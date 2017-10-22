@@ -1,9 +1,12 @@
 package com.derek;
 
 import com.derek.patterns.PatternInstance;
+import javafx.util.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class PatternInstanceEvolution{
 
@@ -11,18 +14,37 @@ public class PatternInstanceEvolution{
     private SoftwareVersion endingPoint;
 
     private PatternType patternType;
-    private Map<SoftwareVersion, List<PatternInstance>> patternLifetime;
+    //index in the list points at pattern software version
+    private List<Pair<SoftwareVersion, PatternInstance>> patternLifetime;
 
-    public PatternInstanceEvolution(SoftwareVersion startingPoint, SoftwareVersion endingPoint, PatternType patternType, Map<SoftwareVersion, List<PatternInstance>> patternLifetime) {
+    public PatternInstanceEvolution(SoftwareVersion startingPoint, SoftwareVersion endingPoint, PatternType patternType, List<Pair<SoftwareVersion, PatternInstance>> patternLifetime) {
         this.startingPoint = startingPoint;
         this.endingPoint = endingPoint;
         this.patternType = patternType;
         this.patternLifetime = patternLifetime;
     }
 
-    public PatternInstanceEvolution(PatternType patternType, Map<SoftwareVersion, List<PatternInstance>> patternLifetime) {
+    public PatternInstanceEvolution(SoftwareVersion startingPoint, PatternType patternType, PatternInstance patternInstance){
+        this.startingPoint = startingPoint;
+
         this.patternType = patternType;
-        this.patternLifetime = patternLifetime;
+        patternLifetime = new ArrayList<>();
+        for (int i = 0; i < startingPoint.getVersionNum(); i++){
+            //this signifies that a pattern did not exist at a particular time.
+            //
+            patternLifetime.add(new Pair<SoftwareVersion, PatternInstance>(new SoftwareVersion(i), null));
+        }
+        patternLifetime.add(new Pair<SoftwareVersion, PatternInstance>(startingPoint, patternInstance));
+    }
+
+
+    public void addPatternInstanceToEvolution(PatternInstance pi, SoftwareVersion v){
+        //add pattern instance to a particular version number.
+        patternLifetime.add(new Pair<SoftwareVersion, PatternInstance>(v, pi));
+    }
+
+    public PatternInstance getFirstPatternInstance(){
+        return patternLifetime.get(startingPoint.getVersionNum()).getValue();
     }
 
     public SoftwareVersion getStartingPoint() {
@@ -49,12 +71,21 @@ public class PatternInstanceEvolution{
         this.patternType = patternType;
     }
 
-    public Map<SoftwareVersion, List<PatternInstance>> getPatternLifetime() {
+    public List<Pair<SoftwareVersion, PatternInstance>> getPatternLifetime() {
         return patternLifetime;
     }
 
-    public void setPatternLifetime(Map<SoftwareVersion, List<PatternInstance>> patternLifetime) {
+    public void setPatternLifetime(List<Pair<SoftwareVersion, PatternInstance>> patternLifetime) {
         this.patternLifetime = patternLifetime;
     }
 
+    public String getCSVVersions(){
+        String toRet = "";
+        for (Pair<SoftwareVersion, PatternInstance> pairs : patternLifetime){
+            if (pairs.getValue() != null){
+                toRet += pairs.getKey().getVersionNum() + ", ";
+            }
+        }
+        return toRet;
+    }
 }

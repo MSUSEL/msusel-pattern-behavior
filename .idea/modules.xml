@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/pattern analysis.iml" filepath="$PROJECT_DIR$/pattern analysis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/pattern-analysis.iml" filepath="$PROJECT_DIR$/.idea/pattern-analysis.iml" />
     </modules>
   </component>
 </project>

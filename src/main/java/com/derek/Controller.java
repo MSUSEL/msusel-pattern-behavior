@@ -31,15 +31,70 @@ public class Controller {
 
         parseDataIntoPatternDataStructure("pattern_detections/");
 
-        //TODO - rename Pattern instances within data structure to represent individual patterns, matching on roles.
 
-        //buildPatternEvolutions();
+        //holy shit it works.
+        buildPatternEvolutions();
 
         //printPatternDataStructure();
         //showAllFactoryMethodEvolutions();
 
-        printPatternTable();
+        //printPatternTable();
 
+
+        printFactoryEvolutions();
+
+    }
+
+    public void printFactoryEvolutions(){
+        List<PatternInstanceEvolution> factories = patternEvolutions.get(PatternType.FACTORY_METHOD);
+
+        System.out.println("Factory Evolution:");
+        for (PatternInstanceEvolution pie : factories){
+            System.out.println(pie.getFirstPatternInstance().toString() + pie.getCSVVersions());
+        }
+    }
+
+    public void buildPatternEvolutions(){
+        for (SoftwareVersion v : patternSummaryTable.rowKeySet()){
+            for (PatternType pt : patternSummaryTable.columnKeySet()){
+                for (PatternInstance pi : patternSummaryTable.get(v, pt)){
+                    //every pattern instance needs to be a part of at least some evolution
+                    //existingPAtternEvolutions is w.r.t. pattern type.
+                    List<PatternInstanceEvolution> existingPatternEvolutions = patternEvolutions.get(pt);
+                    if (existingPatternEvolutions == null){
+                        //first time through loop; we have found no pattern evolution objects for this pattern type
+                        existingPatternEvolutions = new ArrayList<>();
+                        //in this, pi is a list of patternInstances.
+                        existingPatternEvolutions.add(new PatternInstanceEvolution(v, pt, pi));
+                        patternEvolutions.put(pt, existingPatternEvolutions);
+                    }else{
+                        //following method adds a pattern instance to the evolution if it exists (the evolution object).
+                        //thats why we check for false.
+                        if (!doesPatternInstanceExistInEvolutions(pi, existingPatternEvolutions, v)){
+                            existingPatternEvolutions.add(new PatternInstanceEvolution(v, pt, pi));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //checks to see if a pattern instance exists in pattern instance evolutions, and returns false if not.
+    //if true. this method also addes the pattern instance to the evolution list.
+    private boolean doesPatternInstanceExistInEvolutions(PatternInstance pi, List<PatternInstanceEvolution> pies, SoftwareVersion v){
+        boolean toRet = false;
+        for (PatternInstanceEvolution pie : pies){
+            if (pie.getFirstPatternInstance().isInstanceEqual(pi)){
+                //found a pattern instance evolution
+
+
+                pie.addPatternInstanceToEvolution(pi, v);
+                //pie.addPatternInstanceToEvolution(pi, v);
+                toRet = true;
+                return toRet;
+            }
+        }
+        return toRet;
     }
 
     private void printPatternTable(){
