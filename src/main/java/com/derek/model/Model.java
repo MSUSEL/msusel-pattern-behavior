@@ -1,0 +1,417 @@
+package com.derek.model;
+
+import com.derek.model.patterns.*;
+import com.google.common.collect.Table;
+import com.google.common.collect.TreeBasedTable;
+import javafx.util.Pair;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.*;
+
+public class Model {
+
+    private Table<SoftwareVersion, PatternType, List<PatternInstance>> patternSummaryTable;
+
+    private Map<PatternType, List<PatternInstanceEvolution>> patternEvolutions;
+
+    private final int numSharedClassesToConstitutePatternCoupling = 1;
+
+    public Model(){
+
+        patternEvolutions = new TreeMap<>();
+        patternSummaryTable = TreeBasedTable.create();
+
+        parseDataIntoPatternDataStructure("pattern_detections/");
+
+
+        //holy shit it works.
+        buildPatternEvolutions();
+
+        //printPatternDataStructure();
+        //showAllFactoryMethodEvolutions();
+
+        //printPatternTable();
+
+
+        //printFactoryEvolutions();
+        //printFactoryAdditions();
+
+        //findPatternCoupling(numSharedClassesToConstitutePatternCoupling);
+
+    }
+
+    //this method searches across all patterns to find classes that fill shared roles across different (or same) pattern types.
+    //parameterized by the number of shared classes
+    public void findPatternCoupling(int numSharedClasses){
+        Map<SoftwareVersion, List<Pair<PatternInstance, PatternInstance>>> coupledPatterns = new HashMap<>();
+        for (SoftwareVersion v : patternSummaryTable.rowKeySet()) {
+
+            List<Pair<PatternInstance, PatternInstance>> coupledPatternsForThisVersion = new ArrayList<>();
+            for (PatternType outerType : patternSummaryTable.columnKeySet()){
+                for (PatternType innerType : patternSummaryTable.columnKeySet()){
+                    List<PatternInstance> outerLoop = patternSummaryTable.get(v, outerType);
+                    List<PatternInstance> innerLoop = patternSummaryTable.get(v, innerType);
+                    for (PatternInstance piOuter : outerLoop){
+                        for (Pair<String, String> outerPIClass : piOuter.getListOfPatternRoles()){
+                            String outerElement = outerPIClass.getValue();
+                            for (PatternInstance piInner : innerLoop) {
+                                if (piOuter != piInner) {
+                                    //ignore the exact same pattern
+                                    int numSameClasses = 0;
+                                    for (Pair<String, String> innerPIClass : piInner.getListOfPatternRoles()) {
+                                        String innerElement = innerPIClass.getValue();
+                                        if (outerElement.equals(innerElement)) {
+                                            //same class fulfills two different roles.
+                                            numSameClasses++;
+                                            if (numSharedClasses <= numSameClasses) {
+                                                //the number of pattern-sharing classes in the project is sufficient for our pattern coupling criteria
+                                                Pair<PatternInstance, PatternInstance> coupledPatternClasses = new Pair<>(piOuter, piInner);
+                                                if (!doesPairExistInList(coupledPatternClasses, coupledPatternsForThisVersion)) {
+                                                    coupledPatternsForThisVersion.add(coupledPatternClasses);
+                                                }
+                                                break;//break out of innerPIClass loop, because we only want to match once.
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            coupledPatterns.put(v, coupledPatternsForThisVersion);
+        }
+
+        //printing this too. Refactor this eventually, moving to its own method.
+        printCoupledPatterns(coupledPatterns);
+    }
+
+    private boolean doesPairExistInList(Pair<PatternInstance, PatternInstance> coupledPatternClasses, List<Pair<PatternInstance, PatternInstance>> coupledPatternsForThisVersion){
+        boolean toRet = false;
+
+        for (Pair<PatternInstance, PatternInstance> existingCoupledPatterns : coupledPatternsForThisVersion){
+            if (coupledPatternClasses.getKey() == existingCoupledPatterns.getKey() && coupledPatternClasses.getValue() == existingCoupledPatterns.getValue()){
+                toRet = true;
+            }
+            if (coupledPatternClasses.getKey() == existingCoupledPatterns.getValue() && coupledPatternClasses.getValue() == existingCoupledPatterns.getKey()){
+                toRet = true;
+            }
+        }
+        return toRet;
+    }
+
+    private void printCoupledPatterns(Map<SoftwareVersion, List<Pair<PatternInstance, PatternInstance>>> coupledPatterns){
+        try {
+            File f = new File("PatternEvolutions.log");
+            PrintStream ps = new PrintStream(f);
+            for (SoftwareVersion v : coupledPatterns.keySet()) {
+                ps.println(v);
+                for (Pair<PatternInstance, PatternInstance> coupledPatternPair : coupledPatterns.get(v)) {
+                    ps.println('\t' + coupledPatternPair.getKey().toString() + "   " + coupledPatternPair.getValue().toString());
+                }
+            }
+            ps.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void printFactoryAdditions(){
+        //TODO
+    }
+
+    public void printFactoryEvolutions(){
+        List<PatternInstanceEvolution> factories = patternEvolutions.get(PatternType.FACTORY_METHOD);
+
+        System.out.println("Factory Evolution:");
+        for (PatternInstanceEvolution pie : factories){
+            System.out.println(pie.getFirstPatternInstance().toString() + pie.getCSVVersions());
+        }
+    }
+
+    public void buildPatternEvolutions(){
+        for (SoftwareVersion v : patternSummaryTable.rowKeySet()){
+            for (PatternType pt : patternSummaryTable.columnKeySet()){
+                for (PatternInstance pi : patternSummaryTable.get(v, pt)){
+                    //every pattern instance needs to be a part of at least some evolution
+                    //existingPAtternEvolutions is w.r.t. pattern type.
+                    List<PatternInstanceEvolution> existingPatternEvolutions = patternEvolutions.get(pt);
+                    if (existingPatternEvolutions == null){
+                        //first time through loop; we have found no pattern evolution objects for this pattern type
+                        existingPatternEvolutions = new ArrayList<>();
+                        //in this, pi is a list of patternInstances.
+                        existingPatternEvolutions.add(new PatternInstanceEvolution(v, pt, pi));
+                        patternEvolutions.put(pt, existingPatternEvolutions);
+                    }else{
+                        //following method adds a pattern instance to the evolution if it exists (the evolution object).
+                        //thats why we check for false.
+                        if (!doesPatternInstanceExistInEvolutions(pi, existingPatternEvolutions, v)){
+                            existingPatternEvolutions.add(new PatternInstanceEvolution(v, pt, pi));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //checks to see if a pattern instance exists in pattern instance evolutions, and returns false if not.
+    //if true. this method also addes the pattern instance to the evolution list.
+    private boolean doesPatternInstanceExistInEvolutions(PatternInstance pi, List<PatternInstanceEvolution> pies, SoftwareVersion v){
+        boolean toRet = false;
+        for (PatternInstanceEvolution pie : pies){
+            if (pie.getFirstPatternInstance().isInstanceEqual(pi)){
+                //found a pattern instance evolution
+
+
+                pie.addPatternInstanceToEvolution(pi, v);
+                //pie.addPatternInstanceToEvolution(pi, v);
+                toRet = true;
+                return toRet;
+            }
+        }
+        return toRet;
+    }
+
+    private void printPatternTable(){
+        System.out.println(patternSummaryTable.rowKeySet());
+        System.out.println(patternSummaryTable.columnKeySet());
+
+        for (SoftwareVersion v : patternSummaryTable.rowKeySet()){
+            System.out.println(v);
+            for (PatternType pt : patternSummaryTable.columnKeySet()){
+                System.out.print("\t" + pt + " instances: ");
+                for (PatternInstance pi : patternSummaryTable.get(v, pt)){
+                    System.out.print(pi.toString() + ", ");
+                }
+                System.out.println();
+            }
+            System.out.println();
+        }
+    }
+
+    public void parseDataIntoPatternDataStructure(String fileName){
+        try{
+            //https://www.mkyong.com/java/how-to-read-xml-file-in-java-dom-parser/
+            File dir = new File(fileName);
+            for (File f : dir.listFiles()){
+                //assume all files in here are xml
+
+                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                Document doc = dBuilder.parse(f);
+
+                SoftwareVersion version = new SoftwareVersion(getVersionNumberFromFileName(f.getName()));
+
+
+                NodeList patterns = doc.getElementsByTagName("pattern");
+
+                //iterate through pattern types within the xml
+                for (int i = 0; i < patterns.getLength(); i++){
+                    Node patternIter = patterns.item(i);
+                    if (patternIter.getNodeType() == Node.ELEMENT_NODE){
+                        Element patternTypeElement = (Element) patternIter;
+
+                        PatternType patternType = matchPatternEnum(patternTypeElement.getAttribute("name"));
+
+                        NodeList patternInstancesNodeList = patternTypeElement.getElementsByTagName("instance");
+
+                        List<PatternInstance> patternInstances = new ArrayList<>();
+
+                        //iterate through pattern instances of each pattern type
+                        for (int j = 0; j < patternInstancesNodeList.getLength(); j++) {
+                            Node patternInstanceIter = patternInstancesNodeList.item(j);
+
+                            Element patternInstanceElement = (Element) patternInstanceIter;
+                            NodeList patternRoles = patternInstanceElement.getElementsByTagName("role");
+
+                            List<Pair<String, String>> listOfRoles = new ArrayList<>();
+                            for (int k = 0; k < patternRoles.getLength(); k++) {
+                                Node roleNode = patternRoles.item(k);
+
+                                String role = roleNode.getAttributes().getNamedItem("name").getTextContent();
+                                String element = roleNode.getAttributes().getNamedItem("element").getTextContent();
+                                Pair<String, String> p = new Pair<>(role, element);
+                                listOfRoles.add(p);
+
+                            }
+                            //add pattern instance to list of namesake.
+
+                            patternInstances.add(buildPatternInstance(listOfRoles, patternType));
+                        }
+                        patternSummaryTable.put(version, patternType, patternInstances);
+                    }
+                }
+            }
+
+            System.out.println("Build pattern Number of software versions " + getPatternSummaryTable().rowKeySet().size());
+        }catch(FileNotFoundException e){
+            e.printStackTrace();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private PatternInstance buildPatternInstance(List<Pair<String, String>> listOfRoles, PatternType patternType){
+        switch(patternType){
+            //patterns with one major role
+            case FACTORY_METHOD:
+            case CHAIN_OF_RESPONSIBILITY:
+            case TEMPLATE_METHOD:
+            case SINGLETON:
+
+            //patterns with two major roles
+            case OBJECT_ADAPTER:
+            case DECORATOR:
+            case STATE:
+            case STRATEGY:
+            case BRIDGE:
+            case PROXY:
+            case PROXY2:
+                return new PatternInstance(listOfRoles, patternType);
+
+
+            //patterns that have not been detected yet.
+            case PROTOTYPE:return null;//TODO;
+            case COMMAND:return null;//TODO
+            case COMPOSITE:return null;//TODO
+            case OBSERVER:return null;//TODO
+            case VISITOR:return null; //TODO
+            default:
+                System.out.println("Did not match a pattern type with a built-in class of that type. Exiting and fix ");
+                System.exit(0);
+        }
+        return null;
+    }
+
+
+    /*
+    expects the filename as a string for input. forms are: "pattern_detector{\d}+.xml"
+     */
+    private int getVersionNumberFromFileName(String s){
+        //remove .xml
+        return Integer.parseInt(s.substring(16, s.lastIndexOf('.')));
+    }
+
+
+    /*
+    matches an xml string output from the pattern detector tool with the built-in enums in PAtternType
+
+     */
+    private PatternType matchPatternEnum(String s){
+    s = s.toLowerCase();
+        switch(s){
+            case "factory method":
+                return PatternType.FACTORY_METHOD;
+            case "prototype":
+                return PatternType.PROTOTYPE;
+            case "singleton":
+                return PatternType.SINGLETON;
+            case "(object)adapter":
+                return PatternType.OBJECT_ADAPTER;
+            case "command":
+                return PatternType.COMMAND;
+            case "composite":
+                return PatternType.COMPOSITE;
+            case "decorator":
+                return PatternType.DECORATOR;
+            case "observer":
+                return PatternType.OBSERVER;
+            case "state":
+                return PatternType.STATE;
+            case "strategy":
+                return PatternType.STRATEGY;
+            case "bridge":
+                return PatternType.BRIDGE;
+            case "template method":
+                return PatternType.TEMPLATE_METHOD;
+            case "visitor":
+                return PatternType.VISITOR;
+            case "proxy":
+                return PatternType.PROXY;
+            case "proxy2":
+                return PatternType.PROXY2;
+            case "chain of responsibility":
+                return PatternType.CHAIN_OF_RESPONSIBILITY;
+            default:
+                System.out.println("Was not able to match pattern with an enum. Exiting because this should not happen");
+                System.exit(0);
+
+        }
+        //should never get here because we exit on the default case
+        return null;
+    }
+
+    public PatternType getPatternTypeFromIndex(int index){
+        switch(index){
+            case 0:
+                return PatternType.FACTORY_METHOD;
+            case 1:
+                return PatternType.PROTOTYPE;
+            case 2:
+                return PatternType.SINGLETON;
+            case 3:
+                return PatternType.OBJECT_ADAPTER;
+            case 4:
+                return PatternType.COMMAND;
+            case 5:
+                return PatternType.COMPOSITE;
+            case 6:
+                return PatternType.DECORATOR;
+            case 7:
+                return PatternType.OBSERVER;
+            case 8:
+                return PatternType.STATE;
+            case 9:
+                return PatternType.STRATEGY;
+            case 10:
+                return PatternType.BRIDGE;
+            case 11:
+                return PatternType.TEMPLATE_METHOD;
+            case 12:
+                return PatternType.VISITOR;
+            case 13:
+                return PatternType.PROXY;
+            case 14:
+                return PatternType.PROXY2;
+            case 15:
+                return PatternType.CHAIN_OF_RESPONSIBILITY;
+            default:
+                System.out.println("Was not able to match index with an enum. Exiting because this should not happen");
+                System.exit(0);
+
+        }
+        //should never get here because we exit on the default case
+        return null;
+    }
+
+    public Table<SoftwareVersion, PatternType, List<PatternInstance>> getPatternSummaryTable() {
+        return patternSummaryTable;
+    }
+
+    public void setPatternSummaryTable(Table<SoftwareVersion, PatternType, List<PatternInstance>> patternSummaryTable) {
+        this.patternSummaryTable = patternSummaryTable;
+    }
+
+    public Map<PatternType, List<PatternInstanceEvolution>> getPatternEvolutions() {
+        return patternEvolutions;
+    }
+
+    public void setPatternEvolutions(Map<PatternType, List<PatternInstanceEvolution>> patternEvolutions) {
+        this.patternEvolutions = patternEvolutions;
+    }
+}
