@@ -149,17 +149,15 @@ public class View {
 
             List<PatternInstance> pis = mapData.get(v);
 
-            System.out.println("Version: " + i + "     Number of pattern instances " + pis.size());
             if (pis != null) {
-                for (int j = 0; j < pis.size(); j++) {
-                    //System.out.println("I is " + i + "  and j is " + j);
-                    int total = (i * j) + j;
-                    System.out.println("Combined data value is " + total);
-                    data[nextRow][0] = v.toString(); //version, might consider changing to mapData.get(i).
-                    data[nextRow][1] = pis.get(j).getValueOfMajorRole(pis.get(j));//primary role only
-                    data[nextRow][2] = pis.get(j).getValueOfSecondMajorRole(pis.get(j)); //secondary role
-                    nextRow++;
-                }
+            for (int j = 0; j < pis.size(); j++) {
+                //System.out.println("I is " + i + "  and j is " + j);
+                int total = (i * j) + j;
+                data[nextRow][0] = v.toString(); //version, might consider changing to mapData.get(i).
+                data[nextRow][1] = pis.get(j).getValueOfMajorRole(pis.get(j));//primary role only
+                data[nextRow][2] = pis.get(j).getValueOfSecondMajorRole(pis.get(j)); //secondary role
+                nextRow++;
+            }
             }
             i++;
         }
