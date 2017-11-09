@@ -3,7 +3,10 @@ package com.derek.model;
 import com.derek.model.patterns.*;
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.MutableGraph;
 import javafx.util.Pair;
+import org.jboss.shrinkwrap.descriptor.api.Mutable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -24,6 +27,7 @@ public class Model {
     private Table<SoftwareVersion, PatternType, List<PatternInstance>> patternSummaryTable;
 
     private Map<PatternType, List<PatternInstanceEvolution>> patternEvolutions;
+
 
     private final int numSharedClassesToConstitutePatternCoupling = 1;
 
@@ -247,7 +251,7 @@ public class Model {
                             }
                             //add pattern instance to list of namesake.
 
-                            patternInstances.add(buildPatternInstance(listOfRoles, patternType));
+                            patternInstances.add(buildPatternInstance(listOfRoles, patternType, version));
                         }
                         patternSummaryTable.put(version, patternType, patternInstances);
                     }
@@ -265,7 +269,7 @@ public class Model {
         }
     }
 
-    private PatternInstance buildPatternInstance(List<Pair<String, String>> listOfRoles, PatternType patternType){
+    private PatternInstance buildPatternInstance(List<Pair<String, String>> listOfRoles, PatternType patternType, SoftwareVersion version){
         switch(patternType){
             //patterns with one major role
             case FACTORY_METHOD:
@@ -281,7 +285,7 @@ public class Model {
             case BRIDGE:
             case PROXY:
             case PROXY2:
-                return new PatternInstance(listOfRoles, patternType);
+                return new PatternInstance(listOfRoles, patternType, version);
 
 
             //patterns that have not been detected yet.
@@ -299,31 +303,27 @@ public class Model {
 
     //different from the above mehtod with the same name because this one focuses specifically on a single pattern instance,
     //not on the number of pattern instances in the project.
-    public List<Pair<SoftwareVersion, PatternInstance>> buildPatternEvolutions(PatternInstance pi){
-        List<Pair<SoftwareVersion, PatternInstance>> patternLifeTime = new ArrayList<>();
+    public MutableGraph<PatternInstance> buildPatternEvolution(PatternInstance pi){
+        MutableGraph<PatternInstance> patternEvolution = GraphBuilder.directed().allowsSelfLoops(false).build();
         for (SoftwareVersion v : patternSummaryTable.rowKeySet()) {
-            //adding software version as a pair, and also adding null as the pattern instance because this pattern isntance may
-            //not exist at this point in the lifetime.
-            Pair<SoftwareVersion, PatternInstance> patternPair = new Pair<>(v, null);
-            patternLifeTime.add(patternPair);
             for (PatternType pt : patternSummaryTable.columnKeySet()) {
-                //sanme pattern type
+                //same pattern type; not necessary but filters some data
                 if (pi.getPatternType().equals(pt)){
                     for (PatternInstance allPI : patternSummaryTable.get(v, pt)) {
                         if (pi.isInstanceEqual(allPI)) {
                             //same pattern, (hopefully)
-                            //ugly code - but otherwise its hard to get the pair from the arraylist patternlifetime.
-                            //you also can't call set() for the values in a pair class.
-                            patternLifeTime.remove(patternPair);
-                            patternPair = new Pair<>(v, allPI);
-                            patternLifeTime.add(patternPair);
+                            patternEvolution.addNode(pi);
                         }
                     }
                 }
             }
         }
+        //build edges
+        for (PatternInstance node : patternEvolution.nodes()){
+            System.out.println(node.getSoftwareVersion());
+        }
 
-        return patternLifeTime;
+        return patternEvolution;
     }
 
 

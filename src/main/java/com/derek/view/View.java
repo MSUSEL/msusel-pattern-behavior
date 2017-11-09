@@ -4,6 +4,7 @@ import com.derek.model.Model;
 import com.derek.model.PatternType;
 import com.derek.model.SoftwareVersion;
 import com.derek.model.patterns.PatternInstance;
+import com.google.common.graph.MutableGraph;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
@@ -90,7 +91,7 @@ public class View {
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         //https://stackoverflow.com/questions/4344682/double-click-event-on-jlist-element
-        table.addMouseListener(getPatternInstanceMouseAdapter());
+        table.addMouseListener(getPatternInstanceMouseAdapter(instances));
 
         JScrollPane jsp = new JScrollPane(table);
 
@@ -109,16 +110,24 @@ public class View {
 
     }
 
-    private MouseAdapter getPatternInstanceMouseAdapter(){
+    private MouseAdapter getPatternInstanceMouseAdapter(Map<SoftwareVersion, List<PatternInstance>> instances ){
         return new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
                 JTable selector = (JTable)evt.getSource();
                 if (evt.getClickCount() == 1){
                     int index = selector.getSelectedRow();
                     String indexContent = (String)selector.getValueAt(index, selector.getSelectedColumn());
-                    PatternInstanceWindow piw = new PatternInstanceWindow(indexContent, model);
-                    System.out.println("Querying for " + indexContent);
 
+                    //version is a string..
+                    //need a SoftwareVersion object when I call get
+                    int softwareVersionOfSelection = Integer.parseInt((String)selector.getValueAt(index, 0));
+                    //I need to get a PatternInstance object here of the selected row
+                    PatternInstance selection = instances.get(softwareVersionOfSelection).get(index);
+
+                    MutableGraph<PatternInstance> evols = model.buildPatternEvolution(selection);
+                    //PatternInstanceWindow piw = new PatternInstanceWindow(indexContent, model);
+
+                    System.out.println("Querying for " + indexContent);
                 }
                 if (evt.getClickCount() == 2) {
 
@@ -155,14 +164,14 @@ public class View {
             List<PatternInstance> pis = mapData.get(v);
 
             if (pis != null) {
-            for (int j = 0; j < pis.size(); j++) {
-                //System.out.println("I is " + i + "  and j is " + j);
-                int total = (i * j) + j;
-                data[nextRow][0] = v.toString(); //version, might consider changing to mapData.get(i).
-                data[nextRow][1] = pis.get(j).getValueOfMajorRole(pis.get(j));//primary role only
-                data[nextRow][2] = pis.get(j).getValueOfSecondMajorRole(pis.get(j)); //secondary role
-                nextRow++;
-            }
+                for (int j = 0; j < pis.size(); j++) {
+                    //System.out.println("I is " + i + "  and j is " + j);
+                    int total = (i * j) + j;
+                    data[nextRow][0] = v.getVersionNum() + "";//use this if I want a string 'Version x' in teh cell --- v.toString(); //version, might consider changing to mapData.get(i).
+                    data[nextRow][1] = pis.get(j).getValueOfMajorRole(pis.get(j));//primary role only
+                    data[nextRow][2] = pis.get(j).getValueOfSecondMajorRole(pis.get(j)); //secondary role
+                    nextRow++;
+                }
             }
             i++;
         }

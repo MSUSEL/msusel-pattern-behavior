@@ -1,6 +1,7 @@
 package com.derek.model.patterns;
 
 import com.derek.model.PatternType;
+import com.derek.model.SoftwareVersion;
 import javafx.util.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +30,9 @@ public class PatternInstanceTest {
         Pair<String, String> _other2P1 = new Pair<>("Creator", "com.google.common.base.PatternCompiler");
         Pair<String, String> _other2P2 = new Pair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher");
 
+        //version doesn't matter
+        SoftwareVersion version = new SoftwareVersion(1);
+
         List<Pair<String, String>> _this1ListOfPatternRoles = new ArrayList<>();
         _this1ListOfPatternRoles.add(_thisP1);
         _this1ListOfPatternRoles.add(_thisP2);
@@ -42,9 +46,9 @@ public class PatternInstanceTest {
         _other2ListOfPatternRoles.add(_other2P1);
         _other2ListOfPatternRoles.add(_other2P2);
 
-        _this1 = new PatternInstance(_this1ListOfPatternRoles, PatternType.FACTORY_METHOD);
-        _other1 = new PatternInstance(_other1ListOfPatternRoles, PatternType.FACTORY_METHOD);
-        _other2 = new PatternInstance(_other2ListOfPatternRoles, PatternType.FACTORY_METHOD);
+        _this1 = new PatternInstance(_this1ListOfPatternRoles, PatternType.FACTORY_METHOD, version);
+        _other1 = new PatternInstance(_other1ListOfPatternRoles, PatternType.FACTORY_METHOD, version);
+        _other2 = new PatternInstance(_other2ListOfPatternRoles, PatternType.FACTORY_METHOD, version);
     }
 
 

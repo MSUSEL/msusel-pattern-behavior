@@ -1,6 +1,7 @@
 package com.derek.model.patterns;
 
 import com.derek.model.PatternType;
+import com.derek.model.SoftwareVersion;
 import javafx.util.Pair;
 
 import java.util.List;
@@ -14,9 +15,14 @@ public class PatternInstance {
 
     protected PatternType patternType;
 
-    public PatternInstance(List<Pair<String, String>> listOfPatternRoles, PatternType patternType) {
+    //software version this pattern instance appeared in
+    protected SoftwareVersion softwareVersion;
+
+
+    public PatternInstance(List<Pair<String, String>> listOfPatternRoles, PatternType patternType, SoftwareVersion version) {
         this.listOfPatternRoles = listOfPatternRoles;
         this.patternType = patternType;
+        this.softwareVersion = version;
     }
 
     public List<Pair<String, String>> getListOfPatternRoles() {
@@ -131,6 +137,13 @@ public class PatternInstance {
         return patternType;
     }
 
+    public SoftwareVersion getSoftwareVersion() {
+        return softwareVersion;
+    }
+
+    public void setSoftwareVersion(SoftwareVersion softwareVersion) {
+        this.softwareVersion = softwareVersion;
+    }
 
     //comments from an earlier refactoring::
     //DECORATOR:

@@ -1,6 +1,7 @@
 package com.derek.model.patterns;
 
 import com.derek.model.PatternType;
+import com.derek.model.SoftwareVersion;
 import javafx.util.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +40,8 @@ public class PatternInstanceTwoRolesTest {
         Pair<String, String> _other3P2 = new Pair<>("Adapter", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter2");
         Pair<String, String> _other3P3 = new Pair<>("Request()", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter::executionList:com.google.common.util.concurrent.ExecutionList");
 
+        //version doesn't matter
+        SoftwareVersion version = new SoftwareVersion(1);
 
         List<Pair<String, String>> _this1ListOfPatternRoles = new ArrayList<>();
         _this1ListOfPatternRoles.add(_thisP1);
@@ -62,10 +65,10 @@ public class PatternInstanceTwoRolesTest {
         _other3ListOfPatternRoles.add(_other3P3);
 
 
-        _this1 = new PatternInstance(_this1ListOfPatternRoles, PatternType.OBJECT_ADAPTER);
-        _other1 = new PatternInstance(_other1ListOfPatternRoles, PatternType.OBJECT_ADAPTER);
-        _other2 = new PatternInstance(_other2ListOfPatternRoles, PatternType.OBJECT_ADAPTER);
-        _other3 = new PatternInstance(_other3ListOfPatternRoles, PatternType.OBJECT_ADAPTER);
+        _this1 = new PatternInstance(_this1ListOfPatternRoles, PatternType.OBJECT_ADAPTER, version);
+        _other1 = new PatternInstance(_other1ListOfPatternRoles, PatternType.OBJECT_ADAPTER, version);
+        _other2 = new PatternInstance(_other2ListOfPatternRoles, PatternType.OBJECT_ADAPTER, version);
+        _other3 = new PatternInstance(_other3ListOfPatternRoles, PatternType.OBJECT_ADAPTER, version);
     }
 
 

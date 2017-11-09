@@ -1,12 +1,15 @@
 package com.derek.model;
 
 import com.derek.model.patterns.PatternInstance;
+import com.google.common.graph.AbstractGraph;
+import com.google.common.graph.Graph;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-public class PatternInstanceEvolution{
+public class PatternInstanceEvolution {
 
     private SoftwareVersion startingPoint;
     private SoftwareVersion endingPoint;
