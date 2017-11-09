@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 public class View {
 
     public Window w;
-    public Model model;
+    private Model model;
 
     public View(){
         model = new Model();
@@ -28,13 +28,13 @@ public class View {
     public void defaultView(){
         w = new Window();
         w.setSize(1200, 800);
-        buildLeftPanel(w);
+        buildLeftPanel();
 
 
         w.setVisible(true);
     }
 
-    private void buildLeftPanel(Window w){
+    private void buildLeftPanel(){
         JPanel leftPanelSelector = new JPanel(new BorderLayout());
         DefaultListModel stringOptions = new DefaultListModel();
         stringOptions.addElement("Pattern Evolution");
@@ -49,16 +49,8 @@ public class View {
 
         JScrollPane jsp = new JScrollPane(options);
 
-        JButton searchButton = new JButton("Search");
-        //requires more logic to implement. TODO (might not even be worth it honestly)
-//        searchButton.addActionListener(new ActionListener() {
-//            public void actionPerformed(ActionEvent e) {
-//                System.out.println("You clicked the button, using an ActionListener");
-//            }
-//        });
 
         leftPanelSelector.add(jsp, BorderLayout.NORTH);
-        leftPanelSelector.add(searchButton, BorderLayout.SOUTH);
         leftPanelSelector.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         w.add(leftPanelSelector, BorderLayout.WEST);
     }
@@ -69,7 +61,6 @@ public class View {
         for (PatternType tp : model.getPatternSummaryTable().columnKeySet()){
             stringOptions.addElement(tp.toString());
         }
-        System.out.println(" options menu size " + stringOptions.size());
         JList<String> options = new JList<>(stringOptions);
         options.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -78,7 +69,7 @@ public class View {
 
         JScrollPane jsp = new JScrollPane(options);
 
-        patternTypeSelector.add(jsp, BorderLayout.NORTH);
+        patternTypeSelector.add(jsp, BorderLayout.WEST);
         patternTypeSelector.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         w.getContentPane().add(patternTypeSelector, BorderLayout.CENTER);
         w.getContentPane().revalidate();
@@ -96,8 +87,6 @@ public class View {
 
         table = buildJTableFromMapData(instances);
 
-        System.out.println(" pattern instances row count: " + table.getRowCount());
-
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         //https://stackoverflow.com/questions/4344682/double-click-event-on-jlist-element
@@ -107,14 +96,30 @@ public class View {
 
         patternInstanceSelector.add(jsp, BorderLayout.NORTH);
         patternInstanceSelector.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+
+        BorderLayout layout = (BorderLayout) w.getContentPane().getLayout();
+        //remove it if its already here - think of this as a new query
+        Component c = layout.getLayoutComponent(BorderLayout.SOUTH);
+        if (c != null){
+            w.getContentPane().remove(c);
+        }
+
         w.getContentPane().add(patternInstanceSelector, BorderLayout.SOUTH);
         w.getContentPane().revalidate();
+
     }
 
     private MouseAdapter getPatternInstanceMouseAdapter(){
         return new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
                 JTable selector = (JTable)evt.getSource();
+                if (evt.getClickCount() == 1){
+                    int index = selector.getSelectedRow();
+                    String indexContent = (String)selector.getValueAt(index, selector.getSelectedColumn());
+                    PatternInstanceWindow piw = new PatternInstanceWindow(indexContent, model);
+                    System.out.println("Querying for " + indexContent);
+
+                }
                 if (evt.getClickCount() == 2) {
 
                     // Double-click detected

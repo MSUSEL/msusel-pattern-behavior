@@ -10,6 +10,8 @@ public class PatternInstance {
     //key: role
     //value: class that fulfills that role
     protected List<Pair<String, String>> listOfPatternRoles;
+
+
     protected PatternType patternType;
 
     public PatternInstance(List<Pair<String, String>> listOfPatternRoles, PatternType patternType) {
@@ -123,6 +125,10 @@ public class PatternInstance {
         }
         //either pattern only has one major role or we are looking at two different pattern isntances
         return "null";
+    }
+
+    public PatternType getPatternType() {
+        return patternType;
     }
 
 

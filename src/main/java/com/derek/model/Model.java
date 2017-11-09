@@ -254,7 +254,6 @@ public class Model {
                 }
             }
 
-            System.out.println("Build pattern Number of software versions " + getPatternSummaryTable().rowKeySet().size());
         }catch(FileNotFoundException e){
             e.printStackTrace();
         } catch (ParserConfigurationException e) {
@@ -296,6 +295,35 @@ public class Model {
                 System.exit(0);
         }
         return null;
+    }
+
+    //different from the above mehtod with the same name because this one focuses specifically on a single pattern instance,
+    //not on the number of pattern instances in the project.
+    public List<Pair<SoftwareVersion, PatternInstance>> buildPatternEvolutions(PatternInstance pi){
+        List<Pair<SoftwareVersion, PatternInstance>> patternLifeTime = new ArrayList<>();
+        for (SoftwareVersion v : patternSummaryTable.rowKeySet()) {
+            //adding software version as a pair, and also adding null as the pattern instance because this pattern isntance may
+            //not exist at this point in the lifetime.
+            Pair<SoftwareVersion, PatternInstance> patternPair = new Pair<>(v, null);
+            patternLifeTime.add(patternPair);
+            for (PatternType pt : patternSummaryTable.columnKeySet()) {
+                //sanme pattern type
+                if (pi.getPatternType().equals(pt)){
+                    for (PatternInstance allPI : patternSummaryTable.get(v, pt)) {
+                        if (pi.isInstanceEqual(allPI)) {
+                            //same pattern, (hopefully)
+                            //ugly code - but otherwise its hard to get the pair from the arraylist patternlifetime.
+                            //you also can't call set() for the values in a pair class.
+                            patternLifeTime.remove(patternPair);
+                            patternPair = new Pair<>(v, allPI);
+                            patternLifeTime.add(patternPair);
+                        }
+                    }
+                }
+            }
+        }
+
+        return patternLifeTime;
     }
 
 

@@ -22,6 +22,10 @@ public class PatternInstanceEvolution{
         this.patternLifetime = patternLifetime;
     }
 
+    public PatternInstanceEvolution(List<Pair<SoftwareVersion, PatternInstance>> patternLifetime){
+        this.patternLifetime = patternLifetime;
+    }
+
     public PatternInstanceEvolution(SoftwareVersion startingPoint, PatternType patternType, PatternInstance patternInstance){
         this.startingPoint = startingPoint;
 
