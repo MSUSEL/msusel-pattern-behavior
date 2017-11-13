@@ -42,6 +42,8 @@ public class Model {
         //holy shit it works.
         buildPatternEvolutions();
 
+
+
         //printPatternDataStructure();
         //showAllFactoryMethodEvolutions();
 
@@ -129,10 +131,6 @@ public class Model {
         }catch(Exception e){
             e.printStackTrace();
         }
-    }
-
-    public void printFactoryAdditions(){
-        //TODO
     }
 
     public void printFactoryEvolutions(){
@@ -305,22 +303,39 @@ public class Model {
     //not on the number of pattern instances in the project.
     public MutableGraph<PatternInstance> buildPatternEvolution(PatternInstance pi){
         MutableGraph<PatternInstance> patternEvolution = GraphBuilder.directed().allowsSelfLoops(false).build();
+
         for (SoftwareVersion v : patternSummaryTable.rowKeySet()) {
             for (PatternType pt : patternSummaryTable.columnKeySet()) {
-                //same pattern type; not necessary but filters some data
                 if (pi.getPatternType().equals(pt)){
+                    //same pattern type; not necessary but filters some pattern instances
                     for (PatternInstance allPI : patternSummaryTable.get(v, pt)) {
                         if (pi.isInstanceEqual(allPI)) {
                             //same pattern, (hopefully)
-                            patternEvolution.addNode(pi);
+                            patternEvolution.addNode(allPI);
                         }
                     }
                 }
             }
         }
-        //build edges
+
+        List<PatternInstance> orderedPIs = new ArrayList<>();
+        //fill nodes
         for (PatternInstance node : patternEvolution.nodes()){
-            System.out.println(node.getSoftwareVersion());
+            orderedPIs.add(node);
+        }
+        orderedPIs.sort(Comparator.comparing(PatternInstance::getSoftwareVersion));
+        //sort list
+        //https://stackoverflow.com/questions/16252269/how-to-sort-an-arraylist
+//        Collections.sort(orderedPIs, new Comparator<PatternInstance>() {
+//            @Override
+//            public int compare(PatternInstance patternInstance, PatternInstance t1) {
+//                return patternInstance.getSoftwareVersion().getVersionNum() - t1.getSoftwareVersion().getVersionNum();
+//            }
+//        });
+
+        //add edges
+        for (int i = 0; i < orderedPIs.size()-1; i++){
+            patternEvolution.putEdge(orderedPIs.get(i), orderedPIs.get(i+1));
         }
 
         return patternEvolution;
