@@ -9,6 +9,8 @@ import com.google.common.graph.MutableGraph;
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
@@ -29,31 +31,79 @@ public class View {
     public void defaultView(){
         w = new Window();
         w.setSize(1200, 800);
+        JPanel contentPane = new JPanel(new BorderLayout());
+        w.setContentPane(contentPane);
         buildLeftPanel();
 
 
         w.setVisible(true);
     }
 
+    private DefaultListModel getPatternTypes(){
+        DefaultListModel toRet = new DefaultListModel();
+        for (PatternType pt : model.getPatternSummaryTable().columnKeySet()){
+            toRet.addElement(pt.toString());
+        }
+        return toRet;
+    }
+
     private void buildLeftPanel(){
         JPanel leftPanelSelector = new JPanel(new BorderLayout());
-        DefaultListModel stringOptions = new DefaultListModel();
-        stringOptions.addElement("Pattern Evolution");
-        stringOptions.addElement("Pattern Coupling");
-        JList<String> options = new JList<>(stringOptions);
-        options.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        DefaultListModel defaultStringOptions = new DefaultListModel();
 
-
+        defaultStringOptions.addElement("Pattern Evolution");
+        defaultStringOptions.addElement("Pattern Coupling");
+        JList<String> defaultOptions = new JList<>(defaultStringOptions);
+        JList<String> patternEvolutionOptions = new JList<>(getPatternTypes());
+        defaultOptions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        patternEvolutionOptions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         //https://stackoverflow.com/questions/4344682/double-click-event-on-jlist-element
-        options.addMouseListener(getDefaultLeftPanelMouseAdapter());
-
-        JScrollPane jsp = new JScrollPane(options);
+        //defaultOptions.addMouseListener(getDefaultLeftPanelMouseAdapter());
 
 
-        leftPanelSelector.add(jsp, BorderLayout.NORTH);
+        //this may need to change
+        //patternEvolutionOptions.addMouseListener(getPatternTypePanelMouseAdapter());
+
+        JScrollPane defaultJsp = new JScrollPane(defaultOptions);
+        JScrollPane patternEvolutionJSP = new JScrollPane(patternEvolutionOptions);
+
+
+        JPanel cards = new JPanel(new CardLayout());
+        CardLayout cardLayout = (CardLayout) cards.getLayout();
+        cards.add(defaultJsp);
+        cards.add(patternEvolutionJSP);
+
+        JPanel buttonPanel = new JPanel(new BorderLayout());
+        JButton prev = new JButton("Previous");
+        JButton next = new JButton("Next");
+
+
+
+        buttonPanel.add(prev, BorderLayout.WEST);
+        prev.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                cardLayout.previous(cards);
+            }
+        });
+
+        next.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                cardLayout.next(cards);
+            }
+        });
+
+        buttonPanel.add(next, BorderLayout.EAST);
+        cards.add(buttonPanel, BorderLayout.SOUTH);
+        //leftPanelSelector.add(buttonPanel, BorderLayout.SOUTH);
+
+        leftPanelSelector.add(cards, BorderLayout.WEST);
         leftPanelSelector.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-        w.add(leftPanelSelector, BorderLayout.WEST);
+        w.getContentPane().add(leftPanelSelector, BorderLayout.WEST);
     }
 
     private void selectPatternType(){

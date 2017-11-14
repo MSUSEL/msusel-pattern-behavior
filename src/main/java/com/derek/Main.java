@@ -7,10 +7,10 @@ public class Main {
 
     public static void main(String[] args) {
 
-        //new View();
+        new View();
         //view builds the model too. This might change as this project matures.
 
 
-        new Model();
+        //new Model();
     }
 }
