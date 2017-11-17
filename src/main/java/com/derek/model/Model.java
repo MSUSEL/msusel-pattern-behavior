@@ -1,5 +1,6 @@
 package com.derek.model;
 
+import com.derek.Main;
 import com.derek.model.patterns.*;
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
@@ -36,7 +37,7 @@ public class Model {
         patternEvolutions = new TreeMap<>();
         patternSummaryTable = TreeBasedTable.create();
 
-        parseDataIntoPatternDataStructure("pattern_detections/");
+        parseDataIntoPatternDataStructure(Main.workingDirectory + "pattern_detections/");
 
 
         //holy shit it works.

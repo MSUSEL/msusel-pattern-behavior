@@ -45,7 +45,7 @@ public class PatternInstanceWindow {
         stringOptions.addElement("\tFirst Version appearance: " + getFirstAppearance());
         stringOptions.addElement("\tLast Version apperance: " + getLastAppearance());
         stringOptions.addElement("\tIs Pattern Instance continuous: " + isPatternContinuous());
-        stringOptions.addElement("Does pattern change: " + doesPatternChange());
+        stringOptions.addElement("Does pattern change: TODO"  );// + doesPatternChange());
 
         return new JList<String>(stringOptions);
     }
@@ -162,7 +162,7 @@ public class PatternInstanceWindow {
         sourceCodeSelection.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                PatternInstanceSourceCode pisc = new PatternInstanceSourceCode(pi);
+                PatternInstanceSourceCode pisc = new PatternInstanceSourceCode(pi, patternEvolution);
             }
         });
         diagramPopup.add(diagramSelection);
