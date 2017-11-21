@@ -79,7 +79,7 @@ public class PatternInstanceSourceCode {
             //$ denotes a method under a class
             //:: denotes a concrete class, or a class that extends an abstract class
             //: denotes the return object and/or return value of the concrete class from above. Idk if : can appears if :: does not appear.
-            //Beware because all three above can exist in a file. And multipel times for each. I need to watch out for this.
+            //Beware because all three above can exist in a file. And multiple times for each. I need to watch out for this.
             if (roleToFind.contains("$")){
                 //role exists within a method, not a class. So I need to strip it out
                 roleToFind = roleToFind.split("$")[0];

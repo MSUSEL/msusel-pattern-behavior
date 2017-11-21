@@ -36,7 +36,7 @@ public class PatternInstance {
             case PROTOTYPE:return "TODO";//TODO
             case SINGLETON:return "Singleton";
             case OBJECT_ADAPTER:return "Adaptee";
-            case COMMAND:return "TODO";//TODO
+            case COMMAND:return "Receiver";
             case COMPOSITE:return "TODO";//TODO
             case DECORATOR:return "Decorator";//TODO
             case OBSERVER:return "TODO";//TODO
@@ -90,7 +90,7 @@ public class PatternInstance {
             case PROTOTYPE:return "TODO";//TODO
             case SINGLETON:return "";
             case OBJECT_ADAPTER:return "Adapter";
-            case COMMAND:return "TODO";//TODO
+            case COMMAND:return "ConcreteCommand";
             case COMPOSITE:return "TODO";//TODO
             case DECORATOR:return "Component";//TODO
             case OBSERVER:return "TODO";//TODO
@@ -158,6 +158,16 @@ public class PatternInstance {
     //Object Adapter:
     //this is a tricky one because there are three unique roles for the objecct adapter output (Adaptee, Adapter, and adaptee).
     //I think the constitution for a unique Object Adpater instance is that it has a unique pair of Adaptee and Adapter
+
+
+    //Command:
+    //Intuitively, I don't think that the Receiver should be a major role. The first line describing the Command pattern via the
+    //GoF book says that the behaviors that happen should happen without knowing anything about the receiver of the request.
+    //With that said, if the Receiver is kept abstract then that describes the family of classes that can implement the commands.
+    //I think the detection tool defines 'Receiver' as that abstract class, and 'receiver' as the implementing classes.
+    //In that case, I think Receiver is a major role.
+    //Unfortunately there is no Invoker role listed in the detector tool. I feel almost like Invoker would be a role by itself.
+    //but maybe the tool expects the Invoker role to be encapsulated within the command or client -??
 
     //Proxy2:
     //the tool makes it so Proxy2 includes the abstract Subject class. Becuase RealSubject (should) implement Subject,

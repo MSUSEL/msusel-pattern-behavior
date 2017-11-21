@@ -39,6 +39,7 @@ public class Model {
 
         parseDataIntoPatternDataStructure(Main.workingDirectory + "pattern_detections/");
 
+        //printPatternTable();
 
         //holy shit it works.
         buildPatternEvolutions();
@@ -169,7 +170,7 @@ public class Model {
     }
 
     //checks to see if a pattern instance exists in pattern instance evolutions, and returns false if not.
-    //if true. this method also addes the pattern instance to the evolution list.
+    //if true. this method also adds the pattern instance to the evolution list.
     private boolean doesPatternInstanceExistInEvolutions(PatternInstance pi, List<PatternInstanceEvolution> pies, SoftwareVersion v){
         boolean toRet = false;
         for (PatternInstanceEvolution pie : pies){
@@ -278,6 +279,7 @@ public class Model {
 
             //patterns with two major roles
             case OBJECT_ADAPTER:
+            case COMMAND:
             case DECORATOR:
             case STATE:
             case STRATEGY:
@@ -289,7 +291,6 @@ public class Model {
 
             //patterns that have not been detected yet.
             case PROTOTYPE:return null;//TODO;
-            case COMMAND:return null;//TODO
             case COMPOSITE:return null;//TODO
             case OBSERVER:return null;//TODO
             case VISITOR:return null; //TODO
