@@ -7,7 +7,9 @@ import com.derek.view.View;
 public class Main {
 
     public static String workingDirectory = "C://Users/Derek Reimanis/Documents/research/behavior/projects/selenium/";
-    public static String interVersionKey = "selenium-";
+
+
+    public static String interVersionKey = "-src/selenium-";
     public static String interProjectKey = "org/";
     public static String projectLanguage = ".java";
 
@@ -20,7 +22,7 @@ public class Main {
     public static void main(String[] args) {
 
         //new View();
-        SrcMLRunner runner = new SrcMLRunner(workingDirectory + "36-src/selenium-3.6/");
+        SrcMLRunner runner = new SrcMLRunner(workingDirectory + "36" + interVersionKey + "3.6/" + interProjectKey + "openqa");
         //view builds the model too. This might change as this project matures.
 
 

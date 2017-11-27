@@ -108,7 +108,7 @@ public class PatternInstanceSourceCode {
             File f;
             String stringFileBuilder = "";
 
-            stringFileBuilder = Main.workingDirectory + ver + "-src/" + Main.interVersionKey;
+            stringFileBuilder = Main.workingDirectory + ver + Main.interVersionKey;
             stringFileBuilder += (ver + ".0/");
             stringFileBuilder += Main.interProjectKey;
 
