@@ -1,28 +1,32 @@
 package com.derek.uml;
 
+import com.derek.Main;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import sun.reflect.annotation.ExceptionProxy;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class runs the srcML tool  (http://www.srcml.org/#home) on a software project.
  */
 public class SrcMLRunner {
 
-    private final boolean storeSrcML = false;
-    private String projectDirectory;
+    private final boolean storeSrcML = true;
+    private String projectWorkingDirectory;
     private List<String> srcMLOutput;
 
-    public SrcMLRunner(String projectDirectory){
-        this.projectDirectory = projectDirectory;
-        splitSrcML(generateSrcML());
+    public SrcMLRunner(String projectWorkingDirectory){
+        this.projectWorkingDirectory = projectWorkingDirectory;
+        generateSrcML();
     }
 
     //this method runs through the raw srcMLOutput, which is a huge xml file, and pulls out each class (<unit></unit> tag)
@@ -43,42 +47,68 @@ public class SrcMLRunner {
         }catch(Exception e){
             e.printStackTrace();
         }
-
     }
 
-    public String generateSrcML(){
-        try{
-            System.out.println("Starting srcML generation");
-            //https://stackoverflow.com/questions/5604698/java-programming-call-an-exe-from-java-and-passing-parameters
-            quotify();
-            Runtime rt = Runtime.getRuntime();
-            String[] commands = {"srcML", projectDirectory};
-            Process proc = rt.exec(commands);
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-
-            String srcMLOut = "";
-            String s = null;
-            if (storeSrcML) {
-                File fout = new File("resources/output.xml");
-                BufferedWriter bf = new BufferedWriter(new FileWriter(fout));
-                while ((s = stdInput.readLine()) != null) {
-                    srcMLOut += s;
-                    bf.write(s);
-                }
-                bf.close();
-            }
-
-            System.out.println("Ending srcML generation");
-            return srcMLOut;
+    public List<Path> getSourceCodeListFromProject(){
+        try {
+            //https://stackoverflow.com/questions/2534632/list-all-files-from-a-directory-recursively-with-java
+            List<Path> toRet = Files.find(Paths.get(projectWorkingDirectory), 999, (p, bfa) -> bfa.isRegularFile() && p.getFileName().toString().matches(".*\\.java")).collect(Collectors.toList());
+            return toRet;
         }catch(Exception e){
             e.printStackTrace();
         }
-        return "Error in SrcML generation";
+        return null;
     }
 
-    private void quotify(){
-        projectDirectory = "\"" + projectDirectory + "\"";
-        projectDirectory = projectDirectory.replace("/", "\\") ;
+    public void generateSrcML(){
+        try{
+            System.out.println("Starting srcML generation");
+            //https://stackoverflow.com/questions/5604698/java-programming-call-an-exe-from-java-and-passing-parameters
+
+            List<Path> pathsAsPath = getSourceCodeListFromProject();
+
+            //change directory in future.
+            File directory = new File("srcMLOutput\\" + Main.projectID + "13\\");
+            if (!directory.exists()) {
+                Files.createDirectory(Paths.get("srcMLOutput\\"+ Main.projectID + "13\\"));
+            }
+
+            for (Path p : pathsAsPath) {
+                String current = quotify(p.toString());
+
+                System.out.println("Starting srcml generation for " + current);
+                Runtime rt = Runtime.getRuntime();
+                String[] commands = {"srcML ", current};
+                Process proc = rt.exec(commands);
+                BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+                String srcMLOut = "";
+                String s = "";
+                if (storeSrcML) {
+                    //take out .java extension and add .xml extension
+
+                    File fout = new File("srcMLOutput\\" + directory.getName() + "\\" + p.getFileName().toString().split(".java")[0] + ".xml");
+                    if (!fout.exists()) {
+                        BufferedWriter bf = new BufferedWriter(new FileWriter(fout));
+                        while ((s = stdInput.readLine()) != null) {
+                            srcMLOut += s;
+                            bf.write(s);
+                        }
+                        bf.close();
+                    }
+                }
+                proc.destroy();
+            }
+            System.out.println("Ending srcML generation");
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private String quotify(String s){
+        s = "\"" + s + "\"";
+        s = s.replace("/", "\\") ;
+        return s;
     }
 
 

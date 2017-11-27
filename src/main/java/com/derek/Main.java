@@ -6,26 +6,44 @@ import com.derek.view.View;
 
 public class Main {
 
-    public static String workingDirectory = "C://Users/Derek Reimanis/Documents/research/behavior/projects/selenium/";
-
-
-    public static String interVersionKey = "-src/selenium-";
-    public static String interProjectKey = "org/";
-    public static String projectLanguage = ".java";
-
-
     //guava configs
-    //public static String workingDirectory = "C://Users/Derek Reimanis/Documents/research/behavior/projects/guava/";
-    //public static String interVersionKey = "guava-";
-    //public static String interProjectKey = "guava/src/";
+    public static String workingDirectory;
+    public static String projectID;
+    public static String interVersionKey;
+    public static String interProjectKey;
+    public static String projectLanguage;
+    public static SrcMLRunner runner;
 
-    public static void main(String[] args) {
 
+    public Main(){
+        buildGuavaConfigs();
         //new View();
-        SrcMLRunner runner = new SrcMLRunner(workingDirectory + "36" + interVersionKey + "3.6/" + interProjectKey + "openqa");
         //view builds the model too. This might change as this project matures.
 
-
         //new Model();
+    }
+
+    private void buildSeleniumConfigs(){
+        projectID = "selenium";
+        workingDirectory = "C://Users/Derek Reimanis/Documents/research/behavior/projects/selenium/";
+        interVersionKey = "-src/selenium-";
+        interProjectKey = "org/";
+        projectLanguage = ".java";
+        runner = new SrcMLRunner(workingDirectory + "36" + interVersionKey + "3.6/" + interProjectKey + "openqa");
+    }
+
+    public void buildGuavaConfigs(){
+        projectID = "guava";
+        workingDirectory = "C://Users/Derek Reimanis/Documents/research/behavior/projects/guava/";
+        interVersionKey = "guava-";
+        interProjectKey = "guava/src/";
+        projectLanguage = ".java";
+        //manually entering 1 project now. Once the runner is set up I will extend to allow for batch-style runs
+        runner = new SrcMLRunner(workingDirectory + "13-src/" + interVersionKey + "13.0/" + interProjectKey + "com");
+    }
+
+
+    public static void main(String[] args) {
+        new Main();
     }
 }
