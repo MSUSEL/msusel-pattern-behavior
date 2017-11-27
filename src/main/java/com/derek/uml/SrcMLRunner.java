@@ -22,20 +22,18 @@ public class SrcMLRunner {
 
     private final boolean storeSrcML = true;
     private String projectWorkingDirectory;
-    private List<String> srcMLOutput;
 
     public SrcMLRunner(String projectWorkingDirectory){
         this.projectWorkingDirectory = projectWorkingDirectory;
         generateSrcML();
     }
 
-    //this method runs through the raw srcMLOutput, which is a huge xml file, and pulls out each class (<unit></unit> tag)
-    private void splitSrcML(String fullOutput){
+    //this method runs through the raw srcMLOutput, which is an xml file, and build each class using uml
+    private void buildClassDiagram(){
         try {
-            srcMLOutput = new ArrayList<>();
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(fullOutput);
+            Document doc = dBuilder.parse(fileName);
 
             NodeList patterns = doc.getElementsByTagName("unit");
             //iterate through pattern types within the xml
