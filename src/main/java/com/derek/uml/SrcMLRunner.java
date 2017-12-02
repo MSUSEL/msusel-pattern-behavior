@@ -31,7 +31,7 @@ public class SrcMLRunner {
         buildClassDiagram(new File("srcMLOutput/selenium36/Duration.xml"));
     }
 
-    //this method runs through the raw srcMLOutput, which is an xml file, and build each class using uml
+    //this method runs through the raw srcMLOutput, which is an xml file, and builds each class using uml
     private void buildClassDiagram(File xmlFile){
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -54,13 +54,14 @@ public class SrcMLRunner {
                     List<Constructor> constructors = getConstructorsFromXml(className);
 
                     NodeList specifiers = className.getElementsByTagName("specifier");
+                    String classNameVal = className.getElementsByTagName("name").item(0).getTextContent();
                     for (int j = 0; j < specifiers.getLength(); j++){
                         Node specifier = specifiers.item(j);
-                        if (isClassInterfaceSpecifier(specifier.getParentNode().getNodeName())){
-                        //TODO ---- figure out how to extract the class name and visibility.
-                            //challenges: abstract class vs interface vs concrete class vs non visible class (class foo)
-
-
+                        System.out.println(specifier.getTextContent());
+                        if (false){
+                        //future ---- figure out how to extract the visibility (if it exists).
+                            //challenges: abstract class vs concrete class vs non visibility class ('class foo')
+                            //tbh I don't even know if I need the visibility info.. but I think I need the abstract/concrete
                         }
 
                     }
