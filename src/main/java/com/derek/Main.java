@@ -17,8 +17,8 @@ public class Main {
 
     public Main(){
 
-        buildSeleniumConfigs();
-        //buildGuavaConfigs();
+//      buildSeleniumConfigs();
+        buildGuavaConfigs();
         //new View();
         //view builds the model too. This might change as this project matures.
 

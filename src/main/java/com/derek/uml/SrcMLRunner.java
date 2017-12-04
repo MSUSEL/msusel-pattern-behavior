@@ -24,11 +24,21 @@ public class SrcMLRunner {
 
     private final boolean storeSrcML = true;
     private String projectWorkingDirectory;
+    private final String xmlSpecifier = "specifier";
+    private final String xmlName = "name";
+    private UMLClassDiagram umlClassDiagram;
 
     public SrcMLRunner(String projectWorkingDirectory){
         this.projectWorkingDirectory = projectWorkingDirectory;
         generateSrcML();
-        buildClassDiagram(new File("srcMLOutput/selenium36/Duration.xml"));
+
+        umlClassDiagram = new UMLClassDiagram();
+
+        //selenium test
+        //buildClassDiagram(new File("srcMLOutput/selenium36/Duration.xml"));
+
+        //guava test
+        buildClassDiagram(new File("srcMLOutput/guava13/Files.xml"));
     }
 
     //this method runs through the raw srcMLOutput, which is an xml file, and builds each class using uml
@@ -44,7 +54,6 @@ public class SrcMLRunner {
             NodeList srcClasses = doc.getElementsByTagName("class");
             for (int i = 0; i < srcClasses.getLength(); i++) {
                 Node classIter = srcClasses.item(i);
-                System.out.println(classIter);
                 if (classIter.getNodeType() == Node.ELEMENT_NODE){
                     //this should always happen
                     Element className = (Element) classIter;
@@ -53,28 +62,45 @@ public class SrcMLRunner {
                     List<UMLOperation> operations = getOperationsFromXml(className);
                     List<Constructor> constructors = getConstructorsFromXml(className);
 
-                    NodeList specifiers = className.getElementsByTagName("specifier");
-                    String classNameVal = className.getElementsByTagName("name").item(0).getTextContent();
-                    for (int j = 0; j < specifiers.getLength(); j++){
-                        Node specifier = specifiers.item(j);
-                        System.out.println(specifier.getTextContent());
-                        if (false){
-                        //future ---- figure out how to extract the visibility (if it exists).
-                            //challenges: abstract class vs concrete class vs non visibility class ('class foo')
-                            //tbh I don't even know if I need the visibility info.. but I think I need the abstract/concrete
-                        }
+                    NodeList specifiers = className.getElementsByTagName(xmlSpecifier);
+                    String classNameVal = getClassNameFromXml(className);
 
-                    }
+                    //is abstract is false for now. will change in future.
+                    UMLClass classToAdd = new UMLClass(classNameVal, attributes, operations, constructors, false);
 
-                    String visibilityClassSpecifier = className.getElementsByTagName("specifier").item(0).getTextContent();
-                    String typeClassSpecifier = className.getElementsByTagName("specifier").item(1).getTextContent();
+                    umlClassDiagram.addClassToDiagram(classToAdd);
                 }
             }
+            //TODO - interfaces
             NodeList srcInterfaces = doc.getElementsByTagName("interface");
 
         }catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    private String getClassNameFromXml(Element className){
+        NodeList names = className.getElementsByTagName(xmlName);
+
+        for (int i = 0; i < names.getLength(); i++){
+            Node name = names.item(i);
+            if (nameIsClassName(name)){
+                //name is a class name
+                return ((Element)name).getTextContent();
+            }
+        }
+        return "not found";
+    }
+
+    //utility class to get the string value from an xml element. Supply the parent element, the name of the element you are looking for, and the index for
+    //which numbered child you want
+    private String getTextFromXmlElement(Element element, String childName, int index){
+        return element.getElementsByTagName(childName).item(index).getTextContent();
+    }
+
+    //special and most common case for getting text from xml elements.
+    private String getFirstTextFromXmlElement(Element element, String childName){
+        return getTextFromXmlElement(element, childName, 0);
     }
 
     private List<Constructor> getConstructorsFromXml(Element className){
@@ -86,18 +112,16 @@ public class SrcMLRunner {
             if (constructorNode.getNodeType() == Node.ELEMENT_NODE){
                 //always happens, conditional is here for safety
                 Element constructor = (Element) constructorNode;
-                Visibility vis = getVisibilityFromSpecifier(constructor.getElementsByTagName("specifier").item(0).getTextContent());
-                String name = constructor.getElementsByTagName("name").item(0).getTextContent();
+                Visibility vis = getVisibilityFromSpecifier(getFirstTextFromXmlElement(constructor, xmlSpecifier));
+                String name = getFirstTextFromXmlElement(constructor, xmlName);
                 List<Pair<String, String>> params = getParamsFromXml(constructor);
-                System.out.println("Adding constructor:" + name + "    " + vis);
+                System.out.println("Adding constructor:" + vis + "    " + name);
                 for (Pair<String, String> p : params){
                     System.out.println("params: " + p.getKey() + "   " + p.getValue());
                 }
                 toRet.add(new Constructor(name, params, vis));
             }
         }
-
-
 
         return toRet;
     }
@@ -113,16 +137,16 @@ public class SrcMLRunner {
                 //always should happen, conditional for safety
                 Element operation = (Element)operationNode;
                 //functions/methods start with a visibility
-                Visibility vis = getVisibilityFromSpecifier(operation.getElementsByTagName("specifier").item(0).getTextContent());
+                Visibility vis = getVisibilityFromSpecifier(getFirstTextFromXmlElement(operation, xmlSpecifier));
                 //first 'name' is return type
-                String retType = operation.getElementsByTagName("name").item(0).getTextContent();
+                String retType = getFirstTextFromXmlElement(operation, xmlName);
                 //second 'name' is actual method name
-                String name = operation.getElementsByTagName("name").item(1).getTextContent();
+                String name = getTextFromXmlElement(operation, xmlName, 1);
                 List<Pair<String, String>> params = getParamsFromXml(operation);
 
-                System.out.println("Adding uml operations, " + name + "    " + retType + "    " + vis);
+                System.out.println("Adding uml operations, " + vis + "    " + retType + "    " + name);
                 for (Pair<String, String> p : params){
-                    System.out.println("params: " + p.getKey() + "   " + p.getValue());
+                    System.out.println("\tparams: " + p.getKey() + "   " + p.getValue());
                 }
                 toRet.add(new UMLOperation(name, params, retType, vis));
             }
@@ -141,16 +165,18 @@ public class SrcMLRunner {
         NodeList paramNodeList = operation.getElementsByTagName("parameter_list");
         for (int i = 0; i < paramNodeList.getLength(); i++){
             Node paramNode = paramNodeList.item(i);
-            if (paramNode.getNodeType() == Node.ELEMENT_NODE){
-                //should always happen
-                Element param = (Element) paramNode;
+            if (!paramNode.hasAttributes() || (paramNode.hasAttributes() && !paramNode.getAttributes().item(0).getTextContent().equals("generic"))){
+                if (paramNode.getNodeType() == Node.ELEMENT_NODE) {
+                    //should always happen
+                    Element param = (Element) paramNode;
 
-                if (param.getElementsByTagName("name").item(0) == null){
-                    //params can be null
-                    toRet.add(new Pair<>("", ""));
-                }else {
-                    Pair<String, String> p = new Pair<>(param.getElementsByTagName("name").item(0).getTextContent(), param.getElementsByTagName("name").item(1).getTextContent());
-                    toRet.add(p);
+                    if (param.getElementsByTagName(xmlName).item(0) == null) {
+                        //params can be empty '()'
+                        toRet.add(new Pair<>("", ""));
+                    } else {
+                        Pair<String, String> p = new Pair<>(getFirstTextFromXmlElement(param, xmlName), getTextFromXmlElement(param, xmlName, 1));
+                        toRet.add(p);
+                    }
                 }
             }
         }
@@ -169,7 +195,7 @@ public class SrcMLRunner {
                 if (statementNode.getNodeType() == Node.ELEMENT_NODE){
                     //this shoudl always happen
                     Element statement = (Element)statementNode;
-                    Visibility vis = getVisibilityFromSpecifier(statement.getElementsByTagName("specifier").item(0).getTextContent());
+                    Visibility vis = getVisibilityFromSpecifier(getFirstTextFromXmlElement(statement, xmlSpecifier));
 
                     //I believe there should only ever be one typeDec, so I am just using the first item in the nodelist
                     Node typeDec = statement.getElementsByTagName("type").item(0);
@@ -178,18 +204,31 @@ public class SrcMLRunner {
                         //should always be, but putting the conditional for safety
                         Element type = (Element) typeDec;
                         //should only ever be one name.
-                        dataType = type.getElementsByTagName("name").item(0).getTextContent();
+                        dataType = getFirstTextFromXmlElement(type, xmlName);
                     }
 
                     //should always be last item in nodelist of names..
-                    String varName = statement.getElementsByTagName("name").item(1).getTextContent();
-                    System.out.println("Adding uml attribute, " + varName + "    " + dataType + "    " + vis);
+                    String varName = getTextFromXmlElement(statement, xmlName, 1);
+                    System.out.println("Adding uml attribute, " + vis + "    " + dataType + "    " + varName);
 
                     toRet.add(new UMLAttribute(varName, dataType, vis));
                 }
             }
         }
         return toRet;
+    }
+
+    //recursive function that walks up the dom for a given node, for the goal of finding a 'name' element that
+    //corresponds to the class (or interface) name. Because of the poorly-formed xml structure, annotations are given
+    //the value of name as well.
+    private boolean nameIsClassName(Node classNode){
+        if (classNode.getNodeName().equals("annotation")){
+            return false;
+        }else if (classNode.getNodeName().equals("class")){
+            return true;
+        }else{
+            return nameIsClassName(classNode.getParentNode());
+        }
     }
 
 
@@ -255,9 +294,9 @@ public class SrcMLRunner {
             }
 
             //change directory in future.
-            File directory = new File("srcMLOutput\\" + Main.projectID + "36\\");
+            File directory = new File("srcMLOutput\\" + Main.projectID + "13\\");
             if (!directory.exists()) {
-                Files.createDirectory(Paths.get("srcMLOutput\\"+ Main.projectID + "36\\"));
+                Files.createDirectory(Paths.get("srcMLOutput\\"+ Main.projectID + "13\\"));
             }
 
             for (Path p : pathsAsPath) {

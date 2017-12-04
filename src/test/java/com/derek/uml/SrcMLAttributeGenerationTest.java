@@ -9,8 +9,10 @@ public class SrcMLAttributeGenerationTest {
 
     private String xmlFile;
 
+    private final static int var = 0;
+
     @Before
-    public void buildDataStrcutures(){
+    public void buildDataStructures(){
 
     }
 
