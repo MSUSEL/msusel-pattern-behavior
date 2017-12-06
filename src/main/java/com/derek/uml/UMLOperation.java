@@ -42,16 +42,8 @@ public class UMLOperation {
         return returnDataType;
     }
 
-    public void setReturnDataType(String returnDataType) {
-        this.returnDataType = returnDataType;
-    }
-
     public Visibility getVisibility() {
         return visibility;
-    }
-
-    public void setVisibility(Visibility visibility) {
-        this.visibility = visibility;
     }
 
     public boolean isStatic() {
@@ -60,5 +52,27 @@ public class UMLOperation {
 
     public void setStatic(boolean aStatic) {
         isStatic = aStatic;
+    }
+
+
+    public String buildParamsForPlantUMLDiagram(){
+        StringBuilder s = new StringBuilder();
+        //we have params
+        for (int i = 0; i < parameters.size(); i++){
+            Pair<String, String> param = parameters.get(i);
+            if (i == parameters.size() - 1){
+                if (param.getKey() == ""){
+                    //no params - this will happen during the first iteration of the loop and only if there are no params.
+                    return "";
+                }else {
+                    //last param in param list
+                    s.append(param.getKey() + " " + param.getValue());
+                }
+            }else{
+                //defualt case in a sense; multiple params and we are not on the last one
+                s.append(param.getKey() + " " + param.getValue() + ", ");
+            }
+        }
+        return s.toString();
     }
 }

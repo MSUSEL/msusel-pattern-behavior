@@ -1,6 +1,7 @@
 package com.derek.uml;
 
 import com.derek.Main;
+import com.derek.uml.plantUml.PlantUMLTransformer;
 import javafx.util.Pair;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -15,6 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.XMLFormatter;
 import java.util.stream.Collectors;
 
 /**
@@ -35,10 +37,26 @@ public class SrcMLRunner {
         umlClassDiagram = new UMLClassDiagram();
 
         //selenium test
-        //buildClassDiagram(new File("srcMLOutput/selenium36/Duration.xml"));
+        buildAllClassDiagrams();
+//        buildClassDiagram(new File("srcMLOutput/selenium36/Duration.xml"));
+//        buildClassDiagram(new File("srcMLOutput/selenium36/ApacheHttpClient.xml"));
+//        buildClassDiagram(new File("srcMLOutput/selenium36/ThreadGuard.xml"));
+//        buildClassDiagram(new File("srcMLOutput/selenium36/ExpectedConditions.xml"));
 
         //guava test
-        buildClassDiagram(new File("srcMLOutput/guava13/Files.xml"));
+        //buildClassDiagram(new File("srcMLOutput/guava13/Files.xml"));
+
+        PlantUMLTransformer pltTransformer = new PlantUMLTransformer(umlClassDiagram);
+        pltTransformer.generateClassDiagram();
+    }
+
+    private void buildAllClassDiagrams(){
+        //https://stackoverflow.com/questions/5694385/getting-the-filenames-of-all-files-in-a-folder
+        File f = new File("srcMLOutput/selenium36/");
+        File[] listOfFiles = f.listFiles();
+        for (int i = 0; i < listOfFiles.length; i++) {
+            buildClassDiagram(listOfFiles[i]);
+        }
     }
 
     //this method runs through the raw srcMLOutput, which is an xml file, and builds each class using uml
@@ -47,7 +65,6 @@ public class SrcMLRunner {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(xmlFile);
-
             //http://www.mkyong.com/java/how-to-read-xml-file-in-java-dom-parser/
 
             //get all classes (note this includes abstract classes, but not interfaces
@@ -58,12 +75,11 @@ public class SrcMLRunner {
                     //this should always happen
                     Element className = (Element) classIter;
 
+                    String classNameVal = getClassifierNameFromXml(className, ClassifierName.CLASS);
                     List<UMLAttribute> attributes = getAttributesFromXml(className);
                     List<UMLOperation> operations = getOperationsFromXml(className);
-                    List<Constructor> constructors = getConstructorsFromXml(className);
-
-                    NodeList specifiers = className.getElementsByTagName(xmlSpecifier);
-                    String classNameVal = getClassNameFromXml(className);
+                    List<UMLOperation> constructors = getConstructorsFromXml(className);
+                    boolean isClassAbstract = isClassAbstract(className);
 
                     //is abstract is false for now. will change in future.
                     UMLClass classToAdd = new UMLClass(classNameVal, attributes, operations, constructors, false);
@@ -71,25 +87,55 @@ public class SrcMLRunner {
                     umlClassDiagram.addClassToDiagram(classToAdd);
                 }
             }
-            //TODO - interfaces
             NodeList srcInterfaces = doc.getElementsByTagName("interface");
+            for (int i = 0; i < srcInterfaces.getLength(); i++){
+                Node interfaceIter = srcInterfaces.item(i);
+                if (interfaceIter.getNodeType() == Node.ELEMENT_NODE){
+                    //should always happen
+                    Element interfaceEle = (Element) interfaceIter;
+                    String interfaceName = getClassifierNameFromXml(interfaceEle, ClassifierName.INTERFACE);
+
+                    List<UMLOperation> operations = getOperationsFromXml(interfaceEle);
+
+                    UMLInterface interfaceToAdd = new UMLInterface(interfaceName, operations);
+                    umlClassDiagram.addClassToDiagram(interfaceToAdd);
+                }
+            }
 
         }catch(Exception e){
+            System.out.println("CAUGHT ERROR IN BUILDXML   " + xmlFile.getName());
             e.printStackTrace();
+            System.exit(0);
         }
     }
+    private boolean isClassAbstract(Element classEle){
+        boolean toRet = false;
+//TODO
 
-    private String getClassNameFromXml(Element className){
+
+        return toRet;
+    }
+
+    //method that iterates through all 'name' elements and returns the name of a classifier - must provide classifier.
+    private String getClassifierNameFromXml(Element className, ClassifierName classifierName){
         NodeList names = className.getElementsByTagName(xmlName);
 
         for (int i = 0; i < names.getLength(); i++){
             Node name = names.item(i);
-            if (nameIsClassName(name)){
-                //name is a class name
-                return ((Element)name).getTextContent();
+            switch (classifierName){
+                case CLASS:
+                    if (nameIsClassName(name, classifierName)){
+                        //name is a class name
+                        return ((Element)name).getTextContent();
+                    }
+                case INTERFACE:
+                    if (nameIsClassName(name, classifierName)){
+                        return ((Element)name).getTextContent();
+                    }
             }
+
         }
-        return "not found";
+        return "class name not found";
     }
 
     //utility class to get the string value from an xml element. Supply the parent element, the name of the element you are looking for, and the index for
@@ -103,84 +149,135 @@ public class SrcMLRunner {
         return getTextFromXmlElement(element, childName, 0);
     }
 
-    private List<Constructor> getConstructorsFromXml(Element className){
-        List<Constructor> toRet = new ArrayList<>();
+    private List<UMLOperation> getConstructorsFromXml(Element className){
+        List<UMLOperation> toRet = new ArrayList<>();
         NodeList constructorNodes = className.getElementsByTagName("constructor");
 
         for (int i = 0; i < constructorNodes.getLength(); i++){
             Node constructorNode = constructorNodes.item(i);
-            if (constructorNode.getNodeType() == Node.ELEMENT_NODE){
-                //always happens, conditional is here for safety
-                Element constructor = (Element) constructorNode;
-                Visibility vis = getVisibilityFromSpecifier(getFirstTextFromXmlElement(constructor, xmlSpecifier));
-                String name = getFirstTextFromXmlElement(constructor, xmlName);
-                List<Pair<String, String>> params = getParamsFromXml(constructor);
-                System.out.println("Adding constructor:" + vis + "    " + name);
-                for (Pair<String, String> p : params){
-                    System.out.println("params: " + p.getKey() + "   " + p.getValue());
+            if (notNestedClass(className, constructorNode)){
+                if (constructorNode.getNodeType() == Node.ELEMENT_NODE){
+                    //always happens, conditional is here for safety
+                    Element constructor = (Element) constructorNode;
+                    Visibility vis = getVisibilityFromSpecifier(getFirstTextFromXmlElement(constructor, xmlSpecifier));
+                    String name = getFirstTextFromXmlElement(constructor, xmlName);
+                    List<Pair<String, String>> params = getParamsFromXml(constructor);
+                    System.out.println("Adding constructor:" + vis + "    " + name);
+                    for (Pair<String, String> p : params){
+                        System.out.println("params: " + p.getKey() + "   " + p.getValue());
+                    }
+                    toRet.add(new UMLOperation(name, params, "constructor", vis));
                 }
-                toRet.add(new Constructor(name, params, vis));
             }
         }
-
         return toRet;
     }
 
     private List<UMLOperation> getOperationsFromXml(Element className){
         List<UMLOperation> toRet = new ArrayList<>();
-
         NodeList operationsNodes = className.getElementsByTagName("function");
 
         for (int i = 0; i < operationsNodes.getLength(); i++){
             Node operationNode = operationsNodes.item(i);
-            if (operationNode.getNodeType() == Node.ELEMENT_NODE){
-                //always should happen, conditional for safety
-                Element operation = (Element)operationNode;
-                //functions/methods start with a visibility
-                Visibility vis = getVisibilityFromSpecifier(getFirstTextFromXmlElement(operation, xmlSpecifier));
-                //first 'name' is return type
-                String retType = getFirstTextFromXmlElement(operation, xmlName);
-                //second 'name' is actual method name
-                String name = getTextFromXmlElement(operation, xmlName, 1);
-                List<Pair<String, String>> params = getParamsFromXml(operation);
+            if (notNestedClass(className, operationNode)){
+                if (operationNode.getNodeType() == Node.ELEMENT_NODE){
+                    //always should happen, conditional for safety
+                    Element operation = (Element)operationNode;
+                    //functions/methods start with a visibility
+                    Visibility vis = getVisibilityFromSpecifier(getFirstTextFromXmlElement(operation, xmlSpecifier));
+                    int indexerForAnnotations = 0;
+                    while (operation.getElementsByTagName(xmlName).item(indexerForAnnotations).getParentNode().getNodeName().equals("annotation")){
+                        indexerForAnnotations++;
+                        //found at least one annotation - the 'name' field is being picked up by the annotation element. Need to skip.
+                        //see below comment for explanation
+                        //bug here with override annotation - name is picking up 'Override'. To fix I can check to see if
+                        //the name's parent node in the xml is an annotation or not
+                    }
+                    //first 'name' is return type
+                    String retType = getTextFromXmlElement(operation, xmlName, indexerForAnnotations);
 
-                System.out.println("Adding uml operations, " + vis + "    " + retType + "    " + name);
-                for (Pair<String, String> p : params){
-                    System.out.println("\tparams: " + p.getKey() + "   " + p.getValue());
+                    while (!operation.getElementsByTagName(xmlName).item(indexerForAnnotations).getParentNode().getNodeName().equals("function")){
+                        indexerForAnnotations++;
+                        //found at least one type - the 'name' field is being picked up by the type element. Need to skip.
+                        //same issue as annotations, listed above... Although because the xml is poorly formed, and there are two name elements
+                        //stacked, this time I do it until the immediate parent is 'function'
+                    }
+
+                    //second 'name' is actual method name
+                    String name = getTextFromXmlElement(operation, xmlName, indexerForAnnotations);
+                    List<Pair<String, String>> params = getParamsFromXml(operation);
+
+                    System.out.println("Adding uml operations, " + vis + "    " + retType + "    " + name);
+                    for (Pair<String, String> p : params){
+                        System.out.println("\tparams: " + p.getKey() + "   " + p.getValue());
+                    }
+                    toRet.add(new UMLOperation(name, params, retType, vis));
                 }
-                toRet.add(new UMLOperation(name, params, retType, vis));
             }
-
-
         }
-
-
         return toRet;
     }
 
     private List<Pair<String, String>> getParamsFromXml(Element operation){
-        //pair being a param, key being data type value being variable name
-        List<Pair<String, String>> toRet = new ArrayList<>();
+        try {
+            //pair being a param, key being data type value being variable name
+            List<Pair<String, String>> toRet = new ArrayList<>();
 
-        NodeList paramNodeList = operation.getElementsByTagName("parameter_list");
-        for (int i = 0; i < paramNodeList.getLength(); i++){
-            Node paramNode = paramNodeList.item(i);
-            if (!paramNode.hasAttributes() || (paramNode.hasAttributes() && !paramNode.getAttributes().item(0).getTextContent().equals("generic"))){
-                if (paramNode.getNodeType() == Node.ELEMENT_NODE) {
-                    //should always happen
-                    Element param = (Element) paramNode;
+            NodeList paramNodeList = operation.getElementsByTagName("parameter_list");
+            for (int i = 0; i < paramNodeList.getLength(); i++) {
+                Node paramNode = paramNodeList.item(i);
+                if (!paramNode.hasAttributes() || (paramNode.hasAttributes() && !paramNode.getAttributes().item(0).getTextContent().equals("generic") && !paramNode.getAttributes().item(0).getTextContent().equals("pseudo"))) {
+                    if (paramNode.getNodeType() == Node.ELEMENT_NODE) {
+                        //should always happen
+                        Element param = (Element) paramNode;
 
-                    if (param.getElementsByTagName(xmlName).item(0) == null) {
-                        //params can be empty '()'
-                        toRet.add(new Pair<>("", ""));
-                    } else {
-                        Pair<String, String> p = new Pair<>(getFirstTextFromXmlElement(param, xmlName), getTextFromXmlElement(param, xmlName, 1));
-                        toRet.add(p);
+                        if (param.getElementsByTagName(xmlName).item(0) == null) {
+                            //params can be empty '()'
+                            toRet.add(new Pair<>("", ""));
+                        } else {
+                            Pair<String, String> p = new Pair<>(getFirstTextFromXmlElement(param, xmlName), getTextFromXmlElement(param, xmlName, 1));
+                            toRet.add(p);
+                        }
                     }
                 }
             }
+            return toRet;
+        }catch(Exception e){
+            e.printStackTrace();
+            System.exit(0);
         }
-        return toRet;
+        return null;
+    }
+
+    //checker method to see if a given statementNode has class name of className.
+    //otherwise the statementNode is a nested under a different className and should not be considered for this className.
+    private boolean notNestedClass(Element classElement, Node statementNode){
+        //assume it is not a nested class, and prove otherwise
+        boolean isNotNestedClass = false;
+
+        //walk up statement till i hit the first class
+        Node myParent = getImmediateParentNode(statementNode);
+        if (myParent.getNodeType() == Node.ELEMENT_NODE) {
+            //this shoudl always happen
+            Element parent = (Element)myParent;
+            //check if class name = className
+            String parentName = getClassifierNameFromXml(parent, ClassifierName.CLASS);
+            String className = getClassifierNameFromXml(classElement, ClassifierName.CLASS);
+            if (parentName.equals(className)){
+                isNotNestedClass = true;
+            }
+        }
+        return isNotNestedClass;
+    }
+
+    //recursive method to walk up dom tree until the first class node is reached. Should alwasy eventually hit class.
+    //if I get an error here, put a condition making sure walker doesn't go outside the '#document' element.
+    private Node getImmediateParentNode(Node walker){
+        if (walker.getNodeName().equals("class")){
+            return walker;
+        }else{
+            return getImmediateParentNode(walker.getParentNode());
+        }
     }
 
     private List<UMLAttribute> getAttributesFromXml(Element className){
@@ -189,9 +286,9 @@ public class SrcMLRunner {
         //variables are declared using the xml element 'decl_stmt'
         NodeList declaredStatements = className.getElementsByTagName("decl_stmt");
         for (int i = 0; i < declaredStatements.getLength(); i++){
-
             Node statementNode = declaredStatements.item(i);
-            if (notConstructorOrFunction(statementNode)){
+
+            if (notConstructorOrFunction(statementNode) && notNestedClass(className, statementNode)){
                 if (statementNode.getNodeType() == Node.ELEMENT_NODE){
                     //this shoudl always happen
                     Element statement = (Element)statementNode;
@@ -220,22 +317,29 @@ public class SrcMLRunner {
 
     //recursive function that walks up the dom for a given node, for the goal of finding a 'name' element that
     //corresponds to the class (or interface) name. Because of the poorly-formed xml structure, annotations are given
-    //the value of name as well.
-    private boolean nameIsClassName(Node classNode){
+    //the value of name as well
+    private boolean nameIsClassName(Node classNode, ClassifierName classifierName){
         if (classNode.getNodeName().equals("annotation")){
+            //base case, name refers to an annotation
             return false;
-        }else if (classNode.getNodeName().equals("class")){
-            return true;
-        }else{
-            return nameIsClassName(classNode.getParentNode());
+        }else
+            //not base case (obv)
+            switch(classifierName){
+                case CLASS:
+                    if (classNode.getNodeName().equals("class")){
+                        return true;
+                    }
+                case INTERFACE:
+                    if (classNode.getNodeName().equals("interface")){
+                        return true;
+                    }
+                default: return nameIsClassName(classNode.getParentNode(), classifierName);
         }
     }
-
 
     //recursive function that walks up the dom for a given node in the xml, eventually returning false if a
     //function or constructor was found, otherwise returning true when the document root is found.
    private boolean notConstructorOrFunction(Node statementNode){
-
         if (statementNode.getNodeName().equals("function") || statementNode.getNodeName().equals("constructor")){
             //hit a function or constructor in the dom tree
             return false;
@@ -286,17 +390,15 @@ public class SrcMLRunner {
             //https://stackoverflow.com/questions/5604698/java-programming-call-an-exe-from-java-and-passing-parameters
 
             List<Path> pathsAsPath = getSourceCodeListFromProject();
-
-
             File mainDirectory = new File("srcMLOutput\\");
             if (!mainDirectory.exists()){
                 Files.createDirectory(Paths.get("srcMLOutput\\"));
             }
 
             //change directory in future.
-            File directory = new File("srcMLOutput\\" + Main.projectID + "13\\");
+            File directory = new File("srcMLOutput\\" + Main.projectID + Main.testProject + "\\");
             if (!directory.exists()) {
-                Files.createDirectory(Paths.get("srcMLOutput\\"+ Main.projectID + "13\\"));
+                Files.createDirectory(Paths.get("srcMLOutput\\"+ Main.projectID + Main.testProject + "\\"));
             }
 
             for (Path p : pathsAsPath) {

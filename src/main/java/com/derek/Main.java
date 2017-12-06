@@ -13,12 +13,12 @@ public class Main {
     public static String interProjectKey;
     public static String projectLanguage;
     public static SrcMLRunner runner;
-
+    public static int testProject;
 
     public Main(){
 
-//      buildSeleniumConfigs();
-        buildGuavaConfigs();
+        buildSeleniumConfigs();
+        //buildGuavaConfigs();
         //new View();
         //view builds the model too. This might change as this project matures.
 
@@ -31,6 +31,7 @@ public class Main {
         interVersionKey = "-src/selenium-";
         interProjectKey = "org/";
         projectLanguage = ".java";
+        testProject = 36;
         runner = new SrcMLRunner(workingDirectory + "36" + interVersionKey + "3.6/" + interProjectKey + "openqa");
     }
 
@@ -40,6 +41,7 @@ public class Main {
         interVersionKey = "guava-";
         interProjectKey = "guava/src/";
         projectLanguage = ".java";
+        testProject = 13;
         //manually entering 1 project now. Once the runner is set up I will extend to allow for batch-style runs
         runner = new SrcMLRunner(workingDirectory + "13-src/" + interVersionKey + "13.0/" + interProjectKey + "com");
     }
