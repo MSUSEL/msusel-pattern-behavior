@@ -8,6 +8,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.management.relation.Relation;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
@@ -16,7 +17,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.XMLFormatter;
 import java.util.stream.Collectors;
 
 /**
@@ -37,20 +37,82 @@ public class SrcMLRunner {
         umlClassDiagram = new UMLClassDiagram();
 
         //selenium test
-        buildAllClassDiagrams();
-//        buildClassDiagram(new File("srcMLOutput/selenium36/Duration.xml"));
-//        buildClassDiagram(new File("srcMLOutput/selenium36/ApacheHttpClient.xml"));
-//        buildClassDiagram(new File("srcMLOutput/selenium36/ThreadGuard.xml"));
-//        buildClassDiagram(new File("srcMLOutput/selenium36/ExpectedConditions.xml"));
+        buildAllClasses();
+        buildAllRelationships();
 
         //guava test
         //buildClassDiagram(new File("srcMLOutput/guava13/Files.xml"));
 
         PlantUMLTransformer pltTransformer = new PlantUMLTransformer(umlClassDiagram);
-        pltTransformer.generateClassDiagram();
+        //used to print plantuml
+        //pltTransformer.generateClassDiagram();
     }
 
-    private void buildAllClassDiagrams(){
+    private void buildAllRelationships(){
+        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
+            for (UMLAttribute umlAttribute : umlClassifier.getAttributes()){
+                String type = umlAttribute.getDataType();
+                if (isTypePrimitive(type)){
+                    //don't care; primitive type
+                }else{
+                    UMLClassifier dataType;
+                    if ((dataType = isTypeIncludedInProject(type)) != null){
+                        //the type is a class within the project.
+                        System.out.println("type was found!: " + type);
+                        Relationship relationship = getRelationshipFromUMLClassifiers(umlClassifier, dataType);
+                        umlClassDiagram.addRelationshipToDiagram(umlClassifier, dataType, relationship);
+                    }else{
+                        //the type is not a class in the project. Such as 'Integer', coming from a java lib
+                        //could also be a 3rd party library I don't have the source for.
+                        System.out.println("type not found: " + type);
+                    }
+                }
+            }
+            for (UMLOperation umlOperation : umlClassifier.getOperations()){
+
+            }
+        }
+    }
+
+    private Relationship getRelationshipFromUMLClassifiers(UMLClassifier umlClassifier, UMLClassifier dataType){
+        Relationship r = Relationship.UNSPECIFIED;
+
+        return r;
+    }
+
+    //method returns a umlclassifier object in the uml class diagram graph if the type is found to match it.
+    //if a match is not found return null.
+    private UMLClassifier isTypeIncludedInProject(String type){
+        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
+            if (umlClassifier.getName().equals(type)){
+                //found a match!
+                return umlClassifier;
+            }
+        }
+        return null;
+    }
+
+    //returns true if the type is a primitive type (including Strring)
+    //flase otherwise
+    private boolean isTypePrimitive(String type){
+        switch(type){
+            case "boolean":
+            case "byte":
+            case "char":
+            case "short":
+            case "int":
+            case "long":
+            case "float":
+            case "double":
+                //while String technically isn't a primitive, I think its worth including because its so common and
+                //I don't want to pull from the String java class.
+            case "String":
+                return true;
+        }
+        return false;
+    }
+
+    private void buildAllClasses(){
         //https://stackoverflow.com/questions/5694385/getting-the-filenames-of-all-files-in-a-folder
         File f = new File("srcMLOutput/selenium36/");
         File[] listOfFiles = f.listFiles();
@@ -501,8 +563,4 @@ public class SrcMLRunner {
         s = s.replace("/", "\\") ;
         return s;
     }
-
-
-
-
 }

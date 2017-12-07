@@ -17,17 +17,11 @@ public class UMLClassDiagram {
     private MutableValueGraph<UMLClassifier, Relationship> classDiagram;
 
     public UMLClassDiagram(){
-        classDiagram = ValueGraphBuilder.undirected().build();
+        classDiagram = ValueGraphBuilder.undirected().allowsSelfLoops(true).build();
     }
 
-    //add node (class with attributes/operations/ocnstructor/relationships) to graph.
-    //list of pairs are the connecting classes to umlClass. Each pair is <relationship type, other class>.
-    public void addClassToDiagram(UMLClass umlClass, List<Pair<Relationship, UMLClassifier>> connectorClasses){
-        classDiagram.addNode(umlClass);
-        for (Pair<Relationship, UMLClassifier> p : connectorClasses) {
-            classDiagram.putEdgeValue(umlClass, p.getValue(), p.getKey());
-        }
-
+    public void addRelationshipToDiagram(UMLClassifier from, UMLClassifier to, Relationship relationship){
+        classDiagram.putEdgeValue(from, to, relationship);
     }
 
     //add class without edges; should be used for testing primarily.

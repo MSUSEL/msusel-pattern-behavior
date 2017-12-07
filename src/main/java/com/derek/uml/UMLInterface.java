@@ -1,5 +1,6 @@
 package com.derek.uml;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UMLInterface extends UMLClassifier {
@@ -13,6 +14,13 @@ public class UMLInterface extends UMLClassifier {
 
     public List<UMLOperation> getOperations() {
         return operations;
+    }
+
+    @Override
+    public List<UMLAttribute> getAttributes() {
+        //interfaces don't have attributes, so this will always return null. If this bugs out consider returning an empty (but initialized) list
+        //it bugged - so now I'm returning an empty arraylist
+        return new ArrayList<>();
     }
 
     @Override
