@@ -56,6 +56,9 @@ public class UMLClass extends UMLClassifier{
     @Override
     public String plantUMLTransform() {
         StringBuilder output = new StringBuilder();
+        if (isAbstract){
+            output.append("abstract ");
+        }
         output.append("class " + this.getName() + "{\n");
         for (UMLAttribute attribute : this.getAttributes()){
             output.append("\t" + attribute.getName() + " : " + attribute.getDataType() + "\n");

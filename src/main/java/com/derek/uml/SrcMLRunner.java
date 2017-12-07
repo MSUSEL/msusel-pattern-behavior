@@ -77,12 +77,18 @@ public class SrcMLRunner {
 
                     String classNameVal = getClassifierNameFromXml(className, ClassifierName.CLASS);
                     List<UMLAttribute> attributes = getAttributesFromXml(className);
-                    List<UMLOperation> operations = getOperationsFromXml(className);
-                    List<UMLOperation> constructors = getConstructorsFromXml(className);
                     boolean isClassAbstract = isClassAbstract(className);
+                    List<UMLOperation> operations = getOperationsFromXml(className, "function");
+                    if (isClassAbstract){
+                        //abstract classes can have both fucntion declarations and functions - so I need to add the function_decls
+                        for (UMLOperation abstractFunc : getOperationsFromXml(className, "function_decl")){
+                            operations.add(abstractFunc);
+                        }
+                    }
+                    List<UMLOperation> constructors = getConstructorsFromXml(className);
 
                     //is abstract is false for now. will change in future.
-                    UMLClass classToAdd = new UMLClass(classNameVal, attributes, operations, constructors, false);
+                    UMLClass classToAdd = new UMLClass(classNameVal, attributes, operations, constructors, isClassAbstract);
 
                     umlClassDiagram.addClassToDiagram(classToAdd);
                 }
@@ -95,7 +101,7 @@ public class SrcMLRunner {
                     Element interfaceEle = (Element) interfaceIter;
                     String interfaceName = getClassifierNameFromXml(interfaceEle, ClassifierName.INTERFACE);
 
-                    List<UMLOperation> operations = getOperationsFromXml(interfaceEle);
+                    List<UMLOperation> operations = getOperationsFromXml(interfaceEle, "function_decl");
 
                     UMLInterface interfaceToAdd = new UMLInterface(interfaceName, operations);
                     umlClassDiagram.addClassToDiagram(interfaceToAdd);
@@ -110,9 +116,19 @@ public class SrcMLRunner {
     }
     private boolean isClassAbstract(Element classEle){
         boolean toRet = false;
-//TODO
-
-
+        NodeList classSpecifiers = classEle.getElementsByTagName(xmlSpecifier);
+        for (int i = 0; i < classSpecifiers.getLength(); i++){
+            Node classSpecifierNode = classSpecifiers.item(i);
+            if (classSpecifierNode.getNodeType() == Node.ELEMENT_NODE){
+                //should always happen
+                Element classSpecEle = (Element) classSpecifierNode;
+                if (classSpecEle.getTextContent().equals("abstract")){
+                    //found an abstract class
+                    toRet = true;
+                    return toRet;
+                }
+            }
+        }
         return toRet;
     }
 
@@ -141,8 +157,15 @@ public class SrcMLRunner {
     //utility class to get the string value from an xml element. Supply the parent element, the name of the element you are looking for, and the index for
     //which numbered child you want
     private String getTextFromXmlElement(Element element, String childName, int index){
-        return element.getElementsByTagName(childName).item(index).getTextContent();
+        Node toRet = element.getElementsByTagName(childName).item(index);
+        if (toRet == null){
+            //node did not exist
+            return "";
+        }else {
+            return toRet.getTextContent();
+        }
     }
+
 
     //special and most common case for getting text from xml elements.
     private String getFirstTextFromXmlElement(Element element, String childName){
@@ -173,9 +196,13 @@ public class SrcMLRunner {
         return toRet;
     }
 
-    private List<UMLOperation> getOperationsFromXml(Element className){
+    //method to get the list of functions from a class or interface
+    //search string shoudl be 'function' in the case of classes or
+    //'function_decl' in the case of interfaces
+    private List<UMLOperation> getOperationsFromXml(Element className, String searchString){
         List<UMLOperation> toRet = new ArrayList<>();
-        NodeList operationsNodes = className.getElementsByTagName("function");
+        //classes have functions, interfaces have function_decl
+        NodeList operationsNodes = className.getElementsByTagName(searchString);
 
         for (int i = 0; i < operationsNodes.getLength(); i++){
             Node operationNode = operationsNodes.item(i);
@@ -184,6 +211,8 @@ public class SrcMLRunner {
                     //always should happen, conditional for safety
                     Element operation = (Element)operationNode;
                     //functions/methods start with a visibility
+
+                    //the bug is that methods do not need a visibility.
                     Visibility vis = getVisibilityFromSpecifier(getFirstTextFromXmlElement(operation, xmlSpecifier));
                     int indexerForAnnotations = 0;
                     while (operation.getElementsByTagName(xmlName).item(indexerForAnnotations).getParentNode().getNodeName().equals("annotation")){
@@ -196,7 +225,7 @@ public class SrcMLRunner {
                     //first 'name' is return type
                     String retType = getTextFromXmlElement(operation, xmlName, indexerForAnnotations);
 
-                    while (!operation.getElementsByTagName(xmlName).item(indexerForAnnotations).getParentNode().getNodeName().equals("function")){
+                    while (!operation.getElementsByTagName(xmlName).item(indexerForAnnotations).getParentNode().getNodeName().equals(searchString)){
                         indexerForAnnotations++;
                         //found at least one type - the 'name' field is being picked up by the type element. Need to skip.
                         //same issue as annotations, listed above... Although because the xml is poorly formed, and there are two name elements
@@ -205,6 +234,7 @@ public class SrcMLRunner {
 
                     //second 'name' is actual method name
                     String name = getTextFromXmlElement(operation, xmlName, indexerForAnnotations);
+
                     List<Pair<String, String>> params = getParamsFromXml(operation);
 
                     System.out.println("Adding uml operations, " + vis + "    " + retType + "    " + name);
@@ -225,28 +255,62 @@ public class SrcMLRunner {
 
             NodeList paramNodeList = operation.getElementsByTagName("parameter_list");
             for (int i = 0; i < paramNodeList.getLength(); i++) {
-                Node paramNode = paramNodeList.item(i);
-                if (!paramNode.hasAttributes() || (paramNode.hasAttributes() && !paramNode.getAttributes().item(0).getTextContent().equals("generic") && !paramNode.getAttributes().item(0).getTextContent().equals("pseudo"))) {
-                    if (paramNode.getNodeType() == Node.ELEMENT_NODE) {
+                Node paramListNode = paramNodeList.item(i);
+                //check to see if we are dealing with a real param or a special case (such as lambda expression or try/catch)
+                if (paramCatchCases(paramListNode)){
+                    if (paramListNode.getNodeType() == Node.ELEMENT_NODE) {
                         //should always happen
-                        Element param = (Element) paramNode;
+                        Element paramListEle = (Element) paramListNode;
 
-                        if (param.getElementsByTagName(xmlName).item(0) == null) {
-                            //params can be empty '()'
-                            toRet.add(new Pair<>("", ""));
-                        } else {
-                            Pair<String, String> p = new Pair<>(getFirstTextFromXmlElement(param, xmlName), getTextFromXmlElement(param, xmlName, 1));
-                            toRet.add(p);
+                        NodeList params = paramListEle.getElementsByTagName("parameter");
+                        for (int j = 0; j < params.getLength(); j++){
+                            Node paramNode = params.item(j);
+                            if (paramNode.getNodeType() == Node.ELEMENT_NODE){
+                                //once again, should always happen
+                                 Element paramEle = (Element) paramNode;
+                                if (paramEle.getElementsByTagName(xmlName).item(0) == null) {
+                                    //params can be empty '()'
+                                    toRet.add(new Pair<>("", ""));
+                                } else {
+                                    Pair<String, String> p = new Pair<>(getFirstTextFromXmlElement(paramEle, xmlName), getTextFromXmlElement(paramEle, xmlName, 1));
+                                    toRet.add(p);
+                                }
+                            }
                         }
+
                     }
                 }
             }
             return toRet;
         }catch(Exception e){
             e.printStackTrace();
-            System.exit(0);
         }
         return null;
+    }
+
+
+    //this method lists a number of cases that params might appear with.
+    //if a case is found, we return false.
+    private boolean paramCatchCases(Node paramNode){
+        boolean paramIsGood = true;
+        if (paramNode.hasAttributes()){
+            if (paramNode.getAttributes().item(0).getTextContent().equals("generic")){
+                //variable declaration with generics
+                paramIsGood = false;
+            }
+            if (paramNode.getAttributes().item(0).getTextContent().equals("pseudo")){
+                //lambda expression
+                paramIsGood = false;
+            }
+        }
+        if (paramNode.getParentNode().getNodeName().equals("catch")){
+            //found a catch block
+            paramIsGood = false;
+        }
+        if (paramNode.getParentNode().getNodeName().equals("lambda")){
+            paramIsGood = false;
+        }
+        return paramIsGood;
     }
 
     //checker method to see if a given statementNode has class name of className.
@@ -273,7 +337,7 @@ public class SrcMLRunner {
     //recursive method to walk up dom tree until the first class node is reached. Should alwasy eventually hit class.
     //if I get an error here, put a condition making sure walker doesn't go outside the '#document' element.
     private Node getImmediateParentNode(Node walker){
-        if (walker.getNodeName().equals("class")){
+        if (walker.getNodeName().equals("class") || walker.getNodeName().equals("interface")){
             return walker;
         }else{
             return getImmediateParentNode(walker.getParentNode());
