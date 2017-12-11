@@ -7,11 +7,11 @@ import java.util.List;
 
 public class UMLClass extends UMLClassifier{
 
-    private Visibility visibility;
-    private boolean isAbstract;
-    private List<UMLAttribute> attributes;
-    private List<UMLOperation> operations;
-    private List<UMLOperation> constructors;
+    protected Visibility visibility;
+    protected boolean isAbstract;
+    protected List<UMLAttribute> attributes;
+    protected List<UMLOperation> operations;
+    protected List<UMLOperation> constructors;
 
     public UMLClass(String name, List<UMLAttribute> attributes, List<UMLOperation> operations, List<UMLOperation> constructors, boolean isAbstract) {
         super(name);

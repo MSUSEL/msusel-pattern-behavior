@@ -45,7 +45,7 @@ public class SrcMLRunner {
 
         PlantUMLTransformer pltTransformer = new PlantUMLTransformer(umlClassDiagram);
         //used to print plantuml
-        //pltTransformer.generateClassDiagram();
+        pltTransformer.generateClassDiagram();
     }
 
     private void buildAllRelationships(){
@@ -58,9 +58,9 @@ public class SrcMLRunner {
                     UMLClassifier dataType;
                     if ((dataType = isTypeIncludedInProject(type)) != null){
                         //the type is a class within the project.
-                        System.out.println("type was found!: " + type);
-                        Relationship relationship = getRelationshipFromUMLClassifiers(umlClassifier, dataType);
-                        umlClassDiagram.addRelationshipToDiagram(umlClassifier, dataType, relationship);
+                        //I think I can just add a relationship as an association here.
+                        //this is because attributes that I am storing are class-level variables.
+                        umlClassDiagram.addRelationshipToDiagram(umlClassifier, dataType, Relationship.ASSOCIATION);
                     }else{
                         //the type is not a class in the project. Such as 'Integer', coming from a java lib
                         //could also be a 3rd party library I don't have the source for.
@@ -83,6 +83,14 @@ public class SrcMLRunner {
     //method returns a umlclassifier object in the uml class diagram graph if the type is found to match it.
     //if a match is not found return null.
     private UMLClassifier isTypeIncludedInProject(String type){
+        //first strip any generics out
+        if (type.contains("<") || type.contains(">")){
+            String[] openSplitter = type.split("<");
+            String[] closedSplitter = type.split(">");
+            //may be buggy here if we there are multiple generics, such as List<Pair<String,String>>
+            //also, something like <? extends Edge> might exist. This would be a difference case.
+        }
+
         for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
             if (umlClassifier.getName().equals(type)){
                 //found a match!
@@ -169,6 +177,20 @@ public class SrcMLRunner {
                     umlClassDiagram.addClassToDiagram(interfaceToAdd);
                 }
             }
+            NodeList srcEnums = doc.getElementsByTagName("enum");
+            //apparently enums are quite complicated.
+            //Enums can have constructors, attributes, and methods. I had no idea.
+            for (int i = 0; i < srcEnums.getLength(); i++){
+                Node enumIter = srcEnums.item(i);
+                if (enumIter.getNodeType() == Node.ELEMENT_NODE){
+                    //should always happen
+                    Element enumEle = (Element) enumIter;
+                    String enumName = getFirstTextFromXmlElement(enumEle, xmlName);
+                    List<String> enumTypes = getEnumTypesFromXml(enumEle);
+                    UMLEnum enumToAdd = new UMLEnum(enumName, enumTypes);
+                    umlClassDiagram.addClassToDiagram(enumToAdd);
+                }
+            }
 
         }catch(Exception e){
             System.out.println("CAUGHT ERROR IN BUILDXML   " + xmlFile.getName());
@@ -176,6 +198,28 @@ public class SrcMLRunner {
             System.exit(0);
         }
     }
+
+    private List<String> getEnumTypesFromXml(Element enumEle){
+        List<String> types = new ArrayList<>();
+
+        NodeList nodeTypeList = enumEle.getElementsByTagName(xmlName);
+        for (int i = 0; i < nodeTypeList.getLength(); i++){
+            if (i != 0){
+                //i = 0 is the name of the enum, so I skip that case.
+                Node nodeType = nodeTypeList.item(i);
+                if (nodeType.getNodeType() == Node.ELEMENT_NODE){
+                    //should always happen
+                    Element typeEle = (Element) nodeType;
+                    System.out.println("added enum type: " + typeEle.getTextContent());
+                    types.add(typeEle.getTextContent());
+                }
+            }
+        }
+
+
+        return types;
+    }
+
     private boolean isClassAbstract(Element classEle){
         boolean toRet = false;
         NodeList classSpecifiers = classEle.getElementsByTagName(xmlSpecifier);
@@ -247,10 +291,6 @@ public class SrcMLRunner {
                     Visibility vis = getVisibilityFromSpecifier(getFirstTextFromXmlElement(constructor, xmlSpecifier));
                     String name = getFirstTextFromXmlElement(constructor, xmlName);
                     List<Pair<String, String>> params = getParamsFromXml(constructor);
-                    System.out.println("Adding constructor:" + vis + "    " + name);
-                    for (Pair<String, String> p : params){
-                        System.out.println("params: " + p.getKey() + "   " + p.getValue());
-                    }
                     toRet.add(new UMLOperation(name, params, "constructor", vis));
                 }
             }
@@ -298,11 +338,6 @@ public class SrcMLRunner {
                     String name = getTextFromXmlElement(operation, xmlName, indexerForAnnotations);
 
                     List<Pair<String, String>> params = getParamsFromXml(operation);
-
-                    System.out.println("Adding uml operations, " + vis + "    " + retType + "    " + name);
-                    for (Pair<String, String> p : params){
-                        System.out.println("\tparams: " + p.getKey() + "   " + p.getValue());
-                    }
                     toRet.add(new UMLOperation(name, params, retType, vis));
                 }
             }
@@ -428,12 +463,23 @@ public class SrcMLRunner {
                         Element type = (Element) typeDec;
                         //should only ever be one name.
                         dataType = getFirstTextFromXmlElement(type, xmlName);
+                        if (dataType.contains("<") || dataType.contains(">")){
+                            //data type has generics in it.
+                            //the issue is when you have two 'custom data types in the generics' (Foo<Bar>)
+                            //there are also 3 cases of generics: <Foo, Bar>, <? extends Foo>, and simple (<Foo>)
+
+                            //as I think about it I wonder how much we really need to care about generics..
+                            //I think we need to care about it when the owning type is a java library because
+                            //then I really need the generic type. ex: List<Encodable>, Encodable is what I care about... right?
+                        }
+                        if (dataType.contains("[]")){
+                            //array of objects - need to strip the brackets
+                            dataType = dataType.substring(0, dataType.lastIndexOf("["));
+                        }
                     }
 
                     //should always be last item in nodelist of names..
                     String varName = getTextFromXmlElement(statement, xmlName, 1);
-                    System.out.println("Adding uml attribute, " + vis + "    " + dataType + "    " + varName);
-
                     toRet.add(new UMLAttribute(varName, dataType, vis));
                 }
             }
