@@ -11,14 +11,15 @@ import java.util.List;
 public class UMLEnum extends UMLClass {
 
     //types in an enum can be declared {FOO, BAR}, or as allowable values {FOO("fooA", "fooB"), BAR("barA", "barB")}
-    private Table<String, String, String> types;
+    //for this implementation I only care about the general types (not the allowed values)
+    private List<String> types;
 
-    public UMLEnum(String name, Table<String, String, String> types){
+    public UMLEnum(String name, List<String> types){
         super(name, null,  null, null, false);
         this.types = types;
     }
 
-    public UMLEnum(String name, Table<String, String, String> types, List<UMLAttribute> attributes, List<UMLOperation> operations, List<UMLOperation> constructors){
+    public UMLEnum(String name, List<String> types, List<UMLAttribute> attributes, List<UMLOperation> operations, List<UMLOperation> constructors){
         //can't have an abstract enum
         super(name, attributes, operations, constructors, false);
         this.types = types;
@@ -28,14 +29,14 @@ public class UMLEnum extends UMLClass {
     public String plantUMLTransform() {
         StringBuilder output = new StringBuilder();
         output.append("enum " + this.getName() + "{\n");
-        for (String type : this.getTypes().columnKeySet()){
+        for (String type : this.getTypes()){
             output.append("\t" + type + "\n");
         }
         output.append("}\n");
         return output.toString();
     }
 
-    public Table<String, String, String> getTypes() {
+    public List<String> getTypes() {
         return types;
     }
 }

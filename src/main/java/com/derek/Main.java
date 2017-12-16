@@ -1,8 +1,6 @@
 package com.derek;
 
-import com.derek.model.Model;
-import com.derek.uml.SrcMLRunner;
-import com.derek.view.View;
+import com.derek.uml.srcML.SrcMLRunner;
 
 public class Main {
 

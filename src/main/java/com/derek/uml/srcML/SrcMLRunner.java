@@ -1,6 +1,7 @@
-package com.derek.uml;
+package com.derek.uml.srcML;
 
 import com.derek.Main;
+import com.derek.uml.*;
 import com.derek.uml.plantUml.PlantUMLTransformer;
 import javafx.util.Pair;
 import org.w3c.dom.Document;
@@ -36,8 +37,11 @@ public class SrcMLRunner {
 
         umlClassDiagram = new UMLClassDiagram();
 
+        //selenium single file tests
+        buildClassDiagram(new File("srcMLOutput/selenium36/Architecture.xml"));
+
         //selenium test
-        buildAllClasses();
+        //buildAllClasses();
         buildAllRelationships();
 
         //guava test
@@ -182,14 +186,15 @@ public class SrcMLRunner {
             //Enums can have constructors, attributes, and methods. I had no idea.
             for (int i = 0; i < srcEnums.getLength(); i++){
                 Node enumIter = srcEnums.item(i);
-                if (enumIter.getNodeType() == Node.ELEMENT_NODE){
-                    //should always happen
-                    Element enumEle = (Element) enumIter;
-                    String enumName = getFirstTextFromXmlElement(enumEle, xmlName);
-                    List<String> enumTypes = getEnumTypesFromXml(enumEle);
-                    UMLEnum enumToAdd = new UMLEnum(enumName, enumTypes);
-                    umlClassDiagram.addClassToDiagram(enumToAdd);
-                }
+
+                    if (enumIter.getNodeType() == Node.ELEMENT_NODE) {
+                        //should always happen
+                        Element enumEle = (Element) enumIter;
+                        String enumName = getFirstTextFromXmlElement(enumEle, xmlName);
+                        List<String> enumTypes = getEnumTypesFromXml(enumEle);
+                        UMLEnum enumToAdd = new UMLEnum(enumName, enumTypes);
+                        umlClassDiagram.addClassToDiagram(enumToAdd);
+                    }
             }
 
         }catch(Exception e){
@@ -197,6 +202,17 @@ public class SrcMLRunner {
             e.printStackTrace();
             System.exit(0);
         }
+    }
+
+    private boolean isEnumNameArgument(Node enumNode){
+        if (enumNode.getNodeName().equals("argument_list") || enumNode.getNodeName().equals("function")){
+            //argument list are the allowed strings this can take on; function is an override inside an enum declaration
+            return false;
+        }else if (enumNode.getNodeName().equals("enum")){
+            return true;
+        }else{
+        }
+        return isEnumNameArgument(enumNode.getParentNode());
     }
 
     private List<String> getEnumTypesFromXml(Element enumEle){
@@ -207,11 +223,14 @@ public class SrcMLRunner {
             if (i != 0){
                 //i = 0 is the name of the enum, so I skip that case.
                 Node nodeType = nodeTypeList.item(i);
-                if (nodeType.getNodeType() == Node.ELEMENT_NODE){
-                    //should always happen
-                    Element typeEle = (Element) nodeType;
-                    System.out.println("added enum type: " + typeEle.getTextContent());
-                    types.add(typeEle.getTextContent());
+                if (isEnumNameArgument(nodeType)) {
+                    //make sure this is only the enum type, not the values it can take on
+                    if (nodeType.getNodeType() == Node.ELEMENT_NODE) {
+                        //should always happen
+                        Element typeEle = (Element) nodeType;
+                        System.out.println("added enum type: " + typeEle.getTextContent());
+                        types.add(typeEle.getTextContent());
+                    }
                 }
             }
         }
