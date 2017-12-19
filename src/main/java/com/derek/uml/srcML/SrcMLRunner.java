@@ -9,7 +9,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.management.relation.Relation;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
@@ -145,56 +144,50 @@ public class SrcMLRunner {
             NodeList srcClasses = doc.getElementsByTagName("class");
             for (int i = 0; i < srcClasses.getLength(); i++) {
                 Node classIter = srcClasses.item(i);
-                if (classIter.getNodeType() == Node.ELEMENT_NODE){
-                    //this should always happen
-                    Element className = (Element) classIter;
+                Element className = XmlUtils.elementify(classIter);
 
-                    String classNameVal = getClassifierNameFromXml(className, ClassifierName.CLASS);
-                    List<UMLAttribute> attributes = getAttributesFromXml(className);
-                    boolean isClassAbstract = isClassAbstract(className);
-                    List<UMLOperation> operations = getOperationsFromXml(className, "function");
-                    if (isClassAbstract){
-                        //abstract classes can have both fucntion declarations and functions - so I need to add the function_decls
-                        for (UMLOperation abstractFunc : getOperationsFromXml(className, "function_decl")){
-                            operations.add(abstractFunc);
-                        }
+                String classNameVal = getClassifierNameFromXml(className, ClassifierName.CLASS);
+                List<UMLAttribute> attributes = getAttributesFromXml(className);
+                boolean isClassAbstract = isClassAbstract(className);
+                List<UMLOperation> operations = getOperationsFromXml(className, "function");
+                if (isClassAbstract){
+                    //abstract classes can have both fucntion declarations and functions - so I need to add the function_decls
+                    for (UMLOperation abstractFunc : getOperationsFromXml(className, "function_decl")){
+                        operations.add(abstractFunc);
                     }
-                    List<UMLOperation> constructors = getConstructorsFromXml(className);
-
-                    //is abstract is false for now. will change in future.
-                    UMLClass classToAdd = new UMLClass(classNameVal, attributes, operations, constructors, isClassAbstract);
-
-                    umlClassDiagram.addClassToDiagram(classToAdd);
                 }
+                List<UMLOperation> constructors = getConstructorsFromXml(className);
+
+                //is abstract is false for now. will change in future.
+                UMLClass classToAdd = new UMLClass(classNameVal, attributes, operations, constructors, isClassAbstract);
+
+                umlClassDiagram.addClassToDiagram(classToAdd);
+
             }
             NodeList srcInterfaces = doc.getElementsByTagName("interface");
             for (int i = 0; i < srcInterfaces.getLength(); i++){
                 Node interfaceIter = srcInterfaces.item(i);
-                if (interfaceIter.getNodeType() == Node.ELEMENT_NODE){
-                    //should always happen
-                    Element interfaceEle = (Element) interfaceIter;
-                    String interfaceName = getClassifierNameFromXml(interfaceEle, ClassifierName.INTERFACE);
 
-                    List<UMLOperation> operations = getOperationsFromXml(interfaceEle, "function_decl");
+                Element interfaceEle = XmlUtils.elementify(interfaceIter);
+                String interfaceName = getClassifierNameFromXml(interfaceEle, ClassifierName.INTERFACE);
 
-                    UMLInterface interfaceToAdd = new UMLInterface(interfaceName, operations);
-                    umlClassDiagram.addClassToDiagram(interfaceToAdd);
-                }
+                List<UMLOperation> operations = getOperationsFromXml(interfaceEle, "function_decl");
+
+                UMLInterface interfaceToAdd = new UMLInterface(interfaceName, operations);
+                umlClassDiagram.addClassToDiagram(interfaceToAdd);
+
             }
             NodeList srcEnums = doc.getElementsByTagName("enum");
             //apparently enums are quite complicated.
             //Enums can have constructors, attributes, and methods. I had no idea.
             for (int i = 0; i < srcEnums.getLength(); i++){
                 Node enumIter = srcEnums.item(i);
+                Element enumEle = XmlUtils.elementify(enumIter);
+                String enumName = XmlUtils.getFirstTextFromXmlElement(enumEle, xmlName);
+                List<String> enumTypes = getEnumTypesFromXml(enumEle);
 
-                    if (enumIter.getNodeType() == Node.ELEMENT_NODE) {
-                        //should always happen
-                        Element enumEle = (Element) enumIter;
-                        String enumName = getFirstTextFromXmlElement(enumEle, xmlName);
-                        List<String> enumTypes = getEnumTypesFromXml(enumEle);
-                        UMLEnum enumToAdd = new UMLEnum(enumName, enumTypes);
-                        umlClassDiagram.addClassToDiagram(enumToAdd);
-                    }
+                UMLEnum enumToAdd = new UMLEnum(enumName, enumTypes);
+                umlClassDiagram.addClassToDiagram(enumToAdd);
             }
 
         }catch(Exception e){
@@ -224,17 +217,13 @@ public class SrcMLRunner {
                 //i = 0 is the name of the enum, so I skip that case.
                 Node nodeType = nodeTypeList.item(i);
                 if (isEnumNameArgument(nodeType)) {
-                    //make sure this is only the enum type, not the values it can take on
-                    if (nodeType.getNodeType() == Node.ELEMENT_NODE) {
-                        //should always happen
-                        Element typeEle = (Element) nodeType;
-                        System.out.println("added enum type: " + typeEle.getTextContent());
-                        types.add(typeEle.getTextContent());
-                    }
+                //make sure this is only the enum type, not the values it can take on
+                    Element typeEle = XmlUtils.elementify(nodeType);
+                    System.out.println("added enum type: " + typeEle.getTextContent());
+                    types.add(typeEle.getTextContent());
                 }
             }
         }
-
 
         return types;
     }
@@ -244,14 +233,11 @@ public class SrcMLRunner {
         NodeList classSpecifiers = classEle.getElementsByTagName(xmlSpecifier);
         for (int i = 0; i < classSpecifiers.getLength(); i++){
             Node classSpecifierNode = classSpecifiers.item(i);
-            if (classSpecifierNode.getNodeType() == Node.ELEMENT_NODE){
-                //should always happen
-                Element classSpecEle = (Element) classSpecifierNode;
-                if (classSpecEle.getTextContent().equals("abstract")){
-                    //found an abstract class
-                    toRet = true;
-                    return toRet;
-                }
+            Element classSpecEle = XmlUtils.elementify(classSpecifierNode);
+            if (classSpecEle.getTextContent().equals("abstract")) {
+                //found an abstract class
+                toRet = true;
+                return toRet;
             }
         }
         return toRet;
@@ -279,23 +265,6 @@ public class SrcMLRunner {
         return "class name not found";
     }
 
-    //utility class to get the string value from an xml element. Supply the parent element, the name of the element you are looking for, and the index for
-    //which numbered child you want
-    private String getTextFromXmlElement(Element element, String childName, int index){
-        Node toRet = element.getElementsByTagName(childName).item(index);
-        if (toRet == null){
-            //node did not exist
-            return "";
-        }else {
-            return toRet.getTextContent();
-        }
-    }
-
-
-    //special and most common case for getting text from xml elements.
-    private String getFirstTextFromXmlElement(Element element, String childName){
-        return getTextFromXmlElement(element, childName, 0);
-    }
 
     private List<UMLOperation> getConstructorsFromXml(Element className){
         List<UMLOperation> toRet = new ArrayList<>();
@@ -304,14 +273,11 @@ public class SrcMLRunner {
         for (int i = 0; i < constructorNodes.getLength(); i++){
             Node constructorNode = constructorNodes.item(i);
             if (notNestedClass(className, constructorNode)){
-                if (constructorNode.getNodeType() == Node.ELEMENT_NODE){
-                    //always happens, conditional is here for safety
-                    Element constructor = (Element) constructorNode;
-                    Visibility vis = getVisibilityFromSpecifier(getFirstTextFromXmlElement(constructor, xmlSpecifier));
-                    String name = getFirstTextFromXmlElement(constructor, xmlName);
-                    List<Pair<String, String>> params = getParamsFromXml(constructor);
-                    toRet.add(new UMLOperation(name, params, "constructor", vis));
-                }
+                Element constructor = XmlUtils.elementify(constructorNode);
+                Visibility vis = getVisibilityFromSpecifier(XmlUtils.getFirstTextFromXmlElement(constructor, xmlSpecifier));
+                String name = XmlUtils.getFirstTextFromXmlElement(constructor, xmlName);
+                List<Pair<String, String>> params = getParamsFromXml(constructor);
+                toRet.add(new UMLOperation(name, params, "constructor", vis));
             }
         }
         return toRet;
@@ -328,38 +294,37 @@ public class SrcMLRunner {
         for (int i = 0; i < operationsNodes.getLength(); i++){
             Node operationNode = operationsNodes.item(i);
             if (notNestedClass(className, operationNode)){
-                if (operationNode.getNodeType() == Node.ELEMENT_NODE){
-                    //always should happen, conditional for safety
-                    Element operation = (Element)operationNode;
-                    //functions/methods start with a visibility
+                Element operation = XmlUtils.elementify(operationNode);
+                //functions/methods start with a visibility
 
-                    //the bug is that methods do not need a visibility.
-                    Visibility vis = getVisibilityFromSpecifier(getFirstTextFromXmlElement(operation, xmlSpecifier));
-                    int indexerForAnnotations = 0;
-                    while (operation.getElementsByTagName(xmlName).item(indexerForAnnotations).getParentNode().getNodeName().equals("annotation")){
-                        indexerForAnnotations++;
-                        //found at least one annotation - the 'name' field is being picked up by the annotation element. Need to skip.
-                        //see below comment for explanation
-                        //bug here with override annotation - name is picking up 'Override'. To fix I can check to see if
-                        //the name's parent node in the xml is an annotation or not
-                    }
-                    //first 'name' is return type
-                    String retType = getTextFromXmlElement(operation, xmlName, indexerForAnnotations);
-
-                    while (!operation.getElementsByTagName(xmlName).item(indexerForAnnotations).getParentNode().getNodeName().equals(searchString)){
-                        indexerForAnnotations++;
-                        //found at least one type - the 'name' field is being picked up by the type element. Need to skip.
-                        //same issue as annotations, listed above... Although because the xml is poorly formed, and there are two name elements
-                        //stacked, this time I do it until the immediate parent is 'function'
-                    }
-
-                    //second 'name' is actual method name
-                    String name = getTextFromXmlElement(operation, xmlName, indexerForAnnotations);
-
-                    List<Pair<String, String>> params = getParamsFromXml(operation);
-                    toRet.add(new UMLOperation(name, params, retType, vis));
+                //the bug is that methods do not need a visibility.
+                Visibility vis = getVisibilityFromSpecifier(XmlUtils.getFirstTextFromXmlElement(operation, xmlSpecifier));
+                int indexerForAnnotations = 0;
+                while (operation.getElementsByTagName(xmlName).item(indexerForAnnotations).getParentNode().getNodeName().equals("annotation")){
+                    indexerForAnnotations++;
+                    //found at least one annotation - the 'name' field is being picked up by the annotation element. Need to skip.
+                    //see below comment for explanation
+                    //bug here with override annotation - name is picking up 'Override'. To fix I can check to see if
+                    //the name's parent node in the xml is an annotation or not
                 }
+                //first 'name' is return type
+                String retType = XmlUtils.getTextFromXmlElement(operation, xmlName, indexerForAnnotations);
+
+                while (!operation.getElementsByTagName(xmlName).item(indexerForAnnotations).getParentNode().getNodeName().equals(searchString)){
+                    indexerForAnnotations++;
+                    //found at least one type - the 'name' field is being picked up by the type element. Need to skip.
+                    //same issue as annotations, listed above... Although because the xml is poorly formed, and there are two name elements
+                    //stacked, this time I do it until the immediate parent is 'function'
+                }
+
+                //second 'name' is actual method name
+                String name = XmlUtils.getTextFromXmlElement(operation, xmlName, indexerForAnnotations);
+
+                List<Pair<String, String>> params = getParamsFromXml(operation);
+                toRet.add(new UMLOperation(name, params, retType, vis));
             }
+
+
         }
         return toRet;
     }
@@ -374,26 +339,18 @@ public class SrcMLRunner {
                 Node paramListNode = paramNodeList.item(i);
                 //check to see if we are dealing with a real param or a special case (such as lambda expression or try/catch)
                 if (paramCatchCases(paramListNode)){
-                    if (paramListNode.getNodeType() == Node.ELEMENT_NODE) {
-                        //should always happen
-                        Element paramListEle = (Element) paramListNode;
-
-                        NodeList params = paramListEle.getElementsByTagName("parameter");
-                        for (int j = 0; j < params.getLength(); j++){
-                            Node paramNode = params.item(j);
-                            if (paramNode.getNodeType() == Node.ELEMENT_NODE){
-                                //once again, should always happen
-                                 Element paramEle = (Element) paramNode;
-                                if (paramEle.getElementsByTagName(xmlName).item(0) == null) {
-                                    //params can be empty '()'
-                                    toRet.add(new Pair<>("", ""));
-                                } else {
-                                    Pair<String, String> p = new Pair<>(getFirstTextFromXmlElement(paramEle, xmlName), getTextFromXmlElement(paramEle, xmlName, 1));
-                                    toRet.add(p);
-                                }
-                            }
+                    Element paramListEle = XmlUtils.elementify(paramListNode);
+                    NodeList params = paramListEle.getElementsByTagName("parameter");
+                    for (int j = 0; j < params.getLength(); j++){
+                        Node paramNode = params.item(j);
+                         Element paramEle = XmlUtils.elementify(paramNode);
+                        if (paramEle.getElementsByTagName(xmlName).item(0) == null) {
+                            //params can be empty '()'
+                            toRet.add(new Pair<>("", ""));
+                        } else {
+                            Pair<String, String> p = new Pair<>(XmlUtils.getFirstTextFromXmlElement(paramEle, xmlName), XmlUtils.getTextFromXmlElement(paramEle, xmlName, 1));
+                            toRet.add(p);
                         }
-
                     }
                 }
             }
@@ -437,16 +394,14 @@ public class SrcMLRunner {
 
         //walk up statement till i hit the first class
         Node myParent = getImmediateParentNode(statementNode);
-        if (myParent.getNodeType() == Node.ELEMENT_NODE) {
-            //this shoudl always happen
-            Element parent = (Element)myParent;
-            //check if class name = className
-            String parentName = getClassifierNameFromXml(parent, ClassifierName.CLASS);
-            String className = getClassifierNameFromXml(classElement, ClassifierName.CLASS);
-            if (parentName.equals(className)){
-                isNotNestedClass = true;
-            }
+        Element parent = XmlUtils.elementify(myParent);
+        //check if class name = className
+        String parentName = getClassifierNameFromXml(parent, ClassifierName.CLASS);
+        String className = getClassifierNameFromXml(classElement, ClassifierName.CLASS);
+        if (parentName.equals(className)){
+            isNotNestedClass = true;
         }
+
         return isNotNestedClass;
     }
 
@@ -469,38 +424,33 @@ public class SrcMLRunner {
             Node statementNode = declaredStatements.item(i);
 
             if (notConstructorOrFunction(statementNode) && notNestedClass(className, statementNode)){
-                if (statementNode.getNodeType() == Node.ELEMENT_NODE){
-                    //this shoudl always happen
-                    Element statement = (Element)statementNode;
-                    Visibility vis = getVisibilityFromSpecifier(getFirstTextFromXmlElement(statement, xmlSpecifier));
+                Element statement = XmlUtils.elementify(statementNode);
+                Visibility vis = getVisibilityFromSpecifier(XmlUtils.getFirstTextFromXmlElement(statement, xmlSpecifier));
 
-                    //I believe there should only ever be one typeDec, so I am just using the first item in the nodelist
-                    Node typeDec = statement.getElementsByTagName("type").item(0);
-                    String dataType = "";
-                    if (typeDec.getNodeType() == Node.ELEMENT_NODE){
-                        //should always be, but putting the conditional for safety
-                        Element type = (Element) typeDec;
-                        //should only ever be one name.
-                        dataType = getFirstTextFromXmlElement(type, xmlName);
-                        if (dataType.contains("<") || dataType.contains(">")){
-                            //data type has generics in it.
-                            //the issue is when you have two 'custom data types in the generics' (Foo<Bar>)
-                            //there are also 3 cases of generics: <Foo, Bar>, <? extends Foo>, and simple (<Foo>)
+                //I believe there should only ever be one typeDec, so I am just using the first item in the nodelist
+                Node typeDec = statement.getElementsByTagName("type").item(0);
+                String dataType = "";
 
-                            //as I think about it I wonder how much we really need to care about generics..
-                            //I think we need to care about it when the owning type is a java library because
-                            //then I really need the generic type. ex: List<Encodable>, Encodable is what I care about... right?
-                        }
-                        if (dataType.contains("[]")){
-                            //array of objects - need to strip the brackets
-                            dataType = dataType.substring(0, dataType.lastIndexOf("["));
-                        }
-                    }
+                Element type = XmlUtils.elementify(typeDec);
+                //should only ever be one name.
+                dataType = XmlUtils.getFirstTextFromXmlElement(type, xmlName);
+                if (dataType.contains("<") || dataType.contains(">")){
+                    //data type has generics in it.
+                    //the issue is when you have two 'custom data types in the generics' (Foo<Bar>)
+                    //there are also 3 cases of generics: <Foo, Bar>, <? extends Foo>, and simple (<Foo>)
 
-                    //should always be last item in nodelist of names..
-                    String varName = getTextFromXmlElement(statement, xmlName, 1);
-                    toRet.add(new UMLAttribute(varName, dataType, vis));
+                    //as I think about it I wonder how much we really need to care about generics..
+                    //I think we need to care about it when the owning type is a java library because
+                    //then I really need the generic type. ex: List<Encodable>, Encodable is what I care about... right?
                 }
+                if (dataType.contains("[]")){
+                    //array of objects - need to strip the brackets
+                    dataType = dataType.substring(0, dataType.lastIndexOf("["));
+                }
+
+                //should always be last item in nodelist of names..
+                String varName = XmlUtils.getTextFromXmlElement(statement, xmlName, 1);
+                toRet.add(new UMLAttribute(varName, dataType, vis));
             }
         }
         return toRet;
