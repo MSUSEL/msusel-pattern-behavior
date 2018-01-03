@@ -2,6 +2,10 @@ package com.derek.uml.srcML;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class XmlUtils {
 
@@ -36,4 +40,22 @@ public class XmlUtils {
         return getTextFromXmlElement(element, childName, 0);
     }
 
+
+    //returns a nodelist of only the immediate children. This prevents nested elements with the same name
+    //from returning children members
+    //ex: <function><type><name>foo</name></type><name>bar</name></function>
+    //Because of dom, under element.getElementsByName, you would get both foo and bar. But we only want bar.
+    public static List<Node> getImmediateChildren(Node parentNode, String searchString){
+        NodeList allChildren = elementify(parentNode).getElementsByTagName(searchString);
+        List<Node> toRet = new ArrayList<>();
+
+        for (int i = 0; i < allChildren.getLength(); i++){
+            Node child = allChildren.item(i);
+            if (child.getParentNode().equals(parentNode)){
+                //found first element we care about
+                toRet.add(child);
+            }
+        }
+        return toRet;
+    }
 }

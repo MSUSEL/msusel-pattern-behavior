@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<function>
+    <annotation>@<name>Override</name>
+    </annotation>
+    <annotation>@<name>nonNull</name>
+    </annotation>
+    <specifier>public</specifier>
+    <specifier>static</specifier>
+    <type>
+        <name>int</name>
+    </type>
+    <name>getDataModel</name>
+    <parameter_list>()</parameter_list>
+    <block>{      <return>return <expr>
+        <literal type="number">32</literal>
+    </expr>;</return>    }</block>
+</function>
