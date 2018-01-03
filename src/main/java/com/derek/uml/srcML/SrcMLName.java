@@ -28,6 +28,12 @@ public class SrcMLName {
     @Getter @Setter
     private List<String> indices;
 
+    public SrcMLName(String name){
+        //use case for simple names.
+        this.name = new ArrayList<>();
+        this.name.add(name);
+    }
+
     public SrcMLName(Element nameEle){
         this.nameEle = nameEle;
         parse();
