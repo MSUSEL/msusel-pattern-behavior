@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 
 public class SrcMLFunctionParserTest extends SrcMLTest{
 
-    private SrcMLFunctionParser srcMLFunctionParser;
+    private SrcMLFunction srcMLFunctionParser;
 
 
     public SrcMLFunctionParserTest(){
@@ -19,7 +19,7 @@ public class SrcMLFunctionParserTest extends SrcMLTest{
     public void build(){
         super.build();
         Element functionEle = (Element)doc.getElementsByTagName("function").item(0);
-        srcMLFunctionParser = new SrcMLFunctionParser(functionEle);
+        srcMLFunctionParser = new SrcMLFunction(functionEle);
     }
 
 

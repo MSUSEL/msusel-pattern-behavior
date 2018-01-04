@@ -27,10 +27,9 @@ public class SrcMLPackage {
     private void parseName(){
         names = new ArrayList<>();
         List<Node> nameNodes = XmlUtils.getImmediateChildren(packageEle, "name");
-        for (Node name : nameNodes){
-            names.add(new SrcMLName(XmlUtils.elementify(name)));
+        for (Node nameNode : nameNodes){
+            names.add(new SrcMLName(XmlUtils.elementify(nameNode)));
         }
     }
-
 
 }

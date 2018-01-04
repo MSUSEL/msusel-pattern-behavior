@@ -28,7 +28,7 @@ public class SrcMLExpression {
     @Getter
     private List<String> literals;
     @Getter
-    private List<SrcMLJavaAnonymousClass> javaAnonymousClass;
+    private List<SrcMLClass> javaAnonymousClass;
     @Getter
     private List<SrcMLExpression> expressions;
     @Getter
@@ -105,7 +105,7 @@ public class SrcMLExpression {
         javaAnonymousClass = new ArrayList<>();
         List<Node> anonymousNodes = XmlUtils.getImmediateChildren(expressionEle, "class");
         for (Node anonymous : anonymousNodes){
-            javaAnonymousClass.add(new SrcMLJavaAnonymousClass(XmlUtils.elementify(anonymous)));
+            javaAnonymousClass.add(new SrcMLClass(XmlUtils.elementify(anonymous)));
         }
     }
     private void parseExpressions(){

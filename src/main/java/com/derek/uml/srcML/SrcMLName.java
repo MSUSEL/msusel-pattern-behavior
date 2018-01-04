@@ -7,7 +7,6 @@ import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 public class SrcMLName {
     //can be any one of: (complex_)name|templateArgumentList|argumentList|parameterList|templateParameterList|specifier|operator|index
@@ -20,7 +19,7 @@ public class SrcMLName {
     @Getter @Setter
     private List<SrcMLArgumentList> argumentList;
     @Getter @Setter
-    private List<SrcMLParameterList> parameterList;
+    private List<SrcMLPackage.SrcMLParameterList> parameterList;
     @Getter @Setter
     private List<String> specifiers;
     @Getter @Setter
@@ -75,7 +74,7 @@ public class SrcMLName {
         this.parameterList = new ArrayList<>();
         List<Node> parameterListNodes = XmlUtils.getImmediateChildren(nameEle, "parameter_list");
         for (Node parameterNode :  parameterListNodes){
-            parameterList.add(new SrcMLParameterList(XmlUtils.elementify(parameterNode)));
+            parameterList.add(new SrcMLPackage.SrcMLParameterList(XmlUtils.elementify(parameterNode)));
         }
     }
 

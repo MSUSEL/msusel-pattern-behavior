@@ -39,9 +39,9 @@ public class SrcMLClass {
 
     private void parseName(){
         List<Node> nameNodes = XmlUtils.getImmediateChildren(classEle, "name");
-        for (Node name : nameNodes){
+        for (Node nameNode : nameNodes){
             //will only happen once but im leaving hte looop in for safety (poor documentation in srcml)
-            this.name = new SrcMLName(XmlUtils.elementify(name));
+            this.name = new SrcMLName(XmlUtils.elementify(nameNode));
         }
         if (name == null){
             //anonymous class

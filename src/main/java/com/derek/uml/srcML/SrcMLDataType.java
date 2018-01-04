@@ -14,7 +14,9 @@ public class SrcMLDataType {
     @Getter @Setter private List<String> modifiers;
     //not sure if I'll need argumentlist, but at least it is there.
     @Getter @Setter private List<SrcMLArgumentList> argumentList;
-    @Getter @Setter private SrcMLName name;
+    @Getter @Setter private List<SrcMLName> names;
+
+    //type<type>(typeTypeAttr?):(specifier|modifier|decltype|templateArgumentList|name)*;
 
     //this variable represents nested types, which are usually generics. Bear in mind this field can also be null.
     //not sure how I am going to access types n deep yet.. such as List<List<List<List<List<....String>>>>...>> (how do I get the string?
@@ -58,10 +60,11 @@ public class SrcMLDataType {
     }
 
     private void parseName(){
-        //should only be 1 name
+        //should only be 1 name, but it can have many apparently
+        names = new ArrayList<>();
         List<Node> nameNodes = XmlUtils.getImmediateChildren(typeEle, "name");
         for (Node nameNode : nameNodes){
-            name = new SrcMLName(XmlUtils.elementify(nameNode));
+            names.add(new SrcMLName(XmlUtils.elementify(nameNode)));
         }
     }
 }
