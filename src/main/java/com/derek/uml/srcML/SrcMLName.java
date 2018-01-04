@@ -14,12 +14,12 @@ public class SrcMLName {
 
     @Getter
     private Element nameEle;
-    @Getter @Setter
-    private List<String> name;
+    @Getter
+    private List<String> names;
     @Getter @Setter
     private List<SrcMLArgumentList> argumentList;
     @Getter @Setter
-    private List<SrcMLPackage.SrcMLParameterList> parameterList;
+    private List<SrcMLParameterList> parameterList;
     @Getter @Setter
     private List<String> specifiers;
     @Getter @Setter
@@ -29,8 +29,8 @@ public class SrcMLName {
 
     public SrcMLName(String name){
         //use case for simple names.
-        this.name = new ArrayList<>();
-        this.name.add(name);
+        this.names = new ArrayList<>();
+        this.names.add(name);
     }
 
     public SrcMLName(Element nameEle){
@@ -48,16 +48,16 @@ public class SrcMLName {
     }
 
     private void parseName(){
-        this.name = new ArrayList<>();
+        this.names = new ArrayList<>();
         List<Node> nameNodes = XmlUtils.getImmediateChildren(nameEle, "name");
         if (nameNodes.size() == 0){
             //no child elements, this is a simple name. <name>foo</name>
-            name.add(nameEle.getTextContent());
+            names.add(nameEle.getTextContent());
         }
         for (Node nameNode : nameNodes) {
             if (!nameNode.getTextContent().equals("")) {
                 //case where <name><name>foo</name><stuff></stuff></name> and found a simple name
-                name.add(nameNode.getTextContent());
+                names.add(nameNode.getTextContent());
             }
         }
     }
@@ -74,7 +74,7 @@ public class SrcMLName {
         this.parameterList = new ArrayList<>();
         List<Node> parameterListNodes = XmlUtils.getImmediateChildren(nameEle, "parameter_list");
         for (Node parameterNode :  parameterListNodes){
-            parameterList.add(new SrcMLPackage.SrcMLParameterList(XmlUtils.elementify(parameterNode)));
+            parameterList.add(new SrcMLParameterList(XmlUtils.elementify(parameterNode)));
         }
     }
 
@@ -92,7 +92,7 @@ public class SrcMLName {
         for (Node operatorNode :  operatorNodes){
             operators.add(operatorNode.getTextContent());
         }
-}
+    }
 
     private void parseIndices(){
         this.indices = new ArrayList<>();
@@ -101,6 +101,17 @@ public class SrcMLName {
             //this is likely going to require expansion in the future because an expression can be put in the index (foo[x+1])
             indices.add(indexNode.getTextContent());
         }
+    }
+
+    public String getName(){
+        if (names.size() > 1){
+            System.out.println("two names:");
+            for (String name : names){
+                System.out.println(name);
+            }
+            System.exit(0);
+        }
+        return names.get(0);
     }
 
 }

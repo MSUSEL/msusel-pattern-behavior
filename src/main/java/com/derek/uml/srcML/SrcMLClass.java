@@ -1,5 +1,6 @@
 package com.derek.uml.srcML;
 
+import com.derek.uml.UMLClass;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -65,6 +66,10 @@ public class SrcMLClass {
         for (Node block : blockNodes){
             this.block = new SrcMLBlock(XmlUtils.elementify(block));
         }
+    }
+    public UMLClass getClassDiagram(){
+        //UMLClass class1 = new UMLClass(name.getName());
+        return null;
     }
 
 

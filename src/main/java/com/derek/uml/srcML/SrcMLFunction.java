@@ -11,8 +11,8 @@ import java.util.List;
 public class SrcMLFunction {
 
     @Getter private Element functionEle;
-    private List<SrcMLAnnotation> annotations;
-    private List<String> specifiers;
+    @Getter private List<SrcMLAnnotation> annotations;
+    @Getter private List<String> specifiers;
     private SrcMLDataType type;
     private SrcMLName name;
     private SrcMLParameterList parameterList;
@@ -54,7 +54,6 @@ public class SrcMLFunction {
             specifiers.add(specifier.getTextContent());
         }
     }
-
     private void parseType(){
         List<Node> typeNodes = XmlUtils.getImmediateChildren(functionEle, "type");
         for (Node typeNode : typeNodes){

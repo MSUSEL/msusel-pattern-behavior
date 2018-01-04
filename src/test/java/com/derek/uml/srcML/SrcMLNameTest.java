@@ -33,15 +33,15 @@ public class SrcMLNameTest extends SrcMLTest{
 
     @Test
     public void verifyName(){
-        assertEquals(srcMLName1.getName().size(), 1);
-        assertEquals(srcMLName1.getName().get(0), "First");
-        assertEquals(srcMLName2.getName().size(), 1);
-        assertEquals(srcMLName2.getName().get(0), "Optional");
-        assertEquals(srcMLName3.getName().size(), 1);
-        assertEquals(srcMLName3.getName().get(0), "ExpectedCondition");
-        assertEquals(srcMLName4.getName().size(), 2);
-        assertEquals(srcMLName4.getName().get(0), "element");
-        assertEquals(srcMLName4.getName().get(1), "isEnabled");
+        assertEquals(srcMLName1.getNames().size(), 1);
+        assertEquals(srcMLName1.getNames().get(0), "First");
+        assertEquals(srcMLName2.getNames().size(), 1);
+        assertEquals(srcMLName2.getNames().get(0), "Optional");
+        assertEquals(srcMLName3.getNames().size(), 1);
+        assertEquals(srcMLName3.getNames().get(0), "ExpectedCondition");
+        assertEquals(srcMLName4.getNames().size(), 2);
+        assertEquals(srcMLName4.getNames().get(0), "element");
+        assertEquals(srcMLName4.getNames().get(1), "isEnabled");
     }
 
     @Test

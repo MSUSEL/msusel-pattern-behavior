@@ -16,11 +16,9 @@ public class SrcMLBlock {
     //catch|multiTypeCatch|emptyStmt|goto|label|
     @Getter
     private Element blockEle;
-    @Getter
     private List<SrcMLBlock> blocks;
-    @Getter
     private List<SrcMLCase> cases;
-    private List<SrcMLClass> classes;
+    @Getter private List<SrcMLClass> classes;
     private List<SrcMLInterface> interfaces;
     private List<SrcMLAnnotationDefn> annotations;
     private List<SrcMLConstructor> constructors;
@@ -32,9 +30,9 @@ public class SrcMLBlock {
     private List<SrcMLIf> ifs;
     private List<SrcMLElse> elses;
     private List<SrcMLIf> elseIfs;
-    private List<SrcMLExprStmt> expr_stmts;
+    @Getter private List<SrcMLExprStmt> expr_stmts;
     private List<SrcMLEnum> enums;
-    private List<SrcMLFinally> finallys;
+    private List<SrcMLFinally> finallies;
     private List<SrcMLFor> fors;
     private List<SrcMLFunction> functions;
     private List<SrcMLFunction> functionDecls;
@@ -112,7 +110,9 @@ public class SrcMLBlock {
         classes = new ArrayList<>();
         List<Node> classNodes = XmlUtils.getImmediateChildren(blockEle, "class");
         for (Node classNode : classNodes){
-            classes.add(new SrcMLClass(XmlUtils.elementify(classNode)));
+            SrcMLClass test = new SrcMLClass(XmlUtils.elementify(classNode));
+            classes.add(test);
+            System.out.println("added a new class: " + test.getName().getName());
         }
     }
     private void parseInterface(){
@@ -207,10 +207,10 @@ public class SrcMLBlock {
         }
     }
     private void parseFinally(){
-        finallys = new ArrayList<>();
+        finallies = new ArrayList<>();
         List<Node> finallyNodes = XmlUtils.getImmediateChildren(blockEle, "finally");
         for (Node finallyNode : finallyNodes){
-            finallys.add(new SrcMLFinally(XmlUtils.elementify(finallyNode)));
+            finallies.add(new SrcMLFinally(XmlUtils.elementify(finallyNode)));
         }
     }
     private void parseFor(){
@@ -370,6 +370,7 @@ public class SrcMLBlock {
     public class SrcMLExprStmt{
         @Getter
         private Element exprStmtEle;
+        @Getter
         private List<SrcMLExpression> expressions;
         private List<String> operators;
 
