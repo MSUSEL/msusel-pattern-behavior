@@ -1,5 +1,6 @@
 package com.derek.uml.srcML;
 
+import javafx.util.Pair;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -7,9 +8,9 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SrcMLParameterList {
     //similar to SrcMLArgumentList, I'm not sure how much of this I will need, but I'm creatin gthe class just in case.
-    @Getter
     private Element parameterListEle;
     private List<SrcMLParameter> parameters;
 
@@ -28,8 +29,10 @@ public class SrcMLParameterList {
         }
     }
 
+    @Getter
     public class SrcMLParameter{
-        @Getter
+        //after reviewing examples of parameterlist output, it appears that the documentation for this is wrong..
+        //it appears that the <parameter> element ALWAYS has a <decl> element under it and not a <type> element
         private Element parameterEle;
         private SrcMLDecl decl;
         private SrcMLDataType type;
@@ -62,6 +65,21 @@ public class SrcMLParameterList {
                 name = new SrcMLName(XmlUtils.elementify(nameNode));
             }
         }
+        public String getName(){
+            return name.getName();
+        }
+    }
 
+    public List<Pair<String, String>> getParams(){
+        List<Pair<String, String>> params = new ArrayList<>();
+
+        for (SrcMLParameter p : parameters){
+            if (p.getDecl() != null){
+                //reference to comment in SrcMLParameter class
+                params.add(new Pair<String, String>(p.getDecl().getType().getName(), p.getName()));
+            }
+        }
+
+        return params;
     }
 }

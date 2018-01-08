@@ -6,16 +6,12 @@ import org.w3c.dom.Node;
 
 import java.util.List;
 
+@Getter
 public class SrcMLDecl {
-    @Getter
     private Element declEle;
-    @Getter
     private SrcMLDataType type;
-    @Getter
     private SrcMLName name;
-    @Getter
     private SrcMLRange range;
-    @Getter
     private SrcMLInit init;
 
     public SrcMLDecl(Element declEle) {
@@ -54,11 +50,10 @@ public class SrcMLDecl {
     }
 
 
+    @Getter
     public class SrcMLRange{
         //only used by decl and is a pretty simple class
-        @Getter
         private Element rangeEle;
-        @Getter
         private SrcMLExpression expression;
 
         public SrcMLRange(Element rangeEle) {

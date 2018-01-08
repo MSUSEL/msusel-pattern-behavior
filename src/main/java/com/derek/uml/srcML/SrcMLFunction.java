@@ -1,18 +1,22 @@
 package com.derek.uml.srcML;
 
+import com.derek.uml.UMLOperation;
+import javafx.util.Pair;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 
 //class to hold important function-related info (xml 'function' element)
+@Getter
 public class SrcMLFunction {
 
-    @Getter private Element functionEle;
-    @Getter private List<SrcMLAnnotation> annotations;
-    @Getter private List<String> specifiers;
+    private Element functionEle;
+    private List<SrcMLAnnotation> annotations;
+    private List<String> specifiers;
     private SrcMLDataType type;
     private SrcMLName name;
     private SrcMLParameterList parameterList;
@@ -89,6 +93,13 @@ public class SrcMLFunction {
         List<Node> defaultNodes = XmlUtils.getImmediateChildren(functionEle, "default");
         for (Node defaultNode : defaultNodes){
             default1 = new SrcMLDefault(XmlUtils.elementify(defaultNode));
+        }
+    }
+
+    private UMLOperation getOperations(){
+        List<Pair<String, String>> params = new
+        for (SrcMLParameterList.SrcMLParameter p : parameterList.getParameters()){
+
         }
     }
 

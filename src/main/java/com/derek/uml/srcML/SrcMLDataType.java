@@ -8,13 +8,14 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SrcMLDataType {
-    @Getter private Element typeEle;
-    @Getter @Setter private List<String> specifiers;
-    @Getter @Setter private List<String> modifiers;
+    private Element typeEle;
+    private List<String> specifiers;
+    private List<String> modifiers;
     //not sure if I'll need argumentlist, but at least it is there.
-    @Getter @Setter private List<SrcMLArgumentList> argumentList;
-    @Getter @Setter private List<SrcMLName> names;
+    private List<SrcMLArgumentList> argumentList;
+    private List<SrcMLName> names;
 
     //type<type>(typeTypeAttr?):(specifier|modifier|decltype|templateArgumentList|name)*;
 
@@ -65,6 +66,16 @@ public class SrcMLDataType {
         List<Node> nameNodes = XmlUtils.getImmediateChildren(typeEle, "name");
         for (Node nameNode : nameNodes){
             names.add(new SrcMLName(XmlUtils.elementify(nameNode)));
+        }
+    }
+    public String getName(){
+        if (names.size() > 1){
+            //dont' know how this is possible
+            System.out.println("More than 1 name in a data type.. requires debugging.");
+            System.exit(0);
+            return null;
+        }else {
+            return names.get(0).getName();
         }
     }
 }

@@ -7,6 +7,7 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SrcMLBlock {
     // topLevelElements:(comment|assertStmt|block|break|case|classInterfaceOrAnnotation|constructor|constructorDecl|continue|
     // declStmt|defaultCase|do|if|else|elseif|exprStmt|JavaEnum|finally|for|JavaFunction|JavaFunctionDecl|
@@ -14,11 +15,10 @@ public class SrcMLBlock {
 
     //some of the documented elements here arent' needed:
     //catch|multiTypeCatch|emptyStmt|goto|label|
-    @Getter
     private Element blockEle;
     private List<SrcMLBlock> blocks;
     private List<SrcMLCase> cases;
-    @Getter private List<SrcMLClass> classes;
+    private List<SrcMLClass> classes;
     private List<SrcMLInterface> interfaces;
     private List<SrcMLAnnotationDefn> annotations;
     private List<SrcMLConstructor> constructors;
@@ -30,7 +30,7 @@ public class SrcMLBlock {
     private List<SrcMLIf> ifs;
     private List<SrcMLElse> elses;
     private List<SrcMLIf> elseIfs;
-    @Getter private List<SrcMLExprStmt> expr_stmts;
+    private List<SrcMLExprStmt> expr_stmts;
     private List<SrcMLEnum> enums;
     private List<SrcMLFinally> finallies;
     private List<SrcMLFor> fors;
