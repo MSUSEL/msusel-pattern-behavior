@@ -6,7 +6,6 @@ import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,11 +95,12 @@ public class SrcMLFunction {
         }
     }
 
-    private UMLOperation getOperations(){
-        List<Pair<String, String>> params = new
-        for (SrcMLParameterList.SrcMLParameter p : parameterList.getParameters()){
-
-        }
+    public UMLOperation getOperations(){
+        List<Pair<String, String>> params = parameterList.getParams();
+        String name = this.name.getName();
+        String returnType = this.type.getName();
+        //I need to include use dependencies in here eventually.
+        return new UMLOperation(name, params, returnType);
     }
 
 

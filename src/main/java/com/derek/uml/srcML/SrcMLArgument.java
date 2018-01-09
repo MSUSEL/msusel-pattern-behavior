@@ -3,16 +3,15 @@ package com.derek.uml.srcML;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-
 import java.util.List;
 
+@Getter
 public class SrcMLArgument {
 
-    @Getter
     private Element argumentEle;
-    @Getter private String modifier;
-    @Getter private SrcMLExpression expression;
-    @Getter private SrcMLName name;
+    private String modifier;
+    private SrcMLExpression expression;
+    private SrcMLName name;
 
     public SrcMLArgument(Element argumentEle){
         this.argumentEle = argumentEle;
@@ -43,5 +42,8 @@ public class SrcMLArgument {
             //should only be 1 anyway
             name = new SrcMLName(XmlUtils.elementify(nameNode));
         }
+    }
+    public String getName(){
+        return name.getName();
     }
 }

@@ -14,7 +14,7 @@ public class SrcMLDataType {
     private List<String> specifiers;
     private List<String> modifiers;
     //not sure if I'll need argumentlist, but at least it is there.
-    private List<SrcMLArgumentList> argumentList;
+    private SrcMLArgumentList argumentList;
     private List<SrcMLName> names;
 
     //type<type>(typeTypeAttr?):(specifier|modifier|decltype|templateArgumentList|name)*;
@@ -53,10 +53,11 @@ public class SrcMLDataType {
     }
 
     private void parseArgumentList(){
-        argumentList = new ArrayList<>();
+        //I don't know how one can get more than 1 argumentlist.. but its in the docs.
+        //I am making an executive decision to only have 1 argument list.
         List<Node> argumentListNodes = XmlUtils.getImmediateChildren(typeEle, "argument_list");
         for (Node argumentListNode : argumentListNodes){
-            argumentList.add(new SrcMLArgumentList(XmlUtils.elementify(argumentListNode)));
+            argumentList = new SrcMLArgumentList(XmlUtils.elementify(argumentListNode));
         }
     }
 

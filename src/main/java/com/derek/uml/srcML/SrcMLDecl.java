@@ -48,6 +48,9 @@ public class SrcMLDecl {
             init = new SrcMLInit(XmlUtils.elementify(initNode));
         }
     }
+    public String getName(){
+        return name.getName();
+    }
 
 
     @Getter

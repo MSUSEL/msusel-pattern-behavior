@@ -8,11 +8,10 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SrcMLPackage {
-    @Getter
-    private Element packageEle;
 
-    @Getter
+    private Element packageEle;
     private List<SrcMLName> names;
 
     public SrcMLPackage(Element packageEle){

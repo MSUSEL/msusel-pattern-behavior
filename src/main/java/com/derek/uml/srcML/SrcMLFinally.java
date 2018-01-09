@@ -6,8 +6,8 @@ import org.w3c.dom.Node;
 
 import java.util.List;
 
+@Getter
 public class SrcMLFinally {
-    @Getter
     private Element finallyEle;
     private SrcMLBlock block;
 

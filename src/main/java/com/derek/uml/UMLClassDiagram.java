@@ -5,10 +5,12 @@ import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
 import javafx.util.Pair;
+import lombok.Getter;
 
 import javax.management.relation.Relation;
 import java.util.List;
 
+@Getter
 public class UMLClassDiagram {
 
     //I am assuming the graph for the uml will be standard, as in g = <<V>,<E>> and e = <v1, v2>
@@ -29,7 +31,4 @@ public class UMLClassDiagram {
         classDiagram.addNode(umlClass);
     }
 
-    public MutableValueGraph<UMLClassifier, Relationship> getClassDiagram() {
-        return classDiagram;
-    }
 }

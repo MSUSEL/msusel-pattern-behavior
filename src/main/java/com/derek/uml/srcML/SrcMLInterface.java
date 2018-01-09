@@ -6,8 +6,8 @@ import org.w3c.dom.Node;
 
 import java.util.List;
 
+@Getter
 public class SrcMLInterface {
-    @Getter
     private Element interfaceEle;
     private SrcMLName name;
     private SrcMLSuper super1;
@@ -39,6 +39,9 @@ public class SrcMLInterface {
         for (Node blockNode : blockNodes){
             this.block = new SrcMLBlock(XmlUtils.elementify(blockNode));
         }
+    }
+    public String getName(){
+        return name.getName();
     }
 
 }

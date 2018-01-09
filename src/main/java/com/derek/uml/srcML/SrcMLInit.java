@@ -7,13 +7,11 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SrcMLInit {
     //there are a few different types of init, but they generally have the form: (decl|expr)(","(decl|expr))* or some degree
-    @Getter
     private Element initEle;
-    @Getter
     private List<SrcMLDecl> declarations;
-    @Getter
     private List<SrcMLExpression> expressions;
 
     public SrcMLInit(Element initEle) {

@@ -7,11 +7,10 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SrcMLImport {
 
-    @Getter
     private Element importEle;
-    @Getter
     private List<SrcMLName> names;
 
     public SrcMLImport(Element importEle) {

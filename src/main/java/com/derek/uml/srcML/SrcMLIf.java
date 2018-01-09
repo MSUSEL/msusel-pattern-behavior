@@ -6,17 +6,13 @@ import org.w3c.dom.Node;
 
 import java.util.List;
 
+@Getter
 public class SrcMLIf {
     //will likely only use for sequence diagrams
-    @Getter
     private Element ifEle;
-    @Getter
     private SrcMLCondition condition;
-    @Getter
     private SrcMLThen then;
-    @Getter
     private SrcMLElse else1;
-    @Getter
     private SrcMLIf elseIf;
 
     public SrcMLIf(Element ifEle) {

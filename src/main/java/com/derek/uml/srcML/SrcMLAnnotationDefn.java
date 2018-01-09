@@ -6,9 +6,9 @@ import org.w3c.dom.Node;
 
 import java.util.List;
 
+@Getter
 public class SrcMLAnnotationDefn {
     //will likely do nothing with this
-    @Getter
     private Element annotationEle;
     private SrcMLName name;
     private SrcMLSuper super1;
@@ -40,5 +40,8 @@ public class SrcMLAnnotationDefn {
         for (Node blockNode : blockNodes){
             this.block = new SrcMLBlock(XmlUtils.elementify(blockNode));
         }
+    }
+    public String getName(){
+        return name.getName();
     }
 }

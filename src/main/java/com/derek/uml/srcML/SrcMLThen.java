@@ -6,13 +6,11 @@ import org.w3c.dom.Node;
 
 import java.util.List;
 
+@Getter
 public class SrcMLThen {
     //only 2 classes use this; 'SrcMLIf' uses it for the block, and 'SrcMLTernary' uses it for the expression.
-    @Getter
     private Element thenEle;
-    @Getter
     private SrcMLBlock block;
-    @Getter
     private SrcMLExpression expression;
 
     public SrcMLThen(Element thenEle) {

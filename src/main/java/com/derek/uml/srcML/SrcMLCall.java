@@ -7,13 +7,11 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SrcMLCall {
     //will likely have ot use this class for sequence diagram generation
-    @Getter
     private Element callEle;
-    @Getter
     private SrcMLName name;
-    @Getter
     private SrcMLArgumentList argumentList;
 
 
@@ -39,5 +37,8 @@ public class SrcMLCall {
         for (Node argumentListNode : argumentListNodes){
             argumentList = new SrcMLArgumentList(XmlUtils.elementify(argumentListNode));
         }
+    }
+    public String getName(){
+        return name.getName();
     }
 }

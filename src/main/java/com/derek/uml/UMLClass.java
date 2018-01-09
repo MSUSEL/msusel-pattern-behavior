@@ -2,9 +2,11 @@ package com.derek.uml;
 
 import javafx.util.Pair;
 import jdk.nashorn.internal.runtime.regexp.joni.constants.OPCode;
+import lombok.Getter;
 
 import java.util.List;
 
+@Getter
 public class UMLClass extends UMLClassifier{
 
     protected Visibility visibility;
@@ -19,38 +21,6 @@ public class UMLClass extends UMLClassifier{
         this.operations = operations;
         this.constructors = constructors;
         this.isAbstract = isAbstract;
-    }
-
-    public Visibility getVisibility() {
-        return visibility;
-    }
-
-    public void setVisibility(Visibility visibility) {
-        this.visibility = visibility;
-    }
-
-    public List<UMLAttribute> getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(List<UMLAttribute> attributes) {
-        this.attributes = attributes;
-    }
-
-    public List<UMLOperation> getOperations() {
-        return operations;
-    }
-
-    public void setOperations(List<UMLOperation> operations) {
-        this.operations = operations;
-    }
-
-    public List<UMLOperation> getConstructors() {
-        return constructors;
-    }
-
-    public void setConstructors(List<UMLOperation> constructors) {
-        this.constructors = constructors;
     }
 
     @Override

@@ -6,9 +6,9 @@ import org.w3c.dom.Node;
 
 import java.util.List;
 
+@Getter
 public class SrcMLJavaLambda {
     //might not need to use this class.
-    @Getter
     private Element lambdaEle;
     private SrcMLParameterList parameterList;
     private SrcMLBlock block;

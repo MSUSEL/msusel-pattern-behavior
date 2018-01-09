@@ -7,8 +7,8 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SrcMLTry {
-    @Getter
     private Element tryEle;
     private SrcMLInit init;
     private SrcMLBlock block;

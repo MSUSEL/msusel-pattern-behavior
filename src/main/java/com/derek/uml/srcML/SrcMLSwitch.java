@@ -6,12 +6,10 @@ import org.w3c.dom.Node;
 
 import java.util.List;
 
+@Getter
 public class SrcMLSwitch {
-    @Getter
     private Element switchEle;
-    @Getter
     private SrcMLCondition condition;
-    @Getter
     private SrcMLBlock block;
 
     public SrcMLSwitch(Element switchEle) {

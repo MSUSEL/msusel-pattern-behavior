@@ -6,12 +6,10 @@ import org.w3c.dom.Node;
 
 import java.util.List;
 
+@Getter
 public class SrcMLFor {
-    @Getter
     private Element forEle;
-    @Getter
     private SrcMLControl control;
-    @Getter
     private SrcMLBlock block;
 
     public SrcMLFor(Element forEle) {

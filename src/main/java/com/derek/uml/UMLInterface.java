@@ -1,8 +1,11 @@
 package com.derek.uml;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class UMLInterface extends UMLClassifier {
 
     private List<UMLOperation> operations;
@@ -10,10 +13,6 @@ public class UMLInterface extends UMLClassifier {
     public UMLInterface(String name, List<UMLOperation> operations) {
         super(name);
         this.operations = operations;
-    }
-
-    public List<UMLOperation> getOperations() {
-        return operations;
     }
 
     @Override

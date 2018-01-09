@@ -8,8 +8,8 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SrcMLThrows{
-    @Getter
     private Element throwsEle;
     private List<SrcMLArgument> arguments;
 

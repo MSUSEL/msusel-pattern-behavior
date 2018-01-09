@@ -1,9 +1,11 @@
 package com.derek.uml;
 
 import javafx.util.Pair;
+import lombok.Getter;
 
 import java.util.List;
 
+@Getter
 public class UMLOperation {
 
     private String name;
@@ -22,38 +24,17 @@ public class UMLOperation {
         this.visibility = visibility;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
+    /***
+     * Constructor without method visibility
+     * @param name function name
+     * @param parameters list of pairs of strings for function's params
+     * @param returnDataType function return data type
+     */
+    public UMLOperation(String name, List<Pair<String, String>> parameters, String returnDataType) {
         this.name = name;
-    }
-
-    public List<Pair<String, String>> getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(List<Pair<String, String>> parameters) {
         this.parameters = parameters;
+        this.returnDataType = returnDataType;
     }
-
-    public String getReturnDataType() {
-        return returnDataType;
-    }
-
-    public Visibility getVisibility() {
-        return visibility;
-    }
-
-    public boolean isStatic() {
-        return isStatic;
-    }
-
-    public void setStatic(boolean aStatic) {
-        isStatic = aStatic;
-    }
-
 
     public String buildParamsForPlantUMLDiagram(){
         StringBuilder s = new StringBuilder();

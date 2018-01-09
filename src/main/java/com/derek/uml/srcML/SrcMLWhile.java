@@ -6,13 +6,11 @@ import org.w3c.dom.Node;
 
 import java.util.List;
 
+@Getter
 public class SrcMLWhile {
     //this class will fulfill both the 'while' and 'do-while' keywords, because they are the same at a grammar perspective.
-    @Getter
     private Element whileEle;
-    @Getter
     private SrcMLCondition condition;
-    @Getter
     private SrcMLBlock block;
 
     public SrcMLWhile(Element whileEle) {

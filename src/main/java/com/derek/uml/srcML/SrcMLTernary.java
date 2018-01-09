@@ -6,14 +6,11 @@ import org.w3c.dom.Node;
 
 import java.util.List;
 
+@Getter
 public class SrcMLTernary {
-    @Getter
     private Element ternaryEle;
-    @Getter
     private SrcMLCondition condition;
-    @Getter
     private SrcMLThen then;
-    @Getter
     private SrcMLElse else1;
 
     public SrcMLTernary(Element ternaryEle){

@@ -8,23 +8,17 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SrcMLName {
     //can be any one of: (complex_)name|templateArgumentList|argumentList|parameterList|templateParameterList|specifier|operator|index
     //parsign for each sub-type can be delegated to each class matching the sub-type
 
-    @Getter
     private Element nameEle;
-    @Getter
     private List<String> names;
-    @Getter @Setter
-    private List<SrcMLArgumentList> argumentList;
-    @Getter @Setter
-    private List<SrcMLParameterList> parameterList;
-    @Getter @Setter
+    private SrcMLArgumentList argumentList;
+    private SrcMLParameterList parameterList;
     private List<String> specifiers;
-    @Getter @Setter
     private List<String> operators;
-    @Getter @Setter
     private List<String> indices;
 
     public SrcMLName(String name){
@@ -63,18 +57,33 @@ public class SrcMLName {
     }
 
     private void parseArgumentList(){
-        this.argumentList = new ArrayList<>();
         List<Node> argumentListNodes = XmlUtils.getImmediateChildren(nameEle, "argument_list");
         for (Node argumentNode : argumentListNodes){
-            argumentList.add(new SrcMLArgumentList(XmlUtils.elementify(argumentNode)));
+            argumentList = new SrcMLArgumentList(XmlUtils.elementify(argumentNode));
+            //generics handler
+            if (argumentList.getTypeAttribute().equals("generic")){
+                //generic type found.
+                String genericBuilder = "<";
+                for (int i = 0; i < argumentList.getArguments().size(); i++){
+                    SrcMLArgument arg = argumentList.getArguments().get(i);
+                    genericBuilder += arg.getName();
+                    if (i != argumentList.getArguments().size()-1){
+                        //last argument
+                        genericBuilder += ",";
+                    }
+                }
+                genericBuilder += ">";
+                String oldName = names.get(0);
+                names.remove(0);
+                names.add(0, oldName += genericBuilder);
+            }
         }
     }
 
     private void parseParameterList(){
-        this.parameterList = new ArrayList<>();
         List<Node> parameterListNodes = XmlUtils.getImmediateChildren(nameEle, "parameter_list");
         for (Node parameterNode :  parameterListNodes){
-            parameterList.add(new SrcMLParameterList(XmlUtils.elementify(parameterNode)));
+            parameterList = new SrcMLParameterList(XmlUtils.elementify(parameterNode));
         }
     }
 

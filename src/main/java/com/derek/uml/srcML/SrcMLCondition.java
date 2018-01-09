@@ -6,10 +6,9 @@ import org.w3c.dom.Node;
 
 import java.util.List;
 
+@Getter
 public class SrcMLCondition {
-    @Getter
     private Element conditionEle;
-    @Getter
     private SrcMLExpression expression;
 
     public SrcMLCondition(Element conditionEle) {

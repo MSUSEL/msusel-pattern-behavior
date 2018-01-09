@@ -36,28 +36,12 @@ public class SrcMLNameTest extends SrcMLTest{
         assertEquals(srcMLName1.getNames().size(), 1);
         assertEquals(srcMLName1.getNames().get(0), "First");
         assertEquals(srcMLName2.getNames().size(), 1);
-        assertEquals(srcMLName2.getNames().get(0), "Optional");
+        assertEquals(srcMLName2.getNames().get(0), "Optional<Result>");
         assertEquals(srcMLName3.getNames().size(), 1);
-        assertEquals(srcMLName3.getNames().get(0), "ExpectedCondition");
+        assertEquals(srcMLName3.getNames().get(0), "ExpectedCondition<List<WebElement>>");
         assertEquals(srcMLName4.getNames().size(), 2);
         assertEquals(srcMLName4.getNames().get(0), "element");
         assertEquals(srcMLName4.getNames().get(1), "isEnabled");
-    }
-
-    @Test
-    public void verifyArgumentList(){
-        assertEquals(srcMLName1.getArgumentList().size(), 0);
-        assertEquals(srcMLName2.getArgumentList().size(), 1);
-        assertEquals(srcMLName3.getArgumentList().size(), 1);
-        assertEquals(srcMLName4.getArgumentList().size(), 0);
-    }
-
-    @Test
-    public void verifyParameterList(){
-        assertEquals(srcMLName1.getParameterList().size(), 0);
-        assertEquals(srcMLName2.getParameterList().size(), 0);
-        assertEquals(srcMLName3.getParameterList().size(), 0);
-        assertEquals(srcMLName4.getParameterList().size(), 0);
     }
 
     @Test

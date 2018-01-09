@@ -8,6 +8,7 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SrcMLClass {
     //there is some differences in class when considering anonymous classes vs normal classes.
     //Specifically, normal classes have names and anonymous classes don't. I think I can get around this by
@@ -15,15 +16,10 @@ public class SrcMLClass {
 
     //right now im not getting a list of specifiers from the class definitions.. mostly because its not in the spec.
     //I feel like I should put that functionality in..
-    @Getter
     private Element classEle;
-    @Getter
     private SrcMLName name;
-    @Getter
     private SrcMLSuper superLink;
-    @Getter
     private SrcMLArgumentList argumentList;
-    @Getter
     private SrcMLBlock block;
 
     public SrcMLClass(Element classEle) {
@@ -70,6 +66,9 @@ public class SrcMLClass {
     public UMLClass getClassDiagram(){
         //UMLClass class1 = new UMLClass(name.getName());
         return null;
+    }
+    public String getName(){
+        return name.getName();
     }
 
 

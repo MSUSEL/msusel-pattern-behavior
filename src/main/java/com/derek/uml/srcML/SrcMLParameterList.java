@@ -36,7 +36,6 @@ public class SrcMLParameterList {
         private Element parameterEle;
         private SrcMLDecl decl;
         private SrcMLDataType type;
-        private SrcMLName name;
 
         public SrcMLParameter(Element parameterEle) {
             this.parameterEle = parameterEle;
@@ -45,7 +44,6 @@ public class SrcMLParameterList {
         private void parse(){
             parseDecl();
             parseType();
-            parseName();
         }
         private void parseDecl(){
             List<Node> declNodes = XmlUtils.getImmediateChildren(parameterEle, "decl");
@@ -59,24 +57,19 @@ public class SrcMLParameterList {
                 type = new SrcMLDataType(XmlUtils.elementify(typeNode));
             }
         }
-        private void parseName(){
-            List<Node> nameNodes = XmlUtils.getImmediateChildren(parameterEle, "name");
-            for (Node nameNode : nameNodes){
-                name = new SrcMLName(XmlUtils.elementify(nameNode));
-            }
-        }
-        public String getName(){
-            return name.getName();
-        }
     }
 
+    /**
+     * Collects parameters from the SrcML data structures and returns a strcture in a much more edible form
+     *
+     * @return (array)list of Pairs of Strings, where string1 is datatype and string2 is name
+     */
     public List<Pair<String, String>> getParams(){
         List<Pair<String, String>> params = new ArrayList<>();
-
         for (SrcMLParameter p : parameters){
             if (p.getDecl() != null){
                 //reference to comment in SrcMLParameter class
-                params.add(new Pair<String, String>(p.getDecl().getType().getName(), p.getName()));
+                params.add(new Pair<String, String>(p.getDecl().getType().getName(), p.getDecl().getName()));
             }
         }
 

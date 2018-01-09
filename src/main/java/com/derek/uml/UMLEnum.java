@@ -1,6 +1,7 @@
 package com.derek.uml;
 
 import com.google.common.collect.Table;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
 /**
  * An enum can be simple, with only type declaration, or can be complicated with allowable values for type decs, constructors, and operations
  */
+@Getter
 public class UMLEnum extends UMLClass {
 
     //types in an enum can be declared {FOO, BAR}, or as allowable values {FOO("fooA", "fooB"), BAR("barA", "barB")}
@@ -36,7 +38,4 @@ public class UMLEnum extends UMLClass {
         return output.toString();
     }
 
-    public List<String> getTypes() {
-        return types;
-    }
 }

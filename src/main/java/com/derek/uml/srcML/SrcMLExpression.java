@@ -7,31 +7,21 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SrcMLExpression {
     //fulfills expr<expr>:(JavaLambda|name|call|defaultCall|name|initBlock|operator|literal|JavaAnonymousClass|expr|cast|ternary)+;
     //there are 2 'name' values.. I think that is a mistake. Also, the spec doesn't consider ternary a java thing but it is because it appears in teh xml
 
-    @Getter
     private Element expressionEle;
-    @Getter
     private List<SrcMLJavaLambda> javaLambdas;
-    @Getter
     private List<SrcMLName> names;
-    @Getter
     private List<SrcMLCall> calls;
-    @Getter
     private List<SrcMLDefault> defaultVals;
-    @Getter
     private List<SrcMLBlock> initBlocks;
-    @Getter
     private List<String> operators;
-    @Getter
     private List<String> literals;
-    @Getter
     private List<SrcMLClass> javaAnonymousClasses;
-    @Getter
     private List<SrcMLExpression> expressions;
-    @Getter
     private List<SrcMLTernary> ternarys;
 
     public SrcMLExpression(Element expressionEle){
@@ -122,4 +112,5 @@ public class SrcMLExpression {
             ternarys.add(new SrcMLTernary(XmlUtils.elementify(ternary)));
         }
     }
+
 }

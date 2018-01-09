@@ -7,8 +7,8 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SrcMLAnnotation {
-    @Getter
     private Element annotationEle;
     private SrcMLName name;
     private SrcMLArgumentList argumentList;
@@ -32,5 +32,8 @@ public class SrcMLAnnotation {
         for (Node argumentListNode : argumentListNodes){
             argumentList = new SrcMLArgumentList(XmlUtils.elementify(argumentListNode));
         }
+    }
+    public String getName(){
+        return name.getName();
     }
 }

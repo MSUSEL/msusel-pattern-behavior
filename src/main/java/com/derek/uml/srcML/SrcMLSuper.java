@@ -7,16 +7,12 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SrcMLSuper {
     //will likely need this to show generalizations in uml.
-
-    @Getter
     private Element superEle;
-    @Getter
     private List<SrcMLExtends> extender;
-    @Getter
     private List<SrcMLImplements> implementor;
-    @Getter
     private SrcMLName name;
 
     public SrcMLSuper(Element superEle) {
@@ -49,6 +45,7 @@ public class SrcMLSuper {
             this.name = new SrcMLName(XmlUtils.elementify(name));
         }
     }
-
-
+    public String getName(){
+        return name.getName();
+    }
 }

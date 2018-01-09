@@ -7,8 +7,8 @@ import org.w3c.dom.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class SrcMLConstructor {
-    @Getter
     private Element constructorEle;
     private List<String> specifiers;
     private List<SrcMLAnnotation> annotations;
@@ -62,5 +62,8 @@ public class SrcMLConstructor {
         for (Node blockNode : blockNodes){
             block = new SrcMLBlock(XmlUtils.elementify(blockNode));
         }
+    }
+    public String getName(){
+        return name.getName();
     }
 }
