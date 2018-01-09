@@ -1,6 +1,9 @@
 package com.derek.uml.srcML;
 
+import com.derek.uml.UMLAttribute;
 import com.derek.uml.UMLClass;
+import com.derek.uml.UMLGenerationUtils;
+import com.derek.uml.UMLOperation;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -21,6 +24,7 @@ public class SrcMLClass {
     private SrcMLSuper superLink;
     private SrcMLArgumentList argumentList;
     private SrcMLBlock block;
+    private List<String> specifiers;
 
     public SrcMLClass(Element classEle) {
         this.classEle = classEle;
@@ -28,12 +32,20 @@ public class SrcMLClass {
     }
 
     private void parse(){
+        parseSpecifiers();
         parseName();
         parseSuper();
         parseArgumentList();
         parseBlock();
     }
 
+    private void parseSpecifiers(){
+        specifiers = new ArrayList<>();
+        List<Node> specifierNodes = XmlUtils.getImmediateChildren(classEle, "specifier");
+        for (Node specifierNode : specifierNodes){
+            specifiers.add(specifierNode.getTextContent());
+        }
+    }
     private void parseName(){
         List<Node> nameNodes = XmlUtils.getImmediateChildren(classEle, "name");
         for (Node nameNode : nameNodes){
@@ -63,13 +75,27 @@ public class SrcMLClass {
             this.block = new SrcMLBlock(XmlUtils.elementify(block));
         }
     }
-    public UMLClass getClassDiagram(){
-        //UMLClass class1 = new UMLClass(name.getName());
-        return null;
-    }
     public String getName(){
         return name.getName();
     }
+
+    /**
+     * generates and returns a uml class diagram from the child elements under this class.
+     * @return
+     */
+    public UMLClass generateClassDiagram(){
+        List<UMLAttribute> attributes = UMLGenerationUtils.getUMLAttributes(block.getDeclStmts());
+        List<UMLOperation> operations = UMLGenerationUtils.getUMLOperations(block.getFunctions(), block.getFunctionDecls());
+        List<UMLOperation> constructors = UMLGenerationUtils.getUMLConstructors(block.getConstructors(), block.getConstructors_decl());
+
+        boolean isAbstract = UMLGenerationUtils.isAbstract(specifiers);
+        UMLClass umlClass = new UMLClass(this.getName(), null, operations, constructors, isAbstract);
+
+
+        return umlClass;
+    }
+
+
 
 
 }

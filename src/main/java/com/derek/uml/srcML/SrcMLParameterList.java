@@ -59,20 +59,4 @@ public class SrcMLParameterList {
         }
     }
 
-    /**
-     * Collects parameters from the SrcML data structures and returns a strcture in a much more edible form
-     *
-     * @return (array)list of Pairs of Strings, where string1 is datatype and string2 is name
-     */
-    public List<Pair<String, String>> getParams(){
-        List<Pair<String, String>> params = new ArrayList<>();
-        for (SrcMLParameter p : parameters){
-            if (p.getDecl() != null){
-                //reference to comment in SrcMLParameter class
-                params.add(new Pair<String, String>(p.getDecl().getType().getName(), p.getDecl().getName()));
-            }
-        }
-
-        return params;
-    }
 }

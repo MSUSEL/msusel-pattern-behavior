@@ -1,5 +1,6 @@
 package com.derek.uml.srcML;
 
+import com.derek.uml.UMLGenerationUtils;
 import com.derek.uml.UMLOperation;
 import javafx.util.Pair;
 import lombok.Getter;
@@ -95,8 +96,8 @@ public class SrcMLFunction {
         }
     }
 
-    public UMLOperation getOperations(){
-        List<Pair<String, String>> params = parameterList.getParams();
+    public UMLOperation getOperation(){
+        List<Pair<String, String>> params = UMLGenerationUtils.getParameters(parameterList);
         String name = this.name.getName();
         String returnType = this.type.getName();
         //I need to include use dependencies in here eventually.

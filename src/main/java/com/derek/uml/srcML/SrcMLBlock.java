@@ -1,5 +1,6 @@
 package com.derek.uml.srcML;
 
+import com.derek.uml.UMLAttribute;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -110,9 +111,7 @@ public class SrcMLBlock {
         classes = new ArrayList<>();
         List<Node> classNodes = XmlUtils.getImmediateChildren(blockEle, "class");
         for (Node classNode : classNodes){
-            SrcMLClass test = new SrcMLClass(XmlUtils.elementify(classNode));
-            classes.add(test);
-            System.out.println("added a new class: " + test.getName().getName());
+            classes.add(new SrcMLClass(XmlUtils.elementify(classNode)));
         }
     }
     private void parseInterface(){

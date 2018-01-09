@@ -1,7 +1,6 @@
 package com.derek.uml.srcML;
 
 import com.derek.uml.UMLOperation;
-import javafx.util.Pair;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Element;
@@ -33,7 +32,7 @@ public class SrcMLFunctionUMLGenerationTest extends SrcMLTest{
 
     @Test
     public void verifyUMLGeneration(){
-        UMLOperation op = srcMLFunction.getOperations();
+        UMLOperation op = srcMLFunction.getOperation();
         assertEquals(op.getName(), "getDataModel");
         assertEquals(op.getReturnDataType(), "int");
         assertEquals(op.getParameters().size(), 0); //empty params
@@ -41,7 +40,7 @@ public class SrcMLFunctionUMLGenerationTest extends SrcMLTest{
 
     @Test
     public void verifyUMLGeneration2(){
-        UMLOperation op = srcMLFunction2.getOperations();
+        UMLOperation op = srcMLFunction2.getOperation();
         assertEquals(op.getName(), "or");
         assertEquals(op.getReturnDataType(), "ExpectedCondition<Boolean>");
         assertEquals(op.getParameters().size(), 1); //empty params
@@ -51,7 +50,7 @@ public class SrcMLFunctionUMLGenerationTest extends SrcMLTest{
 
     @Test
     public void verifyUMLGeneration3(){
-        UMLOperation op = srcMLFunction3.getOperations();
+        UMLOperation op = srcMLFunction3.getOperation();
         assertEquals(op.getName(), "apply");
         assertEquals(op.getReturnDataType(), "Boolean");
         assertEquals(op.getParameters().size(), 1); //empty params

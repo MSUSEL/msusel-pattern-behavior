@@ -63,7 +63,7 @@ public class SrcMLRunner {
                 SrcMLBlock block = new SrcMLBlock(XmlUtils.elementify(root));
                 List<SrcMLClass> classes = block.getClasses();
                 for (SrcMLClass class1 : classes){
-                    class1.getClassDiagram();
+                    //class1.getClassDiagram();
                 }
 //                List<SrcMLImport> imports = block.getImports();
 //                for (SrcMLImport import1 : imports){

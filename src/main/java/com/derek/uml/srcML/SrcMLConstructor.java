@@ -1,5 +1,8 @@
 package com.derek.uml.srcML;
 
+import com.derek.uml.UMLGenerationUtils;
+import com.derek.uml.UMLOperation;
+import javafx.util.Pair;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -65,5 +68,14 @@ public class SrcMLConstructor {
     }
     public String getName(){
         return name.getName();
+    }
+
+    public UMLOperation getOperation(){
+        List<Pair<String, String>> params = UMLGenerationUtils.getParameters(parameterList);
+        String name = this.name.getName();
+        //constructors don't have return types
+        String returnType = "null";
+        //I need to include use dependencies in here eventually.
+        return new UMLOperation(name, params, returnType);
     }
 }
