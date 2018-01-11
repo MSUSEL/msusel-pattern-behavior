@@ -78,24 +78,4 @@ public class SrcMLClass {
     public String getName(){
         return name.getName();
     }
-
-    /**
-     * generates and returns a uml class diagram from the child elements under this class.
-     * @return
-     */
-    public UMLClass generateClassDiagram(){
-        List<UMLAttribute> attributes = UMLGenerationUtils.getUMLAttributes(block.getDeclStmts());
-        List<UMLOperation> operations = UMLGenerationUtils.getUMLOperations(block.getFunctions(), block.getFunctionDecls());
-        List<UMLOperation> constructors = UMLGenerationUtils.getUMLConstructors(block.getConstructors(), block.getConstructors_decl());
-
-        boolean isAbstract = UMLGenerationUtils.isAbstract(specifiers);
-        UMLClass umlClass = new UMLClass(this.getName(), null, operations, constructors, isAbstract);
-
-
-        return umlClass;
-    }
-
-
-
-
 }

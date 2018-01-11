@@ -72,17 +72,16 @@ public class UMLGenerationUtils {
         }
         return isStatic;
     }
-    public static List<UMLAttribute> getUMLAttributes(List<SrcMLBlock.SrcMLDeclStmt> declStmts){
+    public static List<UMLAttribute> getUMLAttributes(List<SrcMLDeclStmt> declStmts){
         List<UMLAttribute> attributes = new ArrayList<>();
-        //multiple decl_stmts would happen with something like: int a,b,c;
-        //otherwise each decl_Stmt has 1 decl.
-
-        for (SrcMLBlock.SrcMLDeclStmt declStmt: declStmts){
-
-
+        for (SrcMLDeclStmt declStmt : declStmts) {
+            for (SrcMLDecl decl : declStmt.getDecls()) {
+                //multiple decl would happen with something like: int a,b,c;
+                //otherwise each decl has 1 name/type/etc..
+                attributes.add(new UMLAttribute(decl.getName(), decl.getType().getName()));
+            }
         }
-
-
+        //most of the time this will just be 1
         return attributes;
     }
 
@@ -128,4 +127,19 @@ public class UMLGenerationUtils {
         }
         return constructors;
     }
+    /**
+     * generates and returns a uml class diagram from the child elements under this class.
+     * @return
+     */
+    public static UMLClass getUMLClass(SrcMLClass srcMLClass){
+        SrcMLBlock block = srcMLClass.getBlock();
+        List<UMLAttribute> attributes = UMLGenerationUtils.getUMLAttributes(block.getDeclStmts());
+        List<UMLOperation> operations = UMLGenerationUtils.getUMLOperations(block.getFunctions(), block.getFunctionDecls());
+        List<UMLOperation> constructors = UMLGenerationUtils.getUMLConstructors(block.getConstructors(), block.getConstructors_decl());
+
+        boolean isAbstract = UMLGenerationUtils.isAbstract(srcMLClass.getSpecifiers());
+        UMLClass umlClass = new UMLClass(srcMLClass.getName(), attributes, operations, constructors, isAbstract);
+        return umlClass;
+    }
+
 }

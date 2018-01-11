@@ -19,4 +19,9 @@ public class UMLAttribute {
         this.dataType = dataType;
         this.visibility = visibility;
     }
+    public UMLAttribute(String name, String dataType) {
+        this.name = name;
+        this.dataType = dataType;
+        this.visibility = visibility;
+    }
 }

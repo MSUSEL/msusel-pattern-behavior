@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -13,6 +14,7 @@ public class SrcMLDecl {
     private SrcMLName name;
     private SrcMLRange range;
     private SrcMLInit init;
+    private List<String> specifiers;
 
     public SrcMLDecl(Element declEle) {
         this.declEle = declEle;
@@ -23,6 +25,7 @@ public class SrcMLDecl {
         parseName();
         parseRange();
         parseInit();
+        parseSpecifiers();
     }
     private void parseDataType(){
         List<Node> typeNodes = XmlUtils.getImmediateChildren(declEle, "type");
@@ -48,10 +51,16 @@ public class SrcMLDecl {
             init = new SrcMLInit(XmlUtils.elementify(initNode));
         }
     }
+    private void parseSpecifiers(){
+        specifiers = new ArrayList<>();
+        List<Node> specifierNodes = XmlUtils.getImmediateChildren(declEle, "specifier");
+        for (Node specifierNode : specifierNodes){
+            specifiers.add(specifierNode.getTextContent());
+        }
+    }
     public String getName(){
         return name.getName();
     }
-
 
     @Getter
     public class SrcMLRange{
