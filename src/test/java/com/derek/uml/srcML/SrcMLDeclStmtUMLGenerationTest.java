@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 
 public class SrcMLDeclStmtUMLGenerationTest extends SrcMLTest{
 
-    private SrcMLDeclStmt srcMLDeclStmt;
+    private SrcMLBlock srcMLBlock;
     private SrcMLDeclStmt srcMLDeclStmt2;
     private SrcMLDeclStmt srcMLDeclStmt3;
 
@@ -24,19 +24,17 @@ public class SrcMLDeclStmtUMLGenerationTest extends SrcMLTest{
     @Before
     public void build(){
         super.build();
-        Element declStmtEle = (Element)doc.getElementsByTagName("decl_stmt").item(0);
+        Element blockEle = (Element)doc.getElementsByTagName("block").item(0);
         //Element declStmtEle2 = (Element)doc.getElementsByTagName("decl_stmt").item(1);
         //Element declStmtEle3 = (Element)doc.getElementsByTagName("decl_stmt").item(2);
-        srcMLDeclStmt = new SrcMLDeclStmt(declStmtEle);
+        srcMLBlock = new SrcMLBlock(blockEle);
         //srcMLDeclStmt2 = new SrcMLDeclStmt(declStmtEle2);
         //srcMLDeclStmt3 = new SrcMLDeclStmt(declStmtEle3);
     }
 
     @Test
-    public void verfityDeclStmt1(){
-        List<SrcMLDeclStmt> declStmts = new ArrayList<>();
-        declStmts.add(srcMLDeclStmt);
-        List<UMLAttribute> atts = UMLGenerationUtils.getUMLAttributes(declStmts);
+    public void verifyDeclStmt1(){
+        List<UMLAttribute> atts = UMLGenerationUtils.getUMLAttributes(srcMLBlock);
         assertEquals(atts.size(), 1);
         assertEquals(atts.get(0).getDataType(), "String");
         assertEquals(atts.get(0).getName(), "HOST");

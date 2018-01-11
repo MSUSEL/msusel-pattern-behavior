@@ -1,15 +1,10 @@
 package com.derek.uml.srcML;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -34,5 +29,31 @@ public class XmlUtilsTest extends SrcMLTest{
         Node firstName = n.get(0);
         assertEquals(firstName.getTextContent(), "getDataModel");
 
+    }
+
+    @Test
+    public void verifyNameList(){
+        List<String> nameList = new ArrayList<>();
+        nameList.add("foo");
+        nameList.add("bar");
+        nameList.add("bar2");
+        assertEquals(XmlUtils.stringifyNames(nameList), "foo,bar,bar2");
+    }
+    @Test
+    public void verifyNameStack(){
+        List<String> nameList1 = new ArrayList<>();
+        nameList1.add("1foo");
+        nameList1.add("1bar");
+        nameList1.add("1bar2");
+        List<String> nameList2 = new ArrayList<>();
+        nameList2.add("2foo");
+        nameList2.add("2bar");
+        List<String> nameList3 = new ArrayList<>();
+        nameList3.add("3foo");
+        Queue<List<String>> queue = new PriorityQueue<>();
+        queue.offer(nameList1);
+        queue.offer(nameList2);
+        queue.offer(nameList3);
+        assertEquals(XmlUtils.stringifyNames(queue), "3foo<2foo,2bar<1foo,1bar,1bar2>>");
     }
 }

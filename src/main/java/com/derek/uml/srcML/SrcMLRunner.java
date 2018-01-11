@@ -37,11 +37,11 @@ public class SrcMLRunner {
         umlClassDiagram = new UMLClassDiagram();
 
         //parseSrcMLFile(new File("srcMLOutput/selenium36/AbstractAnnotations.xml"));
-        parseSrcMLFile(new File("srcMLOutput/selenium36/ExpectedConditions.xml"));
+        //parseSrcMLFile(new File("srcMLOutput/selenium36/ExpectedConditions.xml"));
         //parseSrcMLFile(new File("srcMLOutput/selenium36/Architecture.xml"));
 
         //selenium test
-        //buildAllClasses();
+        buildAllClasses();
 
         //guava test
         //buildClassDiagram(new File("srcMLOutput/guava13/Files.xml"));
@@ -53,6 +53,7 @@ public class SrcMLRunner {
 
     private void parseSrcMLFile(File file){
         try{
+            System.out.println("parsing " + file.getName());
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(file);
@@ -61,18 +62,18 @@ public class SrcMLRunner {
                 Node root = roots.item(i);
                 //kick off parsing.
                 SrcMLBlock block = new SrcMLBlock(XmlUtils.elementify(root));
-                List<SrcMLClass> classes = block.getClasses();
-                for (SrcMLClass class1 : classes){
-                    //class1.getClassDiagram();
+                List<SrcMLClass> srcMLClasses = block.getClasses();
+                for (SrcMLClass srcMLClass : srcMLClasses){
+                    umlClassDiagram.addClassToDiagram(UMLGenerationUtils.getUMLClass(srcMLClass));
                 }
-//                List<SrcMLImport> imports = block.getImports();
-//                for (SrcMLImport import1 : imports){
-//                    for (SrcMLName names : import1.getNames()){
-//                        for (String name: names.getName()){
-//                            System.out.println(name);
-//                        }
-//                    }
-//                }
+                List<SrcMLInterface> srcMLInterfaces = block.getInterfaces();
+                for (SrcMLInterface srcMLInterface : srcMLInterfaces){
+                    umlClassDiagram.addClassToDiagram(UMLGenerationUtils.getUMLInterface(srcMLInterface));
+                }
+                List<SrcMLEnum> srcMLEnums = block.getEnums();
+                for (SrcMLEnum srcMLEnum : srcMLEnums){
+                    umlClassDiagram.addClassToDiagram(UMLGenerationUtils.getUMLEnum(srcMLEnum));
+                }
             }
 
         }catch(Exception e){

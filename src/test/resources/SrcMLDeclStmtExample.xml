@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <root>
-    <decl_stmt>
-        <decl>
-            <specifier>public</specifier>
-            <type>
-                <specifier>final</specifier>
-                <specifier>static</specifier>
-                <name>String</name>
-            </type>
-            <name>HOST</name>
-            <init>= <expr>
-                <literal type="string">"host"</literal>
-            </expr>
-            </init>
-        </decl>;
-    </decl_stmt>
+    <block>
+        <decl_stmt>
+            <decl>
+                <specifier>public</specifier>
+                <type>
+                    <specifier>final</specifier>
+                    <specifier>static</specifier>
+                    <name>String</name>
+                </type>
+                <name>HOST</name>
+                <init>= <expr>
+                    <literal type="string">"host"</literal>
+                </expr>
+                </init>
+            </decl>;
+        </decl_stmt>
+    </block>
 </root>

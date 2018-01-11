@@ -6,6 +6,8 @@ import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.Stack;
 
 public class XmlUtils {
 
@@ -57,5 +59,32 @@ public class XmlUtils {
             }
         }
         return toRet;
+    }
+    public static String stringifyNames(Queue<List<String>> names){
+        String stringBuilder = "";
+        List<String> current = names.remove();
+        stringBuilder += stringifyNames(current);
+        while(!names.isEmpty()){
+            if (!names.isEmpty()){
+                stringBuilder += "<";
+            }
+            stringBuilder += stringifyNames(current);
+            if (!names.isEmpty()){
+                stringBuilder += ">";
+            }
+            current = names.remove();
+        }
+        return stringBuilder;
+    }
+    public static String stringifyNames(List<String> names){
+        String stringBuilder = "";
+        for (int i = 0; i < names.size(); i++){
+            stringBuilder += names.get(i);
+            if (i != names.size()-1){
+                //not last element
+                stringBuilder += ",";
+            }
+        }
+        return stringBuilder;
     }
 }

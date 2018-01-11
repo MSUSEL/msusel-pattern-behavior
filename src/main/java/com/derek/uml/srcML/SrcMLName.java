@@ -1,12 +1,11 @@
 package com.derek.uml.srcML;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Getter
 public class SrcMLName {
@@ -14,7 +13,7 @@ public class SrcMLName {
     //parsign for each sub-type can be delegated to each class matching the sub-type
 
     private Element nameEle;
-    private List<String> names;
+    private Queue<List<String>> names;
     private SrcMLArgumentList argumentList;
     private SrcMLParameterList parameterList;
     private List<String> specifiers;
@@ -23,8 +22,10 @@ public class SrcMLName {
 
     public SrcMLName(String name){
         //use case for simple names.
-        this.names = new ArrayList<>();
-        this.names.add(name);
+        names = new PriorityQueue<>();
+        ArrayList<String> basicName = new ArrayList<>();
+        basicName.add(name);
+        this.names.add(basicName);
     }
 
     public SrcMLName(Element nameEle){
@@ -33,49 +34,54 @@ public class SrcMLName {
     }
 
     private void parse(){
+        //moving operator before name because the existance of an operator will dictate the name.
+        parseOperators();
         parseName();
         parseArgumentList();
         parseParameterList();
         parseSpecifiers();
-        parseOperators();
         parseIndices();
     }
 
     private void parseName(){
-        this.names = new ArrayList<>();
+        this.names = new PriorityQueue<>();
         List<Node> nameNodes = XmlUtils.getImmediateChildren(nameEle, "name");
         if (nameNodes.size() == 0){
             //no child elements, this is a simple name. <name>foo</name>
-            names.add(nameEle.getTextContent());
+            List<String> nameBar = new ArrayList<>();
+            nameBar.add(nameEle.getTextContent());
+            names.add(nameBar);
         }
+        List<String> nameList = new ArrayList<>();
         for (Node nameNode : nameNodes) {
             if (!nameNode.getTextContent().equals("")) {
                 //case where <name><name>foo</name><stuff></stuff></name> and found a simple name
-                names.add(nameNode.getTextContent());
+                nameList.add(nameNode.getTextContent());
+                names.add(nameList);
             }
         }
     }
 
+    /**
+     * I am going to refactor this so that stacked names fill spots in teh arraylist (List<Integer> -> [List][Integer]
+     */
     private void parseArgumentList(){
-        List<Node> argumentListNodes = XmlUtils.getImmediateChildren(nameEle, "argument_list");
-        for (Node argumentNode : argumentListNodes){
-            argumentList = new SrcMLArgumentList(XmlUtils.elementify(argumentNode));
+        //there is a bug where we are only ever going 1 name deep, yet the requirements are that we can go n name deep (List<List<List<List...)
+        //to fix this bug I think its worth getting all argument list nodes from this name, not just the immediate children.
+        //List<Node> argumentListNodes = XmlUtils.getImmediateChildren(nameEle, "argument_list");
+        NodeList argumentNodes = nameEle.getElementsByTagName("argument_list");
+        for (int i = 0; i < argumentNodes.getLength(); i++){
+            argumentList = new SrcMLArgumentList(XmlUtils.elementify(argumentNodes.item(i)));
             //generics handler
             if (argumentList.getTypeAttribute().equals("generic")){
                 //generic type found.
-                String genericBuilder = "<";
-                for (int i = 0; i < argumentList.getArguments().size(); i++){
-                    SrcMLArgument arg = argumentList.getArguments().get(i);
-                    genericBuilder += arg.getName();
-                    if (i != argumentList.getArguments().size()-1){
-                        //last argument
-                        genericBuilder += ",";
-                    }
+                List<String> nameList = new ArrayList<>();
+                for (int j = 0; j < argumentList.getArguments().size(); j++){
+                    //case where foo.bar
+                    SrcMLArgument arg = argumentList.getArguments().get(j);
+                    nameList.add(arg.getName());
                 }
-                genericBuilder += ">";
-                String oldName = names.get(0);
-                names.remove(0);
-                names.add(0, oldName += genericBuilder);
+                names.add(nameList);
             }
         }
     }
@@ -111,16 +117,15 @@ public class SrcMLName {
             indices.add(indexNode.getTextContent());
         }
     }
-
     public String getName(){
         if (names.size() > 1){
-            System.out.println("two names:");
-            for (String name : names){
-                System.out.println(name);
-            }
-            System.exit(0);
+            return XmlUtils.stringifyNames(names);
+        }else {
+            return XmlUtils.stringifyNames(names.remove());
         }
-        return names.get(0);
+    }
+    public Queue<List<String>> getNames(){
+        return names;
     }
 
 }

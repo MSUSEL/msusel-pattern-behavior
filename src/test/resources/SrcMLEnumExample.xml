@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<root>
+    <enum>
+        <specifier>public</specifier> enum <name>Architecture</name>
+        <block>{  <comment type="line">// Architecture families</comment>
+            <decl>
+                <name>X86</name>
+                <argument_list>(<argument>
+                    <expr>
+                        <literal type="string">"x86"</literal>
+                    </expr>
+                </argument>, <argument>
+                    <expr>
+                        <literal type="string">"i386"</literal>
+                    </expr>
+                </argument>, <argument>
+                    <expr>
+                        <literal type="string">"ia32"</literal>
+                    </expr>
+                </argument>, <argument>
+                    <expr>
+                        <literal type="string">"i686"</literal>
+                    </expr>
+                </argument>, <argument>
+                    <expr>
+                        <literal type="string">"i486"</literal>
+                    </expr>
+                </argument>, <argument>
+                    <expr>
+                        <literal type="string">"i86"</literal>
+                    </expr>
+                </argument>, <argument>
+                    <expr>
+                        <literal type="string">"pentium"</literal>
+                    </expr>
+                </argument>, <argument>
+                    <expr>
+                        <literal type="string">"pentium_pro"</literal>
+                    </expr>
+                </argument>, <argument>
+                    <expr>
+                        <literal type="string">"pentium_pro+mmx"</literal>
+                    </expr>
+                </argument>,      <argument>
+                    <expr>
+                        <literal type="string">"pentium+mmx"</literal>
+                    </expr>
+                </argument>)</argument_list>
+                <block>{    <function>
+                    <annotation>@<name>Override</name>
+                    </annotation>
+                    <specifier>public</specifier>
+                    <type>
+                        <name>int</name>
+                    </type>
+                    <name>getDataModel</name>
+                    <parameter_list>()</parameter_list>
+                    <block>{      <return>return <expr>
+                        <literal type="number">32</literal>
+                    </expr>;</return>    }</block>
+                </function>  }</block>
+            </decl>,  <decl>
+                <name>X64</name>
+                <argument_list>(<argument>
+                    <expr>
+                        <literal type="string">"amd64"</literal>
+                    </expr>
+                </argument>, <argument>
+                    <expr>
+                        <literal type="string">"ia64"</literal>
+                    </expr>
+                </argument>, <argument>
+                    <expr>
+                        <literal type="string">"x86_64"</literal>
+                    </expr>
+                </argument>)</argument_list>
+            </decl>,  <decl>
+                <name>ARM</name>
+                <argument_list>(<argument>
+                    <expr>
+                        <literal type="string">"arm"</literal>
+                    </expr>
+                </argument>)</argument_list>
+            </decl>,  <decl>
+                <name>MIPS32</name>
+                <argument_list>(<argument>
+                    <expr>
+                        <literal type="string">"mips32"</literal>
+                    </expr>
+                </argument>)</argument_list>
+                <block>{    <function>
+                    <annotation>@<name>Override</name>
+                    </annotation>
+                    <specifier>public</specifier>
+                    <type>
+                        <name>int</name>
+                    </type>
+                    <name>getDataModel</name>
+                    <parameter_list>()</parameter_list>
+                    <block>{      <return>return <expr>
+                        <literal type="number">32</literal>
+                    </expr>;</return>    }</block>
+                </function>  }</block>
+            </decl>,  <decl>
+                <name>MIPS64</name>
+                <argument_list>(<argument>
+                    <expr>
+                        <literal type="string">"mips64"</literal>
+                    </expr>
+                </argument>)</argument_list>
+            </decl>,  <comment type="line">// Meta architecture</comment>
+            <decl>
+                <name>ANY</name>
+                <argument_list>(<argument>
+                    <expr>
+                        <literal type="string">""</literal>
+                    </expr>
+                </argument>)</argument_list>
+                <block>{    <function>
+                    <annotation>@<name>Override</name>
+                    </annotation>
+                    <specifier>public</specifier>
+                    <type>
+                        <name>boolean</name>
+                    </type>
+                    <name>is</name>
+                    <parameter_list>(<parameter>
+                        <decl>
+                            <type>
+                                <name>Architecture</name>
+                            </type>
+                            <name>compareWith</name>
+                        </decl>
+                    </parameter>)</parameter_list>
+                    <block>{      <return>return <expr>
+                        <literal type="boolean">true</literal>
+                    </expr>;</return>    }</block>
+                </function>  }</block>
+            </decl>;  <decl_stmt>
+                <decl>
+                    <specifier>private</specifier>
+                    <type>
+                        <specifier>final</specifier>
+                        <name>
+                            <name>String</name>
+                            <index>[]</index>
+                        </name>
+                    </type>
+                    <name>archIdentifiers</name>
+                </decl>;</decl_stmt>
+            <constructor>
+                <name>Architecture</name>
+                <parameter_list>(<parameter>
+                    <decl>
+                        <type>
+                            <name>String</name>
+                            <modifier>...</modifier>
+                        </type>
+                        <name>partOfArch</name>
+                    </decl>
+                </parameter>)</parameter_list>
+                <block>{    <expr_stmt>
+                    <expr>
+                        <name>archIdentifiers</name>
+                        <operator>=</operator>
+                        <name>partOfArch</name>
+                    </expr>;</expr_stmt>  }</block>
+            </constructor>
+            <comment type="block" format="javadoc">/**   * Heuristic for comparing two architectures.  If architectures are found to be in the same   * "architecture family" (e.g. i386, i686, x86 and ia32 are considered related), they will match.   *   * @param compareWith the architecture to compare with   * @return true if architectures belong to the same architecture family, false otherwise   */</comment>
+            <function>
+                <specifier>public</specifier>
+                <type>
+                    <name>boolean</name>
+                </type>
+                <name>is</name>
+                <parameter_list>(<parameter>
+                    <decl>
+                        <type>
+                            <name>Architecture</name>
+                        </type>
+                        <name>compareWith</name>
+                    </decl>
+                </parameter>)</parameter_list>
+                <block>{    <return>return <expr>
+                    <call>
+                        <name>
+                            <name>this</name>
+                            <operator>.</operator>
+                            <name>equals</name>
+                        </name>
+                        <argument_list>(<argument>
+                            <expr>
+                                <name>compareWith</name>
+                            </expr>
+                        </argument>)</argument_list>
+                    </call>
+                </expr>;</return>  }</block>
+            </function>
+            <comment type="block" format="javadoc">/**   * Gets the data model of the architecture.  The data model tells you how big memory addresses are   * on the given microprocessor architecture.   *   * @return 32- or 64-bit depending on architecture   */</comment>
+            <function>
+                <specifier>public</specifier>
+                <type>
+                    <name>int</name>
+                </type>
+                <name>getDataModel</name>
+                <parameter_list>()</parameter_list>
+                <block>{    <return>return <expr>
+                    <literal type="number">64</literal>
+                </expr>;</return>  }</block>
+            </function>
+            <function>
+                <annotation>@<name>Override</name>
+                </annotation>
+                <specifier>public</specifier>
+                <type>
+                    <name>String</name>
+                </type>
+                <name>toString</name>
+                <parameter_list>()</parameter_list>
+                <block>{    <return>return <expr>
+                    <call>
+                        <name>name</name>
+                        <argument_list>()</argument_list>
+                    </call>
+                    <operator>.</operator>
+                    <call>
+                        <name>toLowerCase</name>
+                        <argument_list>()</argument_list>
+                    </call>
+                </expr>;</return>  }</block>
+            </function>
+            <comment type="block" format="javadoc">/**   * Gets current architecture.   *   * @return current architecture   */</comment>
+            <function>
+                <specifier>public</specifier>
+                <specifier>static</specifier>
+                <type>
+                    <name>Architecture</name>
+                </type>
+                <name>getCurrent</name>
+                <parameter_list>()</parameter_list>
+                <block>{    <return>return <expr>
+                    <call>
+                        <name>extractFromSysProperty</name>
+                        <argument_list>(<argument>
+                            <expr>
+                                <call>
+                                    <name>
+                                        <name>System</name>
+                                        <operator>.</operator>
+                                        <name>getProperty</name>
+                                    </name>
+                                    <argument_list>(<argument>
+                                        <expr>
+                                            <literal type="string">"os.arch"</literal>
+                                        </expr>
+                                    </argument>)</argument_list>
+                                </call>
+                            </expr>
+                        </argument>)</argument_list>
+                    </call>
+                </expr>;</return>  }</block>
+            </function>
+            <comment type="block" format="javadoc">/**   * Extracts architectures based on system properties in Java and a heuristic to overcome   * differences between JDK implementations.  If not able to determine the operating system's   * architecture, it will throw.   *   * @param arch the architecture name to determine the architecture of   * @return the most likely architecture based on the given architecture name   * @throws UnsupportedOperationException if the architecture given is unknown or unsupported   */</comment>
+            <function>
+                <specifier>public</specifier>
+                <specifier>static</specifier>
+                <type>
+                    <name>Architecture</name>
+                </type>
+                <name>extractFromSysProperty</name>
+                <parameter_list>(<parameter>
+                    <decl>
+                        <type>
+                            <name>String</name>
+                        </type>
+                        <name>arch</name>
+                    </decl>
+                </parameter>)</parameter_list>
+                <block>{    <if>if <condition>(<expr>
+                    <name>arch</name>
+                    <operator>!=</operator>
+                    <literal type="null">null</literal>
+                </expr>)</condition>
+                    <then>
+                        <block>{      <expr_stmt>
+                            <expr>
+                                <name>arch</name>
+                                <operator>=</operator>
+                                <call>
+                                    <name>
+                                        <name>arch</name>
+                                        <operator>.</operator>
+                                        <name>toLowerCase</name>
+                                    </name>
+                                    <argument_list>()</argument_list>
+                                </call>
+                            </expr>;</expr_stmt>    }</block>
+                    </then>
+                </if>
+                    <comment type="line">// Some architectures are basically the same even though they have different names.  ia32, x86,</comment>
+                    <comment type="line">// i386 and i686 are for WebDriver's purposes the same sort of 32-bit x86-esque architecture.</comment>
+                    <comment type="line">// So each architecture defined in this enum has an array of strings with the different</comment>
+                    <comment type="line">// identifiers it matches.</comment>
+                    <for>for <control>(<init>
+                        <decl>
+                            <type>
+                                <name>Architecture</name>
+                            </type>
+                            <name>architecture</name>
+                            <range>: <expr>
+                                <call>
+                                    <name>values</name>
+                                    <argument_list>()</argument_list>
+                                </call>
+                            </expr>
+                            </range>
+                        </decl>
+                    </init>)</control>
+                        <block>{      <if>if <condition>(<expr>
+                            <name>architecture</name>
+                            <operator>==</operator>
+                            <name>
+                                <name>Architecture</name>
+                                <operator>.</operator>
+                                <name>ANY</name>
+                            </name>
+                        </expr>)</condition>
+                            <then>
+                                <block>{        <continue>continue;</continue>      }</block>
+                            </then>
+                        </if>
+                            <for>for <control>(<init>
+                                <decl>
+                                    <type>
+                                        <name>String</name>
+                                    </type>
+                                    <name>matcher</name>
+                                    <range>: <expr>
+                                        <name>
+                                            <name>architecture</name>
+                                            <operator>.</operator>
+                                            <name>archIdentifiers</name>
+                                        </name>
+                                    </expr>
+                                    </range>
+                                </decl>
+                            </init>)</control>
+                                <block>{        <if>if <condition>(<expr>
+                                    <call>
+                                        <name>
+                                            <name>matcher</name>
+                                            <operator>.</operator>
+                                            <name>equals</name>
+                                        </name>
+                                        <argument_list>(<argument>
+                                            <expr>
+                                                <name>arch</name>
+                                            </expr>
+                                        </argument>)</argument_list>
+                                    </call>
+                                </expr>)</condition>
+                                    <then>
+                                        <block>{          <return>return <expr>
+                                            <name>architecture</name>
+                                        </expr>;</return>        }</block>
+                                    </then>
+                                </if>      }</block>
+                            </for>    }</block>
+                    </for>
+                    <throw>throw <expr>
+                        <operator>new</operator>
+                        <call>
+                            <name>UnsupportedOperationException</name>
+                            <argument_list>(<argument>
+                                <expr>
+                                    <literal type="string">"Unknown architecture: "</literal>
+                                    <operator>+</operator>
+                                    <name>arch</name>
+                                </expr>
+                            </argument>)</argument_list>
+                        </call>
+                    </expr>;</throw>  }</block>
+            </function>}</block>
+    </enum>
+</root>

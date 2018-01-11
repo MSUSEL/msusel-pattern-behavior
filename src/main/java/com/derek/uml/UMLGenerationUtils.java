@@ -72,16 +72,30 @@ public class UMLGenerationUtils {
         }
         return isStatic;
     }
-    public static List<UMLAttribute> getUMLAttributes(List<SrcMLDeclStmt> declStmts){
+    public static List<UMLAttribute> getUMLAttributes(SrcMLBlock block){
         List<UMLAttribute> attributes = new ArrayList<>();
-        for (SrcMLDeclStmt declStmt : declStmts) {
-            for (SrcMLDecl decl : declStmt.getDecls()) {
-                //multiple decl would happen with something like: int a,b,c;
-                //otherwise each decl has 1 name/type/etc..
-                attributes.add(new UMLAttribute(decl.getName(), decl.getType().getName()));
+        //first conditional happens in special cases (enums with both decls and decl_stmts)
+        if (block.getDecls().size() > 0){
+            //dealing an enum (list of decls)
+            List<SrcMLDecl> decls = block.getDecls();
+            for (SrcMLDecl decl : decls) {
+                //in this case the type is the same as the name... I think.. lol
+                attributes.add(new UMLAttribute(decl.getName(), decl.getName()));
             }
         }
-        //most of the time this will just be 1
+        //standard case
+        if (block.getDeclStmts().size() > 0){
+            //default case, dealing with attributes
+            List<SrcMLDeclStmt> declStmts = block.getDeclStmts();
+            for (SrcMLDeclStmt declStmt : declStmts) {
+                //most of the time this will just be 1
+                for (SrcMLDecl decl : declStmt.getDecls()) {
+                    //multiple decl would happen with something like: int a,b,c;
+                    //otherwise each decl has 1 name/type/etc..
+                    attributes.add(new UMLAttribute(decl.getName(), decl.getType().getName()));
+                }
+            }
+        }
         return attributes;
     }
 
@@ -128,18 +142,39 @@ public class UMLGenerationUtils {
         return constructors;
     }
     /**
-     * generates and returns a uml class diagram from the child elements under this class.
+     * generates and returns a uml class from the child elements under this class.
      * @return
      */
     public static UMLClass getUMLClass(SrcMLClass srcMLClass){
         SrcMLBlock block = srcMLClass.getBlock();
-        List<UMLAttribute> attributes = UMLGenerationUtils.getUMLAttributes(block.getDeclStmts());
+        List<UMLAttribute> attributes = UMLGenerationUtils.getUMLAttributes(block);
         List<UMLOperation> operations = UMLGenerationUtils.getUMLOperations(block.getFunctions(), block.getFunctionDecls());
         List<UMLOperation> constructors = UMLGenerationUtils.getUMLConstructors(block.getConstructors(), block.getConstructors_decl());
 
         boolean isAbstract = UMLGenerationUtils.isAbstract(srcMLClass.getSpecifiers());
-        UMLClass umlClass = new UMLClass(srcMLClass.getName(), attributes, operations, constructors, isAbstract);
+        UMLClass umlClass = new UMLClass(srcMLClass.getName(), attributes, operations, constructors, isAbstract, "class");
         return umlClass;
+    }
+
+    /**
+     * generates and return a uml interface from a srcMLInterface class
+     * @param srcMLInterface
+     * @return
+     */
+    public static UMLInterface getUMLInterface(SrcMLInterface srcMLInterface){
+        SrcMLBlock block = srcMLInterface.getBlock();
+        List<UMLOperation> operations = UMLGenerationUtils.getUMLOperations(block.getFunctions(), block.getFunctionDecls());
+        UMLInterface umlInterface = new UMLInterface(srcMLInterface.getName(), operations);
+        return umlInterface;
+    }
+    public static UMLClass getUMLEnum(SrcMLEnum srcMLEnum){
+        SrcMLBlock block = srcMLEnum.getBlock();
+        List<UMLAttribute> attributes = UMLGenerationUtils.getUMLAttributes(block);
+        List<UMLOperation> operations = UMLGenerationUtils.getUMLOperations(block.getFunctions(), block.getFunctionDecls());
+        List<UMLOperation> constructors = UMLGenerationUtils.getUMLConstructors(block.getConstructors(), block.getConstructors_decl());
+
+        UMLClass umlEnum = new UMLClass(srcMLEnum.getName(), attributes, operations, constructors, false, "enum");
+        return umlEnum;
     }
 
 }
