@@ -4,10 +4,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.*;
 
 public class XmlUtils {
 
@@ -60,19 +57,22 @@ public class XmlUtils {
         }
         return toRet;
     }
-    public static String stringifyNames(Queue<List<String>> names){
+    public static String stringifyNames(LinkedList<List<String>> names){
         String stringBuilder = "";
-        List<String> current = names.remove();
+
+        Iterator<List<String>> t = names.iterator();
+        List<String> current = t.next();
         stringBuilder += stringifyNames(current);
-        while(!names.isEmpty()){
-            if (!names.isEmpty()){
-                stringBuilder += "<";
-            }
+        int counter = 0;
+        while(t.hasNext()){
+            stringBuilder += "<";
+            current = t.next();
             stringBuilder += stringifyNames(current);
-            if (!names.isEmpty()){
-                stringBuilder += ">";
-            }
-            current = names.remove();
+            counter++;
+        }
+        while (counter > 0){
+            stringBuilder += ">";
+            counter--;
         }
         return stringBuilder;
     }

@@ -50,10 +50,10 @@ public class XmlUtilsTest extends SrcMLTest{
         nameList2.add("2bar");
         List<String> nameList3 = new ArrayList<>();
         nameList3.add("3foo");
-        Queue<List<String>> queue = new PriorityQueue<>();
-        queue.offer(nameList1);
-        queue.offer(nameList2);
-        queue.offer(nameList3);
-        assertEquals(XmlUtils.stringifyNames(queue), "3foo<2foo,2bar<1foo,1bar,1bar2>>");
+        LinkedList<List<String>> linkedList = new LinkedList<>();
+        linkedList.add(nameList3);
+        linkedList.add(nameList2);
+        linkedList.add(nameList1);
+        assertEquals(XmlUtils.stringifyNames(linkedList), "3foo<2foo,2bar<1foo,1bar,1bar2>>");
     }
 }

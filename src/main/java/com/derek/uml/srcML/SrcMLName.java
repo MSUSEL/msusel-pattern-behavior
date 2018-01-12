@@ -13,7 +13,7 @@ public class SrcMLName {
     //parsign for each sub-type can be delegated to each class matching the sub-type
 
     private Element nameEle;
-    private Queue<List<String>> names;
+    private LinkedList<List<String>> names;
     private SrcMLArgumentList argumentList;
     private SrcMLParameterList parameterList;
     private List<String> specifiers;
@@ -22,7 +22,7 @@ public class SrcMLName {
 
     public SrcMLName(String name){
         //use case for simple names.
-        names = new PriorityQueue<>();
+        names = new LinkedList<>();
         ArrayList<String> basicName = new ArrayList<>();
         basicName.add(name);
         this.names.add(basicName);
@@ -34,7 +34,7 @@ public class SrcMLName {
     }
 
     private void parse(){
-        //moving operator before name because the existance of an operator will dictate the name.
+        //moving operator before name because the existance of an operator will dictate the name. (Class.subclass)
         parseOperators();
         parseName();
         parseArgumentList();
@@ -44,20 +44,21 @@ public class SrcMLName {
     }
 
     private void parseName(){
-        this.names = new PriorityQueue<>();
+        this.names = new LinkedList<>();
         List<Node> nameNodes = XmlUtils.getImmediateChildren(nameEle, "name");
         if (nameNodes.size() == 0){
             //no child elements, this is a simple name. <name>foo</name>
             List<String> nameBar = new ArrayList<>();
             nameBar.add(nameEle.getTextContent());
-            names.add(nameBar);
+            names.addLast(nameBar);
         }
-        List<String> nameList = new ArrayList<>();
+
         for (Node nameNode : nameNodes) {
             if (!nameNode.getTextContent().equals("")) {
                 //case where <name><name>foo</name><stuff></stuff></name> and found a simple name
+                List<String> nameList = new ArrayList<>();
                 nameList.add(nameNode.getTextContent());
-                names.add(nameList);
+                names.addLast(nameList);
             }
         }
     }
@@ -68,20 +69,19 @@ public class SrcMLName {
     private void parseArgumentList(){
         //there is a bug where we are only ever going 1 name deep, yet the requirements are that we can go n name deep (List<List<List<List...)
         //to fix this bug I think its worth getting all argument list nodes from this name, not just the immediate children.
-        //List<Node> argumentListNodes = XmlUtils.getImmediateChildren(nameEle, "argument_list");
-        NodeList argumentNodes = nameEle.getElementsByTagName("argument_list");
-        for (int i = 0; i < argumentNodes.getLength(); i++){
-            argumentList = new SrcMLArgumentList(XmlUtils.elementify(argumentNodes.item(i)));
+        List<Node> argumentListNodes = XmlUtils.getImmediateChildren(nameEle, "argument_list");
+        for (Node argumentNode : argumentListNodes) {
+            argumentList = new SrcMLArgumentList(XmlUtils.elementify(argumentNode));
             //generics handler
-            if (argumentList.getTypeAttribute().equals("generic")){
+            if (argumentList.getTypeAttribute().equals("generic")) {
                 //generic type found.
                 List<String> nameList = new ArrayList<>();
-                for (int j = 0; j < argumentList.getArguments().size(); j++){
+                for (int j = 0; j < argumentList.getArguments().size(); j++) {
                     //case where foo.bar
                     SrcMLArgument arg = argumentList.getArguments().get(j);
                     nameList.add(arg.getName());
                 }
-                names.add(nameList);
+                names.addLast(nameList);
             }
         }
     }
@@ -124,7 +124,7 @@ public class SrcMLName {
             return XmlUtils.stringifyNames(names.remove());
         }
     }
-    public Queue<List<String>> getNames(){
+    public LinkedList<List<String>> getNames(){
         return names;
     }
 

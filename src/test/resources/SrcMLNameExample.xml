@@ -23,4 +23,20 @@
         <operator>.</operator>
         <name>isEnabled</name>
     </name>
+    <name>
+        <name>ExpectedCondition</name>
+        <argument_list type="generic">&lt;<argument>
+            <name>
+                <name>List</name>
+                <argument_list type="generic">&lt;<argument>
+                    <name>
+                        <name>WebElement</name>
+                        <argument_list type="generic">&lt;<argument>
+                            <name>tester</name>
+                        </argument>&gt;</argument_list>
+                    </name>
+                </argument>&gt;</argument_list>
+            </name>
+        </argument>&gt;</argument_list>
+    </name>
 </root>
