@@ -23,25 +23,7 @@ public class UMLGenerationUtils {
 
 
 
-    //returns true if the type is a primitive type (including Strring)
-    //flase otherwise
-    public static boolean isTypePrimitive(String type){
-        switch(type){
-            case "boolean":
-            case "byte":
-            case "char":
-            case "short":
-            case "int":
-            case "long":
-            case "float":
-            case "double":
-                //while String technically isn't a primitive, I think its worth including because its so common and
-                //I don't want to pull from the String java class.
-            case "String":
-                return true;
-        }
-        return false;
-    }
+
 
     /**
      * from a list of string specifiers from srcML, return true if abstract is a specifier
@@ -158,7 +140,7 @@ public class UMLGenerationUtils {
             //bug here. I don't think I can have constructor decls in java.
             //The bug can be seen in selenium3.6-UrlChecker.java.. SrcML INCORRECTLY classifies a system utility call as a constructor.
             //until I figure this out more, im going to ignore this.
-            //constructors.add(getUMLConstructor(constructor));
+            constructors.add(getUMLConstructor(constructor));
         }
         return constructors;
     }

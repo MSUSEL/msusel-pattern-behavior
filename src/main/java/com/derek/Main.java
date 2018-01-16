@@ -1,5 +1,6 @@
 package com.derek;
 
+import com.derek.uml.UMLGenerator;
 import com.derek.uml.srcML.SrcMLRunner;
 
 public class Main {
@@ -16,6 +17,7 @@ public class Main {
     public Main(){
 
         buildSeleniumConfigs();
+        UMLGenerator umlGenerator = new UMLGenerator(runner.getRootBlocks());
         //buildGuavaConfigs();
         //new View();
         //view builds the model too. This might change as this project matures.

@@ -59,7 +59,13 @@ public class SrcMLDecl {
         }
     }
     public String getName(){
-        return name.getName();
+        if (name == null){
+            //happens ocassionally, specifically on enum declarations. -- LEFT_SHIFT(Keys.Shift)
+            //there is no name, just a type setting.
+            return "";
+        }else {
+            return name.getName();
+        }
     }
 
     @Getter

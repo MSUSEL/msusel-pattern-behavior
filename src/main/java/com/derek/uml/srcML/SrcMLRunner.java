@@ -1,11 +1,8 @@
 package com.derek.uml.srcML;
 
 import com.derek.Main;
-import com.derek.uml.*;
-import com.derek.uml.plantUml.PlantUMLTransformer;
-import javafx.util.Pair;
+import lombok.Getter;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -22,73 +19,60 @@ import java.util.stream.Collectors;
 /**
  * This class runs the srcML tool  (http://www.srcml.org/#home) on a software project.
  */
+@Getter
 public class SrcMLRunner {
 
     private final boolean storeSrcML = true;
     private String projectWorkingDirectory;
-    private UMLClassDiagram umlClassDiagram;
+    private List<SrcMLBlock> rootBlocks;
 
     public SrcMLRunner(String projectWorkingDirectory){
         this.projectWorkingDirectory = projectWorkingDirectory;
+        rootBlocks = new ArrayList<>();
+
+
         generateSrcML();
+        parseAllFiles();
 
-        umlClassDiagram = new UMLClassDiagram();
-
+        //selenium tests
         //parseSrcMLFile(new File("srcMLOutput/selenium36/AbstractAnnotations.xml"));
         //parseSrcMLFile(new File("srcMLOutput/selenium36/ExpectedConditions.xml"));
         //parseSrcMLFile(new File("srcMLOutput/selenium36/Architecture.xml"));
         //parseSrcMLFile(new File("srcMLOutput/selenium36/UrlChecker.xml"));
 
-        //selenium test
-        buildAllClasses();
-        buildRelationships();
-
         //guava test
         //buildClassDiagram(new File("srcMLOutput/guava13/Files.xml"));
 
-        PlantUMLTransformer pltTransformer = new PlantUMLTransformer(umlClassDiagram);
-        //used to print plantuml
-        pltTransformer.generateClassDiagram();
-    }
-    private void buildRelationships(){
 
     }
 
-    private void parseSrcMLFile(File file){
+    private SrcMLBlock parseSrcMLFile(File file){
         try{
             System.out.println("parsing " + file.getName());
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(file);
             NodeList roots = doc.getElementsByTagName("unit");
+            SrcMLBlock block = null;
             for (int i = 0; i < roots.getLength(); i++) {
                 Node root = roots.item(i);
                 //kick off parsing.
-                SrcMLBlock block = new SrcMLBlock(XmlUtils.elementify(root));
-                List<SrcMLClass> srcMLClasses = block.getClasses();
-                for (SrcMLClass srcMLClass : srcMLClasses){
-                    umlClassDiagram.addClassToDiagram(UMLGenerationUtils.getUMLClass(srcMLClass));
-                }
-                List<SrcMLInterface> srcMLInterfaces = block.getInterfaces();
-                for (SrcMLInterface srcMLInterface : srcMLInterfaces){
-                    umlClassDiagram.addClassToDiagram(UMLGenerationUtils.getUMLInterface(srcMLInterface));
-                }
-                List<SrcMLEnum> srcMLEnums = block.getEnums();
-                for (SrcMLEnum srcMLEnum : srcMLEnums){
-                    umlClassDiagram.addClassToDiagram(UMLGenerationUtils.getUMLEnum(srcMLEnum));
-                }
+                block = new SrcMLBlock(XmlUtils.elementify(root));
             }
+            return block;
         }catch(Exception e){
             e.printStackTrace();
         }
+        System.out.println("Error in parseSrcMLFile");
+        return null;
     }
 
-    private void buildAllClasses(){
+    private void parseAllFiles(){
         //https://stackoverflow.com/questions/5694385/getting-the-filenames-of-all-files-in-a-folder
         File f = new File("srcMLOutput/selenium36/");
         File[] listOfFiles = f.listFiles();
         for (int i = 0; i < listOfFiles.length; i++) {
-            parseSrcMLFile(listOfFiles[i]);
+            rootBlocks.add(parseSrcMLFile(listOfFiles[i]));
         }
     }
 
