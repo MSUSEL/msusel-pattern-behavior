@@ -43,6 +43,10 @@ public class SrcMLArgument {
             name = new SrcMLName(XmlUtils.elementify(nameNode));
         }
     }
+    public SrcMLName getNameObj(){
+        return name;
+    }
+
     public String getName(){
         return name.getName();
     }

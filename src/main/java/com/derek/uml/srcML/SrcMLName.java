@@ -13,7 +13,7 @@ public class SrcMLName {
     //parsign for each sub-type can be delegated to each class matching the sub-type
 
     private Element nameEle;
-    private LinkedList<List<String>> names;
+    private List<String> names;
     private SrcMLArgumentList argumentList;
     private SrcMLParameterList parameterList;
     private List<String> specifiers;
@@ -22,10 +22,8 @@ public class SrcMLName {
 
     public SrcMLName(String name){
         //use case for simple names.
-        names = new LinkedList<>();
-        ArrayList<String> basicName = new ArrayList<>();
-        basicName.add(name);
-        this.names.add(basicName);
+        names = new ArrayList<>();
+        names.add(name);
     }
 
     public SrcMLName(Element nameEle){
@@ -48,17 +46,13 @@ public class SrcMLName {
         List<Node> nameNodes = XmlUtils.getImmediateChildren(nameEle, "name");
         if (nameNodes.size() == 0){
             //no child elements, this is a simple name. <name>foo</name>
-            List<String> nameBar = new ArrayList<>();
-            nameBar.add(nameEle.getTextContent());
-            names.addLast(nameBar);
+            names.add(nameEle.getTextContent());
         }
 
         for (Node nameNode : nameNodes) {
             if (!nameNode.getTextContent().equals("")) {
                 //case where <name><name>foo</name><stuff></stuff></name> and found a simple name
-                List<String> nameList = new ArrayList<>();
-                nameList.add(nameNode.getTextContent());
-                names.addLast(nameList);
+                names.add(nameNode.getTextContent());
             }
         }
     }
@@ -70,18 +64,12 @@ public class SrcMLName {
         //there is a bug where we are only ever going 1 name deep, yet the requirements are that we can go n name deep (List<List<List<List...)
         //to fix this bug I think its worth getting all argument list nodes from this name, not just the immediate children.
         List<Node> argumentListNodes = XmlUtils.getImmediateChildren(nameEle, "argument_list");
-        for (Node argumentNode : argumentListNodes) {
+        for (Node argumentNode : argumentListNodes){
             argumentList = new SrcMLArgumentList(XmlUtils.elementify(argumentNode));
             //generics handler
-            if (argumentList.getTypeAttribute().equals("generic")) {
+            if (argumentList.getTypeAttribute().equals("generic")){
                 //generic type found.
-                List<String> nameList = new ArrayList<>();
-                for (int j = 0; j < argumentList.getArguments().size(); j++) {
-                    //case where foo.bar
-                    SrcMLArgument arg = argumentList.getArguments().get(j);
-                    nameList.add(arg.getName());
-                }
-                names.addLast(nameList);
+                //I don't think I need to care about this.
             }
         }
     }
@@ -118,14 +106,30 @@ public class SrcMLName {
         }
     }
     public String getName(){
-        if (names.size() > 1){
-            return XmlUtils.stringifyNames(names);
-        }else {
-            return XmlUtils.stringifyNames(names.remove());
-        }
-    }
-    public LinkedList<List<String>> getNames(){
-        return names;
+        return consolidateNames();
     }
 
+    private String consolidateNames(){
+        String consolidatedName = XmlUtils.stringifyNames(names);
+        SrcMLArgumentList argumentListPointer = argumentList;
+        if (argumentListPointer != null) {
+            List<SrcMLArgument> argumentsPointer;
+            Stack<SrcMLArgumentList> nameStack = new Stack<>();
+            nameStack.push(argumentListPointer);
+            while (!nameStack.isEmpty()) {
+                argumentsPointer = nameStack.pop().getArguments();
+                consolidatedName += "<";
+                for (int i = 0; i < argumentsPointer.size(); i++) {
+                    SrcMLArgument arg = argumentsPointer.get(i);
+                    consolidatedName += arg.getName();
+                    if (arg.getNameObj().getArgumentList() != null) {
+                        //end of the stack; no more names.
+                        //nameStack.push(arg.getNameObj().getArgumentList());
+                    }
+                }
+                consolidatedName += ">";
+            }
+        }
+        return consolidatedName;
+    }
 }

@@ -26,8 +26,8 @@ public class SrcMLFunctionParserTest extends SrcMLTest{
     @Test
     public void verifyAnnotations(){
        assertEquals(srcMLFunctionParser.getAnnotations().size(), 2);
-       assertEquals(srcMLFunctionParser.getAnnotations().get(0), "Override");
-       assertEquals(srcMLFunctionParser.getAnnotations().get(1), "nonNull");
+       assertEquals(srcMLFunctionParser.getAnnotations().get(0).getName(), "Override");
+       assertEquals(srcMLFunctionParser.getAnnotations().get(1).getName(), "nonNull");
     }
 
     @Test

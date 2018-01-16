@@ -37,7 +37,7 @@ public class XmlUtilsTest extends SrcMLTest{
         nameList.add("foo");
         nameList.add("bar");
         nameList.add("bar2");
-        assertEquals(XmlUtils.stringifyNames(nameList), "foo,bar,bar2");
+        assertEquals(XmlUtils.stringifyNames(nameList), "foo.bar.bar2");
     }
     @Test
     public void verifyNameStack(){
@@ -54,6 +54,6 @@ public class XmlUtilsTest extends SrcMLTest{
         linkedList.add(nameList3);
         linkedList.add(nameList2);
         linkedList.add(nameList1);
-        assertEquals(XmlUtils.stringifyNames(linkedList), "3foo<2foo,2bar<1foo,1bar,1bar2>>");
+        assertEquals(XmlUtils.stringifyNames(linkedList), "3foo<2foo.2bar<1foo.1bar.1bar2>>");
     }
 }

@@ -82,7 +82,7 @@ public class XmlUtils {
             stringBuilder += names.get(i);
             if (i != names.size()-1){
                 //not last element
-                stringBuilder += ",";
+                stringBuilder += ".";
             }
         }
         return stringBuilder;

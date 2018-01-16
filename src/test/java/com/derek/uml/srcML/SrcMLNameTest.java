@@ -37,32 +37,25 @@ public class SrcMLNameTest extends SrcMLTest{
     @Test
     public void verifyName(){
         assertEquals(srcMLName1.getNames().size(), 1);
-        assertEquals(srcMLName1.getNames().peek().get(0), "First");
+        assertEquals(srcMLName1.getNames().get(0), "First");
         assertEquals(srcMLName1.getName(), "First");
     }
     @Test
     public void verifyName2(){
-        assertEquals(srcMLName2.getNames().size(), 2);
-        assertEquals(srcMLName2.getNames().get(0).size(), 1);
-        assertEquals(srcMLName2.getNames().get(1).size(), 1);
-        assertEquals(srcMLName2.getNames().get(0).get(0), "Optional");
-        assertEquals(srcMLName2.getNames().get(1).get(0), "Result");
+        assertEquals(srcMLName2.getNames().size(), 1);
+        assertEquals(srcMLName2.getName(), "Optional<Result>");
     }
     @Test
     public void verifyName3(){
-        assertEquals(srcMLName3.getNames().size(), 3);
-        assertEquals(srcMLName3.getNames().get(0).size(), 1);
-        assertEquals(srcMLName3.getNames().get(1).size(), 1);
-        assertEquals(srcMLName3.getNames().get(2).size(), 1);
-        assertEquals(srcMLName3.getNames().get(0).get(0), "ExpectedCondition");
-        assertEquals(srcMLName3.getNames().get(1).get(0), "List");
-        assertEquals(srcMLName3.getNames().get(2).get(0), "WebElement");
+        assertEquals(srcMLName3.getNames().size(), 1);
+        assertEquals(srcMLName3.getName(), "ExpectedCondition<List<WebElement>>");
     }
     @Test
     public void verifyName4(){
         assertEquals(srcMLName4.getNames().size(), 2);
-        assertEquals(srcMLName4.getNames().get(0).get(0), "element");
-        assertEquals(srcMLName4.getNames().get(1).get(0), "isEnabled");
+        assertEquals(srcMLName4.getNames().get(0), "element");
+        assertEquals(srcMLName4.getNames().get(1), "isEnabled");
+        assertEquals(srcMLName4.getName(), "element.isEnabled");
     }
 
     @Test
@@ -75,15 +68,8 @@ public class SrcMLNameTest extends SrcMLTest{
     }
     @Test
     public void verifyName5(){
-        assertEquals(srcMLName5.getNames().size(), 4);
-        assertEquals(srcMLName5.getNames().get(0).size(), 1);
-        assertEquals(srcMLName5.getNames().get(1).size(), 1);
-        assertEquals(srcMLName5.getNames().get(2).size(), 1);
-        assertEquals(srcMLName5.getNames().get(3).size(), 1);
-        assertEquals(srcMLName5.getNames().get(0).get(0), "ExpectedCondition");
-        assertEquals(srcMLName5.getNames().get(1).get(0), "List");
-        assertEquals(srcMLName5.getNames().get(2).get(0), "WebElement");
-        assertEquals(srcMLName5.getNames().get(3).get(0), "tester");
+        assertEquals(srcMLName5.getNames().size(), 1);
+        assertEquals(srcMLName5.getName(), "ExpectedCondition<List<WebElement<tester>>>");
     }
 
 }
