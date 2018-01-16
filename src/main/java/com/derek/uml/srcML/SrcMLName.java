@@ -126,6 +126,9 @@ public class SrcMLName {
                         //end of the stack; no more names.
                         //nameStack.push(arg.getNameObj().getArgumentList());
                     }
+                    if (i < argumentsPointer.size() - 1){
+                        consolidatedName += ",";
+                    }
                 }
                 consolidatedName += ">";
             }

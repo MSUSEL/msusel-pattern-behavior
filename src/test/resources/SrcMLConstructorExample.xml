@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<root>
+    <constructor>
+        <annotation>@<name>VisibleForTesting</name>
+        </annotation>
+        <name>UrlChecker</name>
+        <parameter_list>(<parameter>
+            <decl>
+                <type>
+                    <name>TimeLimiter</name>
+                </type>
+                <name>timeLimiter</name>
+            </decl>
+        </parameter>)</parameter_list>
+        <block>{    <expr_stmt>
+            <expr>
+                <name>
+                    <name>this</name>
+                    <operator>.</operator>
+                    <name>timeLimiter</name>
+                </name>
+                <operator>=</operator>
+                <name>timeLimiter</name>
+            </expr>;</expr_stmt>  }</block>
+    </constructor>
+</root>

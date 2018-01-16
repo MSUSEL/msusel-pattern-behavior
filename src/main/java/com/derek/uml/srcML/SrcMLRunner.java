@@ -26,8 +26,6 @@ public class SrcMLRunner {
 
     private final boolean storeSrcML = true;
     private String projectWorkingDirectory;
-    private final String xmlSpecifier = "specifier";
-    private final String xmlName = "name";
     private UMLClassDiagram umlClassDiagram;
 
     public SrcMLRunner(String projectWorkingDirectory){
@@ -39,9 +37,11 @@ public class SrcMLRunner {
         //parseSrcMLFile(new File("srcMLOutput/selenium36/AbstractAnnotations.xml"));
         //parseSrcMLFile(new File("srcMLOutput/selenium36/ExpectedConditions.xml"));
         //parseSrcMLFile(new File("srcMLOutput/selenium36/Architecture.xml"));
+        //parseSrcMLFile(new File("srcMLOutput/selenium36/UrlChecker.xml"));
 
         //selenium test
         buildAllClasses();
+        buildRelationships();
 
         //guava test
         //buildClassDiagram(new File("srcMLOutput/guava13/Files.xml"));
@@ -49,6 +49,9 @@ public class SrcMLRunner {
         PlantUMLTransformer pltTransformer = new PlantUMLTransformer(umlClassDiagram);
         //used to print plantuml
         pltTransformer.generateClassDiagram();
+    }
+    private void buildRelationships(){
+
     }
 
     private void parseSrcMLFile(File file){
@@ -75,11 +78,9 @@ public class SrcMLRunner {
                     umlClassDiagram.addClassToDiagram(UMLGenerationUtils.getUMLEnum(srcMLEnum));
                 }
             }
-
         }catch(Exception e){
             e.printStackTrace();
         }
-
     }
 
     private void buildAllClasses(){

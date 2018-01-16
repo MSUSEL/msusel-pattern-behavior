@@ -69,13 +69,4 @@ public class SrcMLConstructor {
     public String getName(){
         return name.getName();
     }
-
-    public UMLOperation getOperation(){
-        List<Pair<String, String>> params = UMLGenerationUtils.getParameters(parameterList);
-        String name = this.name.getName();
-        //constructors don't have return types
-        String returnType = "null";
-        //I need to include use dependencies in here eventually.
-        return new UMLOperation(name, params, returnType);
-    }
 }

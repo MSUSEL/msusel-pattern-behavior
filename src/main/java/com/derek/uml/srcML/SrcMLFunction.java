@@ -95,15 +95,7 @@ public class SrcMLFunction {
             default1 = new SrcMLDefault(XmlUtils.elementify(defaultNode));
         }
     }
-
-    public UMLOperation getOperation(){
-        List<Pair<String, String>> params = UMLGenerationUtils.getParameters(parameterList);
-        String name = this.name.getName();
-        String returnType = this.type.getName();
-        //I need to include use dependencies in here eventually.
-        return new UMLOperation(name, params, returnType);
+    public String getName(){
+        return name.getName();
     }
-
-
-
 }

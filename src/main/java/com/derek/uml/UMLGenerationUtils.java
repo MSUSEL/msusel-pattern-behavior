@@ -109,10 +109,27 @@ public class UMLGenerationUtils {
         for (SrcMLParameterList.SrcMLParameter p : parameterList.getParameters()){
             if (p.getDecl() != null){
                 //reference to comment in SrcMLParameter class
-                params.add(new Pair<String, String>(p.getDecl().getType().getName(), p.getDecl().getName()));
+                params.add(new Pair<>(p.getDecl().getType().getName(), p.getDecl().getName()));
             }
         }
         return params;
+    }
+
+    public static UMLOperation getUMLOperation(SrcMLFunction srcMLFunction){
+        List<Pair<String, String>> params = UMLGenerationUtils.getParameters(srcMLFunction.getParameterList());
+        String name = srcMLFunction.getName();
+        String returnType = srcMLFunction.getType().getName();
+        //I need to include use dependencies in here eventually.
+        return new UMLOperation(name, params, returnType);
+    }
+
+    public static UMLOperation getUMLConstructor(SrcMLConstructor srcMLConstructor){
+        List<Pair<String, String>> params = UMLGenerationUtils.getParameters(srcMLConstructor.getParameterList());
+        String name = srcMLConstructor.getName();
+        //constructors don't have return types
+        String returnType = "null";
+        //I need to include use dependencies in here eventually.
+        return new UMLOperation(name, params, returnType);
     }
 
     /**
@@ -124,20 +141,24 @@ public class UMLGenerationUtils {
     public static List<UMLOperation> getUMLOperations(List<SrcMLFunction> functions, List<SrcMLFunction> functionDecls){
         List<UMLOperation> operations = new ArrayList<>();
         for (SrcMLFunction function : functions){
-            operations.add(function.getOperation());
+            operations.add(getUMLOperation(function));
         }
         for (SrcMLFunction function : functionDecls){
-            operations.add(function.getOperation());
+            operations.add(getUMLOperation(function));
         }
         return operations;
     }
+
     public static List<UMLOperation> getUMLConstructors(List<SrcMLConstructor> constructorsList, List<SrcMLConstructor> constructorDecls){
         List<UMLOperation> constructors = new ArrayList<>();
         for (SrcMLConstructor constructor : constructorsList){
-            constructors.add(constructor.getOperation());
+            constructors.add(getUMLConstructor(constructor));
         }
         for (SrcMLConstructor constructor : constructorDecls){
-            constructors.add(constructor.getOperation());
+            //bug here. I don't think I can have constructor decls in java.
+            //The bug can be seen in selenium3.6-UrlChecker.java.. SrcML INCORRECTLY classifies a system utility call as a constructor.
+            //until I figure this out more, im going to ignore this.
+            //constructors.add(getUMLConstructor(constructor));
         }
         return constructors;
     }

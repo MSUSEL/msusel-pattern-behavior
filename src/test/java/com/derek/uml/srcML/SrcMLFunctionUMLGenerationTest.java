@@ -1,5 +1,6 @@
 package com.derek.uml.srcML;
 
+import com.derek.uml.UMLGenerationUtils;
 import com.derek.uml.UMLOperation;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +33,7 @@ public class SrcMLFunctionUMLGenerationTest extends SrcMLTest{
 
     @Test
     public void verifyUMLGeneration(){
-        UMLOperation op = srcMLFunction.getOperation();
+        UMLOperation op = UMLGenerationUtils.getUMLOperation(srcMLFunction);
         assertEquals(op.getName(), "getDataModel");
         assertEquals(op.getReturnDataType(), "int");
         assertEquals(op.getParameters().size(), 0); //empty params
@@ -40,7 +41,7 @@ public class SrcMLFunctionUMLGenerationTest extends SrcMLTest{
 
     @Test
     public void verifyUMLGeneration2(){
-        UMLOperation op = srcMLFunction2.getOperation();
+        UMLOperation op = UMLGenerationUtils.getUMLOperation(srcMLFunction2);
         assertEquals(op.getName(), "or");
         assertEquals(op.getReturnDataType(), "ExpectedCondition<Boolean>");
         assertEquals(op.getParameters().size(), 1); //empty params
@@ -50,7 +51,7 @@ public class SrcMLFunctionUMLGenerationTest extends SrcMLTest{
 
     @Test
     public void verifyUMLGeneration3(){
-        UMLOperation op = srcMLFunction3.getOperation();
+        UMLOperation op = UMLGenerationUtils.getUMLOperation(srcMLFunction3);
         assertEquals(op.getName(), "apply");
         assertEquals(op.getReturnDataType(), "Boolean");
         assertEquals(op.getParameters().size(), 1); //empty params
