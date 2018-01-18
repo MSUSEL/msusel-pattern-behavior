@@ -19,7 +19,7 @@ public class UMLClassDiagram {
     private MutableValueGraph<UMLClassifier, Relationship> classDiagram;
 
     public UMLClassDiagram(){
-        classDiagram = ValueGraphBuilder.undirected().allowsSelfLoops(true).build();
+        classDiagram = ValueGraphBuilder.directed().allowsSelfLoops(true).build();
     }
 
     public void addRelationshipToDiagram(UMLClassifier from, UMLClassifier to, Relationship relationship){

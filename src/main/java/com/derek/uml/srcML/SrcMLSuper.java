@@ -11,8 +11,8 @@ import java.util.List;
 public class SrcMLSuper {
     //will likely need this to show generalizations in uml.
     private Element superEle;
-    private List<SrcMLExtends> extender;
-    private List<SrcMLImplements> implementor;
+    private List<SrcMLExtends> extenders;
+    private List<SrcMLImplements> implementors;
     private SrcMLName name;
 
     public SrcMLSuper(Element superEle) {
@@ -25,17 +25,17 @@ public class SrcMLSuper {
         parseName();
     }
     private void parseExtends(){
-        extender = new ArrayList<>();
+        extenders = new ArrayList<>();
         List<Node> extendsNodes = XmlUtils.getImmediateChildren(superEle, "extends");
         for (Node extendsNode : extendsNodes){
-            extender.add(new SrcMLExtends(XmlUtils.elementify(extendsNode)));
+            extenders.add(new SrcMLExtends(XmlUtils.elementify(extendsNode)));
         }
     }
     private void parseImplements(){
-        implementor = new ArrayList<>();
+        implementors = new ArrayList<>();
         List<Node> implementorNodes = XmlUtils.getImmediateChildren(superEle, "implements");
         for (Node implementorNode : implementorNodes){
-            implementor.add(new SrcMLImplements(XmlUtils.elementify(implementorNode)));
+            implementors.add(new SrcMLImplements(XmlUtils.elementify(implementorNode)));
         }
     }
     private void parseName(){

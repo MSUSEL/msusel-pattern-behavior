@@ -32,6 +32,7 @@ public class SrcMLRunner {
 
 
         generateSrcML();
+        //parseSpecificFiles();
         parseAllFiles();
 
         //selenium tests
@@ -74,6 +75,10 @@ public class SrcMLRunner {
         for (int i = 0; i < listOfFiles.length; i++) {
             rootBlocks.add(parseSrcMLFile(listOfFiles[i]));
         }
+    }
+    private void parseSpecificFiles(){
+        rootBlocks.add(parseSrcMLFile(new File("srcMLOutput/selenium36/InternetExplorerDriver.xml")));
+        rootBlocks.add(parseSrcMLFile(new File("srcMLOutput/selenium36/RemoteWebDriver.xml")));
     }
 
     public List<Path> getSourceCodeListFromProject(){

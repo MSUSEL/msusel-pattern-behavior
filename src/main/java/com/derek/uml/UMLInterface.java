@@ -9,10 +9,14 @@ import java.util.List;
 public class UMLInterface extends UMLClassifier {
 
     private List<UMLOperation> operations;
+    private List<String> extendsParents;
+    private List<String> implementsParents;
 
-    public UMLInterface(String name, List<UMLOperation> operations) {
+    public UMLInterface(String name, List<UMLOperation> operations, List<String> extendsParents, List<String> implementsParents) {
         super(name);
         this.operations = operations;
+        this.extendsParents = extendsParents;
+        this.implementsParents = implementsParents;
     }
 
     @Override
@@ -20,6 +24,21 @@ public class UMLInterface extends UMLClassifier {
         //interfaces don't have attributes, so this will always return null. If this bugs out consider returning an empty (but initialized) list
         //it bugged - so now I'm returning an empty arraylist
         return new ArrayList<>();
+    }
+
+    public List<String> getExtendsParents(){
+        if (extendsParents == null){
+            return new ArrayList<>();
+        }else{
+            return extendsParents;
+        }
+    }
+    public List<String> getImplementsParents(){
+        if (implementsParents== null){
+            return new ArrayList<>();
+        }else{
+        }
+        return implementsParents;
     }
 
     @Override

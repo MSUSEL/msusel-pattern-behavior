@@ -10,7 +10,7 @@ import java.util.List;
 public class SrcMLInterface {
     private Element interfaceEle;
     private SrcMLName name;
-    private SrcMLSuper super1;
+    private SrcMLSuper superLink;
     private SrcMLBlock block;
 
     public SrcMLInterface(Element interfaceEle) {
@@ -31,7 +31,7 @@ public class SrcMLInterface {
     private void parseSuper(){
         List<Node> superNodes = XmlUtils.getImmediateChildren(interfaceEle, "super");
         for (Node superNode : superNodes){
-            this.super1 = new SrcMLSuper(XmlUtils.elementify(superNode));
+            this.superLink = new SrcMLSuper(XmlUtils.elementify(superNode));
         }
     }
     private void parseBlock(){

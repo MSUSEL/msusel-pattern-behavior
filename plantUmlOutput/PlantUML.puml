@@ -1,0 +1,3953 @@
+@startuml
+abstract class AbstractAnnotations{
+	buildBy() : By
+	isLookupCached() : boolean
+}
+abstract class AbstractFindByBuilder{
+	buildByFromFindBy(FindBy findBy) : By
+	buildByFromShortFindBy(FindBy findBy) : By
+	buildByFromLongFindBy(FindBy findBy) : By
+	assertValidFindBys(FindBys findBys) : void
+	assertValidFindBy(FindBy findBy) : void
+	assertValidFindAll(FindAll findBys) : void
+	buildIt(Object annotation, Field field) : By
+}
+abstract class AbstractHttpCommandCodec{
+	PATH_SPLITTER : Splitter
+	SESSION_ID_PARAM : String
+	nameToSpec : ConcurrentHashMap<String,CommandSpec>
+	aliases : Map<String,String>
+	beanToJsonConverter : BeanToJsonConverter
+	jsonToBeanConverter : JsonToBeanConverter
+	AbstractHttpCommandCodec()
+	encode(Command command) : HttpRequest
+	decode(HttpRequest encodedCommand) : Command
+	defineCommand(String name, HttpMethod method, String pathPattern) : void
+	alias(String commandName, String isAnAliasFor) : void
+	defineCommand(String name, CommandSpec spec) : void
+	delete(String path) : CommandSpec
+	get(String path) : CommandSpec
+	post(String path) : CommandSpec
+	buildUri(String commandName, SessionId sessionId, Map<String,?> parameters, CommandSpec spec) : String
+	getParameter(String parameterName, String commandName, SessionId sessionId, Map<String,?> parameters) : String
+	amendParameters(String name, Map<String,?> parameters) : Map<String,?>
+}
+abstract class AbstractHttpResponseCodec{
+	errorCodes : ErrorCodes
+	beanToJsonConverter : BeanToJsonConverter
+	jsonToBeanConverter : JsonToBeanConverter
+	encode(Supplier<HttpResponse> factory, Response response) : HttpResponse
+	decode(HttpResponse encodedResponse) : Response
+	getValueToEncode(Response response) : Object
+	reconstructValue(Response response) : Response
+}
+abstract class AbstractWebDriverEventListener{
+	beforeAlertAccept(WebDriver driver) : void
+	afterAlertAccept(WebDriver driver) : void
+	afterAlertDismiss(WebDriver driver) : void
+	beforeAlertDismiss(WebDriver driver) : void
+	beforeNavigateTo(String url, WebDriver driver) : void
+	afterNavigateTo(String url, WebDriver driver) : void
+	beforeNavigateBack(WebDriver driver) : void
+	afterNavigateBack(WebDriver driver) : void
+	beforeNavigateForward(WebDriver driver) : void
+	afterNavigateForward(WebDriver driver) : void
+	beforeNavigateRefresh(WebDriver driver) : void
+	afterNavigateRefresh(WebDriver driver) : void
+	beforeFindBy(By by, WebElement element, WebDriver driver) : void
+	afterFindBy(By by, WebElement element, WebDriver driver) : void
+	beforeClickOn(WebElement element, WebDriver driver) : void
+	afterClickOn(WebElement element, WebDriver driver) : void
+	beforeChangeValueOf(WebElement element, WebDriver driver, CharSequence keysToSend) : void
+	afterChangeValueOf(WebElement element, WebDriver driver, CharSequence keysToSend) : void
+	beforeScript(String script, WebDriver driver) : void
+	afterScript(String script, WebDriver driver) : void
+	onException(Throwable throwable, WebDriver driver) : void
+}
+interface Action{
+	perform() : void
+}
+class Actions{
+	LOG : Logger
+	driver : WebDriver
+	sequences : Map<InputSource,Sequence>
+	defaultMouse : PointerInput
+	defaultKeyboard : KeyInput
+	jsonKeyboard : Keyboard
+	jsonMouse : Mouse
+	action : CompositeAction
+	Actions(WebDriver driver)
+	Actions(Keyboard keyboard, Mouse mouse)
+	Actions(Keyboard keyboard)
+	keyDown(CharSequence key) : Actions
+	keyDown(WebElement target, CharSequence key) : Actions
+	keyUp(CharSequence key) : Actions
+	keyUp(WebElement target, CharSequence key) : Actions
+	sendKeys(CharSequence keys) : Actions
+	sendKeys(WebElement target, CharSequence keys) : Actions
+	asKeys(CharSequence key) : Keys
+	sendKeysInTicks(CharSequence keys) : Actions
+	addKeyAction(CharSequence key, IntConsumer consumer) : Actions
+	clickAndHold(WebElement target) : Actions
+	clickAndHold() : Actions
+	release(WebElement target) : Actions
+	release() : Actions
+	click(WebElement target) : Actions
+	click() : Actions
+	clickInTicks(PointerInput.MouseButton button) : Actions
+	focusInTicks(WebElement target) : Actions
+	doubleClick(WebElement target) : Actions
+	doubleClick() : Actions
+	moveToElement(WebElement target) : Actions
+	moveToElement(WebElement target, int xOffset, int yOffset) : Actions
+	moveInTicks(WebElement target, int xOffset, int yOffset) : Actions
+	moveByOffset(int xOffset, int yOffset) : Actions
+	contextClick(WebElement target) : Actions
+	contextClick() : Actions
+	dragAndDrop(WebElement source, WebElement target) : Actions
+	dragAndDropBy(WebElement source, int xOffset, int yOffset) : Actions
+	pause(long pause) : Actions
+	pause(Duration duration) : Actions
+	tick(Interaction actions) : Actions
+	tick(Action action) : Actions
+	build() : Action
+	perform() : void
+	getSequence(InputSource source) : Sequence
+	isBuildingActions() : boolean
+}
+class AddApplicationCache{
+	getDescribedInterface() : Class<?>
+	getImplementation(Object value) : InterfaceImplementation
+}
+class AddFindsByCss{
+	getDescribedInterface() : Class<?>
+	getImplementation(Object value) : InterfaceImplementation
+}
+class AddFindsChildByCss{
+	getDescribedInterface() : Class<?>
+	getImplementation(Object value) : InterfaceImplementation
+}
+class AddLocationContext{
+	getDescribedInterface() : Class<?>
+	getImplementation(Object value) : InterfaceImplementation
+}
+class AddNetworkConnection{
+	getDescribedInterface() : Class<?>
+	getImplementation(Object value) : InterfaceImplementation
+}
+class AddRemoteTouchScreen{
+	getDescribedInterface() : Class<?>
+	getImplementation(Object value) : InterfaceImplementation
+}
+class AddRotatable{
+	getDescribedInterface() : Class<?>
+	getImplementation(Object value) : InterfaceImplementation
+}
+class AddWebStorage{
+	getDescribedInterface() : Class<?>
+	getImplementation(Object value) : InterfaceImplementation
+}
+class AjaxElementLocator{
+	timeOutInSeconds : int
+	clock : Clock
+	AjaxElementLocator(SearchContext context, int timeOutInSeconds, AbstractAnnotations annotations)
+	AjaxElementLocator(Clock clock, SearchContext context, int timeOutInSeconds, AbstractAnnotations annotations)
+	AjaxElementLocator(SearchContext searchContext, Field field, int timeOutInSeconds)
+	AjaxElementLocator(Clock clock, SearchContext searchContext, Field field, int timeOutInSeconds)
+	findElement() : WebElement
+	findElements() : List<WebElement>
+	sleepFor() : long
+	isElementUsable(WebElement element) : boolean
+}
+class AjaxElementLocatorFactory{
+	searchContext : SearchContext
+	timeOutInSeconds : int
+	AjaxElementLocatorFactory(SearchContext searchContext, int timeOutInSeconds)
+	createLocator(Field field) : ElementLocator
+}
+interface Alert{
+	dismiss() : void
+	accept() : void
+	getText() : String
+	sendKeys(String keysToSend) : void
+	setCredentials(Credentials credentials) : void
+	authenticateUsing(Credentials credentials) : void
+}
+class Annotations{
+	field : Field
+	Annotations(Field field)
+	isLookupCached() : boolean
+	buildBy() : By
+	getField() : Field
+	buildByFromDefault() : By
+	assertValidAnnotations() : void
+}
+class ApacheHttpClient{
+	MAX_REDIRECTS : int
+	url : URL
+	targetHost : HttpHost
+	client : HttpClient
+	ApacheHttpClient(HttpClient client, URL url)
+	execute(HttpRequest request, boolean followRedirects) : HttpResponse
+	createResponse(org.apache.http.HttpResponse response, HttpContext context) : HttpResponse
+	createContext() : HttpContext
+	createHttpUriRequest(HttpMethod method, String url) : HttpUriRequest
+	fallBackExecute(HttpContext context, HttpUriRequest httpMethod) : org.apache.http.HttpResponse
+	followRedirects(HttpClient client, HttpContext context, org.apache.http.HttpResponse response, int redirectCount) : org.apache.http.HttpResponse
+	buildUri(HttpContext context, String location) : URI
+	isRedirect(org.apache.http.HttpResponse response) : boolean
+	close() : void
+}
+enum AppCacheStatus{
+	UNCACHED : UNCACHED
+	IDLE : IDLE
+	CHECKING : CHECKING
+	DOWNLOADING : DOWNLOADING
+	UPDATE_READY : UPDATE_READY
+	OBSOLETE : OBSOLETE
+	value : int
+	AppCacheStatus(int value)
+	value() : int
+	getEnum(int value) : AppCacheStatus
+	getEnum(String value) : AppCacheStatus
+}
+interface ApplicationCache{
+	getStatus() : AppCacheStatus
+}
+enum Architecture{
+	X86 : X86
+	X64 : X64
+	ARM : ARM
+	MIPS32 : MIPS32
+	MIPS64 : MIPS64
+	ANY : ANY
+	archIdentifiers : String
+	Architecture(String partOfArch)
+	is(Architecture compareWith) : boolean
+	getDataModel() : int
+	toString() : String
+	getCurrent() : Architecture
+	extractFromSysProperty(String arch) : Architecture
+}
+class Augmenter{
+	logger : Logger
+	create(RemoteWebDriver driver, Map<String,AugmenterProvider> augmentors, X objectToAugment) : X
+	extractRemoteWebDriver(WebDriver driver) : RemoteWebDriver
+	copyFields(Class<?> clazz, Object source, Object target) : void
+	copyField(Object source, Object target, Field field) : void
+	determineAugmentation(RemoteWebDriver driver, Map<String,AugmenterProvider> augmentors, Object objectToAugment) : CompoundHandler
+	performAugmentation(CompoundHandler handler, X from) : X
+}
+interface AugmenterProvider{
+	getDescribedInterface() : Class<?>
+	getImplementation(Object value) : InterfaceImplementation
+}
+abstract class BaseAction{
+	where : Locatable
+	BaseAction(Locatable actionLocation)
+	getTargetElement() : Optional<WebElement>
+}
+abstract class BaseAugmenter{
+	driverAugmentors : Map<String,AugmenterProvider>
+	elementAugmentors : Map<String,AugmenterProvider>
+	BaseAugmenter()
+	addDriverAugmentation(String capabilityName, AugmenterProvider handlerClass) : void
+	addElementAugmentation(String capabilityName, AugmenterProvider handlerClass) : void
+	augment(WebDriver driver) : WebDriver
+	augment(RemoteWebElement element) : WebElement
+	create(RemoteWebDriver driver, Map<String,AugmenterProvider> augmentors, X objectToAugment) : X
+	extractRemoteWebDriver(WebDriver driver) : RemoteWebDriver
+}
+class BeanToJsonConverter{
+	MAX_DEPTH : int
+	convert(Object object) : String
+	convertObject(Object object) : JsonElement
+	convertObject(Object toConvert, int maxDepth) : JsonElement
+	getMethod(Object toConvert, String methodName) : Method
+	mapObject(Object toConvert, int maxDepth, boolean skipNulls) : JsonElement
+}
+interface BrowserType{
+}
+class BuildInfo{
+	BUILD_PROPERTIES : Properties
+	loadBuildProperties() : Properties
+	getReleaseLabel() : String
+	getBuildRevision() : String
+	getBuildTime() : String
+	toString() : String
+}
+class ButtonReleaseAction{
+	ButtonReleaseAction(Mouse mouse, Locatable locationProvider)
+	perform() : void
+	asInteractions(PointerInput mouse, KeyInput keyboard) : List<Interaction>
+}
+abstract class By{
+	id(String id) : By
+	linkText(String linkText) : By
+	partialLinkText(String linkText) : By
+	name(String name) : By
+	tagName(String name) : By
+	xpath(String xpathExpression) : By
+	className(String className) : By
+	cssSelector(String selector) : By
+	findElement(SearchContext context) : WebElement
+	equals(Object o) : boolean
+	hashCode() : int
+	toString() : String
+	findElements(SearchContext context) : List<WebElement>
+}
+class ByAll{
+	serialVersionUID : long
+	bys : By
+	ByAll(By bys)
+	findElement(SearchContext context) : WebElement
+	findElements(SearchContext context) : List<WebElement>
+	toString() : String
+}
+class ByChained{
+	serialVersionUID : long
+	bys : By
+	ByChained(By bys)
+	findElement(SearchContext context) : WebElement
+	findElements(SearchContext context) : List<WebElement>
+	toString() : String
+}
+class ByIdOrName{
+	serialVersionUID : long
+	idFinder : By
+	nameFinder : By
+	idOrName : String
+	ByIdOrName(String idOrName)
+	findElement(SearchContext context) : WebElement
+	findElements(SearchContext context) : List<WebElement>
+	toString() : String
+}
+interface Capabilities{
+	getBrowserName() : String
+	getPlatform() : Platform
+	getVersion() : String
+	isJavascriptEnabled() : boolean
+	is(String capabilityName) : boolean
+	merge(Capabilities other) : Capabilities
+	asMap() : Map<String,?>
+	getCapability(String capabilityName) : Object
+}
+interface CapabilityType{
+}
+class ChromeDriver{
+	locationContext : RemoteLocationContext
+	webStorage : RemoteWebStorage
+	touchScreen : TouchScreen
+	networkConnection : RemoteNetworkConnection
+	ChromeDriver()
+	ChromeDriver(ChromeDriverService service)
+	ChromeDriver(Capabilities capabilities)
+	ChromeDriver(ChromeOptions options)
+	ChromeDriver(ChromeDriverService service, ChromeOptions options)
+	ChromeDriver(ChromeDriverService service, Capabilities capabilities)
+	setFileDetector(FileDetector detector) : void
+	getLocalStorage() : LocalStorage
+	getSessionStorage() : SessionStorage
+	location() : Location
+	setLocation(Location location) : void
+	getTouch() : TouchScreen
+	getNetworkConnection() : ConnectionType
+	setNetworkConnection(ConnectionType type) : ConnectionType
+	launchApp(String id) : void
+}
+class ChromeDriverCommand{
+	LAUNCH_APP : String
+	ChromeDriverCommand()
+}
+class ChromeDriverCommandExecutor{
+	CHROME_COMMAND_NAME_TO_URL : ImmutableMap<String,CommandInfo>
+	ChromeDriverCommandExecutor(DriverService service)
+}
+class ChromeDriverService{
+	CHROME_DRIVER_EXE_PROPERTY : String
+	CHROME_DRIVER_LOG_PROPERTY : String
+	CHROME_DRIVER_VERBOSE_LOG_PROPERTY : String
+	CHROME_DRIVER_SILENT_OUTPUT_PROPERTY : String
+	CHROME_DRIVER_WHITELISTED_IPS_PROPERTY : String
+	ChromeDriverService(File executable, int port, ImmutableList<String> args, ImmutableMap<String,String> environment)
+	createDefaultService() : ChromeDriverService
+}
+class ChromeOptions{
+	CAPABILITY : String
+	binary : String
+	args : List<String>
+	extensionFiles : List<File>
+	extensions : List<String>
+	experimentalOptions : Map<String,Object>
+	ChromeOptions()
+	setBinary(File path) : ChromeOptions
+	setBinary(String path) : ChromeOptions
+	addArguments(String arguments) : ChromeOptions
+	addArguments(List<String> arguments) : ChromeOptions
+	addExtensions(File paths) : ChromeOptions
+	addExtensions(List<File> paths) : ChromeOptions
+	addEncodedExtensions(String encoded) : ChromeOptions
+	addEncodedExtensions(List<String> encoded) : ChromeOptions
+	setExperimentalOption(String name, Object value) : ChromeOptions
+	getExperimentalOption(String name) : Object
+	setPageLoadStrategy(PageLoadStrategy strategy) : ChromeOptions
+	setUnhandledPromptBehaviour(UnexpectedAlertBehaviour behaviour) : ChromeOptions
+	setHeadless(boolean headless) : ChromeOptions
+	toCapabilities() : MutableCapabilities
+	amendHashCode() : int
+	asMap() : Map<String,?>
+}
+class CircularOutputStream{
+	DEFAULT_SIZE : int
+	start : int
+	end : int
+	filled : boolean
+	buffer : byte
+	CircularOutputStream(int maxSize)
+	CircularOutputStream()
+	write(int b) : void
+	toString() : String
+}
+class ClasspathExtension{
+	loadResourcesUsing : Class<?>
+	loadFrom : String
+	ClasspathExtension(Class<?> loadResourcesUsing, String loadFrom)
+	writeTo(File extensionsDir) : void
+}
+class ClickAction{
+	ClickAction(Mouse mouse, Locatable locationProvider)
+	perform() : void
+	asInteractions(PointerInput mouse, KeyInput keyboard) : List<Interaction>
+}
+class ClickAndHoldAction{
+	ClickAndHoldAction(Mouse mouse, Locatable locationProvider)
+	perform() : void
+	asInteractions(PointerInput mouse, KeyInput keyboard) : List<Interaction>
+}
+interface Clock{
+	now() : long
+	laterBy(long durationInMillis) : long
+	isNowBefore(long endInMillis) : boolean
+}
+class Color{
+	red : int
+	green : int
+	blue : int
+	alpha : double
+	CONVERTERS : Converter
+	Color(int red, int green, int blue, double alpha)
+	fromString(String value) : Color
+	setOpacity(double alpha) : void
+	asRgb() : String
+	asRgba() : String
+	asHex() : String
+	getColor() : java.awt.Color
+	toString() : String
+	equals(Object other) : boolean
+	hashCode() : int
+}
+enum Colors{
+	TRANSPARENT : TRANSPARENT
+	ALICEBLUE : ALICEBLUE
+	ANTIQUEWHITE : ANTIQUEWHITE
+	AQUA : AQUA
+	AQUAMARINE : AQUAMARINE
+	AZURE : AZURE
+	BEIGE : BEIGE
+	BISQUE : BISQUE
+	BLACK : BLACK
+	BLANCHEDALMOND : BLANCHEDALMOND
+	BLUE : BLUE
+	BLUEVIOLET : BLUEVIOLET
+	BROWN : BROWN
+	BURLYWOOD : BURLYWOOD
+	CADETBLUE : CADETBLUE
+	CHARTREUSE : CHARTREUSE
+	CHOCOLATE : CHOCOLATE
+	CORAL : CORAL
+	CORNFLOWERBLUE : CORNFLOWERBLUE
+	CORNSILK : CORNSILK
+	CRIMSON : CRIMSON
+	CYAN : CYAN
+	DARKBLUE : DARKBLUE
+	DARKCYAN : DARKCYAN
+	DARKGOLDENROD : DARKGOLDENROD
+	DARKGRAY : DARKGRAY
+	DARKGREEN : DARKGREEN
+	DARKGREY : DARKGREY
+	DARKKHAKI : DARKKHAKI
+	DARKMAGENTA : DARKMAGENTA
+	DARKOLIVEGREEN : DARKOLIVEGREEN
+	DARKORANGE : DARKORANGE
+	DARKORCHID : DARKORCHID
+	DARKRED : DARKRED
+	DARKSALMON : DARKSALMON
+	DARKSEAGREEN : DARKSEAGREEN
+	DARKSLATEBLUE : DARKSLATEBLUE
+	DARKSLATEGRAY : DARKSLATEGRAY
+	DARKSLATEGREY : DARKSLATEGREY
+	DARKTURQUOISE : DARKTURQUOISE
+	DARKVIOLET : DARKVIOLET
+	DEEPPINK : DEEPPINK
+	DEEPSKYBLUE : DEEPSKYBLUE
+	DIMGRAY : DIMGRAY
+	DIMGREY : DIMGREY
+	DODGERBLUE : DODGERBLUE
+	FIREBRICK : FIREBRICK
+	FLORALWHITE : FLORALWHITE
+	FORESTGREEN : FORESTGREEN
+	FUCHSIA : FUCHSIA
+	GAINSBORO : GAINSBORO
+	GHOSTWHITE : GHOSTWHITE
+	GOLD : GOLD
+	GOLDENROD : GOLDENROD
+	GRAY : GRAY
+	GREY : GREY
+	GREEN : GREEN
+	GREENYELLOW : GREENYELLOW
+	HONEYDEW : HONEYDEW
+	HOTPINK : HOTPINK
+	INDIANRED : INDIANRED
+	INDIGO : INDIGO
+	IVORY : IVORY
+	KHAKI : KHAKI
+	LAVENDER : LAVENDER
+	LAVENDERBLUSH : LAVENDERBLUSH
+	LAWNGREEN : LAWNGREEN
+	LEMONCHIFFON : LEMONCHIFFON
+	LIGHTBLUE : LIGHTBLUE
+	LIGHTCORAL : LIGHTCORAL
+	LIGHTCYAN : LIGHTCYAN
+	LIGHTGOLDENRODYELLOW : LIGHTGOLDENRODYELLOW
+	LIGHTGRAY : LIGHTGRAY
+	LIGHTGREEN : LIGHTGREEN
+	LIGHTGREY : LIGHTGREY
+	LIGHTPINK : LIGHTPINK
+	LIGHTSALMON : LIGHTSALMON
+	LIGHTSEAGREEN : LIGHTSEAGREEN
+	LIGHTSKYBLUE : LIGHTSKYBLUE
+	LIGHTSLATEGRAY : LIGHTSLATEGRAY
+	LIGHTSLATEGREY : LIGHTSLATEGREY
+	LIGHTSTEELBLUE : LIGHTSTEELBLUE
+	LIGHTYELLOW : LIGHTYELLOW
+	LIME : LIME
+	LIMEGREEN : LIMEGREEN
+	LINEN : LINEN
+	MAGENTA : MAGENTA
+	MAROON : MAROON
+	MEDIUMAQUAMARINE : MEDIUMAQUAMARINE
+	MEDIUMBLUE : MEDIUMBLUE
+	MEDIUMORCHID : MEDIUMORCHID
+	MEDIUMPURPLE : MEDIUMPURPLE
+	MEDIUMSEAGREEN : MEDIUMSEAGREEN
+	MEDIUMSLATEBLUE : MEDIUMSLATEBLUE
+	MEDIUMSPRINGGREEN : MEDIUMSPRINGGREEN
+	MEDIUMTURQUOISE : MEDIUMTURQUOISE
+	MEDIUMVIOLETRED : MEDIUMVIOLETRED
+	MIDNIGHTBLUE : MIDNIGHTBLUE
+	MINTCREAM : MINTCREAM
+	MISTYROSE : MISTYROSE
+	MOCCASIN : MOCCASIN
+	NAVAJOWHITE : NAVAJOWHITE
+	NAVY : NAVY
+	OLDLACE : OLDLACE
+	OLIVE : OLIVE
+	OLIVEDRAB : OLIVEDRAB
+	ORANGE : ORANGE
+	ORANGERED : ORANGERED
+	ORCHID : ORCHID
+	PALEGOLDENROD : PALEGOLDENROD
+	PALEGREEN : PALEGREEN
+	PALETURQUOISE : PALETURQUOISE
+	PALEVIOLETRED : PALEVIOLETRED
+	PAPAYAWHIP : PAPAYAWHIP
+	PEACHPUFF : PEACHPUFF
+	PERU : PERU
+	PINK : PINK
+	PLUM : PLUM
+	POWDERBLUE : POWDERBLUE
+	PURPLE : PURPLE
+	REBECCAPURPLE : REBECCAPURPLE
+	RED : RED
+	ROSYBROWN : ROSYBROWN
+	ROYALBLUE : ROYALBLUE
+	SADDLEBROWN : SADDLEBROWN
+	SALMON : SALMON
+	SANDYBROWN : SANDYBROWN
+	SEAGREEN : SEAGREEN
+	SEASHELL : SEASHELL
+	SIENNA : SIENNA
+	SILVER : SILVER
+	SKYBLUE : SKYBLUE
+	SLATEBLUE : SLATEBLUE
+	SLATEGRAY : SLATEGRAY
+	SLATEGREY : SLATEGREY
+	SNOW : SNOW
+	SPRINGGREEN : SPRINGGREEN
+	STEELBLUE : STEELBLUE
+	TAN : TAN
+	TEAL : TEAL
+	THISTLE : THISTLE
+	TOMATO : TOMATO
+	TURQUOISE : TURQUOISE
+	VIOLET : VIOLET
+	WHEAT : WHEAT
+	WHITE : WHITE
+	WHITESMOKE : WHITESMOKE
+	YELLOW : YELLOW
+	YELLOWGREEN : YELLOWGREEN
+	colorValue : Color
+	Colors(Color colorValue)
+	getColorValue() : Color
+}
+class Command{
+	sessionId : SessionId
+	name : String
+	parameters : Map<String,?>
+	Command(SessionId sessionId, String name)
+	Command(SessionId sessionId, String name, Map<String,?> parameters)
+	getSessionId() : SessionId
+	getName() : String
+	getParameters() : Map<String,?>
+	toString() : String
+}
+interface CommandCodec{
+	encode(Command command) : T
+	decode(T encodedCommand) : Command
+	defineCommand(String name, HttpMethod method, String pathPattern) : void
+	alias(String commandName, String isAnAliasFor) : void
+}
+interface CommandExecutor{
+	execute(Command command) : Response
+}
+class CommandInfo{
+	url : String
+	method : HttpMethod
+	CommandInfo(String url, HttpMethod method)
+	getUrl() : String
+	getMethod() : HttpMethod
+}
+class CommandLine{
+	process : OsProcess
+	CommandLine(String executable, String args)
+	CommandLine(String cmdarray)
+	getEnvironment() : Map<String,String>
+	setEnvironmentVariables(Map<String,String> environment) : void
+	setEnvironmentVariable(String name, String value) : void
+	setDynamicLibraryPath(String newLibraryPath) : void
+	updateDynamicLibraryPath(String extraPath) : void
+	getLibraryPathPropertyName() : String
+	executeAsync() : void
+	execute() : void
+	waitFor() : void
+	waitFor(long timeout) : void
+	isSuccessful() : boolean
+	getExitCode() : int
+	getStdOut() : String
+	destroy() : int
+	isRunning() : boolean
+	setInput(String allInput) : void
+	setWorkingDirectory(String workingDirectory) : void
+	toString() : String
+	copyOutputTo(OutputStream out) : void
+	checkForError() : void
+}
+class CompositeAction{
+	actionsList : List<Action>
+	perform() : void
+	addAction(Action action) : CompositeAction
+	getNumberOfActions() : int
+	asInteractions(PointerInput mouse, KeyInput keyboard) : List<Interaction>
+}
+class CompositeLocalLogs{
+	predefinedTypeLogger : LocalLogs
+	allTypesLogger : LocalLogs
+	CompositeLocalLogs(LocalLogs predefinedTypeLogger, LocalLogs allTypesLogger)
+	get(String logType) : LogEntries
+	getAvailableLogTypes() : Set<String>
+	addEntry(String logType, LogEntry entry) : void
+}
+class ConnectionClosedException{
+	ConnectionClosedException(String message)
+}
+interface ContextAware{
+	context(String name) : WebDriver
+	getContextHandles() : Set<String>
+	getContext() : String
+}
+class ContextClickAction{
+	ContextClickAction(Mouse mouse, Locatable where)
+	perform() : void
+	asInteractions(PointerInput mouse, KeyInput keyboard) : List<Interaction>
+}
+class Cookie{
+	serialVersionUID : long
+	name : String
+	value : String
+	path : String
+	domain : String
+	expiry : Date
+	isSecure : boolean
+	isHttpOnly : boolean
+	Cookie(String name, String value, String path, Date expiry)
+	Cookie(String name, String value, String domain, String path, Date expiry)
+	Cookie(String name, String value, String domain, String path, Date expiry, boolean isSecure)
+	Cookie(String name, String value, String domain, String path, Date expiry, boolean isSecure, boolean isHttpOnly)
+	Cookie(String name, String value)
+	Cookie(String name, String value, String path)
+	getName() : String
+	getValue() : String
+	getDomain() : String
+	getPath() : String
+	isSecure() : boolean
+	isHttpOnly() : boolean
+	getExpiry() : Date
+	stripPort(String domain) : String
+	validate() : void
+	toString() : String
+	equals(Object o) : boolean
+	hashCode() : int
+}
+interface Coordinates{
+	onScreen() : Point
+	inViewPort() : Point
+	onPage() : Point
+	getAuxiliary() : Object
+}
+class CoordinatesUtils{
+	paramsFromCoordinates(Coordinates where) : Map<String,Object>
+}
+interface Credentials{
+}
+class DefaultElementLocator{
+	searchContext : SearchContext
+	shouldCache : boolean
+	by : By
+	cachedElement : WebElement
+	cachedElementList : List<WebElement>
+	DefaultElementLocator(SearchContext searchContext, Field field)
+	DefaultElementLocator(SearchContext searchContext, AbstractAnnotations annotations)
+	findElement() : WebElement
+	findElements() : List<WebElement>
+	toString() : String
+}
+class DefaultElementLocatorFactory{
+	searchContext : SearchContext
+	DefaultElementLocatorFactory(SearchContext searchContext)
+	createLocator(Field field) : ElementLocator
+}
+class DefaultFieldDecorator{
+	factory : ElementLocatorFactory
+	DefaultFieldDecorator(ElementLocatorFactory factory)
+	decorate(ClassLoader loader, Field field) : Object
+	isDecoratableList(Field field) : boolean
+	proxyForLocator(ClassLoader loader, ElementLocator locator) : WebElement
+	proxyForListLocator(ClassLoader loader, ElementLocator locator) : List<WebElement>
+}
+class DefaultNetworkInterfaceProvider{
+	cachedInterfaces : List<NetworkInterface>
+	DefaultNetworkInterfaceProvider()
+	getNetworkInterfaces() : Iterable<NetworkInterface>
+	getLocalInterfaceName() : String
+	getLoInterface() : NetworkInterface
+}
+class DesiredCapabilities{
+	DesiredCapabilities(String browser, String version, Platform platform)
+	DesiredCapabilities()
+	DesiredCapabilities(Map<String,?> rawMap)
+	DesiredCapabilities(Capabilities other)
+	DesiredCapabilities(Capabilities others)
+	setBrowserName(String browserName) : void
+	setVersion(String version) : void
+	setPlatform(Platform platform) : void
+	setJavascriptEnabled(boolean javascriptEnabled) : void
+	acceptInsecureCerts() : boolean
+	setAcceptInsecureCerts(boolean acceptInsecureCerts) : void
+	merge(Capabilities extraCapabilities) : DesiredCapabilities
+	android() : DesiredCapabilities
+	chrome() : DesiredCapabilities
+	firefox() : DesiredCapabilities
+	htmlUnit() : DesiredCapabilities
+	edge() : DesiredCapabilities
+	internetExplorer() : DesiredCapabilities
+	iphone() : DesiredCapabilities
+	ipad() : DesiredCapabilities
+	opera() : DesiredCapabilities
+	operaBlink() : DesiredCapabilities
+	safari() : DesiredCapabilities
+	phantomjs() : DesiredCapabilities
+}
+class DeviceRotation{
+	x : int
+	y : int
+	z : int
+	DeviceRotation(int x, int y, int z)
+	DeviceRotation(Map<String,Number> map)
+	validateParameters(int x, int y, int z) : void
+	getX() : int
+	getY() : int
+	getZ() : int
+	parameters() : Map<String,Integer>
+	equals(Object o) : boolean
+	hashCode() : int
+}
+enum Dialect{
+	OSS : OSS
+	W3C : W3C
+	getCommandCodec() : CommandCodec<HttpRequest>
+	getResponseCodec() : ResponseCodec<HttpResponse>
+	getEncodedElementKey() : String
+}
+class Dimension{
+	width : int
+	height : int
+	Dimension(int width, int height)
+	getWidth() : int
+	getHeight() : int
+	equals(Object o) : boolean
+	hashCode() : int
+	toString() : String
+}
+abstract class DisplayAction{
+	DisplayAction(Locatable locationProvider)
+	getActionLocation() : Coordinates
+}
+class DoubleClickAction{
+	DoubleClickAction(Mouse mouse, Locatable locationProvider)
+	perform() : void
+	asInteractions(PointerInput mouse, KeyInput keyboard) : List<Interaction>
+}
+class DoubleTapAction{
+	DoubleTapAction(TouchScreen touchScreen, Locatable locationProvider)
+	perform() : void
+}
+class DownAction{
+	x : int
+	y : int
+	DownAction(TouchScreen touchScreen, int x, int y)
+	perform() : void
+}
+interface DriverCommand{
+}
+class DriverCommandExecutor{
+	service : DriverService
+	DriverCommandExecutor(DriverService service)
+	DriverCommandExecutor(DriverService service, Map<String,CommandInfo> additionalCommands)
+	execute(Command command) : Response
+}
+class DriverService{
+	url : URL
+	lock : ReentrantLock
+	process : CommandLine
+	executable : String
+	args : ImmutableList<String>
+	environment : ImmutableMap<String,String>
+	outputStream : OutputStream
+	DriverService(File executable, int port, ImmutableList<String> args, ImmutableMap<String,String> environment)
+	getUrl(int port) : URL
+	getUrl() : URL
+	findExecutable(String exeName, String exeProperty, String exeDocs, String exeDownload) : File
+	checkExecutable(File exe) : void
+	isRunning() : boolean
+	start() : void
+	waitUntilAvailable() : void
+	stop() : void
+	sendOutputTo(OutputStream outputStream) : void
+	getOutputStream() : OutputStream
+}
+class Duration{
+	time : long
+	unit : TimeUnit
+	Duration(long time, TimeUnit unit)
+	equals(Object o) : boolean
+	hashCode() : int
+	toString() : String
+	in(TimeUnit unit) : long
+}
+class EdgeDriver{
+	EdgeDriver()
+	EdgeDriver(EdgeDriverService service)
+	EdgeDriver(Capabilities capabilities)
+	EdgeDriver(EdgeOptions options)
+	EdgeDriver(EdgeDriverService service, EdgeOptions options)
+	EdgeDriver(EdgeDriverService service, Capabilities capabilities)
+}
+class EdgeDriverService{
+	EDGE_DRIVER_EXE_PROPERTY : String
+	EDGE_DRIVER_LOG_PROPERTY : String
+	EDGE_DRIVER_VERBOSE_LOG_PROPERTY : String
+	EdgeDriverService(File executable, int port, ImmutableList<String> args, ImmutableMap<String,String> environment)
+	createDefaultService() : EdgeDriverService
+}
+class EdgeOptions{
+	CAPABILITY : String
+	EdgeOptions()
+	setPageLoadStrategy(String strategy) : void
+	toCapabilities() : MutableCapabilities
+}
+class ElementClickInterceptedException{
+	ElementClickInterceptedException(String message)
+	ElementClickInterceptedException(String message, Throwable cause)
+}
+interface ElementLocator{
+	findElement() : WebElement
+	findElements() : List<WebElement>
+}
+interface ElementLocatorFactory{
+	createLocator(Field field) : ElementLocator
+}
+class ElementNotInteractableException{
+	ElementNotInteractableException(String message)
+	ElementNotInteractableException(String message, Throwable cause)
+}
+class ElementNotSelectableException{
+	ElementNotSelectableException(String message)
+	ElementNotSelectableException(String message, Throwable cause)
+}
+class ElementNotVisibleException{
+	ElementNotVisibleException(String message)
+	ElementNotVisibleException(String message, Throwable cause)
+}
+enum ElementScrollBehavior{
+	TOP : TOP
+	BOTTOM : BOTTOM
+	value : int
+	ElementScrollBehavior(int value)
+	toString() : String
+	fromString(String text) : ElementScrollBehavior
+	getValue() : int
+}
+interface Encodable{
+	encode() : Map<String,Object>
+}
+interface EphemeralPortRangeDetector{
+	getLowestEphemeralPort() : int
+	getHighestEphemeralPort() : int
+}
+class ErrorCodes{
+	SUCCESS_STRING : String
+	SUCCESS : int
+	NO_SUCH_SESSION : int
+	NO_SUCH_ELEMENT : int
+	NO_SUCH_FRAME : int
+	UNKNOWN_COMMAND : int
+	STALE_ELEMENT_REFERENCE : int
+	ELEMENT_NOT_VISIBLE : int
+	INVALID_ELEMENT_STATE : int
+	UNHANDLED_ERROR : int
+	ELEMENT_NOT_SELECTABLE : int
+	JAVASCRIPT_ERROR : int
+	XPATH_LOOKUP_ERROR : int
+	TIMEOUT : int
+	NO_SUCH_WINDOW : int
+	INVALID_COOKIE_DOMAIN : int
+	UNABLE_TO_SET_COOKIE : int
+	UNEXPECTED_ALERT_PRESENT : int
+	NO_ALERT_PRESENT : int
+	ASYNC_SCRIPT_TIMEOUT : int
+	INVALID_ELEMENT_COORDINATES : int
+	IME_NOT_AVAILABLE : int
+	IME_ENGINE_ACTIVATION_FAILED : int
+	INVALID_SELECTOR_ERROR : int
+	SESSION_NOT_CREATED : int
+	MOVE_TARGET_OUT_OF_BOUNDS : int
+	INVALID_XPATH_SELECTOR : int
+	INVALID_XPATH_SELECTOR_RETURN_TYPER : int
+	ELEMENT_NOT_INTERACTABLE : int
+	INVALID_ARGUMENT : int
+	NO_SUCH_COOKIE : int
+	UNABLE_TO_CAPTURE_SCREEN : int
+	ELEMENT_CLICK_INTERCEPTED : int
+	METHOD_NOT_ALLOWED : int
+	log : Logger
+	KNOWN_ERRORS : ImmutableSet<KnownError>
+	toState(Integer status) : String
+	toStatus(String webdriverState, Optional<Integer> httpStatus) : int
+	getExceptionType(int statusCode) : Class<?>
+	getExceptionType(String webdriverState) : Class<?>
+	toStatusCode(Throwable e) : int
+	isMappableError(Throwable rootCause) : boolean
+}
+class ErrorHandler{
+	MESSAGE : String
+	SCREEN_SHOT : String
+	CLASS : String
+	STACK_TRACE : String
+	LINE_NUMBER : String
+	METHOD_NAME : String
+	CLASS_NAME : String
+	FILE_NAME : String
+	UNKNOWN_CLASS : String
+	UNKNOWN_METHOD : String
+	UNKNOWN_FILE : String
+	errorCodes : ErrorCodes
+	includeServerErrors : boolean
+	ErrorHandler()
+	ErrorHandler(boolean includeServerErrors)
+	ErrorHandler(ErrorCodes codes, boolean includeServerErrors)
+	isIncludeServerErrors() : boolean
+	setIncludeServerErrors(boolean includeServerErrors) : void
+	throwIfResponseFailed(Response response, long duration) : Response
+}
+class UnknownServerException{
+	UnknownServerException(String s)
+}
+class FrameInfoToStackFrame{
+	apply(Map<String,Object> frameInfo) : StackTraceElement
+	toStringOrNull(Object o) : String
+}
+class EventFiringKeyboard{
+	driver : WebDriver
+	dispatcher : WebDriverEventListener
+	keyboard : Keyboard
+	EventFiringKeyboard(WebDriver driver, WebDriverEventListener dispatcher)
+	sendKeys(CharSequence keysToSend) : void
+	pressKey(CharSequence keyToPress) : void
+	releaseKey(CharSequence keyToRelease) : void
+}
+class EventFiringMouse{
+	driver : WebDriver
+	dispatcher : WebDriverEventListener
+	mouse : Mouse
+	EventFiringMouse(WebDriver driver, WebDriverEventListener dispatcher)
+	click(Coordinates where) : void
+	doubleClick(Coordinates where) : void
+	mouseDown(Coordinates where) : void
+	mouseUp(Coordinates where) : void
+	mouseMove(Coordinates where) : void
+	mouseMove(Coordinates where, long xOffset, long yOffset) : void
+	contextClick(Coordinates where) : void
+}
+class EventFiringTouch{
+	driver : WebDriver
+	dispatcher : WebDriverEventListener
+	touchScreen : TouchScreen
+	EventFiringTouch(WebDriver driver, WebDriverEventListener dispatcher)
+	singleTap(Coordinates where) : void
+	down(int x, int y) : void
+	up(int x, int y) : void
+	move(int x, int y) : void
+	scroll(Coordinates where, int xOffset, int yOffset) : void
+	doubleTap(Coordinates where) : void
+	longPress(Coordinates where) : void
+	scroll(int xOffset, int yOffset) : void
+	flick(int xSpeed, int ySpeed) : void
+	flick(Coordinates where, int xOffset, int yOffset, int speed) : void
+}
+class EventFiringWebDriver{
+	driver : WebDriver
+	eventListeners : List<WebDriverEventListener>
+	dispatcher : WebDriverEventListener
+	EventFiringWebDriver(WebDriver driver)
+	extractInterfaces(Object object) : Class<?>
+	extractInterfaces(Set<Class<?>> addTo, Class<?> clazz) : void
+	register(WebDriverEventListener eventListener) : EventFiringWebDriver
+	unregister(WebDriverEventListener eventListener) : EventFiringWebDriver
+	getWrappedDriver() : WebDriver
+	get(String url) : void
+	getCurrentUrl() : String
+	getTitle() : String
+	findElements(By by) : List<WebElement>
+	findElement(By by) : WebElement
+	getPageSource() : String
+	close() : void
+	quit() : void
+	getWindowHandles() : Set<String>
+	getWindowHandle() : String
+	executeScript(String script, Object args) : Object
+	executeAsyncScript(String script, Object args) : Object
+	unpackWrappedArgs(Object args) : Object
+	unpackWrappedElement(Object arg) : Object
+}
+class EventFiringWebElement{
+	element : WebElement
+	underlyingElement : WebElement
+	EventFiringWebElement(WebElement element)
+	click() : void
+	submit() : void
+	sendKeys(CharSequence keysToSend) : void
+	clear() : void
+	getTagName() : String
+	getAttribute(String name) : String
+	isSelected() : boolean
+	isEnabled() : boolean
+	getText() : String
+	isDisplayed() : boolean
+	getLocation() : Point
+	getSize() : Dimension
+	getRect() : Rectangle
+	getCssValue(String propertyName) : String
+	findElement(By by) : WebElement
+	findElements(By by) : List<WebElement>
+	getWrappedElement() : WebElement
+	equals(Object obj) : boolean
+	hashCode() : int
+	toString() : String
+	getWrappedDriver() : WebDriver
+	getCoordinates() : Coordinates
+	getScreenshotAs(OutputType<X> outputType) : X
+}
+class EventFiringNavigation{
+	navigation : WebDriver.Navigation
+	EventFiringNavigation(Navigation navigation)
+	to(String url) : void
+	to(URL url) : void
+	back() : void
+	forward() : void
+	refresh() : void
+}
+class EventFiringOptions{
+	options : Options
+	EventFiringOptions(Options options)
+	logs() : Logs
+	addCookie(Cookie cookie) : void
+	deleteCookieNamed(String name) : void
+	deleteCookie(Cookie cookie) : void
+	deleteAllCookies() : void
+	getCookies() : Set<Cookie>
+	getCookieNamed(String name) : Cookie
+	timeouts() : Timeouts
+	ime() : ImeHandler
+	window() : Window
+}
+class EventFiringTimeouts{
+	timeouts : Timeouts
+	EventFiringTimeouts(Timeouts timeouts)
+	implicitlyWait(long time, TimeUnit unit) : Timeouts
+	setScriptTimeout(long time, TimeUnit unit) : Timeouts
+	pageLoadTimeout(long time, TimeUnit unit) : Timeouts
+}
+class EventFiringTargetLocator{
+	targetLocator : TargetLocator
+	EventFiringTargetLocator(TargetLocator targetLocator)
+	frame(int frameIndex) : WebDriver
+	frame(String frameName) : WebDriver
+	frame(WebElement frameElement) : WebDriver
+	parentFrame() : WebDriver
+	window(String windowName) : WebDriver
+	defaultContent() : WebDriver
+	activeElement() : WebElement
+	alert() : Alert
+}
+class EventFiringWindow{
+	window : Window
+	EventFiringWindow(Window window)
+	setSize(Dimension targetSize) : void
+	setPosition(Point targetLocation) : void
+	getSize() : Dimension
+	getPosition() : Point
+	maximize() : void
+	fullscreen() : void
+}
+class EventFiringAlert{
+	alert : Alert
+	EventFiringAlert(Alert alert)
+	dismiss() : void
+	accept() : void
+	getText() : String
+	sendKeys(String keysToSend) : void
+	setCredentials(Credentials credentials) : void
+	authenticateUsing(Credentials credentials) : void
+}
+enum EventType{
+	HTTP_COMMAND : HTTP_COMMAND
+	YIELD_TO_PAGE_LOAD : YIELD_TO_PAGE_LOAD
+}
+class Executable{
+	binary : File
+	version : String
+	channel : FirefoxBinary.Channel
+	Executable(File userSpecifiedBinaryPath)
+	getDirectory() : File
+	getFile() : File
+	getPath() : String
+	getVersion() : String
+	getChannel() : FirefoxBinary.Channel
+	loadApplicationIni() : void
+	loadChannelPref() : void
+	getResource(String resourceName) : Optional<Path>
+}
+class ExecutableFinder{
+	ENDINGS : ImmutableSet<String>
+	pathSegmentBuilder : ImmutableSet.Builder<String>
+	find(String named) : String
+	addPathFromEnvironment() : void
+	addMacSpecificPath() : void
+	canExecute(File file) : boolean
+}
+interface ExecuteMethod{
+	execute(String commandName, Map<String,?> parameters) : Object
+}
+interface ExpectedCondition{
+}
+class ExpectedConditions{
+	log : Logger
+	ExpectedConditions()
+	titleIs(String title) : ExpectedCondition<Boolean>
+	titleContains(String title) : ExpectedCondition<Boolean>
+	urlToBe(String url) : ExpectedCondition<Boolean>
+	urlContains(String fraction) : ExpectedCondition<Boolean>
+	urlMatches(String regex) : ExpectedCondition<Boolean>
+	presenceOfElementLocated(By locator) : ExpectedCondition<WebElement>
+	visibilityOfElementLocated(By locator) : ExpectedCondition<WebElement>
+	visibilityOfAllElementsLocatedBy(By locator) : ExpectedCondition<List<WebElement>>
+	visibilityOfAllElements(List<WebElement> elements) : ExpectedCondition<List<WebElement>>
+	visibilityOf(WebElement element) : ExpectedCondition<WebElement>
+	elementIfVisible(WebElement element) : WebElement
+	presenceOfAllElementsLocatedBy(By locator) : ExpectedCondition<List<WebElement>>
+	textToBePresentInElement(WebElement element, String text) : ExpectedCondition<Boolean>
+	textToBePresentInElement(By locator, String text) : ExpectedCondition<Boolean>
+	textToBePresentInElementLocated(By locator, String text) : ExpectedCondition<Boolean>
+	textToBePresentInElementValue(WebElement element, String text) : ExpectedCondition<Boolean>
+	textToBePresentInElementValue(By locator, String text) : ExpectedCondition<Boolean>
+	frameToBeAvailableAndSwitchToIt(String frameLocator) : ExpectedCondition<WebDriver>
+	frameToBeAvailableAndSwitchToIt(By locator) : ExpectedCondition<WebDriver>
+	frameToBeAvailableAndSwitchToIt(int frameLocator) : ExpectedCondition<WebDriver>
+	frameToBeAvailableAndSwitchToIt(WebElement frameLocator) : ExpectedCondition<WebDriver>
+	invisibilityOfElementLocated(By locator) : ExpectedCondition<Boolean>
+	invisibilityOfElementWithText(By locator, String text) : ExpectedCondition<Boolean>
+	elementToBeClickable(By locator) : ExpectedCondition<WebElement>
+	elementToBeClickable(WebElement element) : ExpectedCondition<WebElement>
+	stalenessOf(WebElement element) : ExpectedCondition<Boolean>
+	refreshed(ExpectedCondition<T> condition) : ExpectedCondition<T>
+	elementToBeSelected(WebElement element) : ExpectedCondition<Boolean>
+	elementSelectionStateToBe(WebElement element, boolean selected) : ExpectedCondition<Boolean>
+	elementToBeSelected(By locator) : ExpectedCondition<Boolean>
+	elementSelectionStateToBe(By locator, boolean selected) : ExpectedCondition<Boolean>
+	alertIsPresent() : ExpectedCondition<Alert>
+	numberOfwindowsToBe(int expectedNumberOfWindows) : ExpectedCondition<Boolean>
+	numberOfWindowsToBe(int expectedNumberOfWindows) : ExpectedCondition<Boolean>
+	not(ExpectedCondition<?> condition) : ExpectedCondition<Boolean>
+	findElement(By by, WebDriver driver) : WebElement
+	findElements(By by, WebDriver driver) : List<WebElement>
+	attributeToBe(By locator, String attribute, String value) : ExpectedCondition<Boolean>
+	textToBe(By locator, String value) : ExpectedCondition<Boolean>
+	textMatches(By locator, Pattern pattern) : ExpectedCondition<Boolean>
+	numberOfElementsToBeMoreThan(By locator, Integer number) : ExpectedCondition<List<WebElement>>
+	numberOfElementsToBeLessThan(By locator, Integer number) : ExpectedCondition<List<WebElement>>
+	numberOfElementsToBe(By locator, Integer number) : ExpectedCondition<List<WebElement>>
+	attributeToBe(WebElement element, String attribute, String value) : ExpectedCondition<Boolean>
+	attributeContains(WebElement element, String attribute, String value) : ExpectedCondition<Boolean>
+	attributeContains(By locator, String attribute, String value) : ExpectedCondition<Boolean>
+	attributeToBeNotEmpty(WebElement element, String attribute) : ExpectedCondition<Boolean>
+	getAttributeOrCssValue(WebElement element, String name) : Optional<String>
+	visibilityOfNestedElementsLocatedBy(By parent, By childLocator) : ExpectedCondition<List<WebElement>>
+	visibilityOfNestedElementsLocatedBy(WebElement element, By childLocator) : ExpectedCondition<List<WebElement>>
+	presenceOfNestedElementLocatedBy(By locator, By childLocator) : ExpectedCondition<WebElement>
+	presenceOfNestedElementLocatedBy(WebElement element, By childLocator) : ExpectedCondition<WebElement>
+	presenceOfNestedElementsLocatedBy(By parent, By childLocator) : ExpectedCondition<List<WebElement>>
+	invisibilityOfAllElements(List<WebElement> elements) : ExpectedCondition<Boolean>
+	invisibilityOf(WebElement element) : ExpectedCondition<Boolean>
+	isInvisible(WebElement element) : boolean
+	or(ExpectedCondition<?> conditions) : ExpectedCondition<Boolean>
+	and(ExpectedCondition<?> conditions) : ExpectedCondition<Boolean>
+	javaScriptThrowsNoExceptions(String javaScript) : ExpectedCondition<Boolean>
+	jsReturnsValue(String javaScript) : ExpectedCondition<Object>
+}
+interface Extension{
+	writeTo(File parentDirectory) : void
+}
+interface ExtensionConnection{
+	start() : void
+	isConnected() : boolean
+	quit() : void
+	getAddressOfRemoteServer() : URI
+}
+interface FieldDecorator{
+	decorate(ClassLoader loader, Field field) : Object
+}
+interface FileDetector{
+	getLocalFile(CharSequence keys) : File
+}
+class FileExtension{
+	EM_NAMESPACE_URI : String
+	toInstall : File
+	FileExtension(File toInstall)
+	writeTo(File extensionsDir) : void
+	obtainRootDirectory(File extensionToInstall) : File
+	getExtensionId(File root) : String
+	readIdFromManifestJson(File root) : String
+	readIdFromInstallRdf(File root) : String
+}
+class FileHandler{
+	copyResource(File outputDir, Class<?> forClassLoader, String names) : void
+	locateResource(Class<?> forClassLoader, String name) : InputStream
+	createDir(File dir) : boolean
+	makeWritable(File file) : boolean
+	isZipped(String fileName) : boolean
+	delete(File toDelete) : boolean
+	copy(File from, File to) : void
+	copyDir(File from, File to) : void
+	copyFile(File from, File to) : void
+}
+interface FindsByClassName{
+	findElementByClassName(String using) : WebElement
+	findElementsByClassName(String using) : List<WebElement>
+}
+interface FindsByCssSelector{
+	findElementByCssSelector(String using) : WebElement
+	findElementsByCssSelector(String using) : List<WebElement>
+}
+interface FindsById{
+	findElementById(String using) : WebElement
+	findElementsById(String using) : List<WebElement>
+}
+interface FindsByLinkText{
+	findElementByLinkText(String using) : WebElement
+	findElementsByLinkText(String using) : List<WebElement>
+	findElementByPartialLinkText(String using) : WebElement
+	findElementsByPartialLinkText(String using) : List<WebElement>
+}
+interface FindsByName{
+	findElementByName(String using) : WebElement
+	findElementsByName(String using) : List<WebElement>
+}
+interface FindsByTagName{
+	findElementByTagName(String using) : WebElement
+	findElementsByTagName(String using) : List<WebElement>
+}
+interface FindsByXPath{
+	findElementByXPath(String using) : WebElement
+	findElementsByXPath(String using) : List<WebElement>
+}
+class FirefoxBinary{
+	NO_FOCUS_LIBRARY_NAME : String
+	PATH_PREFIX : String
+	extraEnv : Map<String,String>
+	extraOptions : List<String>
+	executable : Executable
+	process : CommandLine
+	stream : OutputStream
+	timeout : long
+	FirefoxBinary()
+	FirefoxBinary(Channel channel)
+	FirefoxBinary(File pathToFirefoxBinary)
+	setEnvironmentProperty(String propertyName, String value) : void
+	addCommandLineOptions(String options) : void
+	amendOptions(FirefoxOptions options) : void
+	isOnLinux() : boolean
+	startProfile(FirefoxProfile profile, File profileDir, String commandLineFlags) : void
+	startFirefoxProcess(CommandLine command) : void
+	getFile() : File
+	getPath() : String
+	getExtraEnv() : Map<String,String>
+	modifyLinkLibraryPath(File profileDir) : void
+	extractAndCheck(File profileDir, String noFocusSoName, String jarPath32Bit, String jarPath64Bit) : String
+	waitFor() : void
+	waitFor(long timeout) : void
+	getConsoleOutput() : String
+	getTimeout() : long
+	setTimeout(long timeout) : void
+	toString() : String
+	setOutputWatcher(OutputStream stream) : void
+	quit() : void
+	getDefaultOutputStream() : OutputStream
+	locateFirefoxBinaryFromSystemProperty() : Executable
+	locateFirefoxBinariesFromPlatform() : Stream<Executable>
+}
+class FirefoxDriver{
+	BINARY : String
+	PROFILE : String
+	MARIONETTE : String
+	binary : FirefoxBinary
+	FirefoxDriver()
+	FirefoxDriver(Capabilities desiredCapabilities)
+	FirefoxDriver(GeckoDriverService service, Capabilities desiredCapabilities)
+	FirefoxDriver(FirefoxOptions options)
+	FirefoxDriver(GeckoDriverService service)
+	FirefoxDriver(GeckoDriverService service, FirefoxOptions options)
+	toExecutor(FirefoxOptions options) : CommandExecutor
+	setFileDetector(FileDetector detector) : void
+	isLegacy(Capabilities desiredCapabilities) : boolean
+	forceMarionetteFromSystemProperty() : Boolean
+	dropCapabilities(Capabilities capabilities) : Capabilities
+}
+enum FirefoxDriverLogLevel{
+	TRACE : TRACE
+	DEBUG : DEBUG
+	CONFIG : CONFIG
+	INFO : INFO
+	WARN : WARN
+	ERROR : ERROR
+	FATAL : FATAL
+	logLevelToGeckoLevelMap : Map<Level,FirefoxDriverLogLevel>
+	toString() : String
+	fromString(String text) : FirefoxDriverLogLevel
+	fromLevel(Level level) : FirefoxDriverLogLevel
+}
+class FirefoxOptions{
+	FIREFOX_OPTIONS : String
+	args : List<String>
+	booleanPrefs : Map<String,Boolean>
+	intPrefs : Map<String,Integer>
+	stringPrefs : Map<String,String>
+	logLevel : FirefoxDriverLogLevel
+	binary : Binary
+	legacy : boolean
+	profile : FirefoxProfile
+	FirefoxOptions()
+	FirefoxOptions(Capabilities source)
+	setLegacy(boolean legacy) : FirefoxOptions
+	isLegacy() : boolean
+	setBinary(FirefoxBinary binary) : FirefoxOptions
+	setBinary(Path path) : FirefoxOptions
+	setBinary(String path) : FirefoxOptions
+	getBinary() : FirefoxBinary
+	getBinaryOrNull() : Optional<FirefoxBinary>
+	setProfile(FirefoxProfile profile) : FirefoxOptions
+	getProfile() : FirefoxProfile
+	addArguments(String arguments) : FirefoxOptions
+	addArguments(List<String> arguments) : FirefoxOptions
+	addPreference(String key, boolean value) : FirefoxOptions
+	addPreference(String key, int value) : FirefoxOptions
+	addPreference(String key, String value) : FirefoxOptions
+	setLogLevel(Level logLevel) : FirefoxOptions
+	setLogLevel(FirefoxDriverLogLevel logLevel) : FirefoxOptions
+	setPageLoadStrategy(PageLoadStrategy strategy) : FirefoxOptions
+	setUnhandledPromptBehaviour(UnexpectedAlertBehaviour behaviour) : FirefoxOptions
+	setAcceptInsecureCerts(boolean acceptInsecureCerts) : FirefoxOptions
+	setHeadless(boolean headless) : FirefoxOptions
+	setCapability(String key, Object value) : void
+	asMap() : Map<String,?>
+	addCapabilities(Capabilities capabilities) : FirefoxOptions
+	merge(Capabilities capabilities) : FirefoxOptions
+	toCapabilities() : Capabilities
+	addTo(DesiredCapabilities capabilities) : DesiredCapabilities
+	amendHashCode() : int
+}
+class FirefoxProfile{
+	PORT_PREFERENCE : String
+	ALLOWED_HOSTS_PREFERENCE : String
+	defaultPrefs : String
+	additionalPrefs : Preferences
+	extensions : Map<String,Extension>
+	loadNoFocusLib : boolean
+	acceptUntrustedCerts : boolean
+	untrustedCertIssuer : boolean
+	model : File
+	ACCEPT_UNTRUSTED_CERTS_PREF : String
+	ASSUME_UNTRUSTED_ISSUER_PREF : String
+	FirefoxProfile()
+	FirefoxProfile(File profileDir)
+	FirefoxProfile(Reader defaultsReader, File profileDir)
+	onlyOverrideThisIfYouKnowWhatYouAreDoing() : Reader
+	getBooleanPreference(Preferences prefs, String key, boolean defaultValue) : boolean
+	getStringPreference(String key, String defaultValue) : String
+	getIntegerPreference(String key, int defaultValue) : int
+	getBooleanPreference(String key, boolean defaultValue) : boolean
+	verifyModel(File model) : void
+	containsWebDriverExtension() : boolean
+	addExtension(Class<?> loadResourcesUsing, String loadFrom) : void
+	addExtension(File extensionToInstall) : void
+	addExtension(String key, Extension extension) : void
+	deriveExtensionName(String originalName) : String
+	setPreference(String key, String value) : void
+	setPreference(String key, boolean value) : void
+	setPreference(String key, int value) : void
+	getAdditionalPreferences() : Preferences
+	updateUserPrefs(File userPrefs) : void
+	deleteLockFiles(File profileDir) : void
+	deleteExtensionsCacheIfItExists(File profileDir) : void
+	shouldLoadNoFocusLib() : boolean
+	setAlwaysLoadNoFocusLib(boolean loadNoFocusLib) : void
+	setAcceptUntrustedCertificates(boolean acceptUntrustedSsl) : void
+	setAssumeUntrustedCertificateIssuer(boolean untrustedIssuer) : void
+	clean(File profileDir) : void
+	toJson() : String
+	fromJson(String json) : FirefoxProfile
+	cleanTemporaryModel() : void
+	layoutOnDisk() : File
+	copyModel(File sourceDir, File profileDir) : void
+	installExtensions(File parentDir) : void
+}
+class FixedIANAPortRange{
+	getLowestEphemeralPort() : int
+	getHighestEphemeralPort() : int
+}
+class FlickAction{
+	xOffset : int
+	yOffset : int
+	speed : int
+	xSpeed : int
+	ySpeed : int
+	SPEED_NORMAL : int
+	SPEED_FAST : int
+	FlickAction(TouchScreen touchScreen, Locatable locationProvider, int x, int y, int speed)
+	FlickAction(TouchScreen touchScreen, int xSpeed, int ySpeed)
+	perform() : void
+}
+class FluentWait{
+	FIVE_HUNDRED_MILLIS : Duration
+	input : T
+	clock : Clock
+	sleeper : Sleeper
+	timeout : Duration
+	interval : Duration
+	messageSupplier : Supplier<String>
+	ignoredExceptions : List<Class<?>>
+	FluentWait(T input)
+	FluentWait(T input, Clock clock, Sleeper sleeper)
+	withTimeout(long duration, TimeUnit unit) : FluentWait<T>
+	withMessage(String message) : FluentWait<T>
+	withMessage(Supplier<String> messageSupplier) : FluentWait<T>
+	pollingEvery(long duration, TimeUnit unit) : FluentWait<T>
+	ignoreAll(Collection<Class<?>> types) : FluentWait<T>
+	ignoring(Class<?> exceptionType) : FluentWait<T>
+	ignoring(Class<?> firstType, Class<?> secondType) : FluentWait<T>
+	until(Function<?,V> isTrue) : V
+	propagateIfNotIgnored(Throwable e) : Throwable
+	timeoutException(String message, Throwable lastException) : RuntimeException
+}
+class Gecko013ProtocolResponse{
+	error : Function<InitialHandshakeResponse,Optional<ProtocolHandshake.Result>>
+	success : Function<InitialHandshakeResponse,Optional<ProtocolHandshake.Result>>
+	getResponseFunction() : Function<InitialHandshakeResponse,Optional<ProtocolHandshake.Result>>
+}
+class GeckoDriverService{
+	GECKO_DRIVER_EXE_PROPERTY : String
+	GeckoDriverService(File executable, int port, ImmutableList<String> args, ImmutableMap<String,String> environment)
+	createDefaultService() : GeckoDriverService
+	waitUntilAvailable() : void
+}
+class HandlerBasedLocalLogs{
+	loggingHandler : LoggingHandler
+	logTypesToInclude : Set<String>
+	HandlerBasedLocalLogs(LoggingHandler loggingHandler, Set<String> logTypesToInclude)
+	get(String logType) : LogEntries
+	getAvailableLogTypes() : Set<String>
+	addEntry(String logType, LogEntry entry) : void
+}
+interface HandshakeResponse{
+	getResponseFunction() : Function<InitialHandshakeResponse,Optional<ProtocolHandshake.Result>>
+}
+interface HasCapabilities{
+	getCapabilities() : Capabilities
+}
+interface HasIdentity{
+	getId() : String
+}
+interface HasInputDevices{
+	getKeyboard() : Keyboard
+	getMouse() : Mouse
+}
+interface HasTouchScreen{
+	getTouch() : TouchScreen
+}
+enum How{
+	CLASS_NAME : CLASS_NAME
+	CSS : CSS
+	ID : ID
+	ID_OR_NAME : ID_OR_NAME
+	LINK_TEXT : LINK_TEXT
+	NAME : NAME
+	PARTIAL_LINK_TEXT : PARTIAL_LINK_TEXT
+	TAG_NAME : TAG_NAME
+	XPATH : XPATH
+	UNSET : UNSET
+}
+interface HttpClient{
+	execute(HttpRequest request, boolean followRedirects) : HttpResponse
+	close() : void
+}
+class HttpClientFactory{
+	httpClient : CloseableHttpClient
+	TIMEOUT_THREE_HOURS : int
+	TIMEOUT_TWO_MINUTES : int
+	gridClientConnectionManager : HttpClientConnectionManager
+	HttpClientFactory()
+	HttpClientFactory(int connectionTimeout, int socketTimeout)
+	getClientConnectionManager() : HttpClientConnectionManager
+	getHttpClient() : HttpClient
+	createHttpClient(Credentials credentials) : CloseableHttpClient
+	createHttpClient(Credentials credentials, int connectionTimeout, int socketTimeout) : CloseableHttpClient
+	getGridHttpClient(int connectionTimeout, int socketTimeout) : HttpClient
+	createSocketConfig(int socketTimeout) : SocketConfig
+	createRequestConfig(int connectionTimeout, int socketTimeout) : RequestConfig
+	createRoutePlanner() : HttpRoutePlanner
+	close() : void
+}
+class HttpCommandExecutor{
+	defaultClientFactory : HttpClient.Factory
+	remoteServer : URL
+	client : HttpClient
+	additionalCommands : Map<String,CommandInfo>
+	commandCodec : CommandCodec<HttpRequest>
+	responseCodec : ResponseCodec<HttpResponse>
+	logs : LocalLogs
+	HttpCommandExecutor(URL addressOfRemoteServer)
+	HttpCommandExecutor(Map<String,CommandInfo> additionalCommands, URL addressOfRemoteServer)
+	HttpCommandExecutor(Map<String,CommandInfo> additionalCommands, URL addressOfRemoteServer, HttpClient.Factory httpClientFactory)
+	getDefaultClientFactory() : HttpClient.Factory
+	defineCommand(String commandName, CommandInfo info) : void
+	setLocalLogs(LocalLogs logs) : void
+	log(String logType, LogEntry entry) : void
+	getAddressOfRemoteServer() : URL
+	execute(Command command) : Response
+}
+class HttpMessage{
+	headers : Multimap<String,String>
+	attributes : Map<String,Object>
+	content : InputStream
+	readContent : byte
+	getAttribute(String key) : Object
+	setAttribute(String key, Object value) : void
+	removeAttribute(String key) : void
+	getHeaderNames() : Iterable<String>
+	getHeaders(String name) : Iterable<String>
+	getHeader(String name) : String
+	setHeader(String name, String value) : void
+	addHeader(String name, String value) : void
+	removeHeader(String name) : void
+	getContentEncoding() : Charset
+	setContent(byte data) : void
+	setContent(InputStream toStreamFrom) : void
+	getContent() : byte
+	getContentString() : String
+	consumeContentStream() : InputStream
+}
+enum HttpMethod{
+	DELETE : DELETE
+	GET : GET
+	POST : POST
+}
+class HttpProfilerLogEntry{
+	HttpProfilerLogEntry(String commandName, boolean isStart)
+	constructMessage(EventType eventType, String commandName, boolean isStart) : String
+}
+class HttpRequest{
+	method : HttpMethod
+	uri : String
+	HttpRequest(HttpMethod method, String uri)
+	getUri() : String
+	getMethod() : HttpMethod
+}
+class HttpResponse{
+	HTTP_TARGET_HOST : String
+	status : int
+	getStatus() : int
+	setStatus(int status) : void
+	setTargetHost(String host) : void
+	getTargetHost() : String
+}
+class HttpSessionId{
+	getSessionId(String uri) : String
+}
+class ImeActivationFailedException{
+	ImeActivationFailedException(String message)
+	ImeActivationFailedException(String message, Throwable cause)
+}
+class ImeNotAvailableException{
+	ImeNotAvailableException(String message)
+	ImeNotAvailableException(String message, Throwable cause)
+}
+class ImmutableCapabilities{
+	serialVersionUID : long
+	caps : Map<String,Object>
+	ImmutableCapabilities()
+	ImmutableCapabilities(String k, Object v)
+	ImmutableCapabilities(String k1, Object v1, String k2, Object v2)
+	ImmutableCapabilities(String k1, Object v1, String k2, Object v2, String k3, Object v3)
+	ImmutableCapabilities(String k1, Object v1, String k2, Object v2, String k3, Object v3, String k4, Object v4)
+	ImmutableCapabilities(String k1, Object v1, String k2, Object v2, String k3, Object v3, String k4, Object v4, String k5, Object v5)
+	ImmutableCapabilities(Capabilities other)
+	ImmutableCapabilities(Map<String,?> capabilities)
+	getCapability(String capabilityName) : Object
+	asMap() : Map<String,?>
+	equals(Object o) : boolean
+	hashCode() : int
+	toString() : String
+	abbreviate(Map<Object,String> seen, StringBuilder builder, Object stringify) : void
+}
+class InitialHandshakeResponse{
+	requestDuration : Duration
+	httpStatusCode : int
+	data : Map<?,?>
+	InitialHandshakeResponse(long millis, int statusCode, Map<?,?> data)
+	getRequestDuration() : Duration
+	getStatusCode() : int
+	getData() : Map<?,?>
+}
+interface InputSource{
+	getInputType() : SourceType
+}
+abstract class Interaction{
+	source : InputSource
+	Interaction(InputSource source)
+	isValidFor(SourceType sourceType) : boolean
+	getSource() : InputSource
+}
+interface Interactive{
+	perform(Collection<Sequence> actions) : void
+	resetInputState() : void
+}
+interface InterfaceImplementation{
+	invoke(ExecuteMethod executeMethod, Object self, Method method, Object args) : Object
+}
+class InternetExplorerDriver{
+	IGNORE_ZOOM_SETTING : String
+	NATIVE_EVENTS : String
+	INITIAL_BROWSER_URL : String
+	ELEMENT_SCROLL_BEHAVIOR : String
+	UNEXPECTED_ALERT_BEHAVIOR : String
+	ENABLE_ELEMENT_CACHE_CLEANUP : String
+	BROWSER_ATTACH_TIMEOUT : String
+	INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS : String
+	ENABLE_PERSISTENT_HOVERING : String
+	REQUIRE_WINDOW_FOCUS : String
+	LOG_FILE : String
+	LOG_LEVEL : String
+	HOST : String
+	EXTRACT_PATH : String
+	SILENT : String
+	FORCE_CREATE_PROCESS : String
+	IE_ENSURE_CLEAN_SESSION : String
+	IE_USE_PER_PROCESS_PROXY : String
+	IE_USE_PRE_PROCESS_PROXY : String
+	IE_SWITCHES : String
+	DEFAULT_PORT : int
+	InternetExplorerDriver()
+	InternetExplorerDriver(Capabilities capabilities)
+	InternetExplorerDriver(InternetExplorerOptions options)
+	InternetExplorerDriver(int port)
+	InternetExplorerDriver(InternetExplorerDriverService service)
+	InternetExplorerDriver(InternetExplorerDriverService service, Capabilities capabilities)
+	InternetExplorerDriver(InternetExplorerDriverService service, InternetExplorerOptions options)
+	InternetExplorerDriver(InternetExplorerDriverService service, Capabilities capabilities, int port)
+	run(InternetExplorerDriverService service, Capabilities capabilities) : void
+	setFileDetector(FileDetector detector) : void
+	getScreenshotAs(OutputType<X> target) : X
+	assertOnWindows() : void
+	setupService(Capabilities caps, int port) : InternetExplorerDriverService
+}
+enum InternetExplorerDriverEngine{
+	LEGACY : LEGACY
+	AUTODETECT : AUTODETECT
+	VENDOR : VENDOR
+}
+enum InternetExplorerDriverLogLevel{
+	TRACE : TRACE
+	DEBUG : DEBUG
+	INFO : INFO
+	WARN : WARN
+	ERROR : ERROR
+	FATAL : FATAL
+}
+class InternetExplorerDriverService{
+	IE_DRIVER_EXE_PROPERTY : String
+	IE_DRIVER_LOGFILE_PROPERTY : String
+	IE_DRIVER_LOGLEVEL_PROPERTY : String
+	IE_DRIVER_ENGINE_PROPERTY : String
+	IE_DRIVER_HOST_PROPERTY : String
+	IE_DRIVER_EXTRACT_PATH_PROPERTY : String
+	IE_DRIVER_SILENT_PROPERTY : String
+	InternetExplorerDriverService(File executable, int port, ImmutableList<String> args, ImmutableMap<String,String> environment)
+	createDefaultService() : InternetExplorerDriverService
+}
+class InternetExplorerOptions{
+	IE_OPTIONS : String
+	FULL_PAGE_SCREENSHOT : String
+	UPLOAD_DIALOG_TIMEOUT : String
+	FORCE_WINDOW_SHELL_API : String
+	VALIDATE_COOKIE_DOCUMENT_TYPE : String
+	CAPABILITY_NAMES : Set<String>
+	ieOptions : Map<String,Object>
+	InternetExplorerOptions()
+	InternetExplorerOptions(Capabilities source)
+	withAttachTimeout(long duration, TimeUnit unit) : InternetExplorerOptions
+	withAttachTimeout(Duration duration) : InternetExplorerOptions
+	elementScrollTo(ElementScrollBehavior behavior) : InternetExplorerOptions
+	enablePersistentHovering() : InternetExplorerOptions
+	useCreateProcessApiToLaunchIe() : InternetExplorerOptions
+	useShellWindowsApiToAttachToIe() : InternetExplorerOptions
+	destructivelyEnsureCleanSession() : InternetExplorerOptions
+	addCommandSwitches(String switches) : InternetExplorerOptions
+	usePerProcessProxy() : InternetExplorerOptions
+	withInitialBrowserUrl(String url) : InternetExplorerOptions
+	requireWindowFocus() : InternetExplorerOptions
+	waitForUploadDialogUpTo(long duration, TimeUnit unit) : InternetExplorerOptions
+	waitForUploadDialogUpTo(Duration duration) : InternetExplorerOptions
+	introduceFlakinessByIgnoringSecurityDomains() : InternetExplorerOptions
+	enableNativeEvents() : InternetExplorerOptions
+	ignoreZoomSettings() : InternetExplorerOptions
+	takeFullPageScreenshot() : InternetExplorerOptions
+	setPageLoadStrategy(PageLoadStrategy strategy) : InternetExplorerOptions
+	setUnhandledPromptBehaviour(UnexpectedAlertBehaviour behaviour) : InternetExplorerOptions
+	amend(String optionName, Object value) : InternetExplorerOptions
+	setCapability(String key, Object value) : void
+}
+class InvalidArgumentException{
+	InvalidArgumentException(String message)
+	InvalidArgumentException(String message, Throwable cause)
+}
+class InvalidCookieDomainException{
+	InvalidCookieDomainException()
+	InvalidCookieDomainException(String message)
+	InvalidCookieDomainException(Throwable cause)
+	InvalidCookieDomainException(String message, Throwable cause)
+}
+class InvalidCoordinatesException{
+	InvalidCoordinatesException(String message)
+}
+class InvalidElementStateException{
+	InvalidElementStateException()
+	InvalidElementStateException(String message)
+	InvalidElementStateException(Throwable cause)
+	InvalidElementStateException(String message, Throwable cause)
+}
+class InvalidSelectorException{
+	SUPPORT_URL : String
+	InvalidSelectorException(String reason)
+	InvalidSelectorException(String reason, Throwable cause)
+	getSupportUrl() : String
+}
+interface ISelect{
+	isMultiple() : boolean
+	getOptions() : List<WebElement>
+	getAllSelectedOptions() : List<WebElement>
+	getFirstSelectedOption() : WebElement
+	selectByVisibleText(String text) : void
+	selectByIndex(int index) : void
+	selectByValue(String value) : void
+	deselectAll() : void
+	deselectByValue(String value) : void
+	deselectByIndex(int index) : void
+	deselectByVisibleText(String text) : void
+}
+interface IsInteraction{
+	asInteractions(PointerInput mouse, KeyInput keyboard) : List<Interaction>
+}
+class JavascriptException{
+	JavascriptException(String message)
+	JavascriptException(String message, Throwable cause)
+}
+interface JavascriptExecutor{
+	executeScript(String script, Object args) : Object
+	executeAsyncScript(String script, Object args) : Object
+}
+class JdkAugmenter{
+	JdkAugmenter()
+	extractRemoteWebDriver(WebDriver driver) : RemoteWebDriver
+	create(RemoteWebDriver driver, Map<String,AugmenterProvider> augmentors, X objectToAugment) : X
+}
+class JreHttpClient{
+	url : URL
+	JreHttpClient(URL url)
+	execute(HttpRequest request, boolean followRedirects) : HttpResponse
+	close() : void
+}
+class JsonException{
+	JsonException(JsonSyntaxException e)
+	JsonException(JsonSyntaxException e, Object text)
+}
+class JsonHttpCommandCodec{
+	JsonHttpCommandCodec()
+	amendParameters(String name, Map<String,?> parameters) : Map<String,?>
+}
+class JsonHttpResponseCodec{
+	errorHandler : ErrorHandler
+	elementConverter : Function<Object,Object>
+	reconstructValue(Response response) : Response
+	getValueToEncode(Response response) : Object
+}
+class JsonToBeanConverter{
+	errorCodes : ErrorCodes
+	convert(Class<T> clazz, Object source) : T
+	convert(Class<T> clazz, Object source, int depth) : T
+	getMethod(Class<?> clazz, String methodName) : Method
+	convertJsonPrimitive(JsonPrimitive json) : Object
+	convertEnum(Class<?> clazz, Object text) : Enum<?>
+	isEnum(Class<?> clazz, Object text) : boolean
+	convertBean(Class<T> clazz, JsonObject toConvert, int depth) : T
+	newInstance(Class<T> clazz) : T
+	propertyWriteException(SimplePropertyDescriptor property, Object value, Class<?> type, Throwable cause) : WebDriverException
+	convertMap(JsonObject toConvert, int depth) : Map<String,Object>
+	convertList(JsonArray toConvert, int depth) : List<?>
+	isPrimitive(Class<?> clazz) : boolean
+}
+class JsonToWebElementConverter{
+	driver : RemoteWebDriver
+	JsonToWebElementConverter(RemoteWebDriver driver)
+	apply(Object result) : Object
+}
+class JsonWireProtocolResponse{
+	error : Function<InitialHandshakeResponse,Optional<ProtocolHandshake.Result>>
+	success : Function<InitialHandshakeResponse,Optional<ProtocolHandshake.Result>>
+	getResponseFunction() : Function<InitialHandshakeResponse,Optional<ProtocolHandshake.Result>>
+}
+interface Kernel32{
+	GetProcessId(HANDLE Process) : int
+}
+interface Keyboard{
+	sendKeys(CharSequence keysToSend) : void
+	pressKey(CharSequence keyToPress) : void
+	releaseKey(CharSequence keyToRelease) : void
+}
+class KeyDownAction{
+	KeyDownAction(Keyboard keyboard, Mouse mouse, Locatable locationProvider, Keys key)
+	KeyDownAction(Keyboard keyboard, Mouse mouse, Keys key)
+	perform() : void
+	asInteractions(PointerInput mouse, KeyInput keyboard) : List<Interaction>
+}
+class KeyInput{
+	name : String
+	KeyInput(String name)
+	getInputType() : SourceType
+	createKeyDown(int codePoint) : Interaction
+	createKeyUp(int codePoint) : Interaction
+	encode() : Map<String,Object>
+}
+enum Keys{
+	NULL : NULL
+	CANCEL : CANCEL
+	HELP : HELP
+	BACK_SPACE : BACK_SPACE
+	TAB : TAB
+	CLEAR : CLEAR
+	RETURN : RETURN
+	ENTER : ENTER
+	SHIFT : SHIFT
+	LEFT_SHIFT(Keys.SHIFT )
+}
+abstract class KeysRelatedAction{
+	keyboard : Keyboard
+	mouse : Mouse
+	KeysRelatedAction(Keyboard keyboard, Mouse mouse, Locatable locationProvider)
+	focusOnElement() : void
+	optionallyClickElement(PointerInput mouse, ImmutableList.Builder<Interaction> interactions) : void
+}
+class KeyUpAction{
+	KeyUpAction(Keyboard keyboard, Mouse mouse, Locatable locationProvider, Keys key)
+	KeyUpAction(Keyboard keyboard, Mouse mouse, Keys key)
+	perform() : void
+	asInteractions(PointerInput mouse, KeyInput keyboard) : List<Interaction>
+}
+class LinuxEphemeralPortRangeDetector{
+	firstEphemeralPort : int
+	lastEphemeralPort : int
+	LinuxEphemeralPortRangeDetector(Reader inputFil)
+	getInstance() : LinuxEphemeralPortRangeDetector
+	getLowestEphemeralPort() : int
+	getHighestEphemeralPort() : int
+}
+abstract class LoadableComponent{
+	get() : T
+	load() : void
+	isLoaded() : void
+}
+class LocalFileDetector{
+	log : Logger
+	getLocalFile(CharSequence keys) : File
+}
+abstract class LocalLogs{
+	NULL_LOGGER : LocalLogs
+	LocalLogs()
+	getNullLogger() : LocalLogs
+	getStoringLoggerInstance(Set<String> logTypesToIgnore) : LocalLogs
+	getHandlerBasedLoggerInstance(LoggingHandler loggingHandler, Set<String> logTypesToInclude) : LocalLogs
+	getCombinedLogsHolder(LocalLogs predefinedTypeLogger, LocalLogs allTypesLogger) : LocalLogs
+	get(String logType) : LogEntries
+	addEntry(String logType, LogEntry entry) : void
+}
+interface LocalStorage{
+	getItem(String key) : String
+	keySet() : Set<String>
+	setItem(String key, String value) : void
+	removeItem(String key) : String
+	clear() : void
+	size() : int
+}
+interface Locatable{
+	getCoordinates() : Coordinates
+}
+class LocatingElementHandler{
+	locator : ElementLocator
+	LocatingElementHandler(ElementLocator locator)
+	invoke(Object object, Method method, Object objects) : Object
+}
+class LocatingElementListHandler{
+	locator : ElementLocator
+	LocatingElementListHandler(ElementLocator locator)
+	invoke(Object object, Method method, Object objects) : Object
+}
+class Location{
+	latitude : double
+	longitude : double
+	altitude : double
+	Location(double latitude, double longitude, double altitude)
+	getLatitude() : double
+	getLongitude() : double
+	getAltitude() : double
+	toString() : String
+}
+interface LocationContext{
+	location() : Location
+	setLocation(Location location) : void
+}
+interface Lock{
+	lock(long timeoutInMillis) : void
+	unlock() : void
+}
+class LogCombiner{
+	LOG_ENTRY_TIMESTAMP_COMPARATOR : Comparator<LogEntry>
+	combine(LogEntries entries) : LogEntries
+}
+class LogEntries{
+	entries : List<LogEntry>
+	LogEntries(Iterable<LogEntry> entries)
+	getAll() : List<LogEntry>
+	filter(Level level) : List<LogEntry>
+	iterator() : Iterator<LogEntry>
+}
+class LogEntry{
+	DATE_FORMAT : ThreadLocal<SimpleDateFormat>
+	level : Level
+	timestamp : long
+	message : String
+	LogEntry(Level level, long timestamp, String message)
+	getLevel() : Level
+	getTimestamp() : long
+	getMessage() : String
+	toString() : String
+	toMap() : Map<String,Object>
+}
+class LoggingHandler{
+	MAX_RECORDS : int
+	records : LinkedList<LogEntry>
+	INSTANCE : LoggingHandler
+	LoggingHandler()
+	getInstance() : LoggingHandler
+	getRecords() : List<LogEntry>
+	publish(LogRecord logRecord) : void
+	flush() : void
+	close() : void
+}
+class LoggingPreferences{
+	serialVersionUID : long
+	prefs : Map<String,Level>
+	enable(String logType, Level level) : void
+	getEnabledLogTypes() : Set<String>
+	getLevel(String logType) : Level
+	addPreferences(LoggingPreferences prefs) : LoggingPreferences
+}
+class LogLevelMapping{
+	DEBUG : String
+	levelMap : Map<Integer,Level>
+	normalize(Level level) : Level
+	getName(Level level) : String
+	toLevel(String logLevelName) : Level
+}
+interface Logs{
+	get(String logType) : LogEntries
+	getAvailableLogTypes() : Set<String>
+}
+class LogType{
+	BROWSER : String
+	CLIENT : String
+	DRIVER : String
+	PERFORMANCE : String
+	PROFILER : String
+	SERVER : String
+}
+class LongPressAction{
+	LongPressAction(TouchScreen touchScreen, Locatable locationProvider)
+	perform() : void
+}
+interface Mouse{
+	click(Coordinates where) : void
+	doubleClick(Coordinates where) : void
+	mouseDown(Coordinates where) : void
+	mouseUp(Coordinates where) : void
+	mouseMove(Coordinates where) : void
+	mouseMove(Coordinates where, long xOffset, long yOffset) : void
+	contextClick(Coordinates where) : void
+}
+abstract class MouseAction{
+	mouse : Mouse
+	MouseAction(Mouse mouse, Locatable locationProvider)
+	getActionLocation() : Coordinates
+	moveToLocation() : void
+	moveToLocation(PointerInput mouse, ImmutableList.Builder<Interaction> interactions) : void
+}
+class MoveAction{
+	x : int
+	y : int
+	MoveAction(TouchScreen touchScreen, int x, int y)
+	perform() : void
+}
+class MoveMouseAction{
+	MoveMouseAction(Mouse mouse, Locatable locationProvider)
+	perform() : void
+	asInteractions(PointerInput mouse, KeyInput keyboard) : List<Interaction>
+}
+class MoveTargetOutOfBoundsException{
+	MoveTargetOutOfBoundsException(String message)
+	MoveTargetOutOfBoundsException(Throwable cause)
+	MoveTargetOutOfBoundsException(String message, Throwable cause)
+}
+class MoveToOffsetAction{
+	xOffset : int
+	yOffset : int
+	MoveToOffsetAction(Mouse mouse, Locatable locationProvider, int x, int y)
+	perform() : void
+	asInteractions(PointerInput mouse, KeyInput keyboard) : List<Interaction>
+}
+class MultiOutputStream{
+	mandatory : OutputStream
+	optional : OutputStream
+	MultiOutputStream(OutputStream mandatory, OutputStream optional)
+	write(int b) : void
+	flush() : void
+	close() : void
+}
+class MutableCapabilities{
+	serialVersionUID : long
+	OPTION_KEYS : Set<String>
+	caps : Map<String,Object>
+	MutableCapabilities()
+	MutableCapabilities(Capabilities other)
+	MutableCapabilities(Map<String,?> capabilities)
+	getCapability(String capabilityName) : Object
+	asMap() : Map<String,?>
+	equals(Object o) : boolean
+	hashCode() : int
+	amendHashCode() : int
+	merge(Capabilities extraCapabilities) : MutableCapabilities
+	setCapability(String capabilityName, boolean value) : void
+	setCapability(String capabilityName, String value) : void
+	setCapability(String capabilityName, Platform value) : void
+	setCapability(String key, Object value) : void
+	toString() : String
+	shortenMapValues(Map<String,?> map) : Map<String,?>
+}
+interface NeedsLocalLogs{
+	setLocalLogs(LocalLogs logs) : void
+}
+interface NetworkConnection{
+	getNetworkConnection() : ConnectionType
+	setNetworkConnection(ConnectionType type) : ConnectionType
+}
+class NetworkInterface{
+	name : String
+	networkInterface : java.net.NetworkInterface
+	inetAddresses : Iterable<InetAddress>
+	isLoopback : Boolean
+	NetworkInterface(java.net.NetworkInterface networkInterface)
+	NetworkInterface(String name, Iterable<InetAddress> inetAddresses)
+	NetworkInterface(String name, InetAddress inetAddresses)
+	isIp4AddressBindingOnly() : boolean
+	isLoopBack() : boolean
+	isLoopBackFromINetAddresses(Iterable<InetAddress> inetAddresses) : boolean
+	getIp4LoopbackOnly() : InetAddress
+	isIpv6(InetAddress address) : boolean
+	getIp4NonLoopBackOnly() : InetAddress
+	getIp6Address() : InetAddress
+	getInetAddresses() : Iterable<InetAddress>
+	getName() : String
+}
+interface NetworkInterfaceProvider{
+	getNetworkInterfaces() : Iterable<NetworkInterface>
+	getLoInterface() : NetworkInterface
+}
+class NetworkUtils{
+	networkInterfaceProvider : NetworkInterfaceProvider
+	NetworkUtils(NetworkInterfaceProvider networkInterfaceProvider)
+	NetworkUtils()
+	getPrivateLocalAddress() : String
+	getNonLoopbackAddressOfThisMachine() : String
+	getIp4NonLoopbackAddressOfThisMachine() : InetAddress
+	obtainLoopbackIp4Address() : String
+	grabFirstNetworkAddress() : InetAddress
+	getIpOfLoopBackIp4() : String
+	getLoopBackAndIp4Only() : NetworkInterface
+	getLocalInterfaceAddress() : List<InetAddress>
+	getNetWorkDiags() : String
+	dumpToConsole(StringBuilder result, NetworkInterface inNetworkInterface) : void
+	dumpAddresses(StringBuilder result, Iterable<InetAddress> inetAddresses) : void
+	main(String args) : void
+}
+class NoAlertPresentException{
+	NoAlertPresentException()
+	NoAlertPresentException(String message)
+	NoAlertPresentException(Throwable cause)
+	NoAlertPresentException(String message, Throwable cause)
+}
+class NoSuchCookieException{
+	NoSuchCookieException(String message)
+}
+class NoSuchElementException{
+	SUPPORT_URL : String
+	NoSuchElementException(String reason)
+	NoSuchElementException(String reason, Throwable cause)
+	getSupportUrl() : String
+}
+class NoSuchFrameException{
+	NoSuchFrameException(String reason)
+	NoSuchFrameException(String reason, Throwable cause)
+}
+class NoSuchSessionException{
+	NoSuchSessionException()
+	NoSuchSessionException(String reason)
+	NoSuchSessionException(String reason, Throwable cause)
+}
+class NoSuchWindowException{
+	NoSuchWindowException(String reason)
+	NoSuchWindowException(String reason, Throwable cause)
+}
+class NotConnectedException{
+	NotConnectedException(URL url, long timeToWaitInMilliSeconds, String consoleOutput)
+	getMessage(URL url, long timeToWaitInMilliSeconds, String consoleOutput) : String
+}
+class NotFoundException{
+	NotFoundException()
+	NotFoundException(String message)
+	NotFoundException(String message, Throwable cause)
+	NotFoundException(Throwable cause)
+}
+class OlderWindowsVersionEphemeralPortDetector{
+	getLowestEphemeralPort() : int
+	getHighestEphemeralPort() : int
+}
+class OperaDriver{
+	locationContext : RemoteLocationContext
+	webStorage : RemoteWebStorage
+	OperaDriver()
+	OperaDriver(OperaDriverService service)
+	OperaDriver(Capabilities capabilities)
+	OperaDriver(OperaOptions options)
+	OperaDriver(OperaDriverService service, OperaOptions options)
+	OperaDriver(OperaDriverService service, Capabilities capabilities)
+	setFileDetector(FileDetector detector) : void
+	getLocalStorage() : LocalStorage
+	getSessionStorage() : SessionStorage
+	location() : Location
+	setLocation(Location location) : void
+}
+class OperaDriverService{
+	OPERA_DRIVER_EXE_PROPERTY : String
+	OPERA_DRIVER_LOG_PROPERTY : String
+	OPERA_DRIVER_VERBOSE_LOG_PROPERTY : String
+	OPERA_DRIVER_SILENT_OUTPUT_PROPERTY : String
+	OperaDriverService(File executable, int port, ImmutableList<String> args, ImmutableMap<String,String> environment)
+	createDefaultService() : OperaDriverService
+}
+class OperaOptions{
+	CAPABILITY : String
+	binary : String
+	args : List<String>
+	extensionFiles : List<File>
+	extensions : List<String>
+	experimentalOptions : Map<String,Object>
+	OperaOptions()
+	setBinary(File path) : OperaOptions
+	setBinary(String path) : OperaOptions
+	addArguments(String arguments) : OperaOptions
+	addArguments(List<String> arguments) : OperaOptions
+	addExtensions(File paths) : OperaOptions
+	addExtensions(List<File> paths) : OperaOptions
+	addEncodedExtensions(String encoded) : OperaOptions
+	addEncodedExtensions(List<String> encoded) : OperaOptions
+	setExperimentalOption(String name, Object value) : OperaOptions
+	getExperimentalOption(String name) : Object
+	asMap() : Map<String,?>
+}
+interface OsProcess{
+	getEnvironment() : Map<String,String>
+	setEnvironmentVariable(String name, String value) : void
+	copyOutputTo(OutputStream out) : void
+	setInput(String allInput) : void
+	setWorkingDirectory(File workingDirectory) : void
+	executeAsync() : void
+	waitFor() : void
+	waitFor(long timeout) : void
+	destroy() : int
+	getExitCode() : int
+	getStdOut() : String
+	isRunning() : boolean
+	checkForError() : void
+}
+interface OutputType{
+	convertFromBase64Png(String base64Png) : T
+	convertFromPngBytes(byte png) : T
+}
+class PageFactory{
+	initElements(WebDriver driver, Class<T> pageClassToProxy) : T
+	initElements(WebDriver driver, Object page) : void
+	initElements(ElementLocatorFactory factory, Object page) : void
+	initElements(FieldDecorator decorator, Object page) : void
+	proxyFields(FieldDecorator decorator, Object page, Class<?> proxyIn) : void
+	instantiatePage(WebDriver driver, Class<T> pageClassToProxy) : T
+}
+enum PageLoadStrategy{
+	NONE : NONE
+	EAGER : EAGER
+	NORMAL : NORMAL
+	text : String
+	PageLoadStrategy(String text)
+	toString() : String
+	fromString(String text) : PageLoadStrategy
+}
+class Pause{
+	duration : Duration
+	Pause(InputSource device, Duration duration)
+	isValidFor(SourceType sourceType) : boolean
+	encode() : Map<String,Object>
+}
+class PauseAction{
+	pause : long
+	PauseAction(long pause)
+	perform() : void
+	asInteractions(PointerInput mouse, KeyInput keyboard) : List<Interaction>
+}
+enum Platform{
+	WINDOWS : WINDOWS
+	XP : XP
+	VISTA : VISTA
+	WIN8 : WIN8
+	WIN8_1 : WIN8_1
+	WIN10 : WIN10
+	MAC : MAC
+	SNOW_LEOPARD : SNOW_LEOPARD
+	MOUNTAIN_LION : MOUNTAIN_LION
+	MAVERICKS : MAVERICKS
+	YOSEMITE : YOSEMITE
+	EL_CAPITAN : EL_CAPITAN
+	SIERRA : SIERRA
+	UNIX : UNIX
+	LINUX : LINUX
+	ANDROID : ANDROID
+	IOS : IOS
+	ANY : ANY
+	partOfOsName : String
+	minorVersion : int
+	majorVersion : int
+	current : Platform
+	Platform(String partOfOsName)
+	getPartOfOsName() : String
+	getCurrent() : Platform
+	extractFromSysProperty(String osName) : Platform
+	extractFromSysProperty(String osName, String osVersion) : Platform
+	fromString(String name) : Platform
+	isBetterMatch(String previous, String matcher) : boolean
+	is(Platform compareWith) : boolean
+	isCurrentPlatform(String osName, String matchAgainst) : boolean
+	isExactMatch(String osName, String matchAgainst) : boolean
+	getMajorVersion() : int
+	getMinorVersion() : int
+	family() : Platform
+}
+class Point{
+	x : int
+	y : int
+	Point(int x, int y)
+	getX() : int
+	getY() : int
+	moveBy(int xOffset, int yOffset) : Point
+	equals(Object o) : boolean
+	hashCode() : int
+	move(int newX, int newY) : void
+	toString() : String
+}
+class PointerInput{
+	kind : Kind
+	name : String
+	PointerInput(Kind kind, String name)
+	getInputType() : SourceType
+	encode() : Map<String,Object>
+	createPointerMove(Duration duration, Origin origin, int x, int y) : Interaction
+	createPointerDown(int button) : Interaction
+	createPointerUp(int button) : Interaction
+}
+class PortProber{
+	random : Random
+	ephemeralRangeDetector : EphemeralPortRangeDetector
+	HIGHEST_PORT : int
+	START_OF_USER_PORTS : int
+	PortProber()
+	findFreePort() : int
+	createAcceptablePort() : int
+	checkPortIsFree(int port) : int
+	pollPort(int port) : boolean
+	pollPort(int port, int timeout, TimeUnit unit) : boolean
+	waitForPortUp(int port, int timeout, TimeUnit unit) : void
+}
+class Preferences{
+	MAX_SCRIPT_RUN_TIME_KEY : String
+	DEFAULT_MAX_SCRIPT_RUN_TIME : int
+	PREFERENCE_PATTERN : Pattern
+	immutablePrefs : Map<String,Object>
+	allPrefs : Map<String,Object>
+	Preferences(Reader defaults)
+	Preferences(Reader defaults, File userPrefs)
+	Preferences(Reader defaults, Reader reader)
+	readDefaultPreferences(Reader defaultsReader) : void
+	setPreference(String key, Object value) : void
+	readPreferences(Reader reader) : void
+	setPreference(String key, String value) : void
+	setPreference(String key, boolean value) : void
+	setPreference(String key, int value) : void
+	addTo(Preferences prefs) : void
+	addTo(FirefoxProfile profile) : void
+	writeTo(Writer writer) : void
+	valueAsPreference(Object value) : String
+	escapeValueAsPreference(String value) : String
+	preferenceAsValue(String toConvert) : Object
+	getPreference(String key) : Object
+	isStringified(String value) : boolean
+	putAll(Map<String,Object> frozenPreferences) : void
+	checkPreference(String key, Object value) : void
+}
+class ProcessUtils{
+	LOG : Logger
+	waitForProcessDeath(Process p, long timeout) : int
+	killProcess(Process process) : int
+	killUnixProcess(Process process) : int
+	killWinProcess(Process process) : int
+	closeAllStreamsAndDestroyProcess(Process process) : void
+	getProcessId(Process p) : int
+	kill9(Integer pid) : void
+	kill9(Process p) : void
+}
+class ProfilerLogEntry{
+	ProfilerLogEntry(EventType eventType, String message)
+}
+class ProfilesIni{
+	profiles : Map<String,File>
+	ProfilesIni()
+	readProfiles(File appData) : Map<String,File>
+	newProfile(String name, File appData, String path, boolean isRelative) : File
+	getProfile(String profileName) : FirefoxProfile
+	locateAppDataDirectory(Platform os) : File
+}
+class ProtocolHandshake{
+	LOG : Logger
+	ACCEPTED_W3C_PATTERNS : Predicate<String>
+	MAP_TYPE : Type
+	createSession(HttpClient client, Command command) : Result
+	streamJsonWireProtocolParameters(JsonWriter out, Gson gson, JsonObject des, JsonObject req) : void
+	streamW3CProtocolParameters(JsonWriter out, Gson gson, JsonObject des, JsonObject req) : void
+}
+class Result{
+	massageProxy : Function<Object,Proxy>
+	dialect : Dialect
+	capabilities : Map<String,?>
+	sessionId : SessionId
+	Result(Dialect dialect, String sessionId, Map<String,?> capabilities)
+	getDialect() : Dialect
+	createResponse() : Response
+	toString() : String
+}
+class Proxy{
+	proxyType : ProxyType
+	autodetect : boolean
+	ftpProxy : String
+	httpProxy : String
+	noProxy : String
+	sslProxy : String
+	socksProxy : String
+	socksVersion : Integer
+	socksUsername : String
+	socksPassword : String
+	proxyAutoconfigUrl : String
+	Proxy()
+	Proxy(Map<String,?> raw)
+	toJson() : Map<String,Object>
+	getProxyType() : ProxyType
+	setProxyType(ProxyType proxyType) : Proxy
+	isAutodetect() : boolean
+	setAutodetect(boolean autodetect) : Proxy
+	getFtpProxy() : String
+	setFtpProxy(String ftpProxy) : Proxy
+	getHttpProxy() : String
+	setHttpProxy(String httpProxy) : Proxy
+	getNoProxy() : String
+	setNoProxy(String noProxy) : Proxy
+	getSslProxy() : String
+	setSslProxy(String sslProxy) : Proxy
+	getSocksProxy() : String
+	setSocksProxy(String socksProxy) : Proxy
+	getSocksVersion() : Integer
+	setSocksVersion(Integer socksVersion) : Proxy
+	getSocksUsername() : String
+	setSocksUsername(String username) : Proxy
+	getSocksPassword() : String
+	setSocksPassword(String password) : Proxy
+	getProxyAutoconfigUrl() : String
+	setProxyAutoconfigUrl(String proxyAutoconfigUrl) : Proxy
+	verifyProxyTypeCompatibility(ProxyType compatibleProxy) : void
+	extractFrom(Capabilities capabilities) : Proxy
+	toString() : String
+	equals(Object o) : boolean
+	hashCode() : int
+}
+class Quotes{
+	escape(String toEscape) : String
+}
+class Rectangle{
+	x : int
+	y : int
+	height : int
+	width : int
+	Rectangle(int x, int y, int height, int width)
+	Rectangle(Point p, Dimension d)
+	getX() : int
+	getY() : int
+	setX(int x) : void
+	setY(int y) : void
+	getHeight() : int
+	setHeight(int height) : void
+	getWidth() : int
+	setWidth(int width) : void
+	getPoint() : Point
+	getDimension() : Dimension
+	equals(Object o) : boolean
+	hashCode() : int
+}
+class RemoteApplicationCache{
+	executeMethod : ExecuteMethod
+	RemoteApplicationCache(ExecuteMethod executeMethod)
+	getStatus() : AppCacheStatus
+}
+class RemoteExecuteMethod{
+	driver : RemoteWebDriver
+	RemoteExecuteMethod(RemoteWebDriver driver)
+	execute(String commandName, Map<String,?> parameters) : Object
+}
+class RemoteKeyboard{
+	executor : ExecuteMethod
+	RemoteKeyboard(ExecuteMethod executor)
+	sendKeys(CharSequence keysToSend) : void
+	pressKey(CharSequence keyToPress) : void
+	releaseKey(CharSequence keyToRelease) : void
+}
+class RemoteLocalStorage{
+	executeMethod : ExecuteMethod
+	RemoteLocalStorage(ExecuteMethod executeMethod)
+	getItem(String key) : String
+	keySet() : Set<String>
+	setItem(String key, String value) : void
+	removeItem(String key) : String
+	clear() : void
+	size() : int
+}
+class RemoteLocationContext{
+	executeMethod : ExecuteMethod
+	RemoteLocationContext(ExecuteMethod executeMethod)
+	location() : Location
+	setLocation(Location location) : void
+}
+class RemoteLogs{
+	LEVEL : String
+	TIMESTAMP : String
+	MESSAGE : String
+	logger : Logger
+	executeMethod : ExecuteMethod
+	TYPE_KEY : String
+	localLogs : LocalLogs
+	RemoteLogs(ExecuteMethod executeMethod, LocalLogs localLogs)
+	get(String logType) : LogEntries
+	getRemoteEntries(String logType) : LogEntries
+	getLocalEntries(String logType) : LogEntries
+	getAvailableLocalLogs() : Set<String>
+	getAvailableLogTypes() : Set<String>
+}
+class RemoteMouse{
+	executor : ExecuteMethod
+	RemoteMouse(ExecuteMethod executor)
+	paramsFromCoordinates(Coordinates where) : Map<String,Object>
+	moveIfNeeded(Coordinates where) : void
+	click(Coordinates where) : void
+	contextClick(Coordinates where) : void
+	doubleClick(Coordinates where) : void
+	mouseDown(Coordinates where) : void
+	mouseUp(Coordinates where) : void
+	mouseMove(Coordinates where) : void
+	mouseMove(Coordinates where, long xOffset, long yOffset) : void
+}
+class RemoteNetworkConnection{
+	executeMethod : ExecuteMethod
+	RemoteNetworkConnection(ExecuteMethod executeMethod)
+	getNetworkConnection() : ConnectionType
+	setNetworkConnection(ConnectionType type) : ConnectionType
+}
+class RemoteSessionStorage{
+	executeMethod : ExecuteMethod
+	RemoteSessionStorage(ExecuteMethod executeMethod)
+	getItem(String key) : String
+	keySet() : Set<String>
+	setItem(String key, String value) : void
+	removeItem(String key) : String
+	clear() : void
+	size() : int
+}
+class RemoteStatus{
+	status : Map<String,Object>
+	buildInfo : Map<String,Object>
+	osInfo : Map<String,Object>
+	RemoteStatus(Map<String,Object> status)
+	getReleaseLabel() : String
+	getBuildRevision() : String
+	getBuildTime() : String
+	getOsArch() : String
+	getOsName() : String
+	getOsVersion() : String
+	toString() : String
+}
+class RemoteTouchScreen{
+	executeMethod : ExecuteMethod
+	RemoteTouchScreen(ExecuteMethod executeMethod)
+	singleTap(Coordinates where) : void
+	down(int x, int y) : void
+	up(int x, int y) : void
+	move(int x, int y) : void
+	scroll(Coordinates where, int xOffset, int yOffset) : void
+	doubleTap(Coordinates where) : void
+	longPress(Coordinates where) : void
+	scroll(int xOffset, int yOffset) : void
+	flick(int xSpeed, int ySpeed) : void
+	flick(Coordinates where, int xOffset, int yOffset, int speed) : void
+}
+class RemoteWebDriver{
+	logger : Logger
+	level : Level
+	errorHandler : ErrorHandler
+	executor : CommandExecutor
+	capabilities : Capabilities
+	sessionId : SessionId
+	fileDetector : FileDetector
+	executeMethod : ExecuteMethod
+	converter : JsonToWebElementConverter
+	keyboard : RemoteKeyboard
+	mouse : RemoteMouse
+	remoteLogs : Logs
+	localLogs : LocalLogs
+	RemoteWebDriver()
+	RemoteWebDriver(Capabilities desiredCapabilities)
+	RemoteWebDriver(CommandExecutor executor, Capabilities desiredCapabilities)
+	RemoteWebDriver(URL remoteAddress, Capabilities desiredCapabilities)
+	init(Capabilities capabilities) : void
+	setFileDetector(FileDetector detector) : void
+	getSessionId() : SessionId
+	setSessionId(String opaqueKey) : void
+	startSession(Capabilities desiredCapabilities) : void
+	startClient() : void
+	startClient(Capabilities desiredCapabilities) : void
+	stopClient() : void
+	stopClient(Capabilities desiredCapbilities) : void
+	getErrorHandler() : ErrorHandler
+	setErrorHandler(ErrorHandler handler) : void
+	getCommandExecutor() : CommandExecutor
+	setCommandExecutor(CommandExecutor executor) : void
+	getCapabilities() : Capabilities
+	get(String url) : void
+	getTitle() : String
+	getCurrentUrl() : String
+	getScreenshotAs(OutputType<X> outputType) : X
+	findElements(By by) : List<WebElement>
+	findElement(By by) : WebElement
+	findElement(String by, String using) : WebElement
+	setFoundBy(SearchContext context, WebElement element, String by, String using) : void
+	findElements(String by, String using) : List<WebElement>
+	findElementById(String using) : WebElement
+	findElementsById(String using) : List<WebElement>
+	findElementByLinkText(String using) : WebElement
+	findElementsByLinkText(String using) : List<WebElement>
+	findElementByPartialLinkText(String using) : WebElement
+	findElementsByPartialLinkText(String using) : List<WebElement>
+	findElementByTagName(String using) : WebElement
+	findElementsByTagName(String using) : List<WebElement>
+	findElementByName(String using) : WebElement
+	findElementsByName(String using) : List<WebElement>
+	findElementByClassName(String using) : WebElement
+	findElementsByClassName(String using) : List<WebElement>
+	findElementByCssSelector(String using) : WebElement
+	findElementsByCssSelector(String using) : List<WebElement>
+	findElementByXPath(String using) : WebElement
+	findElementsByXPath(String using) : List<WebElement>
+	getPageSource() : String
+	close() : void
+	quit() : void
+	getWindowHandles() : Set<String>
+	getWindowHandle() : String
+	executeScript(String script, Object args) : Object
+	executeAsyncScript(String script, Object args) : Object
+	isJavascriptEnabled() : boolean
+	switchTo() : TargetLocator
+	navigate() : Navigation
+	manage() : Options
+	setElementConverter(JsonToWebElementConverter converter) : void
+	getElementConverter() : JsonToWebElementConverter
+	setLogLevel(Level level) : void
+	execute(String driverCommand, Map<String,?> parameters) : Response
+	execute(String command) : Response
+	getExecuteMethod() : ExecuteMethod
+	perform(Collection<Sequence> actions) : void
+	resetInputState() : void
+	getKeyboard() : Keyboard
+	getMouse() : Mouse
+	log(SessionId sessionId, String commandName, Object toLog, When when) : void
+	getFileDetector() : FileDetector
+	toString() : String
+}
+class RemoteWebElement{
+	foundBy : String
+	id : String
+	parent : RemoteWebDriver
+	fileDetector : FileDetector
+	setFoundBy(SearchContext foundFrom, String locator, String term) : void
+	setParent(RemoteWebDriver parent) : void
+	getId() : String
+	setId(String id) : void
+	setFileDetector(FileDetector detector) : void
+	click() : void
+	submit() : void
+	sendKeys(CharSequence keysToSend) : void
+	upload(File localFile) : String
+	clear() : void
+	getTagName() : String
+	getAttribute(String name) : String
+	stringValueOf(Object o) : String
+	isSelected() : boolean
+	isEnabled() : boolean
+	getText() : String
+	getCssValue(String propertyName) : String
+	findElements(By by) : List<WebElement>
+	findElement(By by) : WebElement
+	findElement(String using, String value) : WebElement
+	findElements(String using, String value) : List<WebElement>
+	findElementById(String using) : WebElement
+	findElementsById(String using) : List<WebElement>
+	findElementByLinkText(String using) : WebElement
+	findElementsByLinkText(String using) : List<WebElement>
+	findElementByName(String using) : WebElement
+	findElementsByName(String using) : List<WebElement>
+	findElementByClassName(String using) : WebElement
+	findElementsByClassName(String using) : List<WebElement>
+	findElementByCssSelector(String using) : WebElement
+	findElementsByCssSelector(String using) : List<WebElement>
+	findElementByXPath(String using) : WebElement
+	findElementsByXPath(String using) : List<WebElement>
+	findElementByPartialLinkText(String using) : WebElement
+	findElementsByPartialLinkText(String using) : List<WebElement>
+	findElementByTagName(String using) : WebElement
+	findElementsByTagName(String using) : List<WebElement>
+	execute(String command, Map<String,?> parameters) : Response
+	equals(Object obj) : boolean
+	hashCode() : int
+	getWrappedDriver() : WebDriver
+	isDisplayed() : boolean
+	getLocation() : Point
+	getSize() : Dimension
+	getRect() : Rectangle
+	getCoordinates() : Coordinates
+	getScreenshotAs(OutputType<X> outputType) : X
+	toString() : String
+	toJson() : Map<String,Object>
+}
+class RemoteWebStorage{
+	executeMethod : ExecuteMethod
+	RemoteWebStorage(ExecuteMethod executeMethod)
+	getLocalStorage() : LocalStorage
+	getSessionStorage() : SessionStorage
+}
+class Response{
+	value : Object
+	sessionId : String
+	status : Integer
+	state : String
+	Response()
+	Response(SessionId sessionId)
+	getStatus() : Integer
+	setStatus(Integer status) : void
+	getState() : String
+	setState(String state) : void
+	setValue(Object value) : void
+	getValue() : Object
+	setSessionId(String sessionId) : void
+	getSessionId() : String
+	toString() : String
+}
+interface ResponseCodec{
+	encode(Supplier<T> factory, Response response) : T
+	decode(T encodedResponse) : Response
+}
+interface Rotatable{
+	rotate(ScreenOrientation orientation) : void
+	getOrientation() : ScreenOrientation
+	rotate(DeviceRotation rotation) : void
+	rotation() : DeviceRotation
+}
+class SafariDriver{
+	SafariDriver()
+	SafariDriver(Capabilities desiredCapabilities)
+	SafariDriver(SafariOptions safariOptions)
+	getExecutor(SafariOptions options) : CommandExecutor
+	setFileDetector(FileDetector detector) : void
+}
+class SafariDriverService{
+	SAFARI_DRIVER_EXECUTABLE : File
+	TP_SAFARI_DRIVER_EXECUTABLE : File
+	SafariDriverService(File executable, int port, ImmutableList<String> args, ImmutableMap<String,String> environment)
+	createDefaultService() : SafariDriverService
+	createDefaultService(SafariOptions options) : SafariDriverService
+	waitUntilAvailable() : void
+}
+class SafariOptions{
+	CAPABILITY : String
+	options : Map<String,Object>
+	SafariOptions()
+	fromCapabilities(Capabilities capabilities) : SafariOptions
+	setPort(int port) : SafariOptions
+	setUseCleanSession(boolean useCleanSession) : SafariOptions
+	setUseTechnologyPreview(boolean useTechnologyPreview) : SafariOptions
+	getPort() : int
+	getUseCleanSession() : boolean
+	getUseTechnologyPreview() : boolean
+	fromJsonMap(Map<?,?> options) : SafariOptions
+	toCapabilities() : MutableCapabilities
+}
+enum ScreenOrientation{
+	LANDSCAPE : LANDSCAPE
+	PORTRAIT : PORTRAIT
+	value : String
+	ScreenOrientation(String value)
+	value() : String
+}
+class ScreenshotException{
+	screenshot : String
+	ScreenshotException(String screenGrab)
+	ScreenshotException(String screenGrab, Throwable cause)
+	getBase64EncodedScreenshot() : String
+}
+class ScriptTimeoutException{
+	ScriptTimeoutException()
+	ScriptTimeoutException(String message)
+	ScriptTimeoutException(Throwable cause)
+	ScriptTimeoutException(String message, Throwable cause)
+}
+class ScrollAction{
+	xOffset : int
+	yOffset : int
+	ScrollAction(TouchScreen touchScreen, Locatable locationProvider, int x, int y)
+	ScrollAction(TouchScreen touchScreen, int xOffset, int yOffset)
+	perform() : void
+}
+interface SearchContext{
+	findElements(By by) : List<WebElement>
+	findElement(By by) : WebElement
+}
+class Select{
+	element : WebElement
+	isMulti : boolean
+	Select(WebElement element)
+	isMultiple() : boolean
+	getOptions() : List<WebElement>
+	getAllSelectedOptions() : List<WebElement>
+	getFirstSelectedOption() : WebElement
+	selectByVisibleText(String text) : void
+	getLongestSubstringWithoutSpace(String s) : String
+	selectByIndex(int index) : void
+	selectByValue(String value) : void
+	deselectAll() : void
+	deselectByValue(String value) : void
+	deselectByIndex(int index) : void
+	deselectByVisibleText(String text) : void
+	setSelected(WebElement option, boolean select) : void
+}
+class SendKeysAction{
+	keysToSend : CharSequence
+	SendKeysAction(Keyboard keyboard, Mouse mouse, Locatable locationProvider, CharSequence keysToSend)
+	SendKeysAction(Keyboard keyboard, Mouse mouse, CharSequence keysToSend)
+	perform() : void
+	asInteractions(PointerInput mouse, KeyInput keyboard) : List<Interaction>
+}
+class Sequence{
+	actions : List<Encodable>
+	device : InputSource
+	Sequence(InputSource device, int initialLength)
+	addAction(Interaction action) : Sequence
+	encode() : Map<String,Object>
+	toJson() : Map<String,Object>
+	size() : int
+}
+class SessionId{
+	opaqueKey : String
+	SessionId(String opaqueKey)
+	toString() : String
+	hashCode() : int
+	equals(Object obj) : boolean
+}
+class SessionLogHandler{
+	getSessionLogs(JsonObject rawSessionMap) : Map<String,SessionLogs>
+}
+class SessionLogs{
+	logTypeToEntriesMap : Map<String,LogEntries>
+	SessionLogs()
+	getLogs(String logType) : LogEntries
+	addLog(String logType, LogEntries logEntries) : void
+	getLogTypes() : Set<String>
+	getAll() : Map<String,LogEntries>
+	fromJSON(JsonObject rawSessionLogs) : SessionLogs
+}
+class SessionNotCreatedException{
+	SessionNotCreatedException(String msg)
+	SessionNotCreatedException(String msg, Throwable cause)
+}
+interface SessionStorage{
+	getItem(String key) : String
+	keySet() : Set<String>
+	setItem(String key, String value) : void
+	removeItem(String key) : String
+	clear() : void
+	size() : int
+}
+class SimplePropertyDescriptor{
+	name : String
+	readMethod : Method
+	writeMethod : Method
+	SimplePropertyDescriptor()
+	SimplePropertyDescriptor(String name, Method readMethod, Method writeMethod)
+	getName() : String
+	getReadMethod() : Method
+	getWriteMethod() : Method
+	getPropertyDescriptors(Class<?> clazz) : SimplePropertyDescriptor
+	uncapitalize(String s) : String
+}
+abstract class SingleKeyAction{
+	key : Keys
+	MODIFIER_KEYS : Keys
+	SingleKeyAction(Keyboard keyboard, Mouse mouse, Keys key)
+	SingleKeyAction(Keyboard keyboard, Mouse mouse, Locatable locationProvider, Keys key)
+}
+class SingleTapAction{
+	SingleTapAction(TouchScreen touchScreen, Locatable locationProvider)
+	perform() : void
+}
+interface Sleeper{
+	sleep(Duration duration) : void
+}
+abstract class SlowLoadableComponent{
+	clock : Clock
+	timeOutInSeconds : long
+	SlowLoadableComponent(Clock clock, int timeOutInSeconds)
+	get() : T
+	isError() : void
+	sleepFor() : long
+	waitFor() : void
+}
+class SocketLock{
+	DEFAULT_PORT : int
+	DELAY_BETWEEN_SOCKET_CHECKS : long
+	syncObject : Object
+	localhost : InetSocketAddress
+	lockSocket : Socket
+	address : InetSocketAddress
+	SocketLock()
+	SocketLock(int lockPort)
+	SocketLock(InetSocketAddress address)
+	lock(long timeoutInMillis) : void
+	close() : void
+	unlock() : void
+	isLockFree(InetSocketAddress address) : boolean
+	getLockPort() : int
+}
+enum SourceType{
+	KEY : KEY
+	NONE : NONE
+	POINTER : POINTER
+}
+class StaleElementReferenceException{
+	SUPPORT_URL : String
+	StaleElementReferenceException(String message)
+	StaleElementReferenceException(String message, Throwable cause)
+	getSupportUrl() : String
+}
+class StoringLocalLogs{
+	localLogs : Map<String,List<LogEntry>>
+	logTypesToInclude : Set<String>
+	StoringLocalLogs(Set<String> logTypesToInclude)
+	get(String logType) : LogEntries
+	getLocalLogs(String logType) : Iterable<LogEntry>
+	addEntry(String logType, LogEntry entry) : void
+	getAvailableLogTypes() : Set<String>
+}
+class SystemClock{
+	laterBy(long durationInMillis) : long
+	isNowBefore(long endInMillis) : boolean
+	now() : long
+}
+interface TakesScreenshot{
+	getScreenshotAs(OutputType<X> target) : X
+}
+class TemporaryFilesystem{
+	temporaryFiles : Set<File>
+	baseDir : File
+	shutdownHook : Thread
+	sysTemp : File
+	instance : TemporaryFilesystem
+	TemporaryFilesystem(File baseDir)
+	getDefaultTmpFS() : TemporaryFilesystem
+	setTemporaryDirectory(File directory) : void
+	getTmpFsBasedOn(File directory) : TemporaryFilesystem
+	createTempDir(String prefix, String suffix) : File
+	deleteTempDir(File file) : void
+	deleteTemporaryFiles() : void
+	shouldReap() : boolean
+	deleteBaseDir() : boolean
+}
+class ThreadGuard{
+	protect(WebDriver actualWebDriver) : WebDriver
+	getInterfaces(Object target) : Class<?>
+}
+class TimeoutException{
+	TimeoutException()
+	TimeoutException(String message)
+	TimeoutException(Throwable cause)
+	TimeoutException(String message, Throwable cause)
+}
+class TouchAction{
+	touchScreen : TouchScreen
+	TouchAction(TouchScreen touchScreen, Locatable locationProvider)
+}
+class TouchActions{
+	touchScreen : TouchScreen
+	TouchActions(WebDriver driver)
+	TouchActions(Keyboard keyboard, TouchScreen touchScreen)
+	singleTap(WebElement onElement) : TouchActions
+	down(int x, int y) : TouchActions
+	up(int x, int y) : TouchActions
+	move(int x, int y) : TouchActions
+	scroll(WebElement onElement, int xOffset, int yOffset) : TouchActions
+	doubleTap(WebElement onElement) : TouchActions
+	longPress(WebElement onElement) : TouchActions
+	scroll(int xOffset, int yOffset) : TouchActions
+	flick(int xSpeed, int ySpeed) : TouchActions
+	flick(WebElement onElement, int xOffset, int yOffset, int speed) : TouchActions
+}
+interface TouchScreen{
+	singleTap(Coordinates where) : void
+	down(int x, int y) : void
+	up(int x, int y) : void
+	move(int x, int y) : void
+	scroll(Coordinates where, int xOffset, int yOffset) : void
+	doubleTap(Coordinates where) : void
+	longPress(Coordinates where) : void
+	scroll(int xOffset, int yOffset) : void
+	flick(int xSpeed, int ySpeed) : void
+	flick(Coordinates where, int xOffset, int yOffset, int speed) : void
+}
+class UnableToCreateProfileException{
+	UnableToCreateProfileException(Throwable e)
+	UnableToCreateProfileException(String message)
+}
+class UnableToSetCookieException{
+	UnableToSetCookieException()
+	UnableToSetCookieException(String message)
+	UnableToSetCookieException(Throwable cause)
+	UnableToSetCookieException(String message, Throwable cause)
+}
+enum UnexpectedAlertBehaviour{
+	ACCEPT : ACCEPT
+	DISMISS : DISMISS
+	IGNORE : IGNORE
+	text : String
+	UnexpectedAlertBehaviour(String text)
+	toString() : String
+	fromString(String text) : UnexpectedAlertBehaviour
+}
+class UnexpectedTagNameException{
+	UnexpectedTagNameException(String expectedTagName, String actualTagName)
+}
+class UnhandledAlertException{
+	alertText : String
+	UnhandledAlertException(String message)
+	UnhandledAlertException(String message, String alertText)
+	getAlertText() : String
+	getAlert() : Map<String,String>
+}
+class UnixProcess{
+	log : Logger
+	inputOut : CircularOutputStream
+	allInput : String
+	handler : DefaultExecuteResultHandler
+	executor : Executor
+	drainTo : OutputStream
+	executeWatchdog : SeleniumWatchDog
+	streamHandler : PumpStreamHandler
+	cl : org.apache.commons.exec.CommandLine
+	env : Map<String,String>
+	UnixProcess(String executable, String args)
+	setEnvironmentVariable(String name, String value) : void
+	getEnvironment() : Map<String,String>
+	getMergedEnv() : Map<String,String>
+	getInputStream() : ByteArrayInputStream
+	executeAsync() : void
+	getOutputStream() : OutputStream
+	destroy() : int
+	waitFor() : void
+	waitFor(long timeout) : void
+	isRunning() : boolean
+	getExitCode() : int
+	checkForError() : void
+	getStdOut() : String
+	setInput(String allInput) : void
+	setWorkingDirectory(File workingDirectory) : void
+	toString() : String
+	copyOutputTo(OutputStream out) : void
+}
+class UnreachableBrowserException{
+	UnreachableBrowserException(String message)
+	UnreachableBrowserException(String message, Throwable cause)
+}
+class UnsupportedCommandException{
+	UnsupportedCommandException()
+	UnsupportedCommandException(String message)
+	UnsupportedCommandException(Throwable cause)
+	UnsupportedCommandException(String message, Throwable cause)
+}
+class UpAction{
+	x : int
+	y : int
+	UpAction(TouchScreen touchScreen, int x, int y)
+	perform() : void
+}
+class UrlChecker{
+	log : Logger
+	CONNECT_TIMEOUT_MS : int
+	READ_TIMEOUT_MS : int
+	MAX_POLL_INTERVAL_MS : long
+	MIN_POLL_INTERVAL_MS : long
+	THREAD_COUNTER : AtomicInteger
+	THREAD_POOL : ExecutorService
+	timeLimiter : TimeLimiter
+	UrlChecker()
+	UrlChecker(TimeLimiter timeLimiter)
+	MILLISECONDS.sleep(sleepMillis )
+	waitUntilAvailable(long timeout, TimeUnit unit, URL urls) : void
+}
+class TimeoutException{
+	TimeoutException(String s, Throwable throwable)
+}
+class Urls{
+	log : Logger
+	urlEncode(String value) : String
+}
+class UselessFileDetector{
+	getLocalFile(CharSequence keys) : File
+}
+class UserAndPassword{
+	username : String
+	password : String
+	UserAndPassword(String username, String password)
+	getUsername() : String
+	getPassword() : String
+}
+class W3CHandshakeResponse{
+	error : Function<InitialHandshakeResponse,Optional<ProtocolHandshake.Result>>
+	success : Function<InitialHandshakeResponse,Optional<ProtocolHandshake.Result>>
+	getResponseFunction() : Function<InitialHandshakeResponse,Optional<ProtocolHandshake.Result>>
+}
+class W3CHttpCommandCodec{
+	W3CHttpCommandCodec()
+	amendParameters(String name, Map<String,?> parameters) : Map<String,?>
+	stringToUtf8Array(String toConvert) : JsonArray
+	executeAtom(String atomFileName, Object args) : Map<String,?>
+	toScript(String script, Object args) : Map<String,?>
+	asElement(Object id) : Map<String,String>
+	cssEscape(String using) : String
+}
+class W3CHttpResponseCodec{
+	log : Logger
+	errorCodes : ErrorCodes
+	jsonToBeanConverter : JsonToBeanConverter
+	elementConverter : Function<Object,Object>
+	decode(HttpResponse encodedResponse) : Response
+	getValueToEncode(Response response) : Object
+	reconstructValue(Response response) : Response
+	createException(String error, String message) : WebDriverException
+}
+interface Wait{
+	until(Function<?,T> isTrue) : T
+}
+interface WebDriver{
+	get(String url) : void
+	getCurrentUrl() : String
+	getTitle() : String
+	findElements(By by) : List<WebElement>
+	findElement(By by) : WebElement
+	getPageSource() : String
+	close() : void
+	quit() : void
+	getWindowHandles() : Set<String>
+	getWindowHandle() : String
+	switchTo() : TargetLocator
+	navigate() : Navigation
+	manage() : Options
+}
+interface WebDriverEventListener{
+	beforeAlertAccept(WebDriver driver) : void
+	afterAlertAccept(WebDriver driver) : void
+	afterAlertDismiss(WebDriver driver) : void
+	beforeAlertDismiss(WebDriver driver) : void
+	beforeNavigateTo(String url, WebDriver driver) : void
+	afterNavigateTo(String url, WebDriver driver) : void
+	beforeNavigateBack(WebDriver driver) : void
+	afterNavigateBack(WebDriver driver) : void
+	beforeNavigateForward(WebDriver driver) : void
+	afterNavigateForward(WebDriver driver) : void
+	beforeNavigateRefresh(WebDriver driver) : void
+	afterNavigateRefresh(WebDriver driver) : void
+	beforeFindBy(By by, WebElement element, WebDriver driver) : void
+	afterFindBy(By by, WebElement element, WebDriver driver) : void
+	beforeClickOn(WebElement element, WebDriver driver) : void
+	afterClickOn(WebElement element, WebDriver driver) : void
+	beforeChangeValueOf(WebElement element, WebDriver driver, CharSequence keysToSend) : void
+	afterChangeValueOf(WebElement element, WebDriver driver, CharSequence keysToSend) : void
+	beforeScript(String script, WebDriver driver) : void
+	afterScript(String script, WebDriver driver) : void
+	onException(Throwable throwable, WebDriver driver) : void
+}
+class WebDriverException{
+	SESSION_ID : String
+	DRIVER_INFO : String
+	BASE_SUPPORT_URL : String
+	HOST_NAME : String
+	HOST_ADDRESS : String
+	extraInfo : Map<String,String>
+	address : String
+}
+class WebDriverWait{
+	DEFAULT_SLEEP_TIMEOUT : long
+	driver : WebDriver
+	WebDriverWait(WebDriver driver, long timeOutInSeconds)
+	WebDriverWait(WebDriver driver, long timeOutInSeconds, long sleepInMillis)
+	WebDriverWait(WebDriver driver, Clock clock, Sleeper sleeper, long timeOutInSeconds, long sleepTimeOut)
+	timeoutException(String message, Throwable lastException) : RuntimeException
+}
+interface WebElement{
+	click() : void
+	submit() : void
+	sendKeys(CharSequence keysToSend) : void
+	clear() : void
+	getTagName() : String
+	getAttribute(String name) : String
+	isSelected() : boolean
+	isEnabled() : boolean
+	getText() : String
+	findElements(By by) : List<WebElement>
+	findElement(By by) : WebElement
+	isDisplayed() : boolean
+	getLocation() : Point
+	getSize() : Dimension
+	getRect() : Rectangle
+	getCssValue(String propertyName) : String
+}
+class WebElementToJsonConverter{
+	apply(Object arg) : Object
+}
+interface WebStorage{
+	getLocalStorage() : LocalStorage
+	getSessionStorage() : SessionStorage
+}
+class WindowsUtils{
+	LOG : Logger
+	THIS_IS_WINDOWS : boolean
+	taskkill : String
+	env : Properties
+	killByName(String name) : void
+	killPID(String processID) : void
+	executeCommand(String commandName, String args) : String
+	loadEnvironment() : Properties
+	getProgramFilesPath() : String
+	getProgramFiles86Path() : String
+	getEnvVarPath(String envVar, String defaultValue) : String
+	getPathsInProgramFiles(String childPath) : ImmutableList<String>
+	getFullPath(String parent, String child) : String
+	getEnvVarIgnoreCase(String var) : String
+	findSystemRoot() : File
+	findTaskKill() : String
+	thisIsWindows() : boolean
+}
+interface WrapsDriver{
+	getWrappedDriver() : WebDriver
+}
+interface WrapsElement{
+	getWrappedElement() : WebElement
+}
+class XpiDriverService{
+	lock : Lock
+	port : int
+	binary : FirefoxBinary
+	profile : FirefoxProfile
+	profileDir : File
+	XpiDriverService(File executable, int port, ImmutableList<String> args, ImmutableMap<String,String> environment, FirefoxBinary binary, FirefoxProfile profile)
+	getUrl(int port) : URL
+	start() : void
+	waitUntilAvailable() : void
+	stop() : void
+	addWebDriverExtension(FirefoxProfile profile) : void
+	loadCustomExtension() : Optional<Extension>
+	loadDefaultExtension() : Extension
+	createDefaultService() : XpiDriverService
+	builder() : Builder
+}
+class Zip{
+	BUF_SIZE : int
+	zip(File input) : String
+	addToZip(String basePath, ZipOutputStream zos, File toAdd) : void
+	unzipToTempDir(String source, String prefix, String suffix) : File
+	unzip(String source, File outputDir) : void
+	unzipToTempDir(InputStream source, String prefix, String suffix) : File
+	unzip(InputStream source, File outputDir) : void
+	unzipFile(File output, InputStream zipStream, String name) : void
+}
+AbstractAnnotations --> By
+AbstractFindByBuilder --> By
+AbstractHttpCommandCodec --> HttpMethod
+AbstractHttpCommandCodec --> Command
+AbstractHttpCommandCodec --> JsonToBeanConverter
+AbstractHttpCommandCodec --> HttpRequest
+AbstractHttpCommandCodec --> BeanToJsonConverter
+AbstractHttpCommandCodec --> SessionId
+AbstractHttpResponseCodec --> ErrorCodes
+AbstractHttpResponseCodec --> JsonToBeanConverter
+AbstractHttpResponseCodec --> BeanToJsonConverter
+AbstractHttpResponseCodec --> HttpResponse
+AbstractHttpResponseCodec --> Response
+AbstractWebDriverEventListener --> WebDriver
+AbstractWebDriverEventListener --> By
+AbstractWebDriverEventListener --> WebElement
+AbstractWebDriverEventListener ..|> WebDriverEventListener
+Actions --> WebDriver
+Actions --> Keyboard
+Actions --> Duration
+Actions --> InputSource
+Actions --> KeyInput
+Actions --> Action
+Actions --> PointerInput
+Actions --> WebElement
+Actions --> Mouse
+Actions --> Keys
+Actions --> Sequence
+Actions --> Actions
+Actions --> Interaction
+Actions --> CompositeAction
+AddApplicationCache --> InterfaceImplementation
+AddApplicationCache ..|> AugmenterProvider
+AddFindsByCss --> InterfaceImplementation
+AddFindsByCss ..|> AugmenterProvider
+AddFindsChildByCss --> InterfaceImplementation
+AddFindsChildByCss ..|> AugmenterProvider
+AddLocationContext --> InterfaceImplementation
+AddLocationContext ..|> AugmenterProvider
+AddNetworkConnection --> InterfaceImplementation
+AddNetworkConnection ..|> AugmenterProvider
+AddRemoteTouchScreen --> InterfaceImplementation
+AddRemoteTouchScreen ..|> AugmenterProvider
+AddRotatable --> InterfaceImplementation
+AddRotatable ..|> AugmenterProvider
+AddWebStorage --> InterfaceImplementation
+AddWebStorage ..|> AugmenterProvider
+AjaxElementLocator --|> DefaultElementLocator
+AjaxElementLocator --> WebElement
+AjaxElementLocator --> Clock
+AjaxElementLocatorFactory ..|> ElementLocatorFactory
+AjaxElementLocatorFactory --> ElementLocator
+AjaxElementLocatorFactory --> SearchContext
+Alert --> Credentials
+Annotations --> By
+Annotations --|> AbstractAnnotations
+ApacheHttpClient --> HttpRequest
+ApacheHttpClient --> HttpMethod
+ApacheHttpClient --> HttpClient
+ApacheHttpClient --> HttpResponse
+AppCacheStatus --> AppCacheStatus
+ApplicationCache --> AppCacheStatus
+Architecture --> Architecture
+Augmenter --> AugmenterProvider
+Augmenter --> WebDriver
+Augmenter --> RemoteWebDriver
+Augmenter --|> BaseAugmenter
+AugmenterProvider --> InterfaceImplementation
+BaseAction --> Locatable
+BaseAction --> WebElement
+BaseAugmenter --> AugmenterProvider
+BaseAugmenter --> WebDriver
+BaseAugmenter --> RemoteWebElement
+BaseAugmenter --> WebElement
+BaseAugmenter --> RemoteWebDriver
+ButtonReleaseAction --|> MouseAction
+ButtonReleaseAction --> Interaction
+ButtonReleaseAction --> KeyInput
+ButtonReleaseAction ..|> Action
+ButtonReleaseAction --> PointerInput
+By --> WebElement
+By --> By
+By --> SearchContext
+ByAll --|> By
+ByAll --> WebElement
+ByAll --> SearchContext
+ByChained --|> By
+ByChained --> WebElement
+ByChained --> SearchContext
+ByIdOrName --|> By
+ByIdOrName --> WebElement
+ByIdOrName --> SearchContext
+Capabilities --> Capabilities
+Capabilities --> Platform
+ChromeDriver --> RemoteNetworkConnection
+ChromeDriver ..|> NetworkConnection
+ChromeDriver --> FileDetector
+ChromeDriver --|> RemoteWebDriver
+ChromeDriver --> RemoteLocationContext
+ChromeDriver --> SessionStorage
+ChromeDriver --> TouchScreen
+ChromeDriver --> LocalStorage
+ChromeDriver --> Location
+ChromeDriver --> RemoteWebStorage
+ChromeDriverCommandExecutor --|> DriverCommandExecutor
+ChromeDriverCommandExecutor --> CommandInfo
+ChromeDriverService --|> DriverService
+ChromeDriverService --> ChromeDriverService
+ChromeOptions --> UnexpectedAlertBehaviour
+ChromeOptions --|> MutableCapabilities
+ChromeOptions --> ChromeOptions
+ChromeOptions --> PageLoadStrategy
+ClasspathExtension ..|> Extension
+ClickAction --|> MouseAction
+ClickAction --> Interaction
+ClickAction --> KeyInput
+ClickAction ..|> Action
+ClickAction --> PointerInput
+ClickAndHoldAction --|> MouseAction
+ClickAndHoldAction --> Interaction
+ClickAndHoldAction --> KeyInput
+ClickAndHoldAction ..|> Action
+ClickAndHoldAction --> PointerInput
+Color --> Color
+Colors --> Color
+Command --> SessionId
+CommandCodec --> HttpMethod
+CommandCodec --> Command
+CommandExecutor --> Command
+CommandExecutor --> Response
+CommandInfo --> HttpMethod
+CommandLine --> OsProcess
+CompositeAction --> Action
+CompositeAction --> Interaction
+CompositeAction --> KeyInput
+CompositeAction --> CompositeAction
+CompositeAction --> PointerInput
+CompositeAction ..|> IsInteraction
+CompositeLocalLogs --|> LocalLogs
+CompositeLocalLogs --> LogEntries
+CompositeLocalLogs --> LogEntry
+ConnectionClosedException --|> WebDriverException
+ContextAware --> WebDriver
+ContextClickAction --|> MouseAction
+ContextClickAction --> Interaction
+ContextClickAction --> KeyInput
+ContextClickAction ..|> Action
+ContextClickAction --> PointerInput
+Coordinates --> Point
+CoordinatesUtils --> Coordinates
+DefaultElementLocator --> By
+DefaultElementLocator --> SearchContext
+DefaultElementLocator --> WebElement
+DefaultElementLocator ..|> ElementLocator
+DefaultElementLocatorFactory ..|> ElementLocatorFactory
+DefaultElementLocatorFactory --> ElementLocator
+DefaultElementLocatorFactory --> SearchContext
+DefaultFieldDecorator --> ElementLocatorFactory
+DefaultFieldDecorator ..|> FieldDecorator
+DefaultFieldDecorator --> WebElement
+DefaultFieldDecorator --> ElementLocator
+DefaultNetworkInterfaceProvider --> NetworkInterface
+DefaultNetworkInterfaceProvider ..|> NetworkInterfaceProvider
+DesiredCapabilities --|> MutableCapabilities
+DesiredCapabilities --> DesiredCapabilities
+DesiredCapabilities --> Capabilities
+DesiredCapabilities --> Platform
+Dialect --> CommandCodec
+Dialect --> ResponseCodec
+Dialect --> HttpRequest
+Dialect --> HttpResponse
+DisplayAction --> Coordinates
+DisplayAction --|> BaseAction
+DoubleClickAction --|> MouseAction
+DoubleClickAction --> Interaction
+DoubleClickAction --> KeyInput
+DoubleClickAction ..|> Action
+DoubleClickAction --> PointerInput
+DoubleTapAction ..|> Action
+DoubleTapAction --|> TouchAction
+DownAction ..|> Action
+DownAction --|> TouchAction
+DriverCommandExecutor --> DriverService
+DriverCommandExecutor --> Command
+DriverCommandExecutor --|> HttpCommandExecutor
+DriverCommandExecutor --> Response
+DriverService --> CommandLine
+EdgeDriver --|> RemoteWebDriver
+EdgeDriverService --|> DriverService
+EdgeDriverService --> EdgeDriverService
+EdgeOptions --|> MutableCapabilities
+ElementClickInterceptedException --|> ElementNotInteractableException
+ElementLocator --> WebElement
+ElementLocatorFactory --> ElementLocator
+ElementNotInteractableException --|> InvalidElementStateException
+ElementNotSelectableException --|> InvalidElementStateException
+ElementNotVisibleException --|> ElementNotInteractableException
+ElementScrollBehavior --> ElementScrollBehavior
+ErrorHandler --> ErrorCodes
+ErrorHandler --> Response
+UnknownServerException --|> WebDriverException
+EventFiringKeyboard --> WebDriver
+EventFiringKeyboard --> WebDriverEventListener
+EventFiringKeyboard ..|> Keyboard
+EventFiringMouse --> WebDriver
+EventFiringMouse --> Coordinates
+EventFiringMouse --> WebDriverEventListener
+EventFiringMouse ..|> Mouse
+EventFiringTouch --> WebDriver
+EventFiringTouch --> Coordinates
+EventFiringTouch --> WebDriverEventListener
+EventFiringTouch ..|> TouchScreen
+EventFiringWebDriver --> WebDriver
+EventFiringWebDriver --> By
+EventFiringWebDriver --> WebDriverEventListener
+EventFiringWebDriver ..|> Interactive
+EventFiringWebDriver --> EventFiringWebDriver
+EventFiringWebDriver --> WebElement
+EventFiringWebElement --> By
+EventFiringWebElement --> WebDriver
+EventFiringWebElement --> Coordinates
+EventFiringWebElement --> Dimension
+EventFiringWebElement --> OutputType
+EventFiringWebElement ..|> Locatable
+EventFiringWebElement --> WebElement
+EventFiringWebElement --> Rectangle
+EventFiringWebElement --> Point
+EventFiringOptions --> Logs
+EventFiringOptions --> Cookie
+EventFiringTargetLocator --> WebDriver
+EventFiringTargetLocator --> Alert
+EventFiringTargetLocator --> WebElement
+EventFiringWindow --> Dimension
+EventFiringWindow --> Point
+EventFiringAlert ..|> Alert
+EventFiringAlert --> Credentials
+ExpectedConditions --> ExpectedCondition
+ExpectedConditions --> By
+ExpectedConditions --> WebDriver
+ExpectedConditions --> Alert
+ExpectedConditions --> WebElement
+ExtensionConnection --|> NeedsLocalLogs
+FileExtension ..|> Extension
+FindsByClassName --> WebElement
+FindsByCssSelector --> WebElement
+FindsById --> WebElement
+FindsByLinkText --> WebElement
+FindsByName --> WebElement
+FindsByTagName --> WebElement
+FindsByXPath --> WebElement
+FirefoxBinary --> Executable
+FirefoxBinary --> FirefoxOptions
+FirefoxBinary --> CommandLine
+FirefoxBinary --> FirefoxProfile
+FirefoxDriver --> CommandExecutor
+FirefoxDriver --> FirefoxOptions
+FirefoxDriver --> FirefoxBinary
+FirefoxDriver --> FileDetector
+FirefoxDriver --> Capabilities
+FirefoxDriver --|> RemoteWebDriver
+FirefoxDriverLogLevel --> FirefoxDriverLogLevel
+FirefoxOptions --> FirefoxBinary
+FirefoxOptions --> FirefoxOptions
+FirefoxOptions --|> MutableCapabilities
+FirefoxOptions --> DesiredCapabilities
+FirefoxOptions --> Capabilities
+FirefoxOptions --> FirefoxProfile
+FirefoxOptions --> UnexpectedAlertBehaviour
+FirefoxOptions --> FirefoxDriverLogLevel
+FirefoxOptions --> PageLoadStrategy
+FirefoxProfile --> Preferences
+FirefoxProfile --> FirefoxProfile
+FirefoxProfile --> Extension
+FixedIANAPortRange ..|> EphemeralPortRangeDetector
+FlickAction ..|> Action
+FlickAction --|> TouchAction
+FluentWait --> Sleeper
+FluentWait --> FluentWait
+FluentWait --> Duration
+FluentWait --> Clock
+Gecko013ProtocolResponse --> InitialHandshakeResponse
+Gecko013ProtocolResponse ..|> HandshakeResponse
+GeckoDriverService --|> DriverService
+GeckoDriverService --> GeckoDriverService
+HandlerBasedLocalLogs --|> LocalLogs
+HandlerBasedLocalLogs --> LogEntries
+HandlerBasedLocalLogs --> LogEntry
+HandlerBasedLocalLogs --> LoggingHandler
+HandshakeResponse --> InitialHandshakeResponse
+HasCapabilities --> Capabilities
+HasInputDevices --> Mouse
+HasInputDevices --> Keyboard
+HasTouchScreen --> TouchScreen
+HttpClient --> HttpRequest
+HttpClient --> HttpResponse
+HttpClientFactory --> HttpClient
+HttpClientFactory --> Credentials
+HttpCommandExecutor --> CommandCodec
+HttpCommandExecutor --> ResponseCodec
+HttpCommandExecutor --> HttpRequest
+HttpCommandExecutor --> HttpResponse
+HttpCommandExecutor --> LogEntry
+HttpCommandExecutor --> CommandInfo
+HttpCommandExecutor --> LocalLogs
+HttpCommandExecutor --> Command
+HttpCommandExecutor ..|> NeedsLocalLogs
+HttpCommandExecutor --> HttpClient
+HttpCommandExecutor --> Response
+HttpProfilerLogEntry --> EventType
+HttpProfilerLogEntry --|> ProfilerLogEntry
+HttpRequest --> HttpMethod
+HttpRequest --|> HttpMessage
+HttpResponse --|> HttpMessage
+ImeActivationFailedException --|> WebDriverException
+ImeNotAvailableException --|> WebDriverException
+InitialHandshakeResponse --> Duration
+InputSource --> SourceType
+Interaction --> InputSource
+Interaction --> SourceType
+Interactive --> Sequence
+InterfaceImplementation --> ExecuteMethod
+InternetExplorerDriver --> Capabilities
+InternetExplorerDriver --> FileDetector
+InternetExplorerDriver --> InternetExplorerDriverService
+InternetExplorerDriver --> OutputType
+InternetExplorerDriver --|> RemoteWebDriver
+InternetExplorerDriverService --|> DriverService
+InternetExplorerDriverService --> InternetExplorerDriverService
+InternetExplorerOptions --|> MutableCapabilities
+InternetExplorerOptions --> Duration
+InternetExplorerOptions --> InternetExplorerOptions
+InternetExplorerOptions --> ElementScrollBehavior
+InternetExplorerOptions --> UnexpectedAlertBehaviour
+InternetExplorerOptions --> PageLoadStrategy
+InvalidArgumentException --|> WebDriverException
+InvalidCookieDomainException --|> WebDriverException
+InvalidCoordinatesException --|> WebDriverException
+InvalidElementStateException --|> WebDriverException
+InvalidSelectorException --|> NoSuchElementException
+ISelect --> WebElement
+IsInteraction --> Interaction
+IsInteraction --> KeyInput
+IsInteraction --> PointerInput
+JavascriptException --|> WebDriverException
+JdkAugmenter --> WebDriver
+JdkAugmenter --> AugmenterProvider
+JdkAugmenter --> RemoteWebDriver
+JdkAugmenter --|> BaseAugmenter
+JreHttpClient --> HttpRequest
+JreHttpClient --> HttpResponse
+JreHttpClient ..|> HttpClient
+JsonException --|> WebDriverException
+JsonHttpCommandCodec --|> AbstractHttpCommandCodec
+JsonHttpResponseCodec --|> AbstractHttpResponseCodec
+JsonHttpResponseCodec --> ErrorHandler
+JsonHttpResponseCodec --> Response
+JsonToBeanConverter --> ErrorCodes
+JsonToBeanConverter --> WebDriverException
+JsonToBeanConverter --> SimplePropertyDescriptor
+JsonToWebElementConverter --> RemoteWebDriver
+JsonWireProtocolResponse --> InitialHandshakeResponse
+JsonWireProtocolResponse ..|> HandshakeResponse
+KeyDownAction --> Interaction
+KeyDownAction --> KeyInput
+KeyDownAction --|> SingleKeyAction
+KeyDownAction ..|> Action
+KeyDownAction --> PointerInput
+KeyInput ..|> Encodable
+KeyInput --> Interaction
+KeyInput --> SourceType
+KeysRelatedAction --|> BaseAction
+KeysRelatedAction --> Mouse
+KeysRelatedAction --> Keyboard
+KeysRelatedAction --> Interaction
+KeysRelatedAction --> PointerInput
+KeysRelatedAction ..|> IsInteraction
+KeyUpAction --> Interaction
+KeyUpAction --> KeyInput
+KeyUpAction --|> SingleKeyAction
+KeyUpAction ..|> Action
+KeyUpAction --> PointerInput
+LinuxEphemeralPortRangeDetector ..|> EphemeralPortRangeDetector
+LinuxEphemeralPortRangeDetector --> LinuxEphemeralPortRangeDetector
+LocalFileDetector ..|> FileDetector
+LocalLogs --> LogEntries
+LocalLogs --> LogEntry
+LocalLogs --> LocalLogs
+LocalLogs ..|> Logs
+LocalLogs --> LoggingHandler
+Locatable --> Coordinates
+LocatingElementHandler --> ElementLocator
+LocatingElementListHandler --> ElementLocator
+LocationContext --> Location
+LogCombiner --> LogEntry
+LogCombiner --> LogEntries
+LogEntries --> LogEntry
+LoggingHandler --> LogEntry
+LoggingHandler --> LoggingHandler
+LoggingPreferences --> LoggingPreferences
+Logs --> LogEntries
+LongPressAction ..|> Action
+LongPressAction --|> TouchAction
+Mouse --> Coordinates
+MouseAction --> Coordinates
+MouseAction --> PointerInput
+MouseAction ..|> IsInteraction
+MouseAction --|> BaseAction
+MouseAction --> Mouse
+MouseAction --> Interaction
+MoveAction ..|> Action
+MoveAction --|> TouchAction
+MoveMouseAction --|> MouseAction
+MoveMouseAction --> Interaction
+MoveMouseAction --> KeyInput
+MoveMouseAction ..|> Action
+MoveMouseAction --> PointerInput
+MoveTargetOutOfBoundsException --|> WebDriverException
+MoveToOffsetAction --|> MouseAction
+MoveToOffsetAction --> Interaction
+MoveToOffsetAction --> KeyInput
+MoveToOffsetAction ..|> Action
+MoveToOffsetAction --> PointerInput
+MutableCapabilities --> MutableCapabilities
+MutableCapabilities --> Capabilities
+MutableCapabilities --> Platform
+NeedsLocalLogs --> LocalLogs
+NetworkInterfaceProvider --> NetworkInterface
+NetworkUtils --> NetworkInterfaceProvider
+NetworkUtils --> NetworkInterface
+NoAlertPresentException --|> NotFoundException
+NoSuchCookieException --|> NotFoundException
+NoSuchElementException --|> NotFoundException
+NoSuchFrameException --|> NotFoundException
+NoSuchSessionException --|> WebDriverException
+NoSuchWindowException --|> NotFoundException
+NotFoundException --|> WebDriverException
+OlderWindowsVersionEphemeralPortDetector ..|> EphemeralPortRangeDetector
+OperaDriver --> RemoteLocationContext
+OperaDriver --> SessionStorage
+OperaDriver --> FileDetector
+OperaDriver --> LocalStorage
+OperaDriver --> Location
+OperaDriver --> RemoteWebStorage
+OperaDriver ..|> WebStorage
+OperaDriver --|> RemoteWebDriver
+OperaDriverService --|> DriverService
+OperaDriverService --> OperaDriverService
+OperaOptions --|> MutableCapabilities
+OperaOptions --> OperaOptions
+PageFactory --> ElementLocatorFactory
+PageFactory --> WebDriver
+PageFactory --> FieldDecorator
+PageLoadStrategy --> PageLoadStrategy
+Pause --> SourceType
+Pause ..|> Encodable
+Pause --|> Interaction
+Pause --> Duration
+PauseAction --> Interaction
+PauseAction --> KeyInput
+PauseAction --> PointerInput
+PauseAction ..|> IsInteraction
+Platform --> Platform
+Point --> Point
+PointerInput ..|> Encodable
+PointerInput --> Interaction
+PointerInput --> Duration
+PointerInput --> SourceType
+PortProber --> EphemeralPortRangeDetector
+Preferences --> Preferences
+Preferences --> FirefoxProfile
+ProfilerLogEntry --|> LogEntry
+ProfilesIni --> FirefoxProfile
+ProfilesIni --> Platform
+ProtocolHandshake --> Result
+ProtocolHandshake --> HttpClient
+ProtocolHandshake --> Command
+Result --> Dialect
+Result --> Proxy
+Result --> SessionId
+Result --> Response
+Proxy --> Proxy
+Proxy --> Capabilities
+Rectangle --> Dimension
+Rectangle --> Point
+RemoteApplicationCache --> AppCacheStatus
+RemoteApplicationCache --> ExecuteMethod
+RemoteApplicationCache ..|> ApplicationCache
+RemoteExecuteMethod ..|> ExecuteMethod
+RemoteExecuteMethod --> RemoteWebDriver
+RemoteKeyboard --> ExecuteMethod
+RemoteKeyboard ..|> Keyboard
+RemoteLocalStorage --> ExecuteMethod
+RemoteLocalStorage ..|> LocalStorage
+RemoteLocationContext --> ExecuteMethod
+RemoteLocationContext ..|> LocationContext
+RemoteLocationContext --> Location
+RemoteLogs ..|> Logs
+RemoteLogs --> ExecuteMethod
+RemoteLogs --> LocalLogs
+RemoteLogs --> LogEntries
+RemoteMouse --> ExecuteMethod
+RemoteMouse --> Coordinates
+RemoteMouse ..|> Mouse
+RemoteNetworkConnection --> ExecuteMethod
+RemoteNetworkConnection ..|> NetworkConnection
+RemoteSessionStorage --> ExecuteMethod
+RemoteSessionStorage ..|> SessionStorage
+RemoteTouchScreen --> ExecuteMethod
+RemoteTouchScreen --> Coordinates
+RemoteTouchScreen ..|> TouchScreen
+RemoteWebDriver --> JsonToWebElementConverter
+RemoteWebDriver --> ExecuteMethod
+RemoteWebDriver --> WebElement
+RemoteWebDriver --> LocalLogs
+RemoteWebDriver --> Capabilities
+RemoteWebDriver --> RemoteKeyboard
+RemoteWebDriver --> Logs
+RemoteWebDriver --> Sequence
+RemoteWebDriver --> RemoteMouse
+RemoteWebDriver --> By
+RemoteWebDriver --> FileDetector
+RemoteWebDriver --> SearchContext
+RemoteWebDriver --> Keyboard
+RemoteWebDriver --> OutputType
+RemoteWebDriver --> SessionId
+RemoteWebDriver --> CommandExecutor
+RemoteWebDriver --> ErrorHandler
+RemoteWebDriver ..|> TakesScreenshot
+RemoteWebDriver --> Mouse
+RemoteWebDriver --> Response
+RemoteWebElement --> By
+RemoteWebElement --> WebDriver
+RemoteWebElement --> Coordinates
+RemoteWebElement --> FileDetector
+RemoteWebElement --> SearchContext
+RemoteWebElement --> Dimension
+RemoteWebElement --> OutputType
+RemoteWebElement --> RemoteWebDriver
+RemoteWebElement --> WebElement
+RemoteWebElement --> Rectangle
+RemoteWebElement ..|> TakesScreenshot
+RemoteWebElement --> Response
+RemoteWebElement --> Point
+RemoteWebStorage --> ExecuteMethod
+RemoteWebStorage --> SessionStorage
+RemoteWebStorage --> LocalStorage
+RemoteWebStorage ..|> WebStorage
+ResponseCodec --> Response
+Rotatable --> DeviceRotation
+Rotatable --> ScreenOrientation
+SafariDriver --> CommandExecutor
+SafariDriver --> SafariOptions
+SafariDriver --> FileDetector
+SafariDriver --|> RemoteWebDriver
+SafariDriverService --> SafariDriverService
+SafariDriverService --|> DriverService
+SafariDriverService --> SafariOptions
+SafariOptions --|> MutableCapabilities
+SafariOptions --> SafariOptions
+SafariOptions --> Capabilities
+ScreenshotException --|> WebDriverException
+ScriptTimeoutException --|> WebDriverException
+ScrollAction ..|> Action
+ScrollAction --|> TouchAction
+SearchContext --> By
+SearchContext --> WebElement
+Select --> WebElement
+Select ..|> ISelect
+SendKeysAction --|> KeysRelatedAction
+SendKeysAction --> Interaction
+SendKeysAction --> KeyInput
+SendKeysAction ..|> Action
+SendKeysAction --> PointerInput
+Sequence ..|> Encodable
+Sequence --> Sequence
+Sequence --> InputSource
+Sequence --> Interaction
+SessionLogHandler --> SessionLogs
+SessionLogs --> LogEntries
+SessionLogs --> SessionLogs
+SessionNotCreatedException --|> WebDriverException
+SimplePropertyDescriptor --> SimplePropertyDescriptor
+SingleKeyAction --|> KeysRelatedAction
+SingleKeyAction --> Keys
+SingleTapAction ..|> Action
+SingleTapAction --|> TouchAction
+Sleeper --> Duration
+SlowLoadableComponent --> Clock
+SocketLock ..|> Lock
+StaleElementReferenceException --|> WebDriverException
+StoringLocalLogs --|> LocalLogs
+StoringLocalLogs --> LogEntry
+StoringLocalLogs --> LogEntries
+SystemClock ..|> Clock
+TakesScreenshot --> OutputType
+TemporaryFilesystem --> TemporaryFilesystem
+ThreadGuard --> WebDriver
+TimeoutException --|> WebDriverException
+TouchAction --> TouchScreen
+TouchAction --|> DisplayAction
+TouchActions --|> Actions
+TouchActions --> TouchActions
+TouchActions --> WebElement
+TouchActions --> TouchScreen
+TouchScreen --> Coordinates
+UnableToCreateProfileException --|> WebDriverException
+UnableToSetCookieException --|> WebDriverException
+UnexpectedAlertBehaviour --> UnexpectedAlertBehaviour
+UnexpectedTagNameException --|> WebDriverException
+UnhandledAlertException --|> WebDriverException
+UnixProcess --> CircularOutputStream
+UnixProcess ..|> OsProcess
+UnreachableBrowserException --|> WebDriverException
+UnsupportedCommandException --|> WebDriverException
+UpAction ..|> Action
+UpAction --|> TouchAction
+UselessFileDetector ..|> FileDetector
+UserAndPassword ..|> Credentials
+W3CHandshakeResponse --> InitialHandshakeResponse
+W3CHandshakeResponse ..|> HandshakeResponse
+W3CHttpCommandCodec --|> AbstractHttpCommandCodec
+W3CHttpResponseCodec --> ErrorCodes
+W3CHttpResponseCodec --> JsonToBeanConverter
+W3CHttpResponseCodec --|> AbstractHttpResponseCodec
+W3CHttpResponseCodec --> WebDriverException
+W3CHttpResponseCodec --> HttpResponse
+W3CHttpResponseCodec --> Response
+WebDriver --> WebElement
+WebDriver --> By
+WebDriver --|> SearchContext
+WebDriverEventListener --> WebDriver
+WebDriverEventListener --> By
+WebDriverEventListener --> WebElement
+WebDriverWait --> WebDriver
+WebElement --> By
+WebElement --> Point
+WebElement --> Dimension
+WebElement --> WebElement
+WebElement --> Rectangle
+WebElement --|> TakesScreenshot
+WebStorage --> SessionStorage
+WebStorage --> LocalStorage
+WrapsDriver --> WebDriver
+WrapsElement --> WebElement
+XpiDriverService --|> DriverService
+XpiDriverService --> FirefoxBinary
+XpiDriverService --> FirefoxProfile
+XpiDriverService --> XpiDriverService
+XpiDriverService --> Extension
+XpiDriverService --> Lock
+@enduml

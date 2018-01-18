@@ -21,10 +21,6 @@ public class UMLGenerationUtils {
         return Visibility.UNSPECIFIED;
     }
 
-
-
-
-
     /**
      * from a list of string specifiers from srcML, return true if abstract is a specifier
      * @param specifiers
@@ -144,6 +140,26 @@ public class UMLGenerationUtils {
         }
         return constructors;
     }
+    public static List<String> getUMLExtendsParents(SrcMLSuper srcMLSuper){
+        List<String> parents = new ArrayList<>();
+        //two types of supers; extends and implements
+        if (srcMLSuper != null){
+            for (SrcMLExtends srcMLExtends : srcMLSuper.getExtenders()){
+                parents.add(srcMLExtends.getName());
+            }
+
+        }
+        return parents;
+    }
+    public static List<String> getUMLImplementsParents(SrcMLSuper srcMLSuper){
+        List<String> parents = new ArrayList<>();
+        if (srcMLSuper != null) {
+            for (SrcMLImplements srcMLImplements : srcMLSuper.getImplementors()) {
+                parents.add(srcMLImplements.getName());
+            }
+        }
+        return parents;
+    }
     /**
      * generates and returns a uml class from the child elements under this class.
      * @return
@@ -153,9 +169,11 @@ public class UMLGenerationUtils {
         List<UMLAttribute> attributes = UMLGenerationUtils.getUMLAttributes(block);
         List<UMLOperation> operations = UMLGenerationUtils.getUMLOperations(block.getFunctions(), block.getFunctionDecls());
         List<UMLOperation> constructors = UMLGenerationUtils.getUMLConstructors(block.getConstructors(), block.getConstructors_decl());
+        List<String> extendsParents = UMLGenerationUtils.getUMLExtendsParents(srcMLClass.getSuperLink());
+        List<String> implementsParents = UMLGenerationUtils.getUMLImplementsParents(srcMLClass.getSuperLink());
 
         boolean isAbstract = UMLGenerationUtils.isAbstract(srcMLClass.getSpecifiers());
-        UMLClass umlClass = new UMLClass(srcMLClass.getName(), attributes, operations, constructors, isAbstract, "class");
+        UMLClass umlClass = new UMLClass(srcMLClass.getName(), attributes, operations, constructors, isAbstract, extendsParents, implementsParents, "class");
         return umlClass;
     }
 
@@ -167,7 +185,9 @@ public class UMLGenerationUtils {
     public static UMLInterface getUMLInterface(SrcMLInterface srcMLInterface){
         SrcMLBlock block = srcMLInterface.getBlock();
         List<UMLOperation> operations = UMLGenerationUtils.getUMLOperations(block.getFunctions(), block.getFunctionDecls());
-        UMLInterface umlInterface = new UMLInterface(srcMLInterface.getName(), operations);
+        List<String> extendsParents = UMLGenerationUtils.getUMLExtendsParents(srcMLInterface.getSuperLink());
+        List<String> implementsParents = UMLGenerationUtils.getUMLImplementsParents(srcMLInterface.getSuperLink());
+        UMLInterface umlInterface = new UMLInterface(srcMLInterface.getName(), operations, extendsParents, implementsParents);
         return umlInterface;
     }
     public static UMLClass getUMLEnum(SrcMLEnum srcMLEnum){
@@ -176,7 +196,8 @@ public class UMLGenerationUtils {
         List<UMLOperation> operations = UMLGenerationUtils.getUMLOperations(block.getFunctions(), block.getFunctionDecls());
         List<UMLOperation> constructors = UMLGenerationUtils.getUMLConstructors(block.getConstructors(), block.getConstructors_decl());
 
-        UMLClass umlEnum = new UMLClass(srcMLEnum.getName(), attributes, operations, constructors, false, "enum");
+        //null for parents because enums can't have parents
+        UMLClass umlEnum = new UMLClass(srcMLEnum.getName(), attributes, operations, constructors, false, null, null,"enum");
         return umlEnum;
     }
 

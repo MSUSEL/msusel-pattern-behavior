@@ -5,11 +5,10 @@ import com.derek.uml.srcML.SrcMLBlock;
 import com.derek.uml.srcML.SrcMLClass;
 import com.derek.uml.srcML.SrcMLEnum;
 import com.derek.uml.srcML.SrcMLInterface;
+import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class UMLGenerator {
     private List<SrcMLBlock> rootBlocks;
@@ -23,7 +22,7 @@ public class UMLGenerator {
 
         PlantUMLTransformer pltTransformer = new PlantUMLTransformer(umlClassDiagram);
         //used to print plantuml
-        //pltTransformer.generateClassDiagram();
+        pltTransformer.generateClassDiagram();
     }
 
     private void buildUML(){
@@ -49,27 +48,75 @@ public class UMLGenerator {
         }
     }
 
-
     private void buildRelationships(){
         for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
             for (UMLAttribute umlAttribute : umlClassifier.getAttributes()){
+                //standard attribute relationships
                 String type = umlAttribute.getDataType();
-                if (isPrimitiveType(type)){
-                    //dont' care if this is the case.
-                }else {
-                    List<UMLClassifier> relationships = isInterClassType(type);
-                    for (UMLClassifier relationship : relationships){
-                        //class is declared in this project.
-                        umlClassDiagram.addRelationshipToDiagram(umlClassifier, relationship, Relationship.ASSOCIATION);
-                    }
-                    List<UMLClassifier> nonProjectRelationships = isIntraClassType(type);
-                    for (UMLClassifier nonProjectRelationship : nonProjectRelationships){
-                        System.out.println("non project type: " + type);
-                    }
+                placeAssociation(umlClassifier, type);
+            }
+            for (UMLOperation operation : umlClassifier.getOperations()){
+                //standard operation relationships
+                String returnType = operation.getReturnDataType();
+                placeAssociation(umlClassifier, returnType);
+                for (Pair<String, String> param : operation.getParameters()){
+                    //params in operation
+                    String paramType = param.getKey();
+                    placeAssociation(umlClassifier, paramType);
+                }
+            }
+            for (UMLClassifier parent : findExtendsParentsObjs(umlClassifier)){
+                umlClassDiagram.addRelationshipToDiagram(umlClassifier, parent, Relationship.GENERALIZATION);
+            }
+            for (UMLClassifier parent : findImplementsParentsObjs(umlClassifier)){
+                umlClassDiagram.addRelationshipToDiagram(umlClassifier, parent, Relationship.REALIZATION);
+            }
+        }
+    }
+    private List<UMLClassifier> findExtendsParentsObjs(UMLClassifier umlClassifier){
+        List<UMLClassifier> parents = new ArrayList<>();
+        for (String parent : umlClassifier.getExtendsParents()){
+            for (UMLClassifier potentialParent : umlClassDiagram.getClassDiagram().nodes()){
+                if (parent.equals(potentialParent.getName())){
+                    //found it!
+                    parents.add(potentialParent);
                 }
             }
         }
+        return parents;
+    }
+    private List<UMLClassifier> findImplementsParentsObjs(UMLClassifier umlClassifier){
+        List<UMLClassifier> parents = new ArrayList<>();
+        for (String parent : umlClassifier.getImplementsParents()) {
+            for (UMLClassifier potentialParent : umlClassDiagram.getClassDiagram().nodes()) {
+                if (parent.equals(potentialParent.getName())) {
+                    //found it!
+                    parents.add(potentialParent);
+                }
+            }
+        }
+        return parents;
+    }
 
+    /**
+     * utility method to find and assign types. Because this logic is identical for attributes and operations, I moved it here.
+     * @param umlClassifier
+     * @param type
+     */
+    private void placeAssociation(UMLClassifier umlClassifier, String type){
+        if (isPrimitiveType(type)){
+            //dont' care if this is the case.
+        } else {
+            List<UMLClassifier> relationships = isInterClassType(type);
+            for (UMLClassifier relationship : relationships){
+                //class is declared in this project.
+                umlClassDiagram.addRelationshipToDiagram(umlClassifier, relationship, Relationship.ASSOCIATION);
+            }
+            List<UMLClassifier> nonProjectRelationships = isIntraClassType(type);
+            for (UMLClassifier nonProjectRelationship : nonProjectRelationships){
+                System.out.println("non project type: " + type);
+            }
+        }
     }
 
     private List<UMLClassifier> isInterClassType(String type){

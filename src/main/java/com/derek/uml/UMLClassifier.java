@@ -18,4 +18,7 @@ public abstract class UMLClassifier {
     public abstract List<UMLOperation> getOperations();
     //returns attributes or null if the holding class does not have any attributes
     public abstract List<UMLAttribute> getAttributes();
+
+    public abstract List<String> getExtendsParents();
+    public abstract List<String> getImplementsParents();
 }

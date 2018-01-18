@@ -43,11 +43,11 @@ _testProject_: temporary config used while building and testing the tool, refers
 <br>
 Currently working on:
 
-Generating UML class diagrams from srcML output. Progress ~ 60%
+Generating UML class diagrams from srcML output. Progress ~ 100%
 
 Generating UML sequence diagrams from srcML output. Progress ~ 0%
 
-Transforming UML data model to PlantUML. Progress ~ 30%
+Transforming UML data model to PlantUML. Progress ~ 50%
 
 Implementing design pattern specifications in UML ~ 0%
 
