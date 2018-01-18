@@ -28,27 +28,24 @@ import com.derek.model.Model;
 import com.derek.model.PatternType;
 import com.derek.model.SoftwareVersion;
 import com.derek.model.patterns.PatternInstance;
-import com.google.common.graph.MutableGraph;
 
 import javax.swing.*;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class View {
 
     public Window w;
     private Model model;
+    private List<SoftwareVersion> projectVersions;
 
-    public View(){
-        model = new Model();
+    public View(Model model){
+        this.model = model;
         defaultView();
     }
 

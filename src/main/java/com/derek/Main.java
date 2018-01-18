@@ -24,9 +24,16 @@
  */
 package com.derek;
 
+import com.derek.model.Model;
+import com.derek.model.SoftwareVersion;
 import com.derek.uml.UMLGenerator;
 import com.derek.uml.srcML.SrcMLRunner;
 import com.derek.view.View;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Main {
 
@@ -36,18 +43,17 @@ public class Main {
     public static String interVersionKey;
     public static String interProjectKey;
     public static String projectLanguage;
-    public static SrcMLRunner runner;
-    public static int testProject;
+    private static Map<SoftwareVersion, SrcMLRunner> runner;
+    public static List<SoftwareVersion> projectVersions;
 
     public Main(){
 
         buildSeleniumConfigs();
-        UMLGenerator umlGenerator = new UMLGenerator(runner.getRootBlocks());
+        //UMLGenerator umlGenerator = new UMLGenerator(runner.get(0).getRootBlocks());
         //buildGuavaConfigs();
-        //new View();
-        //view builds the model too. This might change as this project matures.
 
-        //new Model();
+        new View(new Model(projectVersions));
+        //view builds the model too. This might change as this project matures.
     }
 
     private void buildSeleniumConfigs(){
@@ -56,8 +62,15 @@ public class Main {
         interVersionKey = "-src/selenium-";
         interProjectKey = "org/";
         projectLanguage = ".java";
-        testProject = 36;
-        runner = new SrcMLRunner(workingDirectory + "36" + interVersionKey + "3.6/" + interProjectKey + "openqa");
+        projectVersions = new ArrayList<>();
+        projectVersions.add(new SoftwareVersion(36));
+        projectVersions.add(new SoftwareVersion(38));
+        runner = new HashMap<>();
+        for (SoftwareVersion version : projectVersions) {
+            ///selenium/36-src/selenium-36/org
+            String pwd = workingDirectory + version.getVersionNum() + interVersionKey + version.getVersionNum() + "/" + interProjectKey + "openqa/";
+            runner.put(version, new SrcMLRunner(pwd, version.getVersionNum()));
+        }
     }
 
     public void buildGuavaConfigs(){
@@ -66,9 +79,13 @@ public class Main {
         interVersionKey = "guava-";
         interProjectKey = "guava/src/";
         projectLanguage = ".java";
-        testProject = 13;
+        projectVersions = new ArrayList<>();
+        projectVersions.add(new SoftwareVersion(13));
         //manually entering 1 project now. Once the runner is set up I will extend to allow for batch-style runs
-        runner = new SrcMLRunner(workingDirectory + "13-src/" + interVersionKey + "13.0/" + interProjectKey + "com");
+        for (SoftwareVersion version : projectVersions) {
+            String pwd = "workingDirectory + \"" + version.getVersionNum() + "-src/\" + interVersionKey + \"" + version.getVersionNum() + ".0/\" + interProjectKey + \"com\"";
+            runner.put(version, new SrcMLRunner(pwd, version.getVersionNum()));
+        }
     }
 
 

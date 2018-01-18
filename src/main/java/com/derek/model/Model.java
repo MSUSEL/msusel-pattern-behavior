@@ -26,11 +26,14 @@ package com.derek.model;
 
 import com.derek.Main;
 import com.derek.model.patterns.*;
+import com.derek.uml.UMLClassDiagram;
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import javafx.util.Pair;
+import lombok.Getter;
+import lombok.Setter;
 import org.jboss.shrinkwrap.descriptor.api.Mutable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -47,17 +50,21 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
 
+@Getter
+@Setter
 public class Model {
 
     private Table<SoftwareVersion, PatternType, List<PatternInstance>> patternSummaryTable;
+    private Map<SoftwareVersion, UMLClassDiagram> classDiagramMap;
+    private List<SoftwareVersion> versions;
 
     private Map<PatternType, List<PatternInstanceEvolution>> patternEvolutions;
 
 
     private final int numSharedClassesToConstitutePatternCoupling = 1;
 
-    public Model(){
-
+    public Model(List<SoftwareVersion> versions){
+        this.versions = versions;
         patternEvolutions = new TreeMap<>();
         patternSummaryTable = TreeBasedTable.create();
 
@@ -239,8 +246,7 @@ public class Model {
                 DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
                 Document doc = dBuilder.parse(f);
 
-                SoftwareVersion version = new SoftwareVersion(getVersionNumberFromFileName(f.getName()));
-
+                SoftwareVersion version = getVersionFromFileName(f.getName());
 
                 NodeList patterns = doc.getElementsByTagName("pattern");
 
@@ -277,6 +283,7 @@ public class Model {
 
                             patternInstances.add(buildPatternInstance(listOfRoles, patternType, version));
                         }
+                        System.out.println("Placing pattern instance: " + patternInstances + " into version: " + version.getVersionNum());
                         patternSummaryTable.put(version, patternType, patternInstances);
                     }
                 }
@@ -367,13 +374,26 @@ public class Model {
         return patternEvolution;
     }
 
-
-    /*
-    expects the filename as a string for input. forms are: "pattern_detector{\d}+.xml"
+    /**
+     *   expects the filename as a string for input, and finds the software version from the file name.
+     *   forms are: "pattern_detector{\d}+.xml"
+     *
+     * @param s
+     * @return
      */
-    private int getVersionNumberFromFileName(String s){
-        //remove .xml
-        return Integer.parseInt(s.substring(16, s.lastIndexOf('.')));
+    private SoftwareVersion getVersionFromFileName(String s){
+        s = stripSpecialChars(s);
+        int actualVersion = Integer.parseInt(s.substring(16, s.lastIndexOf('.')));
+        for (SoftwareVersion version : versions){
+            if (version.getVersionNum() == actualVersion){
+                return version;
+            }
+        }
+        return null;
+    }
+
+    private String stripSpecialChars(String s){
+        return s.replaceAll("-","");
     }
 
 
@@ -466,21 +486,5 @@ public class Model {
         }
         //should never get here because we exit on the default case
         return null;
-    }
-
-    public Table<SoftwareVersion, PatternType, List<PatternInstance>> getPatternSummaryTable() {
-        return patternSummaryTable;
-    }
-
-    public void setPatternSummaryTable(Table<SoftwareVersion, PatternType, List<PatternInstance>> patternSummaryTable) {
-        this.patternSummaryTable = patternSummaryTable;
-    }
-
-    public Map<PatternType, List<PatternInstanceEvolution>> getPatternEvolutions() {
-        return patternEvolutions;
-    }
-
-    public void setPatternEvolutions(Map<PatternType, List<PatternInstanceEvolution>> patternEvolutions) {
-        this.patternEvolutions = patternEvolutions;
     }
 }

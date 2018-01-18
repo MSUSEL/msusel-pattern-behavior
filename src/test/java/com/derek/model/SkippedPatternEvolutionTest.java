@@ -52,7 +52,6 @@ public class SkippedPatternEvolutionTest {
     @Before
     public void buildSkippedMockObjects(){
         //for this test I am just giving the third pattern instance a different identity.
-        model = new Model();
         Pair<String, String> _firstR1 = new Pair<>("Creator", "com.google.common.base.CommonPattern");
         Pair<String, String> _firstR2 = new Pair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher");
 
@@ -97,6 +96,12 @@ public class SkippedPatternEvolutionTest {
         SoftwareVersion v2 = new SoftwareVersion(2);
         SoftwareVersion v3 = new SoftwareVersion(3);
         SoftwareVersion v4 = new SoftwareVersion(4);
+        List<SoftwareVersion> versions = new ArrayList<>();
+        versions.add(v1);
+        versions.add(v2);
+        versions.add(v3);
+        versions.add(v4);
+        model = new Model(versions);
 
         firstSkipped = new PatternInstance(_firstListOfPatternRoles, PatternType.FACTORY_METHOD, v1);
         secondSkipped = new PatternInstance(_secondListOfPatternRoles, PatternType.FACTORY_METHOD, v2);

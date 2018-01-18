@@ -49,9 +49,11 @@ public class SrcMLRunner {
     private final boolean storeSrcML = true;
     private String projectWorkingDirectory;
     private List<SrcMLBlock> rootBlocks;
+    private int version;
 
-    public SrcMLRunner(String projectWorkingDirectory){
+    public SrcMLRunner(String projectWorkingDirectory, int version){
         this.projectWorkingDirectory = projectWorkingDirectory;
+        this.version = version;
         rootBlocks = new ArrayList<>();
         generateSrcML();
         //parseSpecificFiles();
@@ -83,7 +85,7 @@ public class SrcMLRunner {
 
     private void parseAllFiles(){
         //https://stackoverflow.com/questions/5694385/getting-the-filenames-of-all-files-in-a-folder
-        File f = new File("srcMLOutput/selenium36/");
+        File f = new File("srcMLOutput/"+ Main.projectID + version + "/");
         File[] listOfFiles = f.listFiles();
         for (int i = 0; i < listOfFiles.length; i++) {
             rootBlocks.add(parseSrcMLFile(listOfFiles[i]));
@@ -107,19 +109,19 @@ public class SrcMLRunner {
 
     public void generateSrcML(){
         try{
-            System.out.println("Starting srcML generation");
+            System.out.println("Starting srcML generation for version: " + version);
             //https://stackoverflow.com/questions/5604698/java-programming-call-an-exe-from-java-and-passing-parameters
 
             List<Path> pathsAsPath = getSourceCodeListFromProject();
             File mainDirectory = new File("srcMLOutput\\");
-            if (!mainDirectory.exists()){
+            if (!mainDirectory.exists()) {
                 Files.createDirectory(Paths.get("srcMLOutput\\"));
             }
 
             //change directory in future.
-            File directory = new File("srcMLOutput\\" + Main.projectID + Main.testProject + "\\");
+            File directory = new File("srcMLOutput\\" + Main.projectID + version + "\\");
             if (!directory.exists()) {
-                Files.createDirectory(Paths.get("srcMLOutput\\"+ Main.projectID + Main.testProject + "\\"));
+                Files.createDirectory(Paths.get("srcMLOutput\\" + Main.projectID + version + "\\"));
             }
 
             for (Path p : pathsAsPath) {
@@ -147,7 +149,8 @@ public class SrcMLRunner {
                 }
                 proc.destroy();
             }
-            System.out.println("Ending srcML generation");
+            System.out.println("Ending srcML generation for version: " + version);
+
         }catch(Exception e){
             e.printStackTrace();
         }
