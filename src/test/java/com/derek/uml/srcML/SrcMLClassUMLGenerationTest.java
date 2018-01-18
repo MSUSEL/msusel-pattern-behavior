@@ -30,7 +30,7 @@ public class SrcMLClassUMLGenerationTest extends SrcMLTest{
     }
     @Test
     public void verifyClass(){
-        UMLClass umlClass = UMLGenerationUtils.getUMLClass(srcMLClass);
+        UMLClass umlClass = UMLGenerationUtils.getUMLClass(srcMLClass, null, null);
         assertEquals(umlClass.isAbstract(), true);
         assertEquals(umlClass.getAttributes().size(), 0);
         assertEquals(umlClass.getOperations().size(), 2);
@@ -40,7 +40,7 @@ public class SrcMLClassUMLGenerationTest extends SrcMLTest{
     }
     @Test
     public void verifyClass2(){
-        UMLClass umlClass = UMLGenerationUtils.getUMLClass(srcMLClass2);
+        UMLClass umlClass = UMLGenerationUtils.getUMLClass(srcMLClass2,null, null);
         assertEquals(umlClass.isAbstract(), false);
         assertEquals(umlClass.getAttributes().size(), 21);
         assertEquals(umlClass.getConstructors().size(), 8);
@@ -48,7 +48,7 @@ public class SrcMLClassUMLGenerationTest extends SrcMLTest{
     }
     @Test
     public void verifyClass3(){
-        UMLClass umlClass = UMLGenerationUtils.getUMLClass(srcMLClass3);
+        UMLClass umlClass = UMLGenerationUtils.getUMLClass(srcMLClass3,null, null);
         assertEquals(umlClass.getName(), "Anonymous Class");
         assertEquals(umlClass.getAttributes().size(), 1);
         assertEquals(umlClass.getOperations().size(), 2);

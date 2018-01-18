@@ -2,6 +2,7 @@ package com.derek;
 
 import com.derek.uml.UMLGenerator;
 import com.derek.uml.srcML.SrcMLRunner;
+import com.derek.view.View;
 
 public class Main {
 

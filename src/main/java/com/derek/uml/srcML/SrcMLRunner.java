@@ -29,27 +29,16 @@ public class SrcMLRunner {
     public SrcMLRunner(String projectWorkingDirectory){
         this.projectWorkingDirectory = projectWorkingDirectory;
         rootBlocks = new ArrayList<>();
-
-
         generateSrcML();
         //parseSpecificFiles();
         parseAllFiles();
 
-        //selenium tests
-        //parseSrcMLFile(new File("srcMLOutput/selenium36/AbstractAnnotations.xml"));
-        //parseSrcMLFile(new File("srcMLOutput/selenium36/ExpectedConditions.xml"));
-        //parseSrcMLFile(new File("srcMLOutput/selenium36/Architecture.xml"));
-        //parseSrcMLFile(new File("srcMLOutput/selenium36/UrlChecker.xml"));
-
         //guava test
         //buildClassDiagram(new File("srcMLOutput/guava13/Files.xml"));
-
-
     }
 
     private SrcMLBlock parseSrcMLFile(File file){
         try{
-            System.out.println("parsing " + file.getName());
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(file);
@@ -77,7 +66,7 @@ public class SrcMLRunner {
         }
     }
     private void parseSpecificFiles(){
-        rootBlocks.add(parseSrcMLFile(new File("srcMLOutput/selenium36/InternetExplorerDriver.xml")));
+        rootBlocks.add(parseSrcMLFile(new File("srcMLOutput/selenium36/Actions.xml")));
         rootBlocks.add(parseSrcMLFile(new File("srcMLOutput/selenium36/RemoteWebDriver.xml")));
     }
 

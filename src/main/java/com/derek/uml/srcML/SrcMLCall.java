@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 public class SrcMLCall {
-    //will likely have ot use this class for sequence diagram generation
+    //will likely have to use this class for sequence diagram generation
     private Element callEle;
     private SrcMLName name;
     private SrcMLArgumentList argumentList;

@@ -19,9 +19,9 @@ public class UMLClass extends UMLClassifier{
     protected List<String> implementsParents;
     protected String identifier;
 
-    public UMLClass(String name, List<UMLAttribute> attributes, List<UMLOperation> operations, List<UMLOperation> constructors,
+    public UMLClass(String name, List<String> residingPackage, List<List<String>> imports, List<UMLAttribute> attributes, List<UMLOperation> operations, List<UMLOperation> constructors,
                     boolean isAbstract, List<String> extendsParents, List<String> implementsParents, String identifier) {
-        super(name);
+        super(name, residingPackage, imports);
         this.attributes = attributes;
         this.operations = operations;
         this.constructors = constructors;

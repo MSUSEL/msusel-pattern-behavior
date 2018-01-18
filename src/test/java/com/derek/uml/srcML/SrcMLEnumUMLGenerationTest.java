@@ -24,7 +24,7 @@ public class SrcMLEnumUMLGenerationTest extends SrcMLTest {
     }
     @Test
     public void verifyEnum(){
-        UMLClass umlEnum = UMLGenerationUtils.getUMLEnum(srcMLEnum);
+        UMLClass umlEnum = UMLGenerationUtils.getUMLEnum(srcMLEnum, null, null);
         assertEquals(umlEnum.isAbstract(), false);
         assertEquals(umlEnum.getAttributes().size(), 7);
         assertEquals(umlEnum.getConstructors().size(), 1);

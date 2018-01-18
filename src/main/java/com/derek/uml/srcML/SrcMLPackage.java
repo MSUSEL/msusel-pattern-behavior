@@ -30,5 +30,12 @@ public class SrcMLPackage {
             names.add(new SrcMLName(XmlUtils.elementify(nameNode)));
         }
     }
+    public List<String> getNames(){
+        List<String> s = new ArrayList<>();
+        for (SrcMLName name : names){
+            s.add(name.getName());
+        }
+        return s;
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.derek.uml;
 
 import com.derek.uml.srcML.*;
+import com.sun.javaws.jnl.XMLUtils;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class UMLGenerationUtils {
         boolean isAbstract = false;
         for (String s : specifiers){
             if (s.equals("abstract")){
-                isAbstract = true;
+                return true;
             }
         }
         return isAbstract;
@@ -45,7 +46,7 @@ public class UMLGenerationUtils {
         boolean isStatic = false;
         for (String s : specifiers){
             if (s.equals("static")){
-                isStatic = true;
+                return true;
             }
         }
         return isStatic;
@@ -147,7 +148,6 @@ public class UMLGenerationUtils {
             for (SrcMLExtends srcMLExtends : srcMLSuper.getExtenders()){
                 parents.add(srcMLExtends.getName());
             }
-
         }
         return parents;
     }
@@ -160,11 +160,33 @@ public class UMLGenerationUtils {
         }
         return parents;
     }
+    public static List<String> getResidingPackage(SrcMLBlock block){
+        List<String> residingPackage = new ArrayList<>();
+        for (SrcMLPackage srcMLPackage : block.getPackages()){
+            //should only ever be 1 residing package.
+            residingPackage = srcMLPackage.getNames();
+        }
+        return residingPackage;
+    }
+
+    /**
+     * finds and returns a list of list of strings of all imports.
+     *
+     * @param block
+     * @return first list is one import, second list is package structure UNDER import.
+     */
+    public static List<List<String>> getImports(SrcMLBlock block){
+        List<List<String>> imports = new ArrayList<>();
+        for (SrcMLImport srcMLImport : block.getImports()){
+            imports.add(srcMLImport.getNames());
+        }
+        return imports;
+    }
     /**
      * generates and returns a uml class from the child elements under this class.
      * @return
      */
-    public static UMLClass getUMLClass(SrcMLClass srcMLClass){
+    public static UMLClass getUMLClass(SrcMLClass srcMLClass, List<String> residingPackage, List<List<String>> imports){
         SrcMLBlock block = srcMLClass.getBlock();
         List<UMLAttribute> attributes = UMLGenerationUtils.getUMLAttributes(block);
         List<UMLOperation> operations = UMLGenerationUtils.getUMLOperations(block.getFunctions(), block.getFunctionDecls());
@@ -173,31 +195,33 @@ public class UMLGenerationUtils {
         List<String> implementsParents = UMLGenerationUtils.getUMLImplementsParents(srcMLClass.getSuperLink());
 
         boolean isAbstract = UMLGenerationUtils.isAbstract(srcMLClass.getSpecifiers());
-        UMLClass umlClass = new UMLClass(srcMLClass.getName(), attributes, operations, constructors, isAbstract, extendsParents, implementsParents, "class");
+        UMLClass umlClass = new UMLClass(srcMLClass.getName(), residingPackage, imports, attributes, operations, constructors, isAbstract, extendsParents, implementsParents, "class");
         return umlClass;
     }
 
     /**
      * generates and return a uml interface from a srcMLInterface class
      * @param srcMLInterface
+     *
      * @return
      */
-    public static UMLInterface getUMLInterface(SrcMLInterface srcMLInterface){
+    public static UMLInterface getUMLInterface(SrcMLInterface srcMLInterface, List<String> residingPackage, List<List<String>> imports){
         SrcMLBlock block = srcMLInterface.getBlock();
         List<UMLOperation> operations = UMLGenerationUtils.getUMLOperations(block.getFunctions(), block.getFunctionDecls());
         List<String> extendsParents = UMLGenerationUtils.getUMLExtendsParents(srcMLInterface.getSuperLink());
         List<String> implementsParents = UMLGenerationUtils.getUMLImplementsParents(srcMLInterface.getSuperLink());
-        UMLInterface umlInterface = new UMLInterface(srcMLInterface.getName(), operations, extendsParents, implementsParents);
+        UMLInterface umlInterface = new UMLInterface(srcMLInterface.getName(), residingPackage, imports, operations, extendsParents, implementsParents);
         return umlInterface;
     }
-    public static UMLClass getUMLEnum(SrcMLEnum srcMLEnum){
+    public static UMLClass getUMLEnum(SrcMLEnum srcMLEnum, List<String> residingPackage, List<List<String>> imports){
         SrcMLBlock block = srcMLEnum.getBlock();
         List<UMLAttribute> attributes = UMLGenerationUtils.getUMLAttributes(block);
         List<UMLOperation> operations = UMLGenerationUtils.getUMLOperations(block.getFunctions(), block.getFunctionDecls());
         List<UMLOperation> constructors = UMLGenerationUtils.getUMLConstructors(block.getConstructors(), block.getConstructors_decl());
 
-        //null for parents because enums can't have parents
-        UMLClass umlEnum = new UMLClass(srcMLEnum.getName(), attributes, operations, constructors, false, null, null,"enum");
+        //null for extends parents because enums can't have extends parents.. while then can have implements (i think), srcml doesn't support
+        //that as far as I can tell.
+        UMLClass umlEnum = new UMLClass(srcMLEnum.getName(), residingPackage, imports, attributes, operations, constructors, false, null, null,"enum");
         return umlEnum;
     }
 

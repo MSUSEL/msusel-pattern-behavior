@@ -30,20 +30,21 @@ public class UMLGenerator {
         buildRelationships();
     }
 
-
     private void buildClasses(){
         for (SrcMLBlock rootBlock :  rootBlocks) {
             List<SrcMLClass> srcMLClasses = rootBlock.getClasses();
+            List<String> residingPackage = UMLGenerationUtils.getResidingPackage(rootBlock);
+            List<List<String>> imports = UMLGenerationUtils.getImports(rootBlock);
             for (SrcMLClass srcMLClass : srcMLClasses) {
-                umlClassDiagram.addClassToDiagram(UMLGenerationUtils.getUMLClass(srcMLClass));
+                umlClassDiagram.addClassToDiagram(UMLGenerationUtils.getUMLClass(srcMLClass, residingPackage, imports));
             }
             List<SrcMLInterface> srcMLInterfaces = rootBlock.getInterfaces();
             for (SrcMLInterface srcMLInterface : srcMLInterfaces) {
-                umlClassDiagram.addClassToDiagram(UMLGenerationUtils.getUMLInterface(srcMLInterface));
+                umlClassDiagram.addClassToDiagram(UMLGenerationUtils.getUMLInterface(srcMLInterface, residingPackage, imports));
             }
             List<SrcMLEnum> srcMLEnums = rootBlock.getEnums();
             for (SrcMLEnum srcMLEnum : srcMLEnums) {
-                umlClassDiagram.addClassToDiagram(UMLGenerationUtils.getUMLEnum(srcMLEnum));
+                umlClassDiagram.addClassToDiagram(UMLGenerationUtils.getUMLEnum(srcMLEnum, residingPackage, imports));
             }
         }
     }
@@ -160,7 +161,6 @@ public class UMLGenerator {
                 types.add(segmentSplitter[j]);
             }
         }
-
         return types;
     }
 

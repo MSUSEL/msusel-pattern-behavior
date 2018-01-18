@@ -109,6 +109,11 @@ public class SrcMLName {
         return consolidateNames();
     }
 
+    /**
+     * consolidates the list of names into one single string. this happens across owned names (foo.bar) and through generic-ally stacked names (foo<bar>)
+     *
+     * @return
+     */
     private String consolidateNames(){
         String consolidatedName = XmlUtils.stringifyNames(names);
         SrcMLArgumentList argumentListPointer = argumentList;

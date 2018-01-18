@@ -12,8 +12,8 @@ public class UMLInterface extends UMLClassifier {
     private List<String> extendsParents;
     private List<String> implementsParents;
 
-    public UMLInterface(String name, List<UMLOperation> operations, List<String> extendsParents, List<String> implementsParents) {
-        super(name);
+    public UMLInterface(String name, List<String> residingPackage, List<List<String>> imports, List<UMLOperation> operations, List<String> extendsParents, List<String> implementsParents) {
+        super(name, residingPackage, imports);
         this.operations = operations;
         this.extendsParents = extendsParents;
         this.implementsParents = implementsParents;
