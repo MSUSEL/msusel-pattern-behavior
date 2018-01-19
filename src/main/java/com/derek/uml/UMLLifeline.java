@@ -24,10 +24,23 @@
  */
 package com.derek.uml;
 
+import lombok.Getter;
+
+import java.util.List;
+
+@Getter
 public class UMLLifeline {
     private UMLClassifier umlClassifier;
-
-    public UMLLifeline(UMLClassifier umlClassifier){
+    private List<UMLMessage> inboundMessages;
+    private List<UMLMessage> outboundMessages;
+    //ill worry about activators/deactivators for this later.
+    public UMLLifeline(UMLClassifier umlClassifier, List<UMLMessage> inboundMessages, List<UMLMessage> outboundMessages){
         this.umlClassifier = umlClassifier;
+        this.inboundMessages = inboundMessages;
+        this.outboundMessages = outboundMessages;
+    }
+
+    public String getName(){
+        return umlClassifier.getName();
     }
 }

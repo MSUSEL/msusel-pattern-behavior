@@ -42,14 +42,30 @@ public class UMLGenerator {
         this.rootBlocks = rootBlocks;
         umlClassDiagram = new UMLClassDiagram();
 
-        buildUML();
+        buildStructuralUML();
+        buildBehavioralUML();
 
         PlantUMLTransformer pltTransformer = new PlantUMLTransformer(umlClassDiagram);
         //used to print plantuml
         pltTransformer.generateClassDiagram();
     }
 
-    private void buildUML(){
+    private void buildBehavioralUML(){
+        buildMessages();
+        buildLifelines();
+    }
+
+    private void buildMessages(){
+        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
+
+        }
+    }
+
+    private void buildLifelines(){
+
+    }
+
+    private void buildStructuralUML(){
         buildClasses();
         buildRelationships();
     }
@@ -139,7 +155,9 @@ public class UMLGenerator {
             }
             List<UMLClassifier> nonProjectRelationships = isIntraClassType(type);
             for (UMLClassifier nonProjectRelationship : nonProjectRelationships){
-                System.out.println("non project type: " + type);
+                //in the future if I want to implement associations to non-project types, use the code below to find non-project types
+                //and then incrementally implmeent the missing ones.
+                //System.out.println("non project type: " + type);
             }
         }
     }

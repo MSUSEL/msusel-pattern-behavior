@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<root>
+    <block>{    <decl_stmt>
+        <decl>
+            <type>
+                <name>Executable</name>
+            </type>
+            <name>systemBinary</name>
+            <init>= <expr>
+                <call>
+                    <name>locateFirefoxBinaryFromSystemProperty</name>
+                    <argument_list>()</argument_list>
+                </call>
+            </expr>
+            </init>
+        </decl>;</decl_stmt>
+        <if>if <condition>(<expr>
+            <name>systemBinary</name>
+            <operator>!=</operator>
+            <literal type="null">null</literal>
+        </expr>)</condition>
+            <then>
+                <block>{      <expr_stmt>
+                    <expr>
+                        <name>executable</name>
+                        <operator>=</operator>
+                        <name>systemBinary</name>
+                    </expr>;</expr_stmt>
+                    <return>return;</return>    }</block>
+            </then>
+        </if>
+        <decl_stmt>
+            <decl>
+                <type>
+                    <name>Executable</name>
+                </type>
+                <name>platformBinary</name>
+                <init>= <expr>
+                    <call>
+                        <name>locateFirefoxBinariesFromPlatform</name>
+                        <argument_list>()</argument_list>
+                    </call>
+                    <operator>.</operator>
+                    <call>
+                        <name>findFirst</name>
+                        <argument_list>()</argument_list>
+                    </call>
+                    <operator>.</operator>
+                    <call>
+                        <name>orElse</name>
+                        <argument_list>(<argument>
+                            <expr>
+                                <literal type="null">null</literal>
+                            </expr>
+                        </argument>)</argument_list>
+                    </call>
+                </expr>
+                </init>
+            </decl>;</decl_stmt>
+        <if>if <condition>(<expr>
+            <name>platformBinary</name>
+            <operator>!=</operator>
+            <literal type="null">null</literal>
+        </expr>)</condition>
+            <then>
+                <block>{      <expr_stmt>
+                    <expr>
+                        <name>executable</name>
+                        <operator>=</operator>
+                        <name>platformBinary</name>
+                    </expr>;</expr_stmt>
+                    <return>return;</return>    }</block>
+            </then>
+        </if>
+        <throw>throw <expr>
+            <operator>new</operator>
+            <call>
+                <name>WebDriverException</name>
+                <argument_list>(<argument>
+                    <expr>
+                        <literal type="string">"Cannot find firefox binary in PATH. "</literal>
+                        <operator>+</operator>
+                        <literal type="string">"Make sure firefox is installed. OS appears to be: "</literal>
+                        <operator>+</operator>
+                        <call>
+                            <name>
+                                <name>Platform</name>
+                                <operator>.</operator>
+                                <name>getCurrent</name>
+                            </name>
+                            <argument_list>()</argument_list>
+                        </call>
+                    </expr>
+                </argument>)</argument_list>
+            </call>
+        </expr>;</throw>  }</block>
+<block>{      <decl_stmt>
+    <decl>
+        <type>
+            <specifier>final</specifier>
+            <name>String</name>
+        </type>
+        <name>lcName</name>
+        <init>= <expr>
+            <call>
+                <name>
+                    <name>name</name>
+                    <operator>.</operator>
+                    <name>toLowerCase</name>
+                </name>
+                <argument_list>()</argument_list>
+            </call>
+        </expr>
+        </init>
+    </decl>;</decl_stmt>
+    <return>return <expr>
+        <call>
+            <name>stream</name>
+            <argument_list>(<argument>
+                <expr>
+                    <call>
+                        <name>
+                            <name>Channel</name>
+                            <operator>.</operator>
+                            <name>values</name>
+                        </name>
+                        <argument_list>()</argument_list>
+                    </call>
+                </expr>
+            </argument>)</argument_list>
+        </call>
+        <operator>.</operator>
+        <call>
+            <name>filter</name>
+            <argument_list>(<argument>
+                <expr>
+                    <lambda>
+                        <parameter_list type="pseudo">
+                            <parameter>
+                                <decl>
+                                    <name>ch</name>
+                                </decl>
+                            </parameter>
+                        </parameter_list> -&gt; <block type="pseudo">
+                        <expr>
+                            <call>
+                                <name>
+                                    <name>ch</name>
+                                    <operator>.</operator>
+                                    <name>name</name>
+                                    <operator>.</operator>
+                                    <name>equals</name>
+                                </name>
+                                <argument_list>(<argument>
+                                    <expr>
+                                        <name>lcName</name>
+                                    </expr>
+                                </argument>)</argument_list>
+                            </call>
+                        </expr>
+                    </block>
+                    </lambda>
+                </expr>
+            </argument>)</argument_list>
+        </call>
+        <operator>.</operator>
+        <call>
+            <name>findFirst</name>
+            <argument_list>()</argument_list>
+        </call>
+        <operator>.</operator>
+        <call>
+            <name>orElseThrow</name>
+            <argument_list>(<argument>
+                <expr>
+                    <lambda>
+                        <parameter_list>()</parameter_list> -&gt; <block type="pseudo">
+                        <expr>
+                            <operator>new</operator>
+                            <call>
+                                <name>WebDriverException</name>
+                                <argument_list>(<argument>
+                                    <expr>
+                                        <literal type="string">"Unrecognized channel: "</literal>
+                                        <operator>+</operator>
+                                        <name>name</name>
+                                    </expr>
+                                </argument>)</argument_list>
+                            </call>
+                        </expr>
+                    </block>
+                    </lambda>
+                </expr>
+            </argument>)</argument_list>
+        </call>
+    </expr>;</return>
+    }</block>
+</root>

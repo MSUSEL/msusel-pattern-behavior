@@ -29,11 +29,19 @@ import lombok.Getter;
 @Getter
 public class UMLMessage {
 
+    private UMLOperation operation;
     private UMLClassifier from;
     private UMLClassifier to;
+    private boolean isRequest;
 
-    public UMLMessage(UMLClassifier from, UMLClassifier to) {
+    public UMLMessage(UMLOperation operation, UMLClassifier from, UMLClassifier to, boolean isRequest) {
+        this.operation = operation;
         this.from = from;
         this.to = to;
+        this.isRequest = isRequest;
+    }
+
+    public String getName(){
+        return operation.getName();
     }
 }

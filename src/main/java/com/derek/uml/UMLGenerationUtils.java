@@ -249,4 +249,33 @@ public class UMLGenerationUtils {
         return umlEnum;
     }
 
+    public static List<UMLMessage> getUMLMessages(SrcMLBlock block){
+        //from a block I have both expr_stmt and expr; expr leads to call
+        List<UMLMessage> messages = new ArrayList<>();
+        List<SrcMLExpression> expressions = new ArrayList<>();
+        for (SrcMLBlock.SrcMLExprStmt exprStmt : block.getExpr_stmts()){
+            for (SrcMLExpression expression : exprStmt.getExpressions()){
+                expressions.add(expression);
+            }
+        }
+        for (SrcMLExpression expression : expressions){
+            for (SrcMLCall call : expression.getCalls()){
+                messages.add(getUMLMessage(call));
+            }
+        }
+        return messages;
+    }
+    public static UMLMessage getUMLMessage(SrcMLCall call){
+        String callName = call.getName();
+
+
+        //need to deal with argument lists here. the good news is that I only have 1 call in a <call>..
+
+
+
+        UMLMessage message = new UMLMessage(null, null, null, false);
+
+        return message;
+    }
+
 }

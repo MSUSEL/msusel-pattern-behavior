@@ -56,7 +56,8 @@ public class PlantUMLTransformer {
 
         output.append("@enduml\n");
 
-        System.out.println(output.toString());
+        //below is for printing to console
+        //System.out.println(output.toString());
         printToFile(output);
     }
 

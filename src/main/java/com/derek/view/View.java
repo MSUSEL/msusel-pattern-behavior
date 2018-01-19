@@ -42,7 +42,6 @@ public class View {
 
     public Window w;
     private Model model;
-    private List<SoftwareVersion> projectVersions;
 
     public View(Model model){
         this.model = model;

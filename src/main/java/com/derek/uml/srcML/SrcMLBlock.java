@@ -374,10 +374,9 @@ public class SrcMLBlock {
         }
     }
 
+    @Getter
     public class SrcMLExprStmt{
-        @Getter
         private Element exprStmtEle;
-        @Getter
         private List<SrcMLExpression> expressions;
         private List<String> operators;
 

@@ -37,7 +37,7 @@ import java.util.Map;
 
 public class Main {
 
-    //guava configs
+    //configs
     public static String workingDirectory;
     public static String projectID;
     public static String interVersionKey;
@@ -49,10 +49,12 @@ public class Main {
     public Main(){
 
         buildSeleniumConfigs();
-        //UMLGenerator umlGenerator = new UMLGenerator(runner.get(0).getRootBlocks());
+
         //buildGuavaConfigs();
 
-        new View(new Model(projectVersions));
+
+        //not working right now.
+        //new View(new Model(projectVersions));
         //view builds the model too. This might change as this project matures.
     }
 
@@ -64,12 +66,13 @@ public class Main {
         projectLanguage = ".java";
         projectVersions = new ArrayList<>();
         projectVersions.add(new SoftwareVersion(36));
-        projectVersions.add(new SoftwareVersion(38));
+        //projectVersions.add(new SoftwareVersion(38));
         runner = new HashMap<>();
         for (SoftwareVersion version : projectVersions) {
             ///selenium/36-src/selenium-36/org
             String pwd = workingDirectory + version.getVersionNum() + interVersionKey + version.getVersionNum() + "/" + interProjectKey + "openqa/";
             runner.put(version, new SrcMLRunner(pwd, version.getVersionNum()));
+            UMLGenerator umlGenerator = new UMLGenerator(runner.get(version).getRootBlocks());
         }
     }
 
