@@ -24,24 +24,36 @@
  */
 package com.derek.uml;
 
+import com.google.common.graph.MutableGraph;
 import lombok.Getter;
+
+import java.util.List;
+import java.util.Map;
 
 @Getter
 public class UMLMessage {
 
-    private UMLOperation operation;
+    private MutableGraph<String> callForest;
+    //has been processed refers to the two step transformation from identification to actually buliding out the message.
+    private boolean hasBeenProcessed;
     private UMLClassifier from;
     private UMLClassifier to;
     private boolean isRequest;
 
-    public UMLMessage(UMLOperation operation, UMLClassifier from, UMLClassifier to, boolean isRequest) {
-        this.operation = operation;
+    public UMLMessage(UMLClassifier from, UMLClassifier to, boolean isRequest) {
         this.from = from;
         this.to = to;
         this.isRequest = isRequest;
+        hasBeenProcessed = true;
+    }
+    public UMLMessage(MutableGraph<String> callForest){
+        this.callForest = callForest;
+        this.hasBeenProcessed = false;
     }
 
-    public String getName(){
-        return operation.getName();
+    public void process(){
+        //method to be used during the second step transformation from string-> split up message with uml classifiers identified.
+
+        hasBeenProcessed = true;
     }
 }

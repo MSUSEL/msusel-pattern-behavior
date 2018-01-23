@@ -70,13 +70,13 @@ public class SrcMLName {
         List<Node> nameNodes = XmlUtils.getImmediateChildren(nameEle, "name");
         if (nameNodes.size() == 0){
             //no child elements, this is a simple name. <name>foo</name>
-            names.add(nameEle.getTextContent());
+            names.add(nameEle.getTextContent().replaceAll("\\s", ""));
         }
 
         for (Node nameNode : nameNodes) {
             if (!nameNode.getTextContent().equals("")) {
                 //case where <name><name>foo</name><stuff></stuff></name> and found a simple name
-                names.add(nameNode.getTextContent());
+                names.add(nameNode.getTextContent().replaceAll("\\s", ""));
             }
         }
     }

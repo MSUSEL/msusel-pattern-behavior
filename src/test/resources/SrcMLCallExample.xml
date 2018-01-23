@@ -1,5 +1,80 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <root>
+    <block>
+        <decl_stmt>
+            <decl>
+                <specifier>private</specifier>
+                <specifier>static</specifier>
+                <type>
+                    <specifier>final</specifier>
+                    <name>String</name>
+                </type>
+                <name>PATH_PREFIX</name>
+                <init>= <expr>
+                    <literal type="string">"/"</literal>
+                    <operator>+</operator>
+                    <call>
+                        <name>
+                            <name>FirefoxBinary</name>
+                            <operator>.</operator>
+                            <name>
+                                <name>class</name>
+                                <operator>.</operator>
+                                <name>getPackage</name>
+                            </name>
+                        </name>
+                        <argument_list>()</argument_list>
+                    </call>
+                    <operator>.</operator>
+                    <call>
+                        <name>getName</name>
+                        <argument_list>()</argument_list>
+                    </call>
+                    <operator>.</operator>
+                    <call>
+                        <name>replace</name>
+                        <argument_list>(<argument>
+                            <expr>
+                                <literal type="string">"."</literal>
+                            </expr>
+                        </argument>, <argument>
+                            <expr>
+                                <call>
+                                    <name>
+                                        <name>systemBinary</name>
+                                        <operator>.</operator>
+                                        <name>getChannel</name>
+                                    </name>
+                                    <argument_list>()</argument_list>
+                                </call>
+                            </expr>
+                        </argument>)</argument_list>
+                    </call>
+                    <operator>+</operator>
+                    <literal type="string">"/"</literal>
+                </expr>
+                </init>
+            </decl>;</decl_stmt>
+    </block>
+    <block>{
+        <expr_stmt>
+            <expr>
+                <name>executable</name>
+                <operator>=</operator>
+                <operator>new</operator>
+                <call>
+                    <name>Executable</name>
+                    <argument_list>(
+                        <argument>
+                            <expr>
+                                <name>pathToFirefoxBinary</name>
+                            </expr>
+                        </argument>)
+                    </argument_list>
+                </call>
+            </expr>;
+        </expr_stmt>  }
+    </block>
     <block>{    <decl_stmt>
         <decl>
             <type>

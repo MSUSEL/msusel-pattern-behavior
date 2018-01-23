@@ -26,6 +26,8 @@ package com.derek.uml;
 
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public class UMLAttribute {
 
@@ -35,6 +37,7 @@ public class UMLAttribute {
     //dynamically build them and not have static via an enum.
     private String dataType;
     private Visibility visibility;
+    private UMLMessage callList;
     private boolean isStatic;
     private boolean isFinal;
 
@@ -43,9 +46,9 @@ public class UMLAttribute {
         this.dataType = dataType;
         this.visibility = visibility;
     }
-    public UMLAttribute(String name, String dataType) {
+    public UMLAttribute(String name, String dataType, UMLMessage callList) {
         this.name = name;
         this.dataType = dataType;
-        this.visibility = visibility;
+        this.callList = callList;
     }
 }

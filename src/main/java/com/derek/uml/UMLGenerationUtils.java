@@ -25,7 +25,8 @@
 package com.derek.uml;
 
 import com.derek.uml.srcML.*;
-import com.sun.javaws.jnl.XMLUtils;
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.MutableGraph;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
@@ -83,7 +84,8 @@ public class UMLGenerationUtils {
             List<SrcMLDecl> decls = block.getDecls();
             for (SrcMLDecl decl : decls) {
                 //in this case the type is the same as the name... I think.. lol
-                attributes.add(new UMLAttribute(decl.getName(), decl.getName()));
+                UMLMessage initMessage = UMLGenerationUtils.getUMLExpressionMessage(decl.getInit().getExpressions());
+                attributes.add(new UMLAttribute(decl.getName(), decl.getName(), initMessage));
             }
         }
         //standard case
@@ -95,12 +97,47 @@ public class UMLGenerationUtils {
                 for (SrcMLDecl decl : declStmt.getDecls()) {
                     //multiple decl would happen with something like: int a,b,c;
                     //otherwise each decl has 1 name/type/etc..
-                    attributes.add(new UMLAttribute(decl.getName(), decl.getType().getName()));
+                    UMLMessage initMessage = UMLGenerationUtils.getUMLExpressionMessage(decl.getInit().getExpressions());
+                    attributes.add(new UMLAttribute(decl.getName(), decl.getType().getName(), initMessage));
                 }
             }
         }
         return attributes;
     }
+    public static UMLMessage getUMLExpressionMessage(List<SrcMLExpression> expressions){
+        MutableGraph<String> callForest = GraphBuilder.directed().allowsSelfLoops(false).build();
+        for (SrcMLExpression expression : expressions){
+            //should generally only be 1 expression
+            fillCallDepthLayer(callForest, "", expression);
+        }
+        return new UMLMessage(callForest);
+    }
+
+    public static UMLMessage getUMLDeclMessage(List<SrcMLDecl> decls){
+        UMLMessage message = null;
+
+        return message;
+    }
+
+    private static void fillCallDepthLayer(MutableGraph<String> callForest, String parent, SrcMLExpression expression){
+        List<SrcMLCall> calls = expression.getCalls();
+        for (SrcMLCall call : calls) {
+            if (parent.equals("")){
+                //first time through forest, add a new root as a caller..
+                parent = call.getName();
+                callForest.addNode(parent);
+            }else{
+                //we already have a parent
+                callForest.putEdge(parent, call.getName());
+                parent = call.getName();
+            }
+            //regardless, fill the rest of the forest with edges for each argument.
+            for (SrcMLArgument argument : call.getArgumentList().getArguments()) {
+                fillCallDepthLayer(callForest, parent, argument.getExpression());
+            }
+        }
+    }
+
 
     /**
      * Collects parameters from the SrcML data structures and returns a strcture in a much more edible form
@@ -267,13 +304,18 @@ public class UMLGenerationUtils {
     }
     public static UMLMessage getUMLMessage(SrcMLCall call){
         String callName = call.getName();
+        SrcMLArgumentList argumentList = call.getArgumentList();
+        for (SrcMLArgument argument : argumentList.getArguments()){
+
+
+        }
 
 
         //need to deal with argument lists here. the good news is that I only have 1 call in a <call>..
 
 
 
-        UMLMessage message = new UMLMessage(null, null, null, false);
+        UMLMessage message = new UMLMessage(null, null, false);
 
         return message;
     }
