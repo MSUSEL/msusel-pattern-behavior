@@ -32,7 +32,7 @@ import org.w3c.dom.NodeList;
 import java.util.*;
 
 @Getter
-public class SrcMLName {
+public class SrcMLName extends SrcMLNode{
     //can be any one of: (complex_)name|templateArgumentList|argumentList|parameterList|templateParameterList|specifier|operator|index
     //parsign for each sub-type can be delegated to each class matching the sub-type
 
@@ -45,17 +45,19 @@ public class SrcMLName {
     private List<String> indices;
 
     public SrcMLName(String name){
+        super(null);
         //use case for simple names.
         names = new ArrayList<>();
         names.add(name);
     }
 
     public SrcMLName(Element nameEle){
+        super(nameEle);
         this.nameEle = nameEle;
         parse();
     }
 
-    private void parse(){
+    protected void parse(){
         //moving operator before name because the existance of an operator will dictate the name. (Class.subclass)
         parseOperators();
         parseName();

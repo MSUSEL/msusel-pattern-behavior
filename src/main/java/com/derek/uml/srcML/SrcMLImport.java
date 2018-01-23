@@ -32,16 +32,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SrcMLImport {
+public class SrcMLImport extends SrcMLNode{
 
     private Element importEle;
     private List<SrcMLName> names;
 
     public SrcMLImport(Element importEle) {
+        super(importEle);
         this.importEle = importEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseName();
     }
 

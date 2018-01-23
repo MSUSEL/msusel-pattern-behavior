@@ -30,7 +30,7 @@ import org.w3c.dom.Node;
 import java.util.List;
 
 @Getter
-public class SrcMLArgument {
+public class SrcMLArgument extends SrcMLNode{
 
     private Element argumentEle;
     private String modifier;
@@ -38,10 +38,11 @@ public class SrcMLArgument {
     private SrcMLName name;
 
     public SrcMLArgument(Element argumentEle){
+        super(argumentEle);
         this.argumentEle = argumentEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseModifier();
         parseExpression();
         parseName();

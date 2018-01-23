@@ -31,7 +31,7 @@ import org.w3c.dom.Node;
 import java.util.List;
 
 @Getter
-public class SrcMLIf {
+public class SrcMLIf extends SrcMLNode{
     //will likely only use for sequence diagrams
     private Element ifEle;
     private SrcMLCondition condition;
@@ -40,10 +40,11 @@ public class SrcMLIf {
     private SrcMLIf elseIf;
 
     public SrcMLIf(Element ifEle) {
+        super(ifEle);
         this.ifEle = ifEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseCondition();
         parseThen();
         parseElse();

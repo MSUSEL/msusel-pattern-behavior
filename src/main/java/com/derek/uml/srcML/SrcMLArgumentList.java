@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SrcMLArgumentList {
+public class SrcMLArgumentList extends SrcMLNode{
     //not sure how much of this I will need, but I'm creatin gthe class just in case.
     //a lot of the time the arguments are just generics. But they can also be parameterized arguments (String[] args)
     private Element argumentListEle;
@@ -41,11 +41,12 @@ public class SrcMLArgumentList {
     private String typeAttribute;
 
     public SrcMLArgumentList(Element argumentListEle){
+        super(argumentListEle);
         this.argumentListEle = argumentListEle;
         parse();
     }
 
-    public void parse(){
+    protected void parse(){
         parseOptionalAttribute();
         parseArguments();
     }

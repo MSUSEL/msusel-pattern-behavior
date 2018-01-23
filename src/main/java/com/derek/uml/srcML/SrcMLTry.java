@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SrcMLTry {
+public class SrcMLTry extends SrcMLNode{
     private Element tryEle;
     private SrcMLInit init;
     private SrcMLBlock block;
@@ -40,10 +40,11 @@ public class SrcMLTry {
     private List<SrcMLFinally> finallys;
 
     public SrcMLTry(Element tryEle) {
+        super(tryEle);
         this.tryEle = tryEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseInit();
         parseBlock();
         parseCatch();

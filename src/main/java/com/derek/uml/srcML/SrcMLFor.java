@@ -31,16 +31,17 @@ import org.w3c.dom.Node;
 import java.util.List;
 
 @Getter
-public class SrcMLFor {
+public class SrcMLFor extends SrcMLNode{
     private Element forEle;
     private SrcMLControl control;
     private SrcMLBlock block;
 
     public SrcMLFor(Element forEle) {
+        super(forEle);
         this.forEle = forEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseControl();
         parseBlock();
     }
@@ -58,22 +59,21 @@ public class SrcMLFor {
     }
 
 
-    public class SrcMLControl{
+    @Getter
+    public class SrcMLControl extends SrcMLNode{
         //'control ' element is only used by for loops.
-        @Getter
         private Element controlEle;
-        @Getter
         private SrcMLInit init;
-        @Getter
         private SrcMLCondition condition;
-        @Getter
         private SrcMLIncr incr;
 
-        public SrcMLControl(Element controlEle) {
+        public SrcMLControl(Element controlEle)
+        {
+            super(controlEle);
             this.controlEle = controlEle;
         }
 
-        private void parse(){
+        protected void parse(){
             parseInit();
             parseCondition();
             parseIncr();
@@ -100,18 +100,18 @@ public class SrcMLFor {
             }
         }
 
-        public class SrcMLIncr{
+        @Getter
+        public class SrcMLIncr extends SrcMLNode{
             //putting a nested class in here because 'incr' only goes to expression or nothing.. not worth amking a new file for it.
-            @Getter
             private Element incrEle;
-            @Getter
             private SrcMLExpression expression;
 
             public SrcMLIncr(Element incrEle) {
+                super(incrEle);
                 this.incrEle = incrEle;
                 parse();
             }
-            private void parse(){
+            protected void parse(){
                 parseExpression();
             }
             private void parseExpression(){

@@ -31,17 +31,18 @@ import org.w3c.dom.Node;
 import java.util.List;
 
 @Getter
-public class SrcMLWhile {
+public class SrcMLWhile extends SrcMLNode{
     //this class will fulfill both the 'while' and 'do-while' keywords, because they are the same at a grammar perspective.
     private Element whileEle;
     private SrcMLCondition condition;
     private SrcMLBlock block;
 
     public SrcMLWhile(Element whileEle) {
+        super(whileEle);
         this.whileEle = whileEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseCondition();
         parseBlock();
     }

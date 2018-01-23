@@ -32,16 +32,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SrcMLDeclStmt{
+public class SrcMLDeclStmt extends SrcMLNode{
 
     private Element declStmtEle;
     private List<SrcMLDecl> decls;
 
     public SrcMLDeclStmt(Element declStmtEle) {
+        super(declStmtEle);
         this.declStmtEle = declStmtEle;
         parse();
     }
-    private void parse() {
+    protected void parse() {
         parseDecls();
     }
     private void parseDecls(){

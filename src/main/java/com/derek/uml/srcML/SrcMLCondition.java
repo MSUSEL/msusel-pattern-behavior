@@ -31,15 +31,16 @@ import org.w3c.dom.Node;
 import java.util.List;
 
 @Getter
-public class SrcMLCondition {
+public class SrcMLCondition extends SrcMLNode{
     private Element conditionEle;
     private SrcMLExpression expression;
 
     public SrcMLCondition(Element conditionEle) {
+        super(conditionEle);
         this.conditionEle = conditionEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseExpression();
     }
     private void parseExpression(){

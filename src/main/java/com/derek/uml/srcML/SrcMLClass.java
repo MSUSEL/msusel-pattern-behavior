@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SrcMLClass {
+public class SrcMLClass extends SrcMLNode{
     //there is some differences in class when considering anonymous classes vs normal classes.
     //Specifically, normal classes have names and anonymous classes don't. I think I can get around this by
     //automatically assigning a class name to anonymous classes. 'AnonymousClass'
@@ -51,11 +51,11 @@ public class SrcMLClass {
     private List<String> specifiers;
 
     public SrcMLClass(Element classEle) {
+        super(classEle);
         this.classEle = classEle;
         parse();
     }
-
-    private void parse(){
+    protected void parse(){
         parseSpecifiers();
         parseName();
         parseSuper();

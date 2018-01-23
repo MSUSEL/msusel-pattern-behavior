@@ -31,17 +31,18 @@ import org.w3c.dom.Node;
 import java.util.List;
 
 @Getter
-public class SrcMLTernary {
+public class SrcMLTernary extends SrcMLNode{
     private Element ternaryEle;
     private SrcMLCondition condition;
     private SrcMLThen then;
     private SrcMLElse else1;
 
     public SrcMLTernary(Element ternaryEle){
+        super(ternaryEle);
         this.ternaryEle = ternaryEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseCondition();
         parseThen();
         parseElse();

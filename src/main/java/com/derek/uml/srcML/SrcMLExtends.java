@@ -31,15 +31,16 @@ import org.w3c.dom.Node;
 import java.util.List;
 
 @Getter
-public class SrcMLExtends {
+public class SrcMLExtends extends SrcMLNode{
     private Element extendsEle;
     private SrcMLName name;
 
     public SrcMLExtends(Element extendsEle) {
+        super(extendsEle);
         this.extendsEle = extendsEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseName();
     }
     private void parseName(){

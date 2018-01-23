@@ -84,7 +84,12 @@ public class UMLGenerationUtils {
             List<SrcMLDecl> decls = block.getDecls();
             for (SrcMLDecl decl : decls) {
                 //in this case the type is the same as the name... I think.. lol
-                UMLMessage initMessage = UMLGenerationUtils.getUMLExpressionMessage(decl.getInit().getExpressions());
+                UMLMessage initMessage = null;
+                if (decl.getInit() != null) {
+                    //init statement
+                    initMessage = UMLMessageGenerationUtils.getUMLMessage(decl.getInit().getExpressions());
+
+                }
                 attributes.add(new UMLAttribute(decl.getName(), decl.getName(), initMessage));
             }
         }
@@ -97,51 +102,18 @@ public class UMLGenerationUtils {
                 for (SrcMLDecl decl : declStmt.getDecls()) {
                     //multiple decl would happen with something like: int a,b,c;
                     //otherwise each decl has 1 name/type/etc..
-                    UMLMessage initMessage = UMLGenerationUtils.getUMLExpressionMessage(decl.getInit().getExpressions());
+                    UMLMessage initMessage = null;
+                    if (decl.getInit() != null) {
+                        //init statement
+                        initMessage = UMLMessageGenerationUtils.getUMLMessage(decl.getInit().getExpressions());
+                    }
                     attributes.add(new UMLAttribute(decl.getName(), decl.getType().getName(), initMessage));
                 }
             }
         }
         return attributes;
     }
-    public static UMLMessage getUMLExpressionMessage(List<SrcMLExpression> expressions){
-        MutableGraph<String> callForest = GraphBuilder.directed().allowsSelfLoops(false).build();
-        for (SrcMLExpression expression : expressions){
-            //should generally only be 1 expression
-            fillCallDepthLayer(callForest, "", expression);
-        }
-        return new UMLMessage(callForest);
-    }
 
-    /**
-     * similar to the one above (getUMLExpressionMessage()) but only uses 1 expression as input
-     * @param expression
-     * @return
-     */
-    public static UMLMessage getUMLExpressionMessage(SrcMLExpression expression){
-        MutableGraph<String> callForest = GraphBuilder.directed().allowsSelfLoops(false).build();
-        fillCallDepthLayer(callForest, "", expression);
-        return new UMLMessage(callForest);
-    }
-
-    private static void fillCallDepthLayer(MutableGraph<String> callForest, String parent, SrcMLExpression expression){
-        List<SrcMLCall> calls = expression.getCalls();
-        for (SrcMLCall call : calls) {
-            if (parent.equals("")){
-                //first time through forest, add a new root as a caller..
-                parent = call.getName();
-                callForest.addNode(parent);
-            }else{
-                //we already have a parent
-                callForest.putEdge(parent, call.getName());
-                parent = call.getName();
-            }
-            //regardless, fill the rest of the forest with edges for each argument.
-            for (SrcMLArgument argument : call.getArgumentList().getArguments()) {
-                fillCallDepthLayer(callForest, parent, argument.getExpression());
-            }
-        }
-    }
 
     /**
      * Collects parameters from the SrcML data structures and returns a strcture in a much more edible form
@@ -159,47 +131,13 @@ public class UMLGenerationUtils {
         return params;
     }
 
-    /**
-     * I will be able to get all messages, but the order will be mewssed up. How do I enforce order?
-     * @param block
-     * @return
-     */
-    public static List<UMLMessage> getUMLMessages(SrcMLBlock block){
-        List<UMLMessage> messages = new ArrayList<>();
-        for (SrcMLDeclStmt declStmt : block.getDeclStmts()){
-            for (SrcMLDecl decl : declStmt.getDecls()){
-                UMLMessage message = getUMLExpressionMessage(decl.getInit().getExpressions());
-                messages.add(message);
-            }
-        }
-        for (SrcMLIf srcMLIf : block.getIfs()){
-            List<UMLMessage> ifs = getUMLMessages(srcMLIf);
-        }
-        
-
-        return messages;
-    }
-
-    public static List<UMLMessage> getUMLMessages(SrcMLIf srcMLIf){
-        UMLMessage ifMessage = getUMLExpressionMessage(srcMLIf.getCondition().getExpression());
-        List<UMLMessage> thenMessages = getUMLMessages(srcMLIf.getThen().getBlock());
-        List<UMLMessage> elseMessages = getUMLMessages(srcMLIf.getElse1().getBlock());
-        List<UMLMessage> ifElseMessages = getUMLMessages(srcMLIf.getElseIf());
-
-        List<UMLMessage> messages = new ArrayList<>();
-        messages.add(ifMessage);
-        messages.addAll(thenMessages);
-        messages.addAll(elseMessages);
-        messages.addAll(ifElseMessages);
-        return messages;
-    }
-
     public static UMLOperation getUMLOperation(SrcMLFunction srcMLFunction){
         List<Pair<String, String>> params = UMLGenerationUtils.getParameters(srcMLFunction.getParameterList());
         String name = srcMLFunction.getName();
         String returnType = srcMLFunction.getType().getName();
         //I need to include use dependencies in here eventually.
-        List<UMLMessage> messages = getUMLMessages(srcMLFunction.getBlock());
+
+        //List<UMLMessage> messages = getUMLMessage(srcMLFunction.getBlock());
         return new UMLOperation(name, params, returnType);
     }
 

@@ -30,18 +30,19 @@ import org.w3c.dom.Node;
 
 import java.util.List;
 
-public class SrcMLCatch {
+@Getter
+public class SrcMLCatch extends SrcMLNode{
     //not sure if I need the multicatch.. or even the catch at all.
-    @Getter
     private Element catchEle;
     private SrcMLParameterList parameterList;
     private SrcMLBlock block;
 
     public SrcMLCatch(Element catchEle) {
+        super(catchEle);
         this.catchEle = catchEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseParameterList();
         parseBlock();
     }

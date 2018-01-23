@@ -31,16 +31,17 @@ import org.w3c.dom.Node;
 import java.util.List;
 
 @Getter
-public class SrcMLImplements {
+public class SrcMLImplements extends SrcMLNode{
 
     private Element implementsEle;
     private SrcMLName name;
 
     public SrcMLImplements(Element implementsEle) {
+        super(implementsEle);
         this.implementsEle = implementsEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseName();
     }
     private void parseName(){

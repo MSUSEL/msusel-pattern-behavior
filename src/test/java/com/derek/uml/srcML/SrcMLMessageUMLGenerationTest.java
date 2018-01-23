@@ -2,6 +2,7 @@ package com.derek.uml.srcML;
 
 import com.derek.uml.UMLGenerationUtils;
 import com.derek.uml.UMLMessage;
+import com.derek.uml.UMLMessageGenerationUtils;
 import com.google.common.graph.MutableGraph;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +40,7 @@ public class SrcMLMessageUMLGenerationTest extends SrcMLTest {
     @Test
     public void verifyCall1(){
         List<SrcMLExpression> expressions = block.getDeclStmts().get(0).getDecls().get(0).getInit().getExpressions();
-        UMLMessage message = UMLGenerationUtils.getUMLExpressionMessage(expressions);
+        UMLMessage message = UMLMessageGenerationUtils.getUMLMessage(expressions);
         String verifier1 = "FirefoxBinary.class.getPackage";
         String verifier2 = "getName";
         String verifier3 = "replace";
@@ -57,16 +58,17 @@ public class SrcMLMessageUMLGenerationTest extends SrcMLTest {
     @Test
     public void verifyCall2(){
         List<SrcMLExpression> expressions = block2.getExpr_stmts().get(0).getExpressions();
-        UMLMessage message = UMLGenerationUtils.getUMLExpressionMessage(expressions);
+        UMLMessage message = UMLMessageGenerationUtils.getUMLMessage(expressions);
         MutableGraph<String> callForest = message.getCallForest();
         assertEquals(callForest.nodes().size(), 1);
         assertEquals(callForest.degree("Executable"), 0);
     }
 
+    //TODO
     @Test
     public void verifyCall3(){
         List<SrcMLExpression> expressions = block3.getExpr_stmts().get(0).getExpressions();
-        UMLMessage message = UMLGenerationUtils.getUMLExpressionMessage(expressions);
+        UMLMessage message = UMLMessageGenerationUtils.getUMLMessage(expressions);
         String verifier1 = "locateFirefoxBinaryFromSystemProperty";
         MutableGraph<String> callForest = message.getCallForest();
         assertEquals(callForest.nodes().size(), 2);

@@ -33,15 +33,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SrcMLThrows{
+public class SrcMLThrows extends SrcMLNode{
     private Element throwsEle;
     private List<SrcMLArgument> arguments;
 
     public SrcMLThrows(Element throwsEle) {
+        super(throwsEle);
         this.throwsEle = throwsEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseArguments();
     }
     private void parseArguments(){

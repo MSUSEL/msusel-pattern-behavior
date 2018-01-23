@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SrcMLDataType {
+public class SrcMLDataType extends SrcMLNode{
     private Element typeEle;
     private List<String> specifiers;
     private List<String> modifiers;
@@ -48,11 +48,12 @@ public class SrcMLDataType {
     private SrcMLDataType nestedType;
 
     public SrcMLDataType(Element typeEle){
+        super(typeEle);
         this.typeEle = typeEle;
         parse();
     }
 
-    private void parse(){
+    protected void parse(){
         parseSpecifiers();
         parseModifiers();
         parseArgumentList();

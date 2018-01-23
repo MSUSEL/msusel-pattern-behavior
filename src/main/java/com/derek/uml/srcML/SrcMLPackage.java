@@ -33,17 +33,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SrcMLPackage {
+public class SrcMLPackage extends SrcMLNode{
 
     private Element packageEle;
     private List<SrcMLName> names;
 
     public SrcMLPackage(Element packageEle){
+        super(packageEle);
         this.packageEle = packageEle;
         parse();
     }
 
-    private void parse(){
+    protected void parse(){
         parseName();
     }
 

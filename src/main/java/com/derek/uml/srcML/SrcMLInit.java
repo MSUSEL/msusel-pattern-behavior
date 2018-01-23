@@ -32,17 +32,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SrcMLInit {
+public class SrcMLInit extends SrcMLNode{
     //there are a few different types of init, but they generally have the form: (decl|expr)(","(decl|expr))* or some degree
     private Element initEle;
     private List<SrcMLDecl> declarations;
     private List<SrcMLExpression> expressions;
 
     public SrcMLInit(Element initEle) {
+        super(initEle);
         this.initEle = initEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseDeclarations();
         parseExpressions();
     }

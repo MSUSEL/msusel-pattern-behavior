@@ -31,16 +31,17 @@ import org.w3c.dom.Node;
 import java.util.List;
 
 @Getter
-public class SrcMLSwitch {
+public class SrcMLSwitch extends SrcMLNode{
     private Element switchEle;
     private SrcMLCondition condition;
     private SrcMLBlock block;
 
     public SrcMLSwitch(Element switchEle) {
+        super(switchEle);
         this.switchEle = switchEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseCondition();
         parseBlock();
     }

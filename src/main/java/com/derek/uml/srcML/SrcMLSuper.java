@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SrcMLSuper {
+public class SrcMLSuper extends SrcMLNode{
     //will likely need this to show generalizations in uml.
     private Element superEle;
     private List<SrcMLExtends> extenders;
@@ -40,10 +40,11 @@ public class SrcMLSuper {
     private SrcMLName name;
 
     public SrcMLSuper(Element superEle) {
+        super(superEle);
         this.superEle = superEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseExtends();
         parseImplements();
         parseName();

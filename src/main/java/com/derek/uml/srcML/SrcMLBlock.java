@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SrcMLBlock {
+public class SrcMLBlock extends SrcMLNode{
     // topLevelElements:(comment|assertStmt|block|break|case|classInterfaceOrAnnotation|constructor|constructorDecl|continue|
     // declStmt|defaultCase|do|if|else|elseif|exprStmt|JavaEnum|finally|for|JavaFunction|JavaFunctionDecl|
     // import|package|specifier|return|staticBlock|switch|throw|try|while;
@@ -73,10 +73,11 @@ public class SrcMLBlock {
     private List<SrcMLDecl> decls;
 
     public SrcMLBlock(Element blockEle){
+        super(blockEle);
         this.blockEle = blockEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseComments();
         parseAssert();
         parseBlock();
@@ -328,16 +329,17 @@ public class SrcMLBlock {
         }
     }
 
-    public class SrcMLCase{
+    public class SrcMLCase extends SrcMLNode{
         @Getter private Element caseEle;
         @Getter SrcMLName name;
         @Getter String literal;
 
         public SrcMLCase(Element caseEle) {
+            super(caseEle);
             this.caseEle = caseEle;
             parse();
         }
-        private void parse(){
+        protected void parse(){
             parseName();
             parseLiteral();
         }
@@ -354,16 +356,17 @@ public class SrcMLBlock {
             }
         }
     }
-    public class SrcMLContinue{
+    public class SrcMLContinue extends SrcMLNode{
         @Getter
         private Element continueEle;
         private SrcMLName name;
 
         public SrcMLContinue(Element continueEle) {
+            super(continueEle);
             this.continueEle = continueEle;
             parse();
         }
-        private void parse(){
+        protected void parse(){
             parseName();
         }
         private void parseName(){
@@ -373,18 +376,18 @@ public class SrcMLBlock {
             }
         }
     }
-
     @Getter
-    public class SrcMLExprStmt{
+    public class SrcMLExprStmt extends SrcMLNode{
         private Element exprStmtEle;
         private List<SrcMLExpression> expressions;
         private List<String> operators;
 
         public SrcMLExprStmt(Element exprStmtEle) {
+            super(exprStmtEle);
             this.exprStmtEle = exprStmtEle;
             parse();
         }
-        private void parse(){
+        protected void parse(){
             parseExpressions();
             parseOperators();
         }
@@ -403,16 +406,17 @@ public class SrcMLBlock {
             }
         }
     }
-    public class SrcMLReturn{
+    public class SrcMLReturn extends SrcMLNode{
         @Getter
         private Element returnEle;
         private SrcMLExpression expression;
 
         public SrcMLReturn(Element returnEle) {
+            super(returnEle);
             this.returnEle = returnEle;
             parse();
         }
-        private void parse(){
+        protected void parse(){
             parseExpression();
         }
         private void parseExpression(){
@@ -422,16 +426,17 @@ public class SrcMLBlock {
             }
         }
     }
-    public class SrcMLStaticBlock{
+    public class SrcMLStaticBlock extends SrcMLNode{
         @Getter
         private Element staticEle;
         private SrcMLBlock block;
 
         public SrcMLStaticBlock(Element staticEle) {
+            super(staticEle);
             this.staticEle = staticEle;
             parse();
         }
-        private void parse(){
+        protected void parse(){
             parseBlock();
         }
         private void parseBlock(){

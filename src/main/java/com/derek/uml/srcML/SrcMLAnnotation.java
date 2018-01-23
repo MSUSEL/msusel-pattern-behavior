@@ -32,16 +32,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SrcMLAnnotation {
+public class SrcMLAnnotation extends SrcMLNode{
     private Element annotationEle;
     private SrcMLName name;
     private SrcMLArgumentList argumentList;
 
     public SrcMLAnnotation(Element annotationEle) {
+        super(annotationEle);
         this.annotationEle = annotationEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseName();
         parseArgumentList();
     }

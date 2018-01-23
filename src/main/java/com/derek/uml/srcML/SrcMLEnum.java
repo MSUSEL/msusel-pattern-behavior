@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SrcMLEnum {
+public class SrcMLEnum extends SrcMLNode{
     private Element enumEle;
     private List<String> specifiers;
     private List<SrcMLAnnotation> annotations;
@@ -40,11 +40,12 @@ public class SrcMLEnum {
     private SrcMLBlock block;
 
     public SrcMLEnum(Element enumEle) {
+        super(enumEle);
         this.enumEle = enumEle;
         parse();
     }
 
-    private void parse() {
+    protected void parse() {
         parseAnnotations();
         parseSpecifiers();
         parseName();

@@ -36,7 +36,7 @@ import java.util.List;
 
 //class to hold important function-related info (xml 'function' element)
 @Getter
-public class SrcMLFunction {
+public class SrcMLFunction extends SrcMLNode{
 
     private Element functionEle;
     private List<SrcMLAnnotation> annotations;
@@ -50,11 +50,12 @@ public class SrcMLFunction {
 
 
     public SrcMLFunction(Element functionEle){
+        super(functionEle);
         this.functionEle = functionEle;
         parse();
     }
 
-    private void parse(){
+    protected void parse(){
         parseAnnotations();
         parseSpecifiers();
         parseType();

@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SrcMLConstructor {
+public class SrcMLConstructor extends SrcMLNode{
     private Element constructorEle;
     private List<String> specifiers;
     private List<SrcMLAnnotation> annotations;
@@ -44,11 +44,12 @@ public class SrcMLConstructor {
     private SrcMLBlock block;
 
     public SrcMLConstructor(Element constructorEle) {
+        super(constructorEle);
         this.constructorEle = constructorEle;
         parse();
     }
 
-    private void parse() {
+    protected void parse() {
         parseSpecifiers();
         parseAnnotations();
         parseName();

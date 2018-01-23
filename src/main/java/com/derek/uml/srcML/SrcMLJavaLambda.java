@@ -31,17 +31,18 @@ import org.w3c.dom.Node;
 import java.util.List;
 
 @Getter
-public class SrcMLJavaLambda {
+public class SrcMLJavaLambda extends SrcMLNode{
     //might not need to use this class.
     private Element lambdaEle;
     private SrcMLParameterList parameterList;
     private SrcMLBlock block;
 
     public SrcMLJavaLambda(Element lambdaEle) {
+        super(lambdaEle);
         this.lambdaEle = lambdaEle;
         parse();
     }
-    private void parse() {
+    protected void parse() {
         parseParameterList();
         parseBlock();
     }

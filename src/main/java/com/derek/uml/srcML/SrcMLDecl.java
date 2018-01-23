@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SrcMLDecl {
+public class SrcMLDecl extends SrcMLNode{
     private Element declEle;
     private SrcMLDataType type;
     private SrcMLName name;
@@ -41,10 +41,11 @@ public class SrcMLDecl {
     private List<String> specifiers;
 
     public SrcMLDecl(Element declEle) {
+        super(declEle);
         this.declEle = declEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseDataType();
         parseName();
         parseRange();

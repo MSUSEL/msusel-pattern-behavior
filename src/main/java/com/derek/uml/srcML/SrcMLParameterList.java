@@ -33,16 +33,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SrcMLParameterList {
+public class SrcMLParameterList extends SrcMLNode{
     //similar to SrcMLArgumentList, I'm not sure how much of this I will need, but I'm creatin gthe class just in case.
     private Element parameterListEle;
     private List<SrcMLParameter> parameters;
 
     public SrcMLParameterList(Element parameterListEle){
+        super(parameterListEle);
         this.parameterListEle = parameterListEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseParameters();
     }
     private void parseParameters(){
@@ -54,7 +55,7 @@ public class SrcMLParameterList {
     }
 
     @Getter
-    public class SrcMLParameter{
+    public class SrcMLParameter extends SrcMLNode{
         //after reviewing examples of parameterlist output, it appears that the documentation for this is wrong..
         //it appears that the <parameter> element ALWAYS has a <decl> element under it and not a <type> element
         private Element parameterEle;
@@ -62,10 +63,11 @@ public class SrcMLParameterList {
         private SrcMLDataType type;
 
         public SrcMLParameter(Element parameterEle) {
+            super(parameterEle);
             this.parameterEle = parameterEle;
             parse();
         }
-        private void parse(){
+        protected void parse(){
             parseDecl();
             parseType();
         }

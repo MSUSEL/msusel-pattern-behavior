@@ -31,17 +31,18 @@ import org.w3c.dom.Node;
 import java.util.List;
 
 @Getter
-public class SrcMLThen {
+public class SrcMLThen extends SrcMLNode{
     //only 2 classes use this; 'SrcMLIf' uses it for the block, and 'SrcMLTernary' uses it for the expression.
     private Element thenEle;
     private SrcMLBlock block;
     private SrcMLExpression expression;
 
     public SrcMLThen(Element thenEle) {
+        super(thenEle);
         this.thenEle = thenEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseBlock();
         parseExpression();
     }

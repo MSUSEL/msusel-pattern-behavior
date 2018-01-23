@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SrcMLCall {
+public class SrcMLCall extends SrcMLNode{
     //will likely have to use this class for sequence diagram generation
     private Element callEle;
     private SrcMLName name;
@@ -40,11 +40,12 @@ public class SrcMLCall {
 
 
     public SrcMLCall(Element callEle){
+        super(callEle);
         this.callEle = callEle;
         parse();
     }
 
-    private void parse(){
+    protected void parse(){
         parseName();
         parseArgumentList();
     }

@@ -31,17 +31,18 @@ import org.w3c.dom.Node;
 import java.util.List;
 
 @Getter
-public class SrcMLInterface {
+public class SrcMLInterface extends SrcMLNode{
     private Element interfaceEle;
     private SrcMLName name;
     private SrcMLSuper superLink;
     private SrcMLBlock block;
 
     public SrcMLInterface(Element interfaceEle) {
+        super(interfaceEle);
         this.interfaceEle = interfaceEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseName();
         parseSuper();
         parseBlock();

@@ -31,7 +31,7 @@ import org.w3c.dom.Node;
 import java.util.List;
 
 @Getter
-public class SrcMLAnnotationDefn {
+public class SrcMLAnnotationDefn extends SrcMLNode{
     //will likely do nothing with this
     private Element annotationEle;
     private SrcMLName name;
@@ -39,10 +39,11 @@ public class SrcMLAnnotationDefn {
     private SrcMLBlock block;
 
     public SrcMLAnnotationDefn(Element annotationEle) {
+        super(annotationEle);
         this.annotationEle = annotationEle;
         parse();
     }
-    private void parse(){
+    protected void parse(){
         parseName();
         parseSuper();
         parseBlock();

@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SrcMLExpression {
+public class SrcMLExpression extends SrcMLNode{
     //fulfills expr<expr>:(JavaLambda|name|call|defaultCall|name|initBlock|operator|literal|JavaAnonymousClass|expr|cast|ternary)+;
     //there are 2 'name' values.. I think that is a mistake. Also, the spec doesn't consider ternary a java thing but it is because it appears in teh xml
 
@@ -49,11 +49,12 @@ public class SrcMLExpression {
     private List<SrcMLTernary> ternarys;
 
     public SrcMLExpression(Element expressionEle){
+        super(expressionEle);
         this.expressionEle = expressionEle;
         parse();
     }
 
-    private void parse(){
+    protected void parse(){
         parseJavaLambdas();
         parseNames();
         parseCalls();
