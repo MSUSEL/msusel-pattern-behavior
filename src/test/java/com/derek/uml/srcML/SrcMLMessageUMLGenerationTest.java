@@ -58,7 +58,6 @@ public class SrcMLMessageUMLGenerationTest extends SrcMLTest {
     public void verifyCall2(){
         List<SrcMLExpression> expressions = block2.getExpr_stmts().get(0).getExpressions();
         UMLMessage message = UMLGenerationUtils.getUMLExpressionMessage(expressions);
-        String verifier1 = "pathToFirefoxBinary";
         MutableGraph<String> callForest = message.getCallForest();
         assertEquals(callForest.nodes().size(), 1);
         assertEquals(callForest.degree("Executable"), 0);

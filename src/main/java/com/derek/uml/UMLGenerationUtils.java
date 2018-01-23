@@ -113,10 +113,15 @@ public class UMLGenerationUtils {
         return new UMLMessage(callForest);
     }
 
-    public static UMLMessage getUMLDeclMessage(List<SrcMLDecl> decls){
-        UMLMessage message = null;
-
-        return message;
+    /**
+     * similar to the one above (getUMLExpressionMessage()) but only uses 1 expression as input
+     * @param expression
+     * @return
+     */
+    public static UMLMessage getUMLExpressionMessage(SrcMLExpression expression){
+        MutableGraph<String> callForest = GraphBuilder.directed().allowsSelfLoops(false).build();
+        fillCallDepthLayer(callForest, "", expression);
+        return new UMLMessage(callForest);
     }
 
     private static void fillCallDepthLayer(MutableGraph<String> callForest, String parent, SrcMLExpression expression){
@@ -138,7 +143,6 @@ public class UMLGenerationUtils {
         }
     }
 
-
     /**
      * Collects parameters from the SrcML data structures and returns a strcture in a much more edible form
      *
@@ -155,11 +159,47 @@ public class UMLGenerationUtils {
         return params;
     }
 
+    /**
+     * I will be able to get all messages, but the order will be mewssed up. How do I enforce order?
+     * @param block
+     * @return
+     */
+    public static List<UMLMessage> getUMLMessages(SrcMLBlock block){
+        List<UMLMessage> messages = new ArrayList<>();
+        for (SrcMLDeclStmt declStmt : block.getDeclStmts()){
+            for (SrcMLDecl decl : declStmt.getDecls()){
+                UMLMessage message = getUMLExpressionMessage(decl.getInit().getExpressions());
+                messages.add(message);
+            }
+        }
+        for (SrcMLIf srcMLIf : block.getIfs()){
+            List<UMLMessage> ifs = getUMLMessages(srcMLIf);
+        }
+        
+
+        return messages;
+    }
+
+    public static List<UMLMessage> getUMLMessages(SrcMLIf srcMLIf){
+        UMLMessage ifMessage = getUMLExpressionMessage(srcMLIf.getCondition().getExpression());
+        List<UMLMessage> thenMessages = getUMLMessages(srcMLIf.getThen().getBlock());
+        List<UMLMessage> elseMessages = getUMLMessages(srcMLIf.getElse1().getBlock());
+        List<UMLMessage> ifElseMessages = getUMLMessages(srcMLIf.getElseIf());
+
+        List<UMLMessage> messages = new ArrayList<>();
+        messages.add(ifMessage);
+        messages.addAll(thenMessages);
+        messages.addAll(elseMessages);
+        messages.addAll(ifElseMessages);
+        return messages;
+    }
+
     public static UMLOperation getUMLOperation(SrcMLFunction srcMLFunction){
         List<Pair<String, String>> params = UMLGenerationUtils.getParameters(srcMLFunction.getParameterList());
         String name = srcMLFunction.getName();
         String returnType = srcMLFunction.getType().getName();
         //I need to include use dependencies in here eventually.
+        List<UMLMessage> messages = getUMLMessages(srcMLFunction.getBlock());
         return new UMLOperation(name, params, returnType);
     }
 
@@ -286,38 +326,5 @@ public class UMLGenerationUtils {
         return umlEnum;
     }
 
-    public static List<UMLMessage> getUMLMessages(SrcMLBlock block){
-        //from a block I have both expr_stmt and expr; expr leads to call
-        List<UMLMessage> messages = new ArrayList<>();
-        List<SrcMLExpression> expressions = new ArrayList<>();
-        for (SrcMLBlock.SrcMLExprStmt exprStmt : block.getExpr_stmts()){
-            for (SrcMLExpression expression : exprStmt.getExpressions()){
-                expressions.add(expression);
-            }
-        }
-        for (SrcMLExpression expression : expressions){
-            for (SrcMLCall call : expression.getCalls()){
-                messages.add(getUMLMessage(call));
-            }
-        }
-        return messages;
-    }
-    public static UMLMessage getUMLMessage(SrcMLCall call){
-        String callName = call.getName();
-        SrcMLArgumentList argumentList = call.getArgumentList();
-        for (SrcMLArgument argument : argumentList.getArguments()){
-
-
-        }
-
-
-        //need to deal with argument lists here. the good news is that I only have 1 call in a <call>..
-
-
-
-        UMLMessage message = new UMLMessage(null, null, false);
-
-        return message;
-    }
 
 }

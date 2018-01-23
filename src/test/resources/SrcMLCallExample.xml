@@ -168,7 +168,8 @@
                     </expr>
                 </argument>)</argument_list>
             </call>
-        </expr>;</throw>  }</block>
+        </expr>;</throw>  }
+    </block>
 <block>{      <decl_stmt>
     <decl>
         <type>
