@@ -64,7 +64,7 @@ public class SrcMLMessageUMLGenerationTest extends SrcMLTest {
         assertEquals(callForest.degree("Executable"), 0);
     }
 
-    //TODO
+
     @Test
     public void verifyCall3(){
         List<SrcMLExpression> expressions = block3.getExpr_stmts().get(0).getExpressions();

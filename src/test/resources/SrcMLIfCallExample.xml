@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<root>
+    <block>{          <if>if <condition>(<expr>
+        <operator>!</operator>
+        <call>
+            <name>
+                <name>element</name>
+                <operator>.</operator>
+                <name>isDisplayed</name>
+            </name>
+            <argument_list>()</argument_list>
+        </call>
+    </expr>)</condition>
+        <then>
+            <block>{            <return>return <expr>
+                <literal type="null">null</literal>
+            </expr>;</return>          }</block>
+        </then>
+    </if>        }
+    </block>
+    <block>
+    <if>if <condition>(<expr>
+        <call>
+            <name>
+                <name>Platform</name>
+                <operator>.</operator>
+                <name>getCurrent</name>
+            </name>
+            <argument_list>()</argument_list>
+        </call>
+        <operator>.</operator>
+        <call>
+            <name>is</name>
+            <argument_list>(<argument>
+                <expr>
+                    <name>
+                        <name>Platform</name>
+                        <operator>.</operator>
+                        <name>MAC</name>
+                    </name>
+                </expr>
+            </argument>)</argument_list>
+        </call>
+    </expr>)</condition>
+        <then>
+            <block>{      <expr_stmt>
+                <expr>
+                    <name>discovered</name>
+                    <operator>=</operator>
+                    <call>
+                        <name>
+                            <name>binaryLocation</name>
+                            <operator>.</operator>
+                            <name>getParent</name>
+                        </name>
+                        <argument_list>()</argument_list>
+                    </call>
+                    <operator>.</operator>
+                    <call>
+                        <name>getParent</name>
+                        <argument_list>()</argument_list>
+                    </call>
+                    <operator>.</operator>
+                    <call>
+                        <name>resolve</name>
+                        <argument_list>(<argument>
+                            <expr>
+                                <literal type="string">"Resources"</literal>
+                            </expr>
+                        </argument>)</argument_list>
+                    </call>
+                    <operator>.</operator>
+                    <call>
+                        <name>resolve</name>
+                        <argument_list>(<argument>
+                            <expr>
+                                <name>resourceName</name>
+                            </expr>
+                        </argument>)</argument_list>
+                    </call>
+                </expr>;</expr_stmt>    }</block>
+        </then>
+        <else>else <block>{      <expr_stmt>
+            <expr>
+                <name>discovered</name>
+                <operator>=</operator>
+                <call>
+                    <name>
+                        <name>binaryLocation</name>
+                        <operator>.</operator>
+                        <name>getParent</name>
+                    </name>
+                    <argument_list>()</argument_list>
+                </call>
+                <operator>.</operator>
+                <call>
+                    <name>resolve</name>
+                    <argument_list>(<argument>
+                        <expr>
+                            <name>resourceName</name>
+                        </expr>
+                    </argument>)</argument_list>
+                </call>
+            </expr>;</expr_stmt>    }</block>
+        </else>
+    </if>
+</block>
+</root>

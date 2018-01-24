@@ -18,12 +18,18 @@ public class UMLMessageGenerationUtils {
      */
     public static List<UMLMessage> getUMLMessages(SrcMLBlock block){
         List<UMLMessage> messages = new ArrayList<>();
-        List<UMLMessage> ifs = null;
-        List<UMLMessage> fors = null;
+        List<UMLMessage> expressions = new ArrayList<>();
+        List<UMLMessage> ifs = new ArrayList<>();
+        List<UMLMessage> fors = new ArrayList<>();
         for (SrcMLDeclStmt declStmt : block.getDeclStmts()){
             for (SrcMLDecl decl : declStmt.getDecls()){
                 UMLMessage message = getUMLMessage(decl.getInit().getExpressions());
                 messages.add(message);
+            }
+        }
+        for (SrcMLBlock.SrcMLExprStmt exprStmt : block.getExpr_stmts()){
+            for (SrcMLExpression expression : exprStmt.getExpressions()){
+                expressions.add(getUMLMessage(expression));
             }
         }
         for (SrcMLIf srcMLIf : block.getIfs()){
@@ -32,7 +38,7 @@ public class UMLMessageGenerationUtils {
         for (SrcMLFor srcMLFor : block.getFors()){
             fors = getUMLMessages(srcMLFor);
         }
-        //TODO
+
         //order();
 
         messages.addAll(ifs);
@@ -64,14 +70,50 @@ public class UMLMessageGenerationUtils {
     public static List<UMLMessage> getUMLMessages(SrcMLIf srcMLIf){
         List<UMLMessage> messages = new ArrayList<>();
         UMLMessage ifMessage = getUMLMessage(srcMLIf.getCondition().getExpression());
-        List<UMLMessage> thenMessages = getUMLMessages(srcMLIf.getThen().getBlock());
-        List<UMLMessage> elseMessages = getUMLMessages(srcMLIf.getElse1().getBlock());
-        List<UMLMessage> ifElseMessages = getUMLMessages(srcMLIf.getElseIf());
+        List<UMLMessage> thenMessages = getUMLMessages(srcMLIf.getThen());
+        List<UMLMessage> elseMessages = new ArrayList<>();
+        if (srcMLIf.getElse1() != null) {
+            elseMessages = getUMLMessages(srcMLIf.getElse1());
+        }
+        List<UMLMessage> ifElseMessages = new ArrayList<>();
+        if (srcMLIf.getElseIf() != null) {
+            ifElseMessages = getUMLMessages(srcMLIf.getElseIf());
+        }
 
         messages.add(ifMessage);
         messages.addAll(thenMessages);
         messages.addAll(elseMessages);
         messages.addAll(ifElseMessages);
+        return messages;
+    }
+
+    public static List<UMLMessage> getUMLMessages(SrcMLThen srcMLThen){
+        List<UMLMessage> messages = new ArrayList<>();
+        List<UMLMessage> blocks = new ArrayList<>();
+        List<UMLMessage> expressions = new ArrayList<>();
+        if (srcMLThen.getBlock() != null){
+            blocks = getUMLMessages(srcMLThen.getBlock());
+        }
+        if (srcMLThen.getExpression() != null){
+            expressions.add(getUMLMessage(srcMLThen.getExpression()));
+        }
+        messages.addAll(blocks);
+        messages.addAll(expressions);
+        return messages;
+    }
+
+    public static List<UMLMessage> getUMLMessages(SrcMLElse srcMLElse){
+        List<UMLMessage> messages = new ArrayList<>();
+        List<UMLMessage> blocks = new ArrayList<>();
+        List<UMLMessage> expressions = new ArrayList<>();
+        if (srcMLElse.getBlock() != null){
+            blocks = getUMLMessages(srcMLElse.getBlock());
+        }
+        if (srcMLElse.getExpression() != null){
+            expressions.add(getUMLMessage(srcMLElse.getExpression()));
+        }
+        messages.addAll(blocks);
+        messages.addAll(expressions);
         return messages;
     }
 
