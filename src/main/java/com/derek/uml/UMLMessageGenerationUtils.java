@@ -41,7 +41,10 @@ public class UMLMessageGenerationUtils {
 
         //order();
 
+
+        messages.addAll(expressions);
         messages.addAll(ifs);
+        messages.addAll(fors);
 
         return messages;
     }
@@ -55,16 +58,19 @@ public class UMLMessageGenerationUtils {
     }
     public static List<UMLMessage> getUMLMessages(SrcMLFor.SrcMLControl srcMLControl){
         List<UMLMessage> messages = new ArrayList<>();
-        for (SrcMLExpression expression : srcMLControl.getInit().getExpressions()){
-            //each init can have multiple expressions, and therefore calls - this code is an example: for (int i = 0, j = 9; i < 5 && j > 8; i++, j++)
-            //although if this is true then its going to be very hard to track control characters (how do I match i to the other i's in the above example)
-            messages.add(getUMLMessage(expression));
-        }
+        messages.add(getUMLMessage(srcMLControl.getInit()));
+        messages.add(getUMLMessage(srcMLControl.getCondition()));
+        messages.add(getUMLMessage(srcMLControl.getIncr()));
         return messages;
     }
-    public static List<UMLMessage> getUMLMessages(SrcMLInit srcMLInit){
-        return null;
-        // /return getUMLMessages(srcMLInit.getExpressions());
+    public static UMLMessage getUMLMessage(SrcMLFor.SrcMLControl.SrcMLIncr srcMLIncr){
+        return getUMLMessage(srcMLIncr.getExpression());
+    }
+    public static UMLMessage getUMLMessage(SrcMLCondition srcMLCondition){
+        return getUMLMessage(srcMLCondition.getExpression());
+    }
+    public static UMLMessage getUMLMessage(SrcMLInit srcMLInit){
+        return getUMLMessage(srcMLInit.getExpressions());
     }
 
     public static List<UMLMessage> getUMLMessages(SrcMLIf srcMLIf){
@@ -86,7 +92,6 @@ public class UMLMessageGenerationUtils {
         messages.addAll(ifElseMessages);
         return messages;
     }
-
     public static List<UMLMessage> getUMLMessages(SrcMLThen srcMLThen){
         List<UMLMessage> messages = new ArrayList<>();
         List<UMLMessage> blocks = new ArrayList<>();
@@ -101,7 +106,6 @@ public class UMLMessageGenerationUtils {
         messages.addAll(expressions);
         return messages;
     }
-
     public static List<UMLMessage> getUMLMessages(SrcMLElse srcMLElse){
         List<UMLMessage> messages = new ArrayList<>();
         List<UMLMessage> blocks = new ArrayList<>();
@@ -146,8 +150,9 @@ public class UMLMessageGenerationUtils {
                 callForest.addNode(parent);
             }else{
                 //we already have a parent
-                callForest.putEdge(parent, call.getName());
-                parent = call.getName();
+                String nextParent = parent + "." + call.getName();
+                callForest.putEdge(parent, nextParent);
+                parent = nextParent;
             }
             //regardless, fill the rest of the forest with edges for each argument.
             for (SrcMLArgument argument : call.getArgumentList().getArguments()) {
