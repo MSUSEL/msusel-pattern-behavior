@@ -21,6 +21,9 @@ public class UMLMessageGenerationUtils {
         List<UMLMessage> expressions = new ArrayList<>();
         List<UMLMessage> ifs = new ArrayList<>();
         List<UMLMessage> fors = new ArrayList<>();
+        List<UMLMessage> whiles = new ArrayList<>();
+        List<UMLMessage> dos = new ArrayList<>();
+
         for (SrcMLDeclStmt declStmt : block.getDeclStmts()){
             for (SrcMLDecl decl : declStmt.getDecls()){
                 UMLMessage message = getUMLMessage(decl.getInit().getExpressions());
@@ -38,6 +41,16 @@ public class UMLMessageGenerationUtils {
         for (SrcMLFor srcMLFor : block.getFors()){
             fors = getUMLMessages(srcMLFor);
         }
+        for (SrcMLWhile srcMLWhile : block.getWhiles()){
+            whiles = getUMLMessages(srcMLWhile);
+        }
+        for (SrcMLWhile srcMLDo : block.getDos()){
+            dos = getUMLMessages(srcMLDo);
+        }
+        for (SrcMLFunction srcMLFunction : block.getFunctions()){
+
+        }
+
 
         //order();
 
@@ -45,7 +58,15 @@ public class UMLMessageGenerationUtils {
         messages.addAll(expressions);
         messages.addAll(ifs);
         messages.addAll(fors);
+        messages.addAll(whiles);
+        messages.addAll(dos);
 
+        return messages;
+    }
+    public static List<UMLMessage> getUMLMessages(SrcMLWhile srcMLWhile){
+        List<UMLMessage> messages = new ArrayList<>();
+        messages.add(getUMLMessage(srcMLWhile.getCondition()));
+        messages.addAll(getUMLMessages(srcMLWhile.getBlock()));
         return messages;
     }
     public static List<UMLMessage> getUMLMessages(SrcMLFor srcMLFor){
