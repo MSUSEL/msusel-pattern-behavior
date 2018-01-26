@@ -33,27 +33,24 @@ import java.util.List;
 @Getter
 public class SrcMLThen extends SrcMLNode{
     //only 2 classes use this; 'SrcMLIf' uses it for the block, and 'SrcMLTernary' uses it for the expression.
-    private Element thenEle;
     private SrcMLBlock block;
     private SrcMLExpression expression;
 
     public SrcMLThen(Element thenEle) {
         super(thenEle);
-        this.thenEle = thenEle;
-        parse();
     }
     protected void parse(){
         parseBlock();
         parseExpression();
     }
     private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(thenEle, "block");
+        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
         for (Node blockNode : blockNodes){
             this.block = new SrcMLBlock(XmlUtils.elementify(blockNode));
         }
     }
     private void parseExpression(){
-        List<Node> expressionNodes = XmlUtils.getImmediateChildren(thenEle, "expr");
+        List<Node> expressionNodes = XmlUtils.getImmediateChildren(element, "expr");
         for (Node expressionNode : expressionNodes){
             //can have 0 or 1
             expression = new SrcMLExpression(XmlUtils.elementify(expressionNode));

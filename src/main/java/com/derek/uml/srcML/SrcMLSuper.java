@@ -34,15 +34,12 @@ import java.util.List;
 @Getter
 public class SrcMLSuper extends SrcMLNode{
     //will likely need this to show generalizations in uml.
-    private Element superEle;
     private List<SrcMLExtends> extenders;
     private List<SrcMLImplements> implementors;
     private SrcMLName name;
 
     public SrcMLSuper(Element superEle) {
         super(superEle);
-        this.superEle = superEle;
-        parse();
     }
     protected void parse(){
         parseExtends();
@@ -51,20 +48,20 @@ public class SrcMLSuper extends SrcMLNode{
     }
     private void parseExtends(){
         extenders = new ArrayList<>();
-        List<Node> extendsNodes = XmlUtils.getImmediateChildren(superEle, "extends");
+        List<Node> extendsNodes = XmlUtils.getImmediateChildren(element, "extends");
         for (Node extendsNode : extendsNodes){
             extenders.add(new SrcMLExtends(XmlUtils.elementify(extendsNode)));
         }
     }
     private void parseImplements(){
         implementors = new ArrayList<>();
-        List<Node> implementorNodes = XmlUtils.getImmediateChildren(superEle, "implements");
+        List<Node> implementorNodes = XmlUtils.getImmediateChildren(element, "implements");
         for (Node implementorNode : implementorNodes){
             implementors.add(new SrcMLImplements(XmlUtils.elementify(implementorNode)));
         }
     }
     private void parseName(){
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(superEle, "name");
+        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
         for (Node name : nameNodes){
             //will only happen once but im leaving hte looop in for safety (poor documentation in srcml)
             this.name = new SrcMLName(XmlUtils.elementify(name));

@@ -33,27 +33,24 @@ import java.util.List;
 @Getter
 public class SrcMLJavaLambda extends SrcMLNode{
     //might not need to use this class.
-    private Element lambdaEle;
     private SrcMLParameterList parameterList;
     private SrcMLBlock block;
 
     public SrcMLJavaLambda(Element lambdaEle) {
         super(lambdaEle);
-        this.lambdaEle = lambdaEle;
-        parse();
     }
     protected void parse() {
         parseParameterList();
         parseBlock();
     }
     private void parseParameterList(){
-        List<Node> parameterNodes = XmlUtils.getImmediateChildren(lambdaEle, "parameter_list");
+        List<Node> parameterNodes = XmlUtils.getImmediateChildren(element, "parameter_list");
         for (Node parameterNode : parameterNodes){
             parameterList = new SrcMLParameterList(XmlUtils.elementify(parameterNode));
         }
     }
     private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(lambdaEle, "block");
+        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
         for (Node blockNode : blockNodes){
             block = new SrcMLBlock(XmlUtils.elementify(blockNode));
         }

@@ -34,14 +34,11 @@ import java.util.List;
 @Getter
 public class SrcMLInit extends SrcMLNode{
     //there are a few different types of init, but they generally have the form: (decl|expr)(","(decl|expr))* or some degree
-    private Element initEle;
     private List<SrcMLDecl> declarations;
     private List<SrcMLExpression> expressions;
 
     public SrcMLInit(Element initEle) {
         super(initEle);
-        this.initEle = initEle;
-        parse();
     }
     protected void parse(){
         parseDeclarations();
@@ -49,14 +46,14 @@ public class SrcMLInit extends SrcMLNode{
     }
     private void parseDeclarations(){
         declarations = new ArrayList<>();
-        List<Node> declNodes = XmlUtils.getImmediateChildren(initEle, "decl");
+        List<Node> declNodes = XmlUtils.getImmediateChildren(element, "decl");
         for (Node declNode : declNodes){
             declarations.add(new SrcMLDecl(XmlUtils.elementify(declNode)));
         }
     }
     private void parseExpressions(){
         expressions = new ArrayList<>();
-        List<Node> exprNodes = XmlUtils.getImmediateChildren(initEle, "expr");
+        List<Node> exprNodes = XmlUtils.getImmediateChildren(element, "expr");
         for (Node exprNode : exprNodes){
             expressions.add(new SrcMLExpression(XmlUtils.elementify(exprNode)));
         }

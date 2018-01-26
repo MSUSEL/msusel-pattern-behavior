@@ -24,10 +24,6 @@
  */
 package com.derek.uml.srcML;
 
-import com.derek.uml.UMLAttribute;
-import com.derek.uml.UMLClass;
-import com.derek.uml.UMLGenerationUtils;
-import com.derek.uml.UMLOperation;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -43,7 +39,6 @@ public class SrcMLClass extends SrcMLNode{
 
     //right now im not getting a list of specifiers from the class definitions.. mostly because its not in the spec.
     //I feel like I should put that functionality in..
-    private Element classEle;
     private SrcMLName name;
     private SrcMLSuper superLink;
     private SrcMLArgumentList argumentList;
@@ -52,8 +47,6 @@ public class SrcMLClass extends SrcMLNode{
 
     public SrcMLClass(Element classEle) {
         super(classEle);
-        this.classEle = classEle;
-        parse();
     }
     protected void parse(){
         parseSpecifiers();
@@ -65,13 +58,13 @@ public class SrcMLClass extends SrcMLNode{
 
     private void parseSpecifiers(){
         specifiers = new ArrayList<>();
-        List<Node> specifierNodes = XmlUtils.getImmediateChildren(classEle, "specifier");
+        List<Node> specifierNodes = XmlUtils.getImmediateChildren(element, "specifier");
         for (Node specifierNode : specifierNodes){
             specifiers.add(specifierNode.getTextContent());
         }
     }
     private void parseName(){
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(classEle, "name");
+        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
         for (Node nameNode : nameNodes){
             //will only happen once but im leaving hte looop in for safety (poor documentation in srcml)
             this.name = new SrcMLName(XmlUtils.elementify(nameNode));
@@ -82,19 +75,19 @@ public class SrcMLClass extends SrcMLNode{
         }
     }
     private void parseSuper(){
-        List<Node> superNodes = XmlUtils.getImmediateChildren(classEle, "super");
+        List<Node> superNodes = XmlUtils.getImmediateChildren(element, "super");
         for (Node superNode : superNodes){
             this.superLink = new SrcMLSuper(XmlUtils.elementify(superNode));
         }
     }
     private void parseArgumentList(){
-        List<Node> argumentListNodes = XmlUtils.getImmediateChildren(classEle, "argument_list");
+        List<Node> argumentListNodes = XmlUtils.getImmediateChildren(element, "argument_list");
         for (Node argumentListNode : argumentListNodes){
             argumentList = new SrcMLArgumentList(XmlUtils.elementify(argumentListNode));
         }
     }
     private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(classEle, "block");
+        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
         for (Node block : blockNodes){
             this.block = new SrcMLBlock(XmlUtils.elementify(block));
         }

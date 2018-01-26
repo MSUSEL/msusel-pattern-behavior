@@ -32,19 +32,16 @@ import java.util.List;
 
 @Getter
 public class SrcMLFinally extends SrcMLNode{
-    private Element finallyEle;
     private SrcMLBlock block;
 
     public SrcMLFinally(Element finallyEle) {
         super(finallyEle);
-        this.finallyEle = finallyEle;
-        parse();
     }
     protected void parse(){
         parseBlock();
     }
     private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(finallyEle, "block");
+        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
         for (Node blockNode : blockNodes){
             block = new SrcMLBlock(XmlUtils.elementify(blockNode));
         }

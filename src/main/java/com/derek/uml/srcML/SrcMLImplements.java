@@ -33,19 +33,16 @@ import java.util.List;
 @Getter
 public class SrcMLImplements extends SrcMLNode{
 
-    private Element implementsEle;
     private SrcMLName name;
 
     public SrcMLImplements(Element implementsEle) {
         super(implementsEle);
-        this.implementsEle = implementsEle;
-        parse();
     }
     protected void parse(){
         parseName();
     }
     private void parseName(){
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(implementsEle, "name");
+        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
         for (Node name : nameNodes){
             //will only happen once but im leaving hte looop in for safety (poor documentation in srcml)
             this.name = new SrcMLName(XmlUtils.elementify(name));

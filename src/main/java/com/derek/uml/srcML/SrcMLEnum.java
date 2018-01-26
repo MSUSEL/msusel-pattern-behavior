@@ -33,7 +33,6 @@ import java.util.List;
 
 @Getter
 public class SrcMLEnum extends SrcMLNode{
-    private Element enumEle;
     private List<String> specifiers;
     private List<SrcMLAnnotation> annotations;
     private SrcMLName name;
@@ -41,8 +40,6 @@ public class SrcMLEnum extends SrcMLNode{
 
     public SrcMLEnum(Element enumEle) {
         super(enumEle);
-        this.enumEle = enumEle;
-        parse();
     }
 
     protected void parse() {
@@ -54,26 +51,26 @@ public class SrcMLEnum extends SrcMLNode{
 
     private void parseAnnotations() {
         annotations = new ArrayList<>();
-        List<Node> annotationNodes = XmlUtils.getImmediateChildren(enumEle, "annotation");
+        List<Node> annotationNodes = XmlUtils.getImmediateChildren(element, "annotation");
         for (Node annotationNode : annotationNodes) {
             annotations.add(new SrcMLAnnotation(XmlUtils.elementify(annotationNode)));
         }
     }
     private void parseSpecifiers(){
         specifiers = new ArrayList<>();
-        List<Node> specifierNodes = XmlUtils.getImmediateChildren(enumEle, "specifier");
+        List<Node> specifierNodes = XmlUtils.getImmediateChildren(element, "specifier");
         for (Node specifierNode : specifierNodes) {
             specifiers.add(specifierNode.getTextContent());
         }
     }
     private void parseName() {
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(enumEle, "name");
+        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
         for (Node nameNode : nameNodes) {
             name = new SrcMLName(XmlUtils.elementify(nameNode));
         }
     }
     private void parseBlock() {
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(enumEle, "block");
+        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
         for (Node blockNode : blockNodes) {
             block = new SrcMLBlock(XmlUtils.elementify(blockNode));
         }

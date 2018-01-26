@@ -34,14 +34,10 @@ import java.util.List;
 
 @Getter
 public class SrcMLPackage extends SrcMLNode{
-
-    private Element packageEle;
     private List<SrcMLName> names;
 
     public SrcMLPackage(Element packageEle){
         super(packageEle);
-        this.packageEle = packageEle;
-        parse();
     }
 
     protected void parse(){
@@ -50,7 +46,7 @@ public class SrcMLPackage extends SrcMLNode{
 
     private void parseName(){
         names = new ArrayList<>();
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(packageEle, "name");
+        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
         for (Node nameNode : nameNodes){
             names.add(new SrcMLName(XmlUtils.elementify(nameNode)));
         }

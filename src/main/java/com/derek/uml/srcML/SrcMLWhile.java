@@ -33,28 +33,25 @@ import java.util.List;
 @Getter
 public class SrcMLWhile extends SrcMLNode{
     //this class will fulfill both the 'while' and 'do-while' keywords, because they are the same at a grammar perspective.
-    private Element whileEle;
     private SrcMLCondition condition;
     private SrcMLBlock block;
 
     public SrcMLWhile(Element whileEle) {
         super(whileEle);
-        this.whileEle = whileEle;
-        parse();
     }
     protected void parse(){
         parseCondition();
         parseBlock();
     }
     private void parseCondition(){
-        List<Node> conditionNodes = XmlUtils.getImmediateChildren(whileEle, "condition");
+        List<Node> conditionNodes = XmlUtils.getImmediateChildren(element, "condition");
         for (Node conditionNode : conditionNodes){
             //should only be 1 anyway
             condition = new SrcMLCondition(XmlUtils.elementify(conditionNode));
         }
     }
     private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(whileEle, "block");
+        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
         for (Node blockNode : blockNodes){
             this.block = new SrcMLBlock(XmlUtils.elementify(blockNode));
         }

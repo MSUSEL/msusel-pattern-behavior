@@ -30,11 +30,9 @@ import org.w3c.dom.Element;
 @Getter
 public class SrcMLDefault extends SrcMLNode{
     //will likely not have to use this class
-    private Element defaultEle;
 
     public SrcMLDefault(Element defaultEle){
         super(defaultEle);
-        this.defaultEle = defaultEle;
     }
     protected void parse(){
         //don't care.

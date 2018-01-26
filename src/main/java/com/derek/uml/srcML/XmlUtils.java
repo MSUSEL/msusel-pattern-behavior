@@ -36,6 +36,19 @@ public class XmlUtils {
         //private constructor for only 1 instance
     }
 
+    public static List<Element> getChildElements(Element e){
+        List<Element> children = new ArrayList<>();
+        NodeList nl = e.getChildNodes();
+
+        for (int i = 0; i < nl.getLength(); i++){
+            Element ele = elementify(nl.item(i));
+            if (ele != null) {
+                children.add(ele);
+            }
+        }
+        return children;
+    }
+
     public static Element elementify(Node node){
         if (node.getNodeType() == Node.ELEMENT_NODE) {
             return (Element) node;

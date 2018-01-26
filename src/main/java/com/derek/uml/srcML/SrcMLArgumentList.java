@@ -35,15 +35,13 @@ import java.util.List;
 public class SrcMLArgumentList extends SrcMLNode{
     //not sure how much of this I will need, but I'm creatin gthe class just in case.
     //a lot of the time the arguments are just generics. But they can also be parameterized arguments (String[] args)
-    private Element argumentListEle;
     private List<SrcMLArgument> arguments;
     //typeAttribute is for capturing the optional attribute on argumentlists.
     private String typeAttribute;
 
     public SrcMLArgumentList(Element argumentListEle){
         super(argumentListEle);
-        this.argumentListEle = argumentListEle;
-        parse();
+        this.element = argumentListEle;
     }
 
     protected void parse(){
@@ -53,12 +51,12 @@ public class SrcMLArgumentList extends SrcMLNode{
 
     private void parseOptionalAttribute(){
         //this will have zero or 1 attributes.
-        typeAttribute = argumentListEle.getAttribute("type");
+        typeAttribute = element.getAttribute("type");
     }
 
     private void parseArguments(){
         arguments = new ArrayList<>();
-        List<Node> argumentNodes = XmlUtils.getImmediateChildren(argumentListEle, "argument");
+        List<Node> argumentNodes = XmlUtils.getImmediateChildren(element, "argument");
         for (Node argumentNode : argumentNodes){
             arguments.add(new SrcMLArgument(XmlUtils.elementify(argumentNode)));
         }

@@ -35,20 +35,17 @@ import java.util.List;
 @Getter
 public class SrcMLParameterList extends SrcMLNode{
     //similar to SrcMLArgumentList, I'm not sure how much of this I will need, but I'm creatin gthe class just in case.
-    private Element parameterListEle;
     private List<SrcMLParameter> parameters;
 
     public SrcMLParameterList(Element parameterListEle){
         super(parameterListEle);
-        this.parameterListEle = parameterListEle;
-        parse();
     }
     protected void parse(){
         parseParameters();
     }
     private void parseParameters(){
         parameters = new ArrayList<>();
-        List<Node> parameterNodes = XmlUtils.getImmediateChildren(parameterListEle, "parameter");
+        List<Node> parameterNodes = XmlUtils.getImmediateChildren(element, "parameter");
         for (Node parameterNode : parameterNodes){
             parameters.add(new SrcMLParameter(XmlUtils.elementify(parameterNode)));
         }
@@ -58,27 +55,24 @@ public class SrcMLParameterList extends SrcMLNode{
     public class SrcMLParameter extends SrcMLNode{
         //after reviewing examples of parameterlist output, it appears that the documentation for this is wrong..
         //it appears that the <parameter> element ALWAYS has a <decl> element under it and not a <type> element
-        private Element parameterEle;
         private SrcMLDecl decl;
         private SrcMLDataType type;
 
         public SrcMLParameter(Element parameterEle) {
             super(parameterEle);
-            this.parameterEle = parameterEle;
-            parse();
         }
         protected void parse(){
             parseDecl();
             parseType();
         }
         private void parseDecl(){
-            List<Node> declNodes = XmlUtils.getImmediateChildren(parameterEle, "decl");
+            List<Node> declNodes = XmlUtils.getImmediateChildren(element, "decl");
             for (Node declNode : declNodes){
                 decl = new SrcMLDecl(XmlUtils.elementify(declNode));
             }
         }
         private void parseType(){
-            List<Node> typeNodes = XmlUtils.getImmediateChildren(parameterEle, "type");
+            List<Node> typeNodes = XmlUtils.getImmediateChildren(element, "type");
             for (Node typeNode : typeNodes){
                 type = new SrcMLDataType(XmlUtils.elementify(typeNode));
             }

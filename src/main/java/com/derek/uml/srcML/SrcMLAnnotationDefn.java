@@ -33,15 +33,12 @@ import java.util.List;
 @Getter
 public class SrcMLAnnotationDefn extends SrcMLNode{
     //will likely do nothing with this
-    private Element annotationEle;
     private SrcMLName name;
     private SrcMLSuper super1;
     private SrcMLBlock block;
 
     public SrcMLAnnotationDefn(Element annotationEle) {
         super(annotationEle);
-        this.annotationEle = annotationEle;
-        parse();
     }
     protected void parse(){
         parseName();
@@ -49,19 +46,19 @@ public class SrcMLAnnotationDefn extends SrcMLNode{
         parseBlock();
     }
     private void parseName(){
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(annotationEle, "name");
+        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
         for (Node nameNode : nameNodes){
             this.name = new SrcMLName(XmlUtils.elementify(nameNode));
         }
     }
     private void parseSuper(){
-        List<Node> superNodes = XmlUtils.getImmediateChildren(annotationEle, "super");
+        List<Node> superNodes = XmlUtils.getImmediateChildren(element, "super");
         for (Node superNode : superNodes){
             this.super1 = new SrcMLSuper(XmlUtils.elementify(superNode));
         }
     }
     private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(annotationEle, "block");
+        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
         for (Node blockNode : blockNodes){
             this.block = new SrcMLBlock(XmlUtils.elementify(blockNode));
         }

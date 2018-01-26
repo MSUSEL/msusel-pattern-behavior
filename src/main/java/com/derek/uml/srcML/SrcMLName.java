@@ -36,7 +36,6 @@ public class SrcMLName extends SrcMLNode{
     //can be any one of: (complex_)name|templateArgumentList|argumentList|parameterList|templateParameterList|specifier|operator|index
     //parsign for each sub-type can be delegated to each class matching the sub-type
 
-    private Element nameEle;
     private List<String> names;
     private SrcMLArgumentList argumentList;
     private SrcMLParameterList parameterList;
@@ -53,8 +52,6 @@ public class SrcMLName extends SrcMLNode{
 
     public SrcMLName(Element nameEle){
         super(nameEle);
-        this.nameEle = nameEle;
-        parse();
     }
 
     protected void parse(){
@@ -68,11 +65,11 @@ public class SrcMLName extends SrcMLNode{
     }
 
     private void parseName(){
-        this.names = new LinkedList<>();
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(nameEle, "name");
+        this.names = new ArrayList<>();
+        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
         if (nameNodes.size() == 0){
             //no child elements, this is a simple name. <name>foo</name>
-            names.add(nameEle.getTextContent().replaceAll("\\s", ""));
+            names.add(element.getTextContent().replaceAll("\\s", ""));
         }
 
         for (Node nameNode : nameNodes) {
@@ -89,7 +86,7 @@ public class SrcMLName extends SrcMLNode{
     private void parseArgumentList(){
         //there is a bug where we are only ever going 1 name deep, yet the requirements are that we can go n name deep (List<List<List<List...)
         //to fix this bug I think its worth getting all argument list nodes from this name, not just the immediate children.
-        List<Node> argumentListNodes = XmlUtils.getImmediateChildren(nameEle, "argument_list");
+        List<Node> argumentListNodes = XmlUtils.getImmediateChildren(element, "argument_list");
         for (Node argumentNode : argumentListNodes){
             argumentList = new SrcMLArgumentList(XmlUtils.elementify(argumentNode));
             //generics handler
@@ -101,7 +98,7 @@ public class SrcMLName extends SrcMLNode{
     }
 
     private void parseParameterList(){
-        List<Node> parameterListNodes = XmlUtils.getImmediateChildren(nameEle, "parameter_list");
+        List<Node> parameterListNodes = XmlUtils.getImmediateChildren(element, "parameter_list");
         for (Node parameterNode :  parameterListNodes){
             parameterList = new SrcMLParameterList(XmlUtils.elementify(parameterNode));
         }
@@ -109,7 +106,7 @@ public class SrcMLName extends SrcMLNode{
 
     private void parseSpecifiers(){
         this.specifiers = new ArrayList<>();
-        List<Node> specifierNodes = XmlUtils.getImmediateChildren(nameEle, "specifier");
+        List<Node> specifierNodes = XmlUtils.getImmediateChildren(element, "specifier");
         for (Node specifierNode :  specifierNodes){
             specifiers.add(specifierNode.getTextContent());
         }
@@ -117,7 +114,7 @@ public class SrcMLName extends SrcMLNode{
 
     private void parseOperators(){
         this.operators = new ArrayList<>();
-        List<Node> operatorNodes = XmlUtils.getImmediateChildren(nameEle, "operator");
+        List<Node> operatorNodes = XmlUtils.getImmediateChildren(element, "operator");
         for (Node operatorNode :  operatorNodes){
             operators.add(operatorNode.getTextContent());
         }
@@ -125,7 +122,7 @@ public class SrcMLName extends SrcMLNode{
 
     private void parseIndices(){
         this.indices = new ArrayList<>();
-        List<Node> indexNodes = XmlUtils.getImmediateChildren(nameEle, "index");
+        List<Node> indexNodes = XmlUtils.getImmediateChildren(element, "index");
         for (Node indexNode :  indexNodes){
             //this is likely going to require expansion in the future because an expression can be put in the index (foo[x+1])
             indices.add(indexNode.getTextContent());

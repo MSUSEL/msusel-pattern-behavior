@@ -34,20 +34,17 @@ import java.util.List;
 
 @Getter
 public class SrcMLThrows extends SrcMLNode{
-    private Element throwsEle;
     private List<SrcMLArgument> arguments;
 
     public SrcMLThrows(Element throwsEle) {
         super(throwsEle);
-        this.throwsEle = throwsEle;
-        parse();
     }
     protected void parse(){
         parseArguments();
     }
     private void parseArguments(){
         arguments = new ArrayList<>();
-        List<Node> argumentNodes = XmlUtils.getImmediateChildren(throwsEle, "argument");
+        List<Node> argumentNodes = XmlUtils.getImmediateChildren(element, "argument");
         for (Node argumentNode : argumentNodes){
             arguments.add(new SrcMLArgument(XmlUtils.elementify(argumentNode)));
         }

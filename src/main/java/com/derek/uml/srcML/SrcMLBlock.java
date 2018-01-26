@@ -24,7 +24,6 @@
  */
 package com.derek.uml.srcML;
 
-import com.derek.uml.UMLAttribute;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -40,7 +39,6 @@ public class SrcMLBlock extends SrcMLNode{
 
     //some of the documented elements here arent' needed:
     //catch|multiTypeCatch|emptyStmt|goto|label|
-    private Element blockEle;
     private List<SrcMLBlock> blocks;
     private List<SrcMLCase> cases;
     private List<SrcMLClass> classes;
@@ -74,8 +72,6 @@ public class SrcMLBlock extends SrcMLNode{
 
     public SrcMLBlock(Element blockEle){
         super(blockEle);
-        this.blockEle = blockEle;
-        parse();
     }
     protected void parse(){
         parseComments();
@@ -120,257 +116,252 @@ public class SrcMLBlock extends SrcMLNode{
     }
     private void parseBlock(){
         blocks = new ArrayList<>();
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(blockEle, "block");
+        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
         for (Node blockNode : blockNodes){
             blocks.add(new SrcMLBlock(XmlUtils.elementify(blockNode)));
         }
     }
     private void parseCase(){
         cases = new ArrayList<>();
-        List<Node> caseNodes = XmlUtils.getImmediateChildren(blockEle, "case");
+        List<Node> caseNodes = XmlUtils.getImmediateChildren(element, "case");
         for (Node caseNode : caseNodes){
             cases.add(new SrcMLCase(XmlUtils.elementify(caseNode)));
         }
     }
     private void parseClass(){
         classes = new ArrayList<>();
-        List<Node> classNodes = XmlUtils.getImmediateChildren(blockEle, "class");
+        List<Node> classNodes = XmlUtils.getImmediateChildren(element, "class");
         for (Node classNode : classNodes){
             classes.add(new SrcMLClass(XmlUtils.elementify(classNode)));
         }
     }
     private void parseInterface(){
         interfaces = new ArrayList<>();
-        List<Node> interfaceNodes = XmlUtils.getImmediateChildren(blockEle, "interface");
+        List<Node> interfaceNodes = XmlUtils.getImmediateChildren(element, "interface");
         for (Node interfaceNode : interfaceNodes){
             interfaces.add(new SrcMLInterface(XmlUtils.elementify(interfaceNode)));
         }
     }
     private void parseAnnotation(){
         annotations = new ArrayList<>();
-        List<Node> annotation_defnNodes = XmlUtils.getImmediateChildren(blockEle, "annotation_defn");
+        List<Node> annotation_defnNodes = XmlUtils.getImmediateChildren(element, "annotation_defn");
         for (Node annotation_defnNode : annotation_defnNodes){
             annotations.add(new SrcMLAnnotationDefn(XmlUtils.elementify(annotation_defnNode)));
         }
     }
     private void parseConstructor(){
         constructors = new ArrayList<>();
-        List<Node> constructorNodes = XmlUtils.getImmediateChildren(blockEle, "constructor");
+        List<Node> constructorNodes = XmlUtils.getImmediateChildren(element, "constructor");
         for (Node constructorNode : constructorNodes){
             constructors.add(new SrcMLConstructor(XmlUtils.elementify(constructorNode)));
         }
     }
     private void parseConstructorDecl(){
         constructors_decl = new ArrayList<>();
-        List<Node> constructorNodes = XmlUtils.getImmediateChildren(blockEle, "constructor_decl");
+        List<Node> constructorNodes = XmlUtils.getImmediateChildren(element, "constructor_decl");
         for (Node constructorNode : constructorNodes){
             constructors_decl.add(new SrcMLConstructor(XmlUtils.elementify(constructorNode)));
         }
     }
     private void parseContinue(){
         continues = new ArrayList<>();
-        List<Node> continueNodes = XmlUtils.getImmediateChildren(blockEle, "continue");
+        List<Node> continueNodes = XmlUtils.getImmediateChildren(element, "continue");
         for (Node continueNode : continueNodes){
             continues.add(new SrcMLContinue(XmlUtils.elementify(continueNode)));
         }
     }
     private void parseDeclStmt(){
         declStmts = new ArrayList<>();
-        List<Node> declStmtNodes = XmlUtils.getImmediateChildren(blockEle, "decl_stmt");
+        List<Node> declStmtNodes = XmlUtils.getImmediateChildren(element, "decl_stmt");
         for (Node declStmtNode : declStmtNodes){
             declStmts.add(new SrcMLDeclStmt(XmlUtils.elementify(declStmtNode)));
         }
     }
     private void parseDefault(){
         defaults = new ArrayList<>();
-        List<Node> defaultNodes = XmlUtils.getImmediateChildren(blockEle, "default");
+        List<Node> defaultNodes = XmlUtils.getImmediateChildren(element, "default");
         for (Node defaultNode : defaultNodes){
             defaults.add(new SrcMLDefault(XmlUtils.elementify(defaultNode)));
         }
     }
     private void parseDo(){
         dos = new ArrayList<>();
-        List<Node> doNodes = XmlUtils.getImmediateChildren(blockEle, "do");
+        List<Node> doNodes = XmlUtils.getImmediateChildren(element, "do");
         for (Node doNode : doNodes){
             dos.add(new SrcMLWhile(XmlUtils.elementify(doNode)));
         }
     }
     private void parseIf(){
         ifs = new ArrayList<>();
-        List<Node> ifNodes = XmlUtils.getImmediateChildren(blockEle, "if");
+        List<Node> ifNodes = XmlUtils.getImmediateChildren(element, "if");
         for (Node ifNode : ifNodes){
             ifs.add(new SrcMLIf(XmlUtils.elementify(ifNode)));
         }
     }
     private void parseElse(){
         elses = new ArrayList<>();
-        List<Node> elseNodes = XmlUtils.getImmediateChildren(blockEle, "else");
+        List<Node> elseNodes = XmlUtils.getImmediateChildren(element, "else");
         for (Node elseNode : elseNodes){
             elses.add(new SrcMLElse(XmlUtils.elementify(elseNode)));
         }
     }
     private void parseElseIf(){
         elseIfs = new ArrayList<>();
-        List<Node> ifNodes = XmlUtils.getImmediateChildren(blockEle, "elseif");
+        List<Node> ifNodes = XmlUtils.getImmediateChildren(element, "elseif");
         for (Node ifNode : ifNodes){
             elseIfs.add(new SrcMLIf(XmlUtils.elementify(ifNode)));
         }
     }
     private void parseExprStmt(){
         expr_stmts = new ArrayList<>();
-        List<Node> expr_stmtNodes = XmlUtils.getImmediateChildren(blockEle, "expr_stmt");
+        List<Node> expr_stmtNodes = XmlUtils.getImmediateChildren(element, "expr_stmt");
         for (Node expr_stmtNode : expr_stmtNodes){
             expr_stmts.add(new SrcMLExprStmt(XmlUtils.elementify(expr_stmtNode)));
         }
     }
     private void parseJavaEnum(){
         enums = new ArrayList<>();
-        List<Node> enumNodes = XmlUtils.getImmediateChildren(blockEle, "enum");
+        List<Node> enumNodes = XmlUtils.getImmediateChildren(element, "enum");
         for (Node enumNode : enumNodes){
             enums.add(new SrcMLEnum(XmlUtils.elementify(enumNode)));
         }
     }
     private void parseFinally(){
         finallies = new ArrayList<>();
-        List<Node> finallyNodes = XmlUtils.getImmediateChildren(blockEle, "finally");
+        List<Node> finallyNodes = XmlUtils.getImmediateChildren(element, "finally");
         for (Node finallyNode : finallyNodes){
             finallies.add(new SrcMLFinally(XmlUtils.elementify(finallyNode)));
         }
     }
     private void parseFor(){
         fors = new ArrayList<>();
-        List<Node> forNodes = XmlUtils.getImmediateChildren(blockEle, "for");
+        List<Node> forNodes = XmlUtils.getImmediateChildren(element, "for");
         for (Node forNode : forNodes){
             fors.add(new SrcMLFor(XmlUtils.elementify(forNode)));
         }
     }
     private void parseJavaFunction(){
         functions = new ArrayList<>();
-        List<Node> functionNodes = XmlUtils.getImmediateChildren(blockEle, "function");
+        List<Node> functionNodes = XmlUtils.getImmediateChildren(element, "function");
         for (Node functionNode : functionNodes){
             functions.add(new SrcMLFunction(XmlUtils.elementify(functionNode)));
         }
     }
     private void parseJavaFunctionDecl(){
         functionDecls = new ArrayList<>();
-        List<Node> functionNodes = XmlUtils.getImmediateChildren(blockEle, "function_decl");
+        List<Node> functionNodes = XmlUtils.getImmediateChildren(element, "function_decl");
         for (Node functionNode : functionNodes){
             functionDecls.add(new SrcMLFunction(XmlUtils.elementify(functionNode)));
         }
     }
     private void parseImport(){
         imports = new ArrayList<>();
-        List<Node> importNodes = XmlUtils.getImmediateChildren(blockEle, "import");
+        List<Node> importNodes = XmlUtils.getImmediateChildren(element, "import");
         for (Node importNode : importNodes){
             imports.add(new SrcMLImport(XmlUtils.elementify(importNode)));
         }
     }
     private void parsePackage(){
         packages = new ArrayList<>();
-        List<Node> packageNodes = XmlUtils.getImmediateChildren(blockEle, "package");
+        List<Node> packageNodes = XmlUtils.getImmediateChildren(element, "package");
         for (Node packageNode : packageNodes){
             packages.add(new SrcMLPackage(XmlUtils.elementify(packageNode)));
         }
     }
     private void parseSpecifier(){
         specifiers = new ArrayList<>();
-        List<Node> specifierNodes = XmlUtils.getImmediateChildren(blockEle, "specifier");
+        List<Node> specifierNodes = XmlUtils.getImmediateChildren(element, "specifier");
         for (Node specifierNode : specifierNodes){
             specifiers.add(specifierNode.getTextContent());
         }
     }
     private void parseReturn(){
         returns = new ArrayList<>();
-        List<Node> returnNodes = XmlUtils.getImmediateChildren(blockEle, "return");
+        List<Node> returnNodes = XmlUtils.getImmediateChildren(element, "return");
         for (Node returnNode : returnNodes){
             returns.add(new SrcMLReturn(XmlUtils.elementify(returnNode)));
         }
     }
     private void parseStaticBlock(){
         statics = new ArrayList<>();
-        List<Node> staticNodes = XmlUtils.getImmediateChildren(blockEle, "static");
+        List<Node> staticNodes = XmlUtils.getImmediateChildren(element, "static");
         for (Node staticNode : staticNodes){
             statics.add(new SrcMLStaticBlock(XmlUtils.elementify(staticNode)));
         }
     }
     private void parseSwitch(){
         switches = new ArrayList<>();
-        List<Node> switchNodes = XmlUtils.getImmediateChildren(blockEle, "switch");
+        List<Node> switchNodes = XmlUtils.getImmediateChildren(element, "switch");
         for (Node switchNode : switchNodes){
             switches.add(new SrcMLSwitch(XmlUtils.elementify(switchNode)));
         }
     }
     private void parseThrow(){
         throws1 = new ArrayList<>();
-        List<Node> throwsNodes = XmlUtils.getImmediateChildren(blockEle, "throws");
+        List<Node> throwsNodes = XmlUtils.getImmediateChildren(element, "throws");
         for (Node throwsNode : throwsNodes){
             throws1.add(new SrcMLThrows(XmlUtils.elementify(throwsNode)));
         }
     }
     private void parseTry(){
         tries = new ArrayList<>();
-        List<Node> tryNodes = XmlUtils.getImmediateChildren(blockEle, "try");
+        List<Node> tryNodes = XmlUtils.getImmediateChildren(element, "try");
         for (Node tryNode : tryNodes){
             tries.add(new SrcMLTry(XmlUtils.elementify(tryNode)));
         }
     }
     private void parseWhile(){
         whiles = new ArrayList<>();
-        List<Node> whileNodes = XmlUtils.getImmediateChildren(blockEle, "while");
+        List<Node> whileNodes = XmlUtils.getImmediateChildren(element, "while");
         for (Node whileNode : whileNodes){
             whiles.add(new SrcMLWhile(XmlUtils.elementify(whileNode)));
         }
     }
     private void parseDecl(){
         decls = new ArrayList<>();
-        List<Node> declNodes = XmlUtils.getImmediateChildren(blockEle, "decl");
+        List<Node> declNodes = XmlUtils.getImmediateChildren(element, "decl");
         for (Node declNode : declNodes){
             decls.add(new SrcMLDecl(XmlUtils.elementify(declNode)));
         }
     }
 
+    @Getter
     public class SrcMLCase extends SrcMLNode{
-        @Getter private Element caseEle;
-        @Getter SrcMLName name;
-        @Getter String literal;
+        private SrcMLName name;
+        private String literal;
 
         public SrcMLCase(Element caseEle) {
             super(caseEle);
-            this.caseEle = caseEle;
-            parse();
         }
         protected void parse(){
             parseName();
             parseLiteral();
         }
         private void parseName(){
-            List<Node> nameNodes = XmlUtils.getImmediateChildren(caseEle, "name");
+            List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
             for (Node nameNode : nameNodes){
                 name = new SrcMLName(XmlUtils.elementify(nameNode));
             }
         }
         private void parseLiteral(){
-            List<Node> nameNodes = XmlUtils.getImmediateChildren(caseEle, "literal");
+            List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "literal");
             for (Node nameNode : nameNodes){
                 literal = nameNode.getTextContent();
             }
         }
     }
+    @Getter
     public class SrcMLContinue extends SrcMLNode{
-        @Getter
-        private Element continueEle;
         private SrcMLName name;
 
         public SrcMLContinue(Element continueEle) {
             super(continueEle);
-            this.continueEle = continueEle;
-            parse();
         }
         protected void parse(){
             parseName();
         }
         private void parseName(){
-            List<Node> nameNodes = XmlUtils.getImmediateChildren(continueEle, "name");
+            List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
             for (Node nameNode : nameNodes){
                 name = new SrcMLName(XmlUtils.elementify(nameNode));
             }
@@ -378,14 +369,11 @@ public class SrcMLBlock extends SrcMLNode{
     }
     @Getter
     public class SrcMLExprStmt extends SrcMLNode{
-        private Element exprStmtEle;
         private List<SrcMLExpression> expressions;
         private List<String> operators;
 
         public SrcMLExprStmt(Element exprStmtEle) {
             super(exprStmtEle);
-            this.exprStmtEle = exprStmtEle;
-            parse();
         }
         protected void parse(){
             parseExpressions();
@@ -393,14 +381,14 @@ public class SrcMLBlock extends SrcMLNode{
         }
         private void parseExpressions(){
             expressions = new ArrayList<>();
-            List<Node> expressionNodes = XmlUtils.getImmediateChildren(exprStmtEle, "expr");
+            List<Node> expressionNodes = XmlUtils.getImmediateChildren(element, "expr");
             for (Node expressionNode : expressionNodes){
                 expressions.add(new SrcMLExpression(XmlUtils.elementify(expressionNode)));
             }
         }
         private void parseOperators(){
             operators = new ArrayList<>();
-            List<Node> operatorNodes = XmlUtils.getImmediateChildren(exprStmtEle, "operator");
+            List<Node> operatorNodes = XmlUtils.getImmediateChildren(element, "operator");
             for (Node operatorNode : operatorNodes){
                 operators.add(operatorNode.getTextContent());
             }
@@ -409,44 +397,37 @@ public class SrcMLBlock extends SrcMLNode{
     @Getter
     public class SrcMLReturn extends SrcMLNode{
 
-        private Element returnEle;
         private SrcMLExpression expression;
 
         public SrcMLReturn(Element returnEle) {
             super(returnEle);
-            this.returnEle = returnEle;
-            parse();
         }
         protected void parse(){
             parseExpression();
         }
         private void parseExpression(){
-            List<Node> exprNodes = XmlUtils.getImmediateChildren(returnEle, "expr");
+            List<Node> exprNodes = XmlUtils.getImmediateChildren(element, "expr");
             for (Node exprNode : exprNodes){
                 expression = new SrcMLExpression(XmlUtils.elementify(exprNode));
             }
         }
     }
+    @Getter
     public class SrcMLStaticBlock extends SrcMLNode{
-        @Getter
-        private Element staticEle;
         private SrcMLBlock block;
 
         public SrcMLStaticBlock(Element staticEle) {
             super(staticEle);
-            this.staticEle = staticEle;
-            parse();
         }
         protected void parse(){
             parseBlock();
         }
         private void parseBlock(){
-            List<Node> staticNodes = XmlUtils.getImmediateChildren(staticEle, "block");
+            List<Node> staticNodes = XmlUtils.getImmediateChildren(element, "block");
             for (Node staticNode : staticNodes){
                 block = new SrcMLBlock(XmlUtils.elementify(staticNode));
             }
         }
     }
-
 
 }

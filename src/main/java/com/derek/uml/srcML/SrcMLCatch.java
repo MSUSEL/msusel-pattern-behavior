@@ -33,27 +33,24 @@ import java.util.List;
 @Getter
 public class SrcMLCatch extends SrcMLNode{
     //not sure if I need the multicatch.. or even the catch at all.
-    private Element catchEle;
     private SrcMLParameterList parameterList;
     private SrcMLBlock block;
 
     public SrcMLCatch(Element catchEle) {
         super(catchEle);
-        this.catchEle = catchEle;
-        parse();
     }
     protected void parse(){
         parseParameterList();
         parseBlock();
     }
     private void parseParameterList(){
-        List<Node> parameterNodes = XmlUtils.getImmediateChildren(catchEle, "parameter_list");
+        List<Node> parameterNodes = XmlUtils.getImmediateChildren(element, "parameter_list");
         for (Node parameterNode : parameterNodes){
             parameterList = new SrcMLParameterList(XmlUtils.elementify(parameterNode));
         }
     }
     private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(catchEle, "block");
+        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
         for (Node blockNode : blockNodes){
             block = new SrcMLBlock(XmlUtils.elementify(blockNode));
         }

@@ -33,7 +33,6 @@ import java.util.List;
 
 @Getter
 public class SrcMLDecl extends SrcMLNode{
-    private Element declEle;
     private SrcMLDataType type;
     private SrcMLName name;
     private SrcMLRange range;
@@ -42,8 +41,6 @@ public class SrcMLDecl extends SrcMLNode{
 
     public SrcMLDecl(Element declEle) {
         super(declEle);
-        this.declEle = declEle;
-        parse();
     }
     protected void parse(){
         parseDataType();
@@ -53,32 +50,32 @@ public class SrcMLDecl extends SrcMLNode{
         parseSpecifiers();
     }
     private void parseDataType(){
-        List<Node> typeNodes = XmlUtils.getImmediateChildren(declEle, "type");
+        List<Node> typeNodes = XmlUtils.getImmediateChildren(element, "type");
         for (Node typeNode : typeNodes){
             type = new SrcMLDataType(XmlUtils.elementify(typeNode));
         }
     }
     private void parseName(){
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(declEle, "name");
+        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
         for (Node nameNode : nameNodes){
             name = new SrcMLName(XmlUtils.elementify(nameNode));
         }
     }
     private void parseRange(){
-        List<Node> rangeNodes = XmlUtils.getImmediateChildren(declEle, "range");
+        List<Node> rangeNodes = XmlUtils.getImmediateChildren(element, "range");
         for (Node rangeNode : rangeNodes){
             range = new SrcMLRange(XmlUtils.elementify(rangeNode));
         }
     }
     private void parseInit(){
-        List<Node> initNodes = XmlUtils.getImmediateChildren(declEle, "init");
+        List<Node> initNodes = XmlUtils.getImmediateChildren(element, "init");
         for (Node initNode : initNodes){
             init = new SrcMLInit(XmlUtils.elementify(initNode));
         }
     }
     private void parseSpecifiers(){
         specifiers = new ArrayList<>();
-        List<Node> specifierNodes = XmlUtils.getImmediateChildren(declEle, "specifier");
+        List<Node> specifierNodes = XmlUtils.getImmediateChildren(element, "specifier");
         for (Node specifierNode : specifierNodes){
             specifiers.add(specifierNode.getTextContent());
         }
@@ -94,20 +91,18 @@ public class SrcMLDecl extends SrcMLNode{
     }
 
     @Getter
-    public class SrcMLRange{
+    public class SrcMLRange extends SrcMLNode{
         //only used by decl and is a pretty simple class
-        private Element rangeEle;
         private SrcMLExpression expression;
 
         public SrcMLRange(Element rangeEle) {
-            this.rangeEle = rangeEle;
-            parse();
+            super(rangeEle);
         }
-        private void parse(){
+        protected void parse(){
             parseExpression();
         }
         private void parseExpression(){
-            List<Node> expressionNodes = XmlUtils.getImmediateChildren(rangeEle, "expr");
+            List<Node> expressionNodes = XmlUtils.getImmediateChildren(element, "expr");
             for (Node expressionNode : expressionNodes){
                 //can have 0 or 1
                 expression = new SrcMLExpression(XmlUtils.elementify(expressionNode));

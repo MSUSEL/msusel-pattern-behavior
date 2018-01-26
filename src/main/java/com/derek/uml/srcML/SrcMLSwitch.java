@@ -32,28 +32,25 @@ import java.util.List;
 
 @Getter
 public class SrcMLSwitch extends SrcMLNode{
-    private Element switchEle;
     private SrcMLCondition condition;
     private SrcMLBlock block;
 
     public SrcMLSwitch(Element switchEle) {
         super(switchEle);
-        this.switchEle = switchEle;
-        parse();
     }
     protected void parse(){
         parseCondition();
         parseBlock();
     }
     private void parseCondition(){
-        List<Node> conditionNodes = XmlUtils.getImmediateChildren(switchEle, "condition");
+        List<Node> conditionNodes = XmlUtils.getImmediateChildren(element, "condition");
         for (Node conditionNode : conditionNodes){
             //should only be 1 anyway
             condition = new SrcMLCondition(XmlUtils.elementify(conditionNode));
         }
     }
     private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(switchEle, "block");
+        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
         for (Node blockNode : blockNodes){
             this.block = new SrcMLBlock(XmlUtils.elementify(blockNode));
         }

@@ -33,27 +33,24 @@ import java.util.List;
 
 @Getter
 public class SrcMLAnnotation extends SrcMLNode{
-    private Element annotationEle;
     private SrcMLName name;
     private SrcMLArgumentList argumentList;
 
     public SrcMLAnnotation(Element annotationEle) {
         super(annotationEle);
-        this.annotationEle = annotationEle;
-        parse();
     }
     protected void parse(){
         parseName();
         parseArgumentList();
     }
     private void parseName(){
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(annotationEle, "name");
+        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
         for (Node nameNode : nameNodes){
             this.name = new SrcMLName(XmlUtils.elementify(nameNode));
         }
     }
     private void parseArgumentList(){
-        List<Node> argumentListNodes = XmlUtils.getImmediateChildren(annotationEle, "argument_list");
+        List<Node> argumentListNodes = XmlUtils.getImmediateChildren(element, "argument_list");
         for (Node argumentListNode : argumentListNodes){
             argumentList = new SrcMLArgumentList(XmlUtils.elementify(argumentListNode));
         }

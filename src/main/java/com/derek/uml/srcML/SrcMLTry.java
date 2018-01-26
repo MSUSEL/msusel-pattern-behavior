@@ -33,7 +33,6 @@ import java.util.List;
 
 @Getter
 public class SrcMLTry extends SrcMLNode{
-    private Element tryEle;
     private SrcMLInit init;
     private SrcMLBlock block;
     private List<SrcMLCatch> catches;
@@ -41,8 +40,6 @@ public class SrcMLTry extends SrcMLNode{
 
     public SrcMLTry(Element tryEle) {
         super(tryEle);
-        this.tryEle = tryEle;
-        parse();
     }
     protected void parse(){
         parseInit();
@@ -51,27 +48,27 @@ public class SrcMLTry extends SrcMLNode{
         parseFinally();
     }
     private void parseInit(){
-        List<Node> initNodes = XmlUtils.getImmediateChildren(tryEle, "init");
+        List<Node> initNodes = XmlUtils.getImmediateChildren(element, "init");
         for (Node initNode : initNodes){
             init = new SrcMLInit(XmlUtils.elementify(initNode));
         }
     }
     private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(tryEle, "block");
+        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
         for (Node blockNode : blockNodes){
             block = new SrcMLBlock(XmlUtils.elementify(blockNode));
         }
     }
     private void parseCatch(){
         catches = new ArrayList<>();
-        List<Node> catchNodes = XmlUtils.getImmediateChildren(tryEle, "catch");
+        List<Node> catchNodes = XmlUtils.getImmediateChildren(element, "catch");
         for (Node catchNode : catchNodes){
             catches.add(new SrcMLCatch(XmlUtils.elementify(catchNode)));
         }
     }
     private void parseFinally(){
         finallys = new ArrayList<>();
-        List<Node> finallyNodes = XmlUtils.getImmediateChildren(tryEle, "finally");
+        List<Node> finallyNodes = XmlUtils.getImmediateChildren(element, "finally");
         for (Node finallyNode : finallyNodes){
             finallys.add(new SrcMLFinally(XmlUtils.elementify(finallyNode)));
         }

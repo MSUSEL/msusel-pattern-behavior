@@ -25,7 +25,6 @@
 package com.derek.uml.srcML;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -34,23 +33,14 @@ import java.util.List;
 
 @Getter
 public class SrcMLDataType extends SrcMLNode{
-    private Element typeEle;
     private List<String> specifiers;
     private List<String> modifiers;
     //not sure if I'll need argumentlist, but at least it is there.
     private SrcMLArgumentList argumentList;
     private List<SrcMLName> names;
 
-    //type<type>(typeTypeAttr?):(specifier|modifier|decltype|templateArgumentList|name)*;
-
-    //this variable represents nested types, which are usually generics. Bear in mind this field can also be null.
-    //not sure how I am going to access types n deep yet.. such as List<List<List<List<List<....String>>>>...>> (how do I get the string?
-    private SrcMLDataType nestedType;
-
     public SrcMLDataType(Element typeEle){
         super(typeEle);
-        this.typeEle = typeEle;
-        parse();
     }
 
     protected void parse(){
@@ -63,7 +53,7 @@ public class SrcMLDataType extends SrcMLNode{
     private void parseSpecifiers(){
         //in the context of types, this could be any combination or number of: "final, public, static", etc.
         specifiers = new ArrayList<>();
-        List<Node> specifierNodes = XmlUtils.getImmediateChildren(typeEle, "specifier");
+        List<Node> specifierNodes = XmlUtils.getImmediateChildren(element, "specifier");
         for (Node specifier : specifierNodes){
             specifiers.add(specifier.getTextContent());
         }
@@ -71,7 +61,7 @@ public class SrcMLDataType extends SrcMLNode{
 
     private void parseModifiers(){
         modifiers = new ArrayList<>();
-        List<Node> modifierNodes = XmlUtils.getImmediateChildren(typeEle, "modifier");
+        List<Node> modifierNodes = XmlUtils.getImmediateChildren(element, "modifier");
         for (Node modifier : modifierNodes){
             modifiers.add(modifier.getTextContent());
         }
@@ -80,7 +70,7 @@ public class SrcMLDataType extends SrcMLNode{
     private void parseArgumentList(){
         //I don't know how one can get more than 1 argumentlist.. but its in the docs.
         //I am making an executive decision to only have 1 argument list.
-        List<Node> argumentListNodes = XmlUtils.getImmediateChildren(typeEle, "argument_list");
+        List<Node> argumentListNodes = XmlUtils.getImmediateChildren(element, "argument_list");
         for (Node argumentListNode : argumentListNodes){
             argumentList = new SrcMLArgumentList(XmlUtils.elementify(argumentListNode));
         }
@@ -89,7 +79,7 @@ public class SrcMLDataType extends SrcMLNode{
     private void parseName(){
         //should only be 1 name, but it can have many apparently
         names = new ArrayList<>();
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(typeEle, "name");
+        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
         for (Node nameNode : nameNodes){
             names.add(new SrcMLName(XmlUtils.elementify(nameNode)));
         }

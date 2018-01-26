@@ -32,15 +32,12 @@ import java.util.List;
 
 @Getter
 public class SrcMLInterface extends SrcMLNode{
-    private Element interfaceEle;
     private SrcMLName name;
     private SrcMLSuper superLink;
     private SrcMLBlock block;
 
     public SrcMLInterface(Element interfaceEle) {
         super(interfaceEle);
-        this.interfaceEle = interfaceEle;
-        parse();
     }
     protected void parse(){
         parseName();
@@ -48,19 +45,19 @@ public class SrcMLInterface extends SrcMLNode{
         parseBlock();
     }
     private void parseName(){
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(interfaceEle, "name");
+        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
         for (Node nameNode : nameNodes){
             this.name = new SrcMLName(XmlUtils.elementify(nameNode));
         }
     }
     private void parseSuper(){
-        List<Node> superNodes = XmlUtils.getImmediateChildren(interfaceEle, "super");
+        List<Node> superNodes = XmlUtils.getImmediateChildren(element, "super");
         for (Node superNode : superNodes){
             this.superLink = new SrcMLSuper(XmlUtils.elementify(superNode));
         }
     }
     private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(interfaceEle, "block");
+        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
         for (Node blockNode : blockNodes){
             this.block = new SrcMLBlock(XmlUtils.elementify(blockNode));
         }

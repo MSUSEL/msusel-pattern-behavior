@@ -60,19 +60,11 @@ public class UMLMessageGenerationUtils {
         messages.addAll(dos);
         messages.addAll(returns);
 
-        order(block, messages);
 
 
         return messages;
     }
 
-    public static void order(SrcMLBlock block, List<UMLMessage> messages){
-        for (String s : block.getNodeOrder()){
-            for (UMLMessage message : messages){
-                
-            }
-        }
-    }
 
     public static UMLMessage getUMLMessage(SrcMLBlock.SrcMLReturn srcMLReturn){
         return getUMLMessage(srcMLReturn.getExpression());

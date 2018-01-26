@@ -32,15 +32,12 @@ import java.util.List;
 @Getter
 public class SrcMLArgument extends SrcMLNode{
 
-    private Element argumentEle;
     private String modifier;
     private SrcMLExpression expression;
     private SrcMLName name;
 
     public SrcMLArgument(Element argumentEle){
         super(argumentEle);
-        this.argumentEle = argumentEle;
-        parse();
     }
     protected void parse(){
         parseModifier();
@@ -48,21 +45,21 @@ public class SrcMLArgument extends SrcMLNode{
         parseName();
     }
     private void parseModifier(){
-        List<Node> modifierNodes = XmlUtils.getImmediateChildren(argumentEle, "modifier");
+        List<Node> modifierNodes = XmlUtils.getImmediateChildren(element, "modifier");
         for (Node modifierNode : modifierNodes){
             //should be 0 or 1
             modifier = modifierNode.getTextContent();
         }
     }
     private void parseExpression(){
-        List<Node> expressionNodes = XmlUtils.getImmediateChildren(argumentEle, "expr");
+        List<Node> expressionNodes = XmlUtils.getImmediateChildren(element, "expr");
         for (Node expressionNode : expressionNodes){
             //should only be 1 anyway
             expression = new SrcMLExpression(XmlUtils.elementify(expressionNode));
         }
     }
     private void parseName(){
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(argumentEle, "name");
+        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
         for (Node nameNode : nameNodes){
             //should only be 1 anyway
             name = new SrcMLName(XmlUtils.elementify(nameNode));

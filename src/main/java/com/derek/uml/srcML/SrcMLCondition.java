@@ -32,19 +32,16 @@ import java.util.List;
 
 @Getter
 public class SrcMLCondition extends SrcMLNode{
-    private Element conditionEle;
     private SrcMLExpression expression;
 
     public SrcMLCondition(Element conditionEle) {
         super(conditionEle);
-        this.conditionEle = conditionEle;
-        parse();
     }
     protected void parse(){
         parseExpression();
     }
     private void parseExpression(){
-        List<Node> expressionNodes = XmlUtils.getImmediateChildren(conditionEle, "expr");
+        List<Node> expressionNodes = XmlUtils.getImmediateChildren(element, "expr");
         for (Node expressionNode : expressionNodes){
             //can have 0 or 1
             expression = new SrcMLExpression(XmlUtils.elementify(expressionNode));
