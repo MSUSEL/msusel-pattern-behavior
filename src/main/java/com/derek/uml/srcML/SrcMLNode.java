@@ -1,5 +1,6 @@
 package com.derek.uml.srcML;
 
+import com.sun.javaws.jnl.XMLUtils;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -21,10 +22,11 @@ public abstract class SrcMLNode {
     }
     private void findOrder(){
         Node child = element.getFirstChild();
-        if (child != null) {
-            nodeOrder.add(child.getNodeName());
-            while ((child = child.getNextSibling()) != null) {
-                nodeOrder.add(child.getNodeName());
+        Element childEle = XmlUtils.elementify(child);
+        if (childEle != null) {
+            nodeOrder.add(childEle.getTagName());
+            while ((childEle = XmlUtils.elementify(childEle.getNextSibling())) != null) {
+                nodeOrder.add(childEle.getTagName());
             }
         }
     }

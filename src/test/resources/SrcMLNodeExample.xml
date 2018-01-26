@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<root>
+    <decl>
+        <type>
+            <specifier>final</specifier>
+            <name>String</name>
+        </type>
+        <name>lcName</name>
+        <init>= <expr>
+            <call>
+                <name>
+                    <name>name</name>
+                    <operator>.</operator>
+                    <name>toLowerCase</name>
+                </name>
+                <argument_list>()</argument_list>
+            </call>
+            </expr>
+        </init>
+    </decl>
+</root>

@@ -10,6 +10,7 @@ import java.util.List;
 public class UMLMessageGenerationUtils {
 
     //need message builders here for anything that can eventually parse down to <expr>.
+    //these are: <expr>:(JavaLambda|name|decltype|call|name|initBlock|operator|literal|JavaAnonymousClass|expr|cast|ternary)+;
 
     /**
      * I will be able to get all messages, but the order will be mewssed up. How do I enforce order?
@@ -23,6 +24,7 @@ public class UMLMessageGenerationUtils {
         List<UMLMessage> fors = new ArrayList<>();
         List<UMLMessage> whiles = new ArrayList<>();
         List<UMLMessage> dos = new ArrayList<>();
+        List<UMLMessage> returns = new ArrayList<>();
 
         for (SrcMLDeclStmt declStmt : block.getDeclStmts()){
             for (SrcMLDecl decl : declStmt.getDecls()){
@@ -47,21 +49,33 @@ public class UMLMessageGenerationUtils {
         for (SrcMLWhile srcMLDo : block.getDos()){
             dos = getUMLMessages(srcMLDo);
         }
-        for (SrcMLFunction srcMLFunction : block.getFunctions()){
-
+        for (SrcMLBlock.SrcMLReturn srcMLReturn : block.getReturns()){
+            returns.add(getUMLMessage(srcMLReturn));
         }
-
-
-        //order();
-
 
         messages.addAll(expressions);
         messages.addAll(ifs);
         messages.addAll(fors);
         messages.addAll(whiles);
         messages.addAll(dos);
+        messages.addAll(returns);
+
+        order(block, messages);
+
 
         return messages;
+    }
+
+    public static void order(SrcMLBlock block, List<UMLMessage> messages){
+        for (String s : block.getNodeOrder()){
+            for (UMLMessage message : messages){
+                
+            }
+        }
+    }
+
+    public static UMLMessage getUMLMessage(SrcMLBlock.SrcMLReturn srcMLReturn){
+        return getUMLMessage(srcMLReturn.getExpression());
     }
     public static List<UMLMessage> getUMLMessages(SrcMLWhile srcMLWhile){
         List<UMLMessage> messages = new ArrayList<>();
@@ -93,7 +107,6 @@ public class UMLMessageGenerationUtils {
     public static UMLMessage getUMLMessage(SrcMLInit srcMLInit){
         return getUMLMessage(srcMLInit.getExpressions());
     }
-
     public static List<UMLMessage> getUMLMessages(SrcMLIf srcMLIf){
         List<UMLMessage> messages = new ArrayList<>();
         UMLMessage ifMessage = getUMLMessage(srcMLIf.getCondition().getExpression());

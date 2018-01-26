@@ -137,7 +137,7 @@ public class UMLGenerationUtils {
         String returnType = srcMLFunction.getType().getName();
         //I need to include use dependencies in here eventually.
 
-        //List<UMLMessage> messages = getUMLMessage(srcMLFunction.getBlock());
+        List<UMLMessage> messages = UMLMessageGenerationUtils.getUMLMessages(srcMLFunction.getBlock());
         return new UMLOperation(name, params, returnType);
     }
 
@@ -147,6 +147,7 @@ public class UMLGenerationUtils {
         //constructors don't have return types
         String returnType = "null";
         //I need to include use dependencies in here eventually.
+        List<UMLMessage> messages = UMLMessageGenerationUtils.getUMLMessages(srcMLConstructor.getBlock());
         return new UMLOperation(name, params, returnType);
     }
 

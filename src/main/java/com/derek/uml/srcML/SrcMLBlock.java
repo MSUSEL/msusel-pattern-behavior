@@ -406,8 +406,9 @@ public class SrcMLBlock extends SrcMLNode{
             }
         }
     }
+    @Getter
     public class SrcMLReturn extends SrcMLNode{
-        @Getter
+
         private Element returnEle;
         private SrcMLExpression expression;
 
