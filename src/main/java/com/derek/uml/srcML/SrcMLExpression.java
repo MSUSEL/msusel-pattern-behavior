@@ -24,6 +24,9 @@
  */
 package com.derek.uml.srcML;
 
+import com.derek.uml.UMLMessage;
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.MutableGraph;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -46,9 +49,11 @@ public class SrcMLExpression extends SrcMLNode{
     private List<SrcMLClass> javaAnonymousClasses;
     private List<SrcMLExpression> expressions;
     private List<SrcMLTernary> ternarys;
+    private MutableGraph<SrcMLNode> callTree;
 
     public SrcMLExpression(Element expressionEle){
         super(expressionEle);
+        buildCallTree();
     }
 
     protected void parse(){
@@ -91,6 +96,30 @@ public class SrcMLExpression extends SrcMLNode{
             literals.add(XmlUtils.elementify(literalNode).getNodeName());
         }
         return literals;
+    }
+
+    private void buildCallTree(){
+        callTree = GraphBuilder.directed().allowsSelfLoops(false).build();
+        fillCallDepthLayer(callTree, this, null);
+    }
+
+    private void fillCallDepthLayer(MutableGraph<SrcMLNode> callTree, SrcMLNode parent, SrcMLNode childExpression){
+        List<SrcMLCall> calls = this.getCalls();
+        for (SrcMLCall call : calls) {
+            if (callTree.nodes().size() == 0){
+                //first time through forest, add a new root as a caller..
+                parent = call;
+                callTree.addNode(parent);
+            }else{
+                //we already have a parent
+                callTree.putEdge(parent, childExpression);
+                parent = childExpression;
+            }
+            //regardless, fill the rest of the forest with edges for each argument.
+            for (SrcMLArgument argument : call.getArgumentList().getArguments()) {
+                fillCallDepthLayer(callTree, parent, argument.getExpression());
+            }
+        }
     }
 
 

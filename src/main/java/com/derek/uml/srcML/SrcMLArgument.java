@@ -30,18 +30,17 @@ import org.w3c.dom.Node;
 import java.util.List;
 
 @Getter
-public class SrcMLArgument extends SrcMLNode{
+public class SrcMLArgument extends SrcMLSingleExpression{
 
     private String modifier;
-    private SrcMLExpression expression;
     private SrcMLName name;
 
     public SrcMLArgument(Element argumentEle){
         super(argumentEle);
     }
     protected void parse(){
+        super.parse();
         modifier = parseModifier();
-        expression = parseExpression();
         name = parseName();
     }
 

@@ -212,13 +212,13 @@ public abstract class SrcMLNode {
         List<SrcMLNode> srcMLNodes = getSameNameElements("init");
         return srcMLNodes.isEmpty() ? null : (SrcMLInit)srcMLNodes.get(0);
     }
-    protected SrcMLCondition parseCondition(){
-        List<SrcMLNode> srcMLNodes = getSameNameElements("condition");
-        return srcMLNodes.isEmpty() ? null : (SrcMLCondition)srcMLNodes.get(0);
-    }
     protected SrcMLThen parseThen(){
         List<SrcMLNode> srcMLNodes = getSameNameElements("then");
         return srcMLNodes.isEmpty() ? null : (SrcMLThen)srcMLNodes.get(0);
+    }
+    protected SrcMLCondition parseCondition(){
+        List<SrcMLNode> srcMLNodes = getSameNameElements("condition");
+        return srcMLNodes.isEmpty() ? null : (SrcMLCondition)srcMLNodes.get(0);
     }
     protected SrcMLIncr parseIncr(){
         List<SrcMLNode> srcMLNodes = getSameNameElements("incr");
@@ -228,6 +228,7 @@ public abstract class SrcMLNode {
         List<SrcMLNode> srcMLNodes = getSameNameElements("range");
         return srcMLNodes.isEmpty() ? null : (SrcMLRange)srcMLNodes.get(0);
     }
+
     protected SrcMLDataType parseDataType(){
         List<SrcMLNode> srcMLNodes = getSameNameElements("type");
         return srcMLNodes.isEmpty() ? null : (SrcMLDataType) srcMLNodes.get(0);
@@ -321,9 +322,7 @@ public abstract class SrcMLNode {
         }
         return nodes;
     }
-    protected SrcMLExpression parseExpression(){
-        return parseExpressions().isEmpty() ? null : parseExpressions().get(0);
-    }
+
     protected List<SrcMLExpression> parseExpressions(){
         List<SrcMLExpression> expressions = new ArrayList<>();
             for (SrcMLNode expression : getSameNameElements("expr")){

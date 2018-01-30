@@ -223,7 +223,7 @@ public class SrcMLBlock extends SrcMLNode{
     private List<SrcMLReturn> parseReturns(){
         List<SrcMLReturn> nodes = new ArrayList<>();
         for (SrcMLNode node : getSameNameElements("return")){
-            nodes.add((SrcMLReturn)node);
+            nodes.add((SrcMLReturn) node);
         }
         return nodes;
     }

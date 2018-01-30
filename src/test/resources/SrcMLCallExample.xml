@@ -1,6 +1,43 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <root>
     <block>
+        <expr_stmt>
+            <expr>
+                <call>
+                    <name>
+                        <name>command</name>
+                        <operator>.</operator>
+                        <name>updateDynamicLibraryPath</name>
+                    </name>
+                    <argument_list>(<argument>
+                        <expr>
+                            <call>
+                                <name>getExtraEnv</name>
+                                <argument_list>()</argument_list>
+                            </call>
+                            <operator>.</operator>
+                            <call>
+                                <name>get</name>
+                                <argument_list>(<argument>
+                                    <expr>
+                                        <call>
+                                            <name>
+                                                <name>CommandLine</name>
+                                                <operator>.</operator>
+                                                <name>getLibraryPathPropertyName</name>
+                                            </name>
+                                            <argument_list>()</argument_list>
+                                        </call>
+                                    </expr>
+                                </argument>)</argument_list>
+                            </call>
+                        </expr>
+                    </argument>)</argument_list>
+                </call>
+            </expr>
+        </expr_stmt>
+    </block>
+    <block>
         <decl_stmt>
             <decl>
                 <specifier>private</specifier>
@@ -270,5 +307,6 @@
             </argument>)</argument_list>
         </call>
     </expr>;</return>
-    }</block>
+    }
+</block>
 </root>

@@ -31,16 +31,15 @@ import org.w3c.dom.Node;
 import java.util.List;
 
 @Getter
-public class SrcMLElse extends SrcMLNode{
+public class SrcMLElse extends SrcMLSingleExpression{
     //only 2 classes use this; 'SrcMLIf' uses it for the block, and 'SrcMLTernary' uses it for the expression.
     private SrcMLBlock block;
-    private SrcMLExpression expression;
 
     public SrcMLElse(Element elseEle) {
         super(elseEle);
     }
     protected void parse(){
+        super.parse();
         block = parseBlock();
-        expression = parseExpression();
     }
 }
