@@ -40,21 +40,10 @@ public class SrcMLAnnotation extends SrcMLNode{
         super(annotationEle);
     }
     protected void parse(){
-        parseName();
-        parseArgumentList();
+        this.name = parseName();
+        this.argumentList = parseArgumentList();
     }
-    private void parseName(){
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
-        for (Node nameNode : nameNodes){
-            this.name = new SrcMLName(XmlUtils.elementify(nameNode));
-        }
-    }
-    private void parseArgumentList(){
-        List<Node> argumentListNodes = XmlUtils.getImmediateChildren(element, "argument_list");
-        for (Node argumentListNode : argumentListNodes){
-            argumentList = new SrcMLArgumentList(XmlUtils.elementify(argumentListNode));
-        }
-    }
+
     public String getName(){
         return name.getName();
     }

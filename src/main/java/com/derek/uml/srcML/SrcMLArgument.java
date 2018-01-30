@@ -40,31 +40,11 @@ public class SrcMLArgument extends SrcMLNode{
         super(argumentEle);
     }
     protected void parse(){
-        parseModifier();
-        parseExpression();
-        parseName();
+        modifier = parseModifier();
+        expression = parseExpression();
+        name = parseName();
     }
-    private void parseModifier(){
-        List<Node> modifierNodes = XmlUtils.getImmediateChildren(element, "modifier");
-        for (Node modifierNode : modifierNodes){
-            //should be 0 or 1
-            modifier = modifierNode.getTextContent();
-        }
-    }
-    private void parseExpression(){
-        List<Node> expressionNodes = XmlUtils.getImmediateChildren(element, "expr");
-        for (Node expressionNode : expressionNodes){
-            //should only be 1 anyway
-            expression = new SrcMLExpression(XmlUtils.elementify(expressionNode));
-        }
-    }
-    private void parseName(){
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
-        for (Node nameNode : nameNodes){
-            //should only be 1 anyway
-            name = new SrcMLName(XmlUtils.elementify(nameNode));
-        }
-    }
+
     public SrcMLName getNameObj(){
         return name;
     }

@@ -41,28 +41,11 @@ public class SrcMLAnnotationDefn extends SrcMLNode{
         super(annotationEle);
     }
     protected void parse(){
-        parseName();
-        parseSuper();
-        parseBlock();
+        name = parseName();
+        super1 = parseSuper();
+        block = parseBlock();
     }
-    private void parseName(){
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
-        for (Node nameNode : nameNodes){
-            this.name = new SrcMLName(XmlUtils.elementify(nameNode));
-        }
-    }
-    private void parseSuper(){
-        List<Node> superNodes = XmlUtils.getImmediateChildren(element, "super");
-        for (Node superNode : superNodes){
-            this.super1 = new SrcMLSuper(XmlUtils.elementify(superNode));
-        }
-    }
-    private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
-        for (Node blockNode : blockNodes){
-            this.block = new SrcMLBlock(XmlUtils.elementify(blockNode));
-        }
-    }
+
     public String getName(){
         return name.getName();
     }

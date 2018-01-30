@@ -43,43 +43,13 @@ public class SrcMLDecl extends SrcMLNode{
         super(declEle);
     }
     protected void parse(){
-        parseDataType();
-        parseName();
-        parseRange();
-        parseInit();
-        parseSpecifiers();
+        type = parseDataType();
+        name = parseName();
+        range = parseRange();
+        init = parseInit();
+        specifiers = parseSpecifiers();
     }
-    private void parseDataType(){
-        List<Node> typeNodes = XmlUtils.getImmediateChildren(element, "type");
-        for (Node typeNode : typeNodes){
-            type = new SrcMLDataType(XmlUtils.elementify(typeNode));
-        }
-    }
-    private void parseName(){
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
-        for (Node nameNode : nameNodes){
-            name = new SrcMLName(XmlUtils.elementify(nameNode));
-        }
-    }
-    private void parseRange(){
-        List<Node> rangeNodes = XmlUtils.getImmediateChildren(element, "range");
-        for (Node rangeNode : rangeNodes){
-            range = new SrcMLRange(XmlUtils.elementify(rangeNode));
-        }
-    }
-    private void parseInit(){
-        List<Node> initNodes = XmlUtils.getImmediateChildren(element, "init");
-        for (Node initNode : initNodes){
-            init = new SrcMLInit(XmlUtils.elementify(initNode));
-        }
-    }
-    private void parseSpecifiers(){
-        specifiers = new ArrayList<>();
-        List<Node> specifierNodes = XmlUtils.getImmediateChildren(element, "specifier");
-        for (Node specifierNode : specifierNodes){
-            specifiers.add(specifierNode.getTextContent());
-        }
-    }
+
     public String getName(){
         if (name == null){
             //happens ocassionally, specifically on enum declarations. -- LEFT_SHIFT(Keys.Shift)
@@ -87,26 +57,6 @@ public class SrcMLDecl extends SrcMLNode{
             return "";
         }else {
             return name.getName();
-        }
-    }
-
-    @Getter
-    public class SrcMLRange extends SrcMLNode{
-        //only used by decl and is a pretty simple class
-        private SrcMLExpression expression;
-
-        public SrcMLRange(Element rangeEle) {
-            super(rangeEle);
-        }
-        protected void parse(){
-            parseExpression();
-        }
-        private void parseExpression(){
-            List<Node> expressionNodes = XmlUtils.getImmediateChildren(element, "expr");
-            for (Node expressionNode : expressionNodes){
-                //can have 0 or 1
-                expression = new SrcMLExpression(XmlUtils.elementify(expressionNode));
-            }
         }
     }
 }

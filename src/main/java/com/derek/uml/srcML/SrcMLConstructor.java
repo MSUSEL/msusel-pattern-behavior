@@ -44,47 +44,13 @@ public class SrcMLConstructor extends SrcMLNode{
     }
 
     protected void parse() {
-        parseSpecifiers();
-        parseAnnotations();
-        parseName();
-        parseParameterList();
-        parseBlock();
+        specifiers = parseSpecifiers();
+        annotations = parseAnnotations();
+        name = parseName();
+        parameterList = parseParameterList();
+        block = parseBlock();
     }
 
-    private void parseSpecifiers() {
-        specifiers = new ArrayList<>();
-        List<Node> specifierNodes = XmlUtils.getImmediateChildren(element, "specifier");
-        for (Node specifier : specifierNodes) {
-            //can have any number of specifier strings (public abstract)
-            specifiers.add(specifier.getTextContent());
-        }
-    }
-    private void parseAnnotations() {
-        annotations = new ArrayList<>();
-        List<Node> annotationNodes = XmlUtils.getImmediateChildren(element, "annotation");
-        for (Node annotationNode : annotationNodes) {
-            //can have multiple annotations strings (@getter @setter, for example)
-            annotations.add(new SrcMLAnnotation(XmlUtils.elementify(annotationNode)));
-        }
-    }
-    private void parseName(){
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
-        for (Node nameNode : nameNodes){
-            name = new SrcMLName(XmlUtils.elementify(nameNode));
-        }
-    }
-    private void parseParameterList(){
-        List<Node> parameterNodes = XmlUtils.getImmediateChildren(element, "parameter_list");
-        for (Node parameterNode : parameterNodes){
-            parameterList = new SrcMLParameterList(XmlUtils.elementify(parameterNode));
-        }
-    }
-    private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
-        for (Node blockNode : blockNodes){
-            block = new SrcMLBlock(XmlUtils.elementify(blockNode));
-        }
-    }
     public String getName(){
         return name.getName();
     }

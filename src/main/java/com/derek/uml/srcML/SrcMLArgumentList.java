@@ -41,25 +41,16 @@ public class SrcMLArgumentList extends SrcMLNode{
 
     public SrcMLArgumentList(Element argumentListEle){
         super(argumentListEle);
-        this.element = argumentListEle;
     }
 
     protected void parse(){
         parseOptionalAttribute();
-        parseArguments();
+        arguments = parseArguments();
     }
 
     private void parseOptionalAttribute(){
         //this will have zero or 1 attributes.
         typeAttribute = element.getAttribute("type");
-    }
-
-    private void parseArguments(){
-        arguments = new ArrayList<>();
-        List<Node> argumentNodes = XmlUtils.getImmediateChildren(element, "argument");
-        for (Node argumentNode : argumentNodes){
-            arguments.add(new SrcMLArgument(XmlUtils.elementify(argumentNode)));
-        }
     }
 
 }

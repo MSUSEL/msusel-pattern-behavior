@@ -122,7 +122,7 @@ public class UMLGenerationUtils {
      */
     public static List<Pair<String, String>> getParameters(SrcMLParameterList parameterList){
         List<Pair<String, String>> params = new ArrayList<>();
-        for (SrcMLParameterList.SrcMLParameter p : parameterList.getParameters()){
+        for (SrcMLParameter p : parameterList.getParameters()){
             if (p.getDecl() != null){
                 //reference to comment in SrcMLParameter class
                 params.add(new Pair<>(p.getDecl().getType().getName(), p.getDecl().getName()));

@@ -24,15 +24,12 @@ public class SrcMLNodeOrderTest extends SrcMLTest {
         Element nameEle1 = (Element) doc.getElementsByTagName("decl").item(0);
         node1 = new SrcMLDecl(nameEle1);
     }
-
     @Test
-    @Ignore
     public void verifyNodeOrder(){
-        List<String> nodeOrder = new ArrayList<>();
-        nodeOrder.add("type");
-        nodeOrder.add("name");
-        nodeOrder.add("init");
-
+        assertEquals(node1.getChildNodeOrder().size(), 3);
+        assertEquals(node1.getChildNodeOrder().get(0).getElement().getTagName(), "type");
+        assertEquals(node1.getChildNodeOrder().get(1).getElement().getTagName(), "name");
+        assertEquals(node1.getChildNodeOrder().get(2).getElement().getTagName(), "init");
     }
 
 

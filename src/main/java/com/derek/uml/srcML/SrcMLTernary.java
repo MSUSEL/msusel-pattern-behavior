@@ -40,29 +40,9 @@ public class SrcMLTernary extends SrcMLNode{
         super(ternaryEle);
     }
     protected void parse(){
-        parseCondition();
-        parseThen();
-        parseElse();
+        condition = parseCondition();
+        then = parseThen();
+        else1 = parseElse();
     }
-    private void parseCondition(){
-        List<Node> conditionNodes = XmlUtils.getImmediateChildren(element, "condition");
-        for (Node conditionNode : conditionNodes){
-            //should only be 1 anyway
-            condition = new SrcMLCondition(XmlUtils.elementify(conditionNode));
-        }
-    }
-    private void parseThen(){
-        List<Node> thenNodes = XmlUtils.getImmediateChildren(element, "then");
-        for (Node thenNode : thenNodes){
-            //should only be 1 anyway
-            then = new SrcMLThen(XmlUtils.elementify(thenNode));
-        }
-    }
-    private void parseElse(){
-        List<Node> elseNodes = XmlUtils.getImmediateChildren(element, "else");
-        for (Node elseNode : elseNodes){
-            //should only be 1 anyway
-            else1 = new SrcMLElse(XmlUtils.elementify(elseNode));
-        }
-    }
+
 }

@@ -40,13 +40,7 @@ public class SrcMLThrows extends SrcMLNode{
         super(throwsEle);
     }
     protected void parse(){
-        parseArguments();
+        arguments = parseArguments();
     }
-    private void parseArguments(){
-        arguments = new ArrayList<>();
-        List<Node> argumentNodes = XmlUtils.getImmediateChildren(element, "argument");
-        for (Node argumentNode : argumentNodes){
-            arguments.add(new SrcMLArgument(XmlUtils.elementify(argumentNode)));
-        }
-    }
+
 }

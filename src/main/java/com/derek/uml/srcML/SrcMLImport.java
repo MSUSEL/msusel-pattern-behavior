@@ -39,16 +39,9 @@ public class SrcMLImport extends SrcMLNode{
         super(importEle);
     }
     protected void parse(){
-        parseName();
+        names = parseNames();
     }
 
-    private void parseName(){
-        names = new ArrayList<>();
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
-        for (Node name : nameNodes){
-            names.add(new SrcMLName(XmlUtils.elementify(name)));
-        }
-    }
     public List<String> getNames(){
         List<String> s = new ArrayList<>();
         for (SrcMLName name : names){

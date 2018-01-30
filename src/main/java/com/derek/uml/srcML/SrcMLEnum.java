@@ -43,37 +43,10 @@ public class SrcMLEnum extends SrcMLNode{
     }
 
     protected void parse() {
-        parseAnnotations();
-        parseSpecifiers();
-        parseName();
-        parseBlock();
-    }
-
-    private void parseAnnotations() {
-        annotations = new ArrayList<>();
-        List<Node> annotationNodes = XmlUtils.getImmediateChildren(element, "annotation");
-        for (Node annotationNode : annotationNodes) {
-            annotations.add(new SrcMLAnnotation(XmlUtils.elementify(annotationNode)));
-        }
-    }
-    private void parseSpecifiers(){
-        specifiers = new ArrayList<>();
-        List<Node> specifierNodes = XmlUtils.getImmediateChildren(element, "specifier");
-        for (Node specifierNode : specifierNodes) {
-            specifiers.add(specifierNode.getTextContent());
-        }
-    }
-    private void parseName() {
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
-        for (Node nameNode : nameNodes) {
-            name = new SrcMLName(XmlUtils.elementify(nameNode));
-        }
-    }
-    private void parseBlock() {
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
-        for (Node blockNode : blockNodes) {
-            block = new SrcMLBlock(XmlUtils.elementify(blockNode));
-        }
+        annotations = parseAnnotations();
+        specifiers = parseSpecifiers();
+        name = parseName();
+        block = parseBlock();
     }
     public String getName(){
         return name.getName();

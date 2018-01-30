@@ -42,31 +42,25 @@ public class SrcMLSuper extends SrcMLNode{
         super(superEle);
     }
     protected void parse(){
-        parseExtends();
-        parseImplements();
-        parseName();
+        extenders = parseExtends();
+        implementors = parseImplements();
+        name = parseName();
     }
-    private void parseExtends(){
-        extenders = new ArrayList<>();
-        List<Node> extendsNodes = XmlUtils.getImmediateChildren(element, "extends");
-        for (Node extendsNode : extendsNodes){
-            extenders.add(new SrcMLExtends(XmlUtils.elementify(extendsNode)));
+    private List<SrcMLExtends> parseExtends(){
+        List<SrcMLExtends> nodes = new ArrayList<>();
+        for (SrcMLNode node : getSameNameElements("extends")){
+            nodes.add((SrcMLExtends)node);
         }
+        return nodes;
     }
-    private void parseImplements(){
-        implementors = new ArrayList<>();
-        List<Node> implementorNodes = XmlUtils.getImmediateChildren(element, "implements");
-        for (Node implementorNode : implementorNodes){
-            implementors.add(new SrcMLImplements(XmlUtils.elementify(implementorNode)));
+    private List<SrcMLImplements> parseImplements(){
+        List<SrcMLImplements> nodes = new ArrayList<>();
+        for (SrcMLNode node : getSameNameElements("implements")){
+            nodes.add((SrcMLImplements)node);
         }
+        return nodes;
     }
-    private void parseName(){
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
-        for (Node name : nameNodes){
-            //will only happen once but im leaving hte looop in for safety (poor documentation in srcml)
-            this.name = new SrcMLName(XmlUtils.elementify(name));
-        }
-    }
+
     public String getName(){
         return name.getName();
     }

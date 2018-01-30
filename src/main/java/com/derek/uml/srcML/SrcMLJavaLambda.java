@@ -40,20 +40,8 @@ public class SrcMLJavaLambda extends SrcMLNode{
         super(lambdaEle);
     }
     protected void parse() {
-        parseParameterList();
-        parseBlock();
-    }
-    private void parseParameterList(){
-        List<Node> parameterNodes = XmlUtils.getImmediateChildren(element, "parameter_list");
-        for (Node parameterNode : parameterNodes){
-            parameterList = new SrcMLParameterList(XmlUtils.elementify(parameterNode));
-        }
-    }
-    private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
-        for (Node blockNode : blockNodes){
-            block = new SrcMLBlock(XmlUtils.elementify(blockNode));
-        }
+        parameterList = parseParameterList();
+        block = parseBlock();
     }
 
 }

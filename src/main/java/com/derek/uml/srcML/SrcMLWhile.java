@@ -40,20 +40,7 @@ public class SrcMLWhile extends SrcMLNode{
         super(whileEle);
     }
     protected void parse(){
-        parseCondition();
-        parseBlock();
-    }
-    private void parseCondition(){
-        List<Node> conditionNodes = XmlUtils.getImmediateChildren(element, "condition");
-        for (Node conditionNode : conditionNodes){
-            //should only be 1 anyway
-            condition = new SrcMLCondition(XmlUtils.elementify(conditionNode));
-        }
-    }
-    private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
-        for (Node blockNode : blockNodes){
-            this.block = new SrcMLBlock(XmlUtils.elementify(blockNode));
-        }
+        condition = parseCondition();
+        block = parseBlock();
     }
 }

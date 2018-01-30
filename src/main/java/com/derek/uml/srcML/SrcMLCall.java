@@ -37,28 +37,13 @@ public class SrcMLCall extends SrcMLNode{
     private SrcMLName name;
     private SrcMLArgumentList argumentList;
 
-
     public SrcMLCall(Element callEle){
         super(callEle);
     }
 
     protected void parse(){
-        parseName();
-        parseArgumentList();
-    }
-
-    private void parseName(){
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
-        for (Node nameNode : nameNodes){
-            //will only happen once but im leaving hte looop in for safety (poor documentation in srcml)
-            this.name = new SrcMLName(XmlUtils.elementify(nameNode));
-        }
-    }
-    private void parseArgumentList(){
-        List<Node> argumentListNodes = XmlUtils.getImmediateChildren(element, "argument_list");
-        for (Node argumentListNode : argumentListNodes){
-            argumentList = new SrcMLArgumentList(XmlUtils.elementify(argumentListNode));
-        }
+        name = parseName();
+        argumentList = parseArgumentList();
     }
     public String getName(){
         return name.getName();

@@ -32,7 +32,7 @@ public class UMLMessageGenerationUtils {
                 messages.add(message);
             }
         }
-        for (SrcMLBlock.SrcMLExprStmt exprStmt : block.getExpr_stmts()){
+        for (SrcMLExprStmt exprStmt : block.getExpr_stmts()){
             for (SrcMLExpression expression : exprStmt.getExpressions()){
                 expressions.add(getUMLMessage(expression));
             }
@@ -49,7 +49,7 @@ public class UMLMessageGenerationUtils {
         for (SrcMLWhile srcMLDo : block.getDos()){
             dos = getUMLMessages(srcMLDo);
         }
-        for (SrcMLBlock.SrcMLReturn srcMLReturn : block.getReturns()){
+        for (SrcMLReturn srcMLReturn : block.getReturns()){
             returns.add(getUMLMessage(srcMLReturn));
         }
 
@@ -60,13 +60,12 @@ public class UMLMessageGenerationUtils {
         messages.addAll(dos);
         messages.addAll(returns);
 
-
+        //messages = orderMessages(block, messages);
 
         return messages;
     }
 
-
-    public static UMLMessage getUMLMessage(SrcMLBlock.SrcMLReturn srcMLReturn){
+    public static UMLMessage getUMLMessage(SrcMLReturn srcMLReturn){
         return getUMLMessage(srcMLReturn.getExpression());
     }
     public static List<UMLMessage> getUMLMessages(SrcMLWhile srcMLWhile){
@@ -83,14 +82,14 @@ public class UMLMessageGenerationUtils {
         messages.addAll(blockMessages);
         return messages;
     }
-    public static List<UMLMessage> getUMLMessages(SrcMLFor.SrcMLControl srcMLControl){
+    public static List<UMLMessage> getUMLMessages(SrcMLControl srcMLControl){
         List<UMLMessage> messages = new ArrayList<>();
         messages.add(getUMLMessage(srcMLControl.getInit()));
         messages.add(getUMLMessage(srcMLControl.getCondition()));
         messages.add(getUMLMessage(srcMLControl.getIncr()));
         return messages;
     }
-    public static UMLMessage getUMLMessage(SrcMLFor.SrcMLControl.SrcMLIncr srcMLIncr){
+    public static UMLMessage getUMLMessage(SrcMLIncr srcMLIncr){
         return getUMLMessage(srcMLIncr.getExpression());
     }
     public static UMLMessage getUMLMessage(SrcMLCondition srcMLCondition){

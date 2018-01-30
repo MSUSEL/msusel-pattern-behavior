@@ -49,48 +49,19 @@ public class SrcMLClass extends SrcMLNode{
         super(classEle);
     }
     protected void parse(){
-        parseSpecifiers();
-        parseName();
-        parseSuper();
-        parseArgumentList();
-        parseBlock();
+        specifiers = parseSpecifiers();
+        name = parseName();
+        superLink = parseSuper();
+        argumentList = parseArgumentList();
+        block = parseBlock();
     }
 
-    private void parseSpecifiers(){
-        specifiers = new ArrayList<>();
-        List<Node> specifierNodes = XmlUtils.getImmediateChildren(element, "specifier");
-        for (Node specifierNode : specifierNodes){
-            specifiers.add(specifierNode.getTextContent());
-        }
-    }
-    private void parseName(){
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
-        for (Node nameNode : nameNodes){
-            //will only happen once but im leaving hte looop in for safety (poor documentation in srcml)
-            this.name = new SrcMLName(XmlUtils.elementify(nameNode));
-        }
+    protected SrcMLName parseName(){
+        SrcMLName name = super.parseName();
         if (name == null){
-            //anonymous class
-            this.name = new SrcMLName("Anonymous Class");
+            name = new SrcMLName("Anonymous Class");
         }
-    }
-    private void parseSuper(){
-        List<Node> superNodes = XmlUtils.getImmediateChildren(element, "super");
-        for (Node superNode : superNodes){
-            this.superLink = new SrcMLSuper(XmlUtils.elementify(superNode));
-        }
-    }
-    private void parseArgumentList(){
-        List<Node> argumentListNodes = XmlUtils.getImmediateChildren(element, "argument_list");
-        for (Node argumentListNode : argumentListNodes){
-            argumentList = new SrcMLArgumentList(XmlUtils.elementify(argumentListNode));
-        }
-    }
-    private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
-        for (Node block : blockNodes){
-            this.block = new SrcMLBlock(XmlUtils.elementify(block));
-        }
+        return name;
     }
     public String getName(){
         return name.getName();

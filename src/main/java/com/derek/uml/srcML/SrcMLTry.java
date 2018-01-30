@@ -36,41 +36,23 @@ public class SrcMLTry extends SrcMLNode{
     private SrcMLInit init;
     private SrcMLBlock block;
     private List<SrcMLCatch> catches;
-    private List<SrcMLFinally> finallys;
+    private List<SrcMLFinally> finallies;
 
     public SrcMLTry(Element tryEle) {
         super(tryEle);
     }
     protected void parse(){
-        parseInit();
-        parseBlock();
-        parseCatch();
-        parseFinally();
+        init = parseInit();
+        block = parseBlock();
+        catches = parseCatches();
+        finallies = parseFinallies();
     }
-    private void parseInit(){
-        List<Node> initNodes = XmlUtils.getImmediateChildren(element, "init");
-        for (Node initNode : initNodes){
-            init = new SrcMLInit(XmlUtils.elementify(initNode));
+    private List<SrcMLCatch> parseCatches(){
+        List<SrcMLCatch> nodes = new ArrayList<>();
+        for (SrcMLNode node : getSameNameElements("catch")){
+            nodes.add((SrcMLCatch)node);
         }
+        return nodes;
     }
-    private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
-        for (Node blockNode : blockNodes){
-            block = new SrcMLBlock(XmlUtils.elementify(blockNode));
-        }
-    }
-    private void parseCatch(){
-        catches = new ArrayList<>();
-        List<Node> catchNodes = XmlUtils.getImmediateChildren(element, "catch");
-        for (Node catchNode : catchNodes){
-            catches.add(new SrcMLCatch(XmlUtils.elementify(catchNode)));
-        }
-    }
-    private void parseFinally(){
-        finallys = new ArrayList<>();
-        List<Node> finallyNodes = XmlUtils.getImmediateChildren(element, "finally");
-        for (Node finallyNode : finallyNodes){
-            finallys.add(new SrcMLFinally(XmlUtils.elementify(finallyNode)));
-        }
-    }
+
 }

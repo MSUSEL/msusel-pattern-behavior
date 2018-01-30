@@ -41,42 +41,13 @@ public class SrcMLParameterList extends SrcMLNode{
         super(parameterListEle);
     }
     protected void parse(){
-        parseParameters();
+        parameters = parseParameters();
     }
-    private void parseParameters(){
-        parameters = new ArrayList<>();
-        List<Node> parameterNodes = XmlUtils.getImmediateChildren(element, "parameter");
-        for (Node parameterNode : parameterNodes){
-            parameters.add(new SrcMLParameter(XmlUtils.elementify(parameterNode)));
+    protected List<SrcMLParameter> parseParameters(){
+        List<SrcMLParameter> nodes = new ArrayList<>();
+        for (SrcMLNode node : getSameNameElements("parameter")){
+            nodes.add((SrcMLParameter)node);
         }
+        return nodes;
     }
-
-    @Getter
-    public class SrcMLParameter extends SrcMLNode{
-        //after reviewing examples of parameterlist output, it appears that the documentation for this is wrong..
-        //it appears that the <parameter> element ALWAYS has a <decl> element under it and not a <type> element
-        private SrcMLDecl decl;
-        private SrcMLDataType type;
-
-        public SrcMLParameter(Element parameterEle) {
-            super(parameterEle);
-        }
-        protected void parse(){
-            parseDecl();
-            parseType();
-        }
-        private void parseDecl(){
-            List<Node> declNodes = XmlUtils.getImmediateChildren(element, "decl");
-            for (Node declNode : declNodes){
-                decl = new SrcMLDecl(XmlUtils.elementify(declNode));
-            }
-        }
-        private void parseType(){
-            List<Node> typeNodes = XmlUtils.getImmediateChildren(element, "type");
-            for (Node typeNode : typeNodes){
-                type = new SrcMLDataType(XmlUtils.elementify(typeNode));
-            }
-        }
-    }
-
 }

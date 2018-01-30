@@ -55,6 +55,9 @@ public class SrcMLClassUMLGenerationTest extends SrcMLTest{
     @Test
     public void verifyClass(){
         UMLClass umlClass = UMLGenerationUtils.getUMLClass(srcMLClass, null, null);
+        assertEquals(srcMLClass.getSpecifiers().size(), 2);
+        assertEquals(srcMLClass.getSpecifiers().get(0), "public");
+        assertEquals(srcMLClass.getSpecifiers().get(1), "abstract");
         assertEquals(umlClass.isAbstract(), true);
         assertEquals(umlClass.getAttributes().size(), 0);
         assertEquals(umlClass.getOperations().size(), 2);

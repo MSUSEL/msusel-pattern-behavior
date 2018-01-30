@@ -50,69 +50,15 @@ public class SrcMLFunction extends SrcMLNode{
     }
 
     protected void parse(){
-        parseAnnotations();
-        parseSpecifiers();
-        parseType();
-        parseName();
-        parseParameterList();
-        parseThrows();
-        parseBlock();
+        annotations = parseAnnotations();
+        specifiers = parseSpecifiers();
+        type = parseDataType();
+        name = parseName();
+        parameterList = parseParameterList();
+        throws1 = parseThrows();
+        block = parseBlock();
         //default is the only difference between 'function' and 'function_Decl' elements.. default exists in function_decl only
-        parseDefault();
-    }
-
-    private void parseAnnotations(){
-        annotations = new ArrayList<>();
-        List<Node> annotationNodes = XmlUtils.getImmediateChildren(element, "annotation");
-        for (Node annotationNode : annotationNodes){
-            //can have multiple annotations strings (@getter @setter, for example)
-            annotations.add(new SrcMLAnnotation(XmlUtils.elementify(annotationNode)));
-        }
-    }
-    private void parseSpecifiers(){
-        specifiers = new ArrayList<>();
-        List<Node> specifierNodes = XmlUtils.getImmediateChildren(element, "specifier");
-        for (Node specifier : specifierNodes){
-            //can have any number of specifier strings (public abstract)
-            specifiers.add(specifier.getTextContent());
-        }
-    }
-    private void parseType(){
-        List<Node> typeNodes = XmlUtils.getImmediateChildren(element, "type");
-        for (Node typeNode : typeNodes){
-            type = new SrcMLDataType(XmlUtils.elementify(typeNode));
-        }
-    }
-    private void parseName(){
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
-        for (Node nameNode : nameNodes){
-            name = new SrcMLName(XmlUtils.elementify(nameNode));
-        }
-    }
-    private void parseParameterList(){
-        List<Node> parameterNodes = XmlUtils.getImmediateChildren(element, "parameter_list");
-        for (Node parameterNode : parameterNodes){
-            parameterList = new SrcMLParameterList(XmlUtils.elementify(parameterNode));
-        }
-    }
-    private void parseThrows(){
-        throws1 = new ArrayList<>();
-        List<Node> throwsNodes = XmlUtils.getImmediateChildren(element, "throws");
-        for (Node throwsNode : throwsNodes){
-            throws1.add(new SrcMLThrows(XmlUtils.elementify(throwsNode)));
-        }
-    }
-    private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
-        for (Node blockNode : blockNodes){
-            block = new SrcMLBlock(XmlUtils.elementify(blockNode));
-        }
-    }
-    private void parseDefault(){
-        List<Node> defaultNodes = XmlUtils.getImmediateChildren(element, "default");
-        for (Node defaultNode : defaultNodes){
-            default1 = new SrcMLDefault(XmlUtils.elementify(defaultNode));
-        }
+        default1 = parseDefault();
     }
     public String getName(){
         return name.getName();

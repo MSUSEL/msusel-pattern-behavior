@@ -38,12 +38,6 @@ public class SrcMLFinally extends SrcMLNode{
         super(finallyEle);
     }
     protected void parse(){
-        parseBlock();
-    }
-    private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
-        for (Node blockNode : blockNodes){
-            block = new SrcMLBlock(XmlUtils.elementify(blockNode));
-        }
+        block = parseBlock();
     }
 }

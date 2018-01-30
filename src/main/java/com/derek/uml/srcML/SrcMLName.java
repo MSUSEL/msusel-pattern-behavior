@@ -56,78 +56,40 @@ public class SrcMLName extends SrcMLNode{
 
     protected void parse(){
         //moving operator before name because the existance of an operator will dictate the name. (Class.subclass)
-        parseOperators();
-        parseName();
-        parseArgumentList();
-        parseParameterList();
-        parseSpecifiers();
-        parseIndices();
+        operators = parseOperators();
+        names = parseStringNames();
+        argumentList = parseArgumentList();
+        parameterList = parseParameterList();
+        specifiers = parseSpecifiers();
+        indices = parseIndices();
     }
 
-    private void parseName(){
-        this.names = new ArrayList<>();
+    protected List<String> parseStringNames(){
+        List<String> names = new ArrayList<>();
         List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
         if (nameNodes.size() == 0){
             //no child elements, this is a simple name. <name>foo</name>
             names.add(element.getTextContent().replaceAll("\\s", ""));
         }
-
         for (Node nameNode : nameNodes) {
             if (!nameNode.getTextContent().equals("")) {
                 //case where <name><name>foo</name><stuff></stuff></name> and found a simple name
                 names.add(nameNode.getTextContent().replaceAll("\\s", ""));
             }
         }
+        return names;
     }
 
-    /**
-     * I am going to refactor this so that stacked names fill spots in teh arraylist (List<Integer> -> [List][Integer]
-     */
-    private void parseArgumentList(){
-        //there is a bug where we are only ever going 1 name deep, yet the requirements are that we can go n name deep (List<List<List<List...)
-        //to fix this bug I think its worth getting all argument list nodes from this name, not just the immediate children.
-        List<Node> argumentListNodes = XmlUtils.getImmediateChildren(element, "argument_list");
-        for (Node argumentNode : argumentListNodes){
-            argumentList = new SrcMLArgumentList(XmlUtils.elementify(argumentNode));
-            //generics handler
-            if (argumentList.getTypeAttribute().equals("generic")){
-                //generic type found.
-                //I don't think I need to care about this.
-            }
-        }
-    }
-
-    private void parseParameterList(){
-        List<Node> parameterListNodes = XmlUtils.getImmediateChildren(element, "parameter_list");
-        for (Node parameterNode :  parameterListNodes){
-            parameterList = new SrcMLParameterList(XmlUtils.elementify(parameterNode));
-        }
-    }
-
-    private void parseSpecifiers(){
-        this.specifiers = new ArrayList<>();
-        List<Node> specifierNodes = XmlUtils.getImmediateChildren(element, "specifier");
-        for (Node specifierNode :  specifierNodes){
-            specifiers.add(specifierNode.getTextContent());
-        }
-    }
-
-    private void parseOperators(){
-        this.operators = new ArrayList<>();
-        List<Node> operatorNodes = XmlUtils.getImmediateChildren(element, "operator");
-        for (Node operatorNode :  operatorNodes){
-            operators.add(operatorNode.getTextContent());
-        }
-    }
-
-    private void parseIndices(){
-        this.indices = new ArrayList<>();
+    private List<String> parseIndices(){
+        List<String> indices = new ArrayList<>();
         List<Node> indexNodes = XmlUtils.getImmediateChildren(element, "index");
         for (Node indexNode :  indexNodes){
             //this is likely going to require expansion in the future because an expression can be put in the index (foo[x+1])
             indices.add(indexNode.getTextContent());
         }
+        return indices;
     }
+
     public String getName(){
         return consolidateNames();
     }

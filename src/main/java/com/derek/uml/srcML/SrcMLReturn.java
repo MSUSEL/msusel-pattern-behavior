@@ -4,10 +4,10 @@ import lombok.Getter;
 import org.w3c.dom.Element;
 
 @Getter
-public class SrcMLCondition extends SrcMLNode {
+public class SrcMLReturn extends SrcMLNode {
     private SrcMLExpression expression;
 
-    public SrcMLCondition(Element element) {
+    public SrcMLReturn(Element element) {
         super(element);
     }
     protected void parse(){

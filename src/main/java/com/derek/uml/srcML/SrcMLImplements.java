@@ -39,14 +39,7 @@ public class SrcMLImplements extends SrcMLNode{
         super(implementsEle);
     }
     protected void parse(){
-        parseName();
-    }
-    private void parseName(){
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
-        for (Node name : nameNodes){
-            //will only happen once but im leaving hte looop in for safety (poor documentation in srcml)
-            this.name = new SrcMLName(XmlUtils.elementify(name));
-        }
+        name = parseName();
     }
     public String getName(){
         return name.getName();

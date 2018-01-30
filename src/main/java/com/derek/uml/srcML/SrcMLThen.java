@@ -40,20 +40,7 @@ public class SrcMLThen extends SrcMLNode{
         super(thenEle);
     }
     protected void parse(){
-        parseBlock();
-        parseExpression();
-    }
-    private void parseBlock(){
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
-        for (Node blockNode : blockNodes){
-            this.block = new SrcMLBlock(XmlUtils.elementify(blockNode));
-        }
-    }
-    private void parseExpression(){
-        List<Node> expressionNodes = XmlUtils.getImmediateChildren(element, "expr");
-        for (Node expressionNode : expressionNodes){
-            //can have 0 or 1
-            expression = new SrcMLExpression(XmlUtils.elementify(expressionNode));
-        }
+        block = parseBlock();
+        expression = parseExpression();
     }
 }

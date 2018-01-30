@@ -40,13 +40,7 @@ public class SrcMLDeclStmt extends SrcMLNode{
         super(declStmtEle);
     }
     protected void parse() {
-        parseDecls();
+        decls = parseDecls();
     }
-    private void parseDecls(){
-        decls = new ArrayList<>();
-        List<Node> declNodes = XmlUtils.getImmediateChildren(element, "decl");
-            for (Node declNode : declNodes){
-            decls.add(new SrcMLDecl(XmlUtils.elementify(declNode)));
-        }
-    }
+
 }

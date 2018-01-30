@@ -52,87 +52,46 @@ public class SrcMLExpression extends SrcMLNode{
     }
 
     protected void parse(){
-        parseJavaLambdas();
-        parseNames();
-        parseCalls();
-        parseDefaultVals();
-        parseInitBlocks();
-        parseOperators();
-        parseLiterals();
-        parseAnonymousClasses();
-        parseExpressions();
-        parseTernarys();
+        javaLambdas = parseJavaLambdas();
+        names = parseNames();
+        calls = parseCalls();
+        defaultVals = parseDefaults();
+        initBlocks = parseBlocks();
+        operators = parseOperators();
+        literals = parseLiterals();
+        javaAnonymousClasses = parseClasses();
+        expressions = parseExpressions();
+        ternarys = parseTernarys();
+    }
+    private List<SrcMLCall> parseCalls(){
+        List<SrcMLCall> nodes = new ArrayList<>();
+        for (SrcMLNode node : getSameNameElements("call")){
+            nodes.add((SrcMLCall)node);
+        }
+        return nodes;
+    }
+    private List<SrcMLJavaLambda> parseJavaLambdas(){
+        List<SrcMLJavaLambda> nodes = new ArrayList<>();
+        for (SrcMLNode node : getSameNameElements("lambda")){
+            nodes.add((SrcMLJavaLambda)node);
+        }
+        return nodes;
+    }
+    private List<SrcMLTernary> parseTernarys(){
+        List<SrcMLTernary> nodes = new ArrayList<>();
+        for (SrcMLNode node : getSameNameElements("ternary")){
+            nodes.add((SrcMLTernary)node);
+        }
+        return nodes;
+    }
+    private List<String> parseLiterals(){
+        List<String> literals = new ArrayList<>();
+        List<Node> literalNodes = XmlUtils.getImmediateChildren(element, "literal");
+        for (Node literalNode : literalNodes){
+            literals.add(XmlUtils.elementify(literalNode).getNodeName());
+        }
+        return literals;
     }
 
-    private void parseJavaLambdas(){
-        javaLambdas = new ArrayList<>();
-        List<Node> lambdaNodes = XmlUtils.getImmediateChildren(element, "lambda");
-        for (Node lambda : lambdaNodes){
-            javaLambdas.add(new SrcMLJavaLambda(XmlUtils.elementify(lambda)));
-        }
-    }
-    private void parseNames(){
-        names = new ArrayList<>();
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
-        for (Node name : nameNodes){
-            names.add(new SrcMLName(XmlUtils.elementify(name)));
-        }
-    }
-    private void parseCalls(){
-        calls = new ArrayList<>();
-        List<Node> callNodes = XmlUtils.getImmediateChildren(element, "call");
-        for (Node call : callNodes){
-            calls.add(new SrcMLCall(XmlUtils.elementify(call)));
-        }
-    }
-    private void parseDefaultVals(){
-        defaultVals = new ArrayList<>();
-        List<Node> defaultNodes = XmlUtils.getImmediateChildren(element, "default");
-        for (Node default1 : defaultNodes){
-            defaultVals.add(new SrcMLDefault(XmlUtils.elementify(default1)));
-        }
-    }
-    private void parseInitBlocks(){
-        initBlocks = new ArrayList<>();
-        List<Node> blockNodes = XmlUtils.getImmediateChildren(element, "block");
-        for (Node block : blockNodes){
-            initBlocks.add(new SrcMLBlock(XmlUtils.elementify(block)));
-        }
-    }
-    private void parseOperators(){
-        operators = new ArrayList<>();
-        List<Node> operatorNodes = XmlUtils.getImmediateChildren(element, "operator");
-        for (Node operator : operatorNodes){
-            operators.add(operator.getTextContent());
-        }
-    }
-    private void parseLiterals(){
-        literals = new ArrayList<>();
-        List<Node> literalNodes = XmlUtils.getImmediateChildren(element, "literal");
-        for (Node literal : literalNodes){
-            literals.add(literal.getTextContent());
-        }
-    }
-    private void parseAnonymousClasses(){
-        javaAnonymousClasses = new ArrayList<>();
-        List<Node> anonymousNodes = XmlUtils.getImmediateChildren(element, "class");
-        for (Node anonymous : anonymousNodes){
-            javaAnonymousClasses.add(new SrcMLClass(XmlUtils.elementify(anonymous)));
-        }
-    }
-    private void parseExpressions(){
-        expressions = new ArrayList<>();
-        List<Node> expressionNodes = XmlUtils.getImmediateChildren(element, "expr");
-        for (Node expression : expressionNodes){
-            expressions.add(new SrcMLExpression(XmlUtils.elementify(expression)));
-        }
-    }
-    private void parseTernarys(){
-        ternarys = new ArrayList<>();
-        List<Node> ternaryNodes = XmlUtils.getImmediateChildren(element, "ternary");
-        for (Node ternary : ternaryNodes){
-            ternarys.add(new SrcMLTernary(XmlUtils.elementify(ternary)));
-        }
-    }
 
 }

@@ -37,61 +37,19 @@ public class SrcMLDataType extends SrcMLNode{
     private List<String> modifiers;
     //not sure if I'll need argumentlist, but at least it is there.
     private SrcMLArgumentList argumentList;
-    private List<SrcMLName> names;
+    private SrcMLName name;
 
     public SrcMLDataType(Element typeEle){
         super(typeEle);
     }
 
     protected void parse(){
-        parseSpecifiers();
-        parseModifiers();
-        parseArgumentList();
-        parseName();
-    }
-
-    private void parseSpecifiers(){
-        //in the context of types, this could be any combination or number of: "final, public, static", etc.
-        specifiers = new ArrayList<>();
-        List<Node> specifierNodes = XmlUtils.getImmediateChildren(element, "specifier");
-        for (Node specifier : specifierNodes){
-            specifiers.add(specifier.getTextContent());
-        }
-    }
-
-    private void parseModifiers(){
-        modifiers = new ArrayList<>();
-        List<Node> modifierNodes = XmlUtils.getImmediateChildren(element, "modifier");
-        for (Node modifier : modifierNodes){
-            modifiers.add(modifier.getTextContent());
-        }
-    }
-
-    private void parseArgumentList(){
-        //I don't know how one can get more than 1 argumentlist.. but its in the docs.
-        //I am making an executive decision to only have 1 argument list.
-        List<Node> argumentListNodes = XmlUtils.getImmediateChildren(element, "argument_list");
-        for (Node argumentListNode : argumentListNodes){
-            argumentList = new SrcMLArgumentList(XmlUtils.elementify(argumentListNode));
-        }
-    }
-
-    private void parseName(){
-        //should only be 1 name, but it can have many apparently
-        names = new ArrayList<>();
-        List<Node> nameNodes = XmlUtils.getImmediateChildren(element, "name");
-        for (Node nameNode : nameNodes){
-            names.add(new SrcMLName(XmlUtils.elementify(nameNode)));
-        }
+        specifiers = parseSpecifiers();
+        modifiers = parseModifiers();
+        argumentList = parseArgumentList();
+        name = parseName();
     }
     public String getName(){
-        if (names.size() > 1){
-            //dont' know how this is possible
-            System.out.println("More than 1 name in a data type.. requires debugging.");
-            System.exit(0);
-            return null;
-        }else {
-            return names.get(0).getName();
-        }
+        return name.getName();
     }
 }
