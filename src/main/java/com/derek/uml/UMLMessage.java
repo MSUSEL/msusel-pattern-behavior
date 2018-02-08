@@ -33,7 +33,7 @@ import java.util.Map;
 @Getter
 public class UMLMessage {
 
-    private MutableGraph<String> callForest;
+    private MutableGraph<String> callTree;
     //has been processed refers to the two step transformation from identification to actually buliding out the message.
     private boolean hasBeenProcessed;
     private UMLClassifier from;
@@ -46,8 +46,8 @@ public class UMLMessage {
         this.isRequest = isRequest;
         hasBeenProcessed = true;
     }
-    public UMLMessage(MutableGraph<String> callForest){
-        this.callForest = callForest;
+    public UMLMessage(MutableGraph<String> callTree){
+        this.callTree = callTree;
         this.hasBeenProcessed = false;
     }
 

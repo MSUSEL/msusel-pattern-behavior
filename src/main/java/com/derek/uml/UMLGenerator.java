@@ -51,8 +51,8 @@ public class UMLGenerator {
     }
 
     private void buildBehavioralUML(){
-        buildMessages();
         buildLifelines();
+        buildMessages();
     }
 
     private void buildMessages(){

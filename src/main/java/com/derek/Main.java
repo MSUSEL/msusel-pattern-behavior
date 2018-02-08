@@ -66,7 +66,7 @@ public class Main {
         projectLanguage = ".java";
         projectVersions = new ArrayList<>();
         projectVersions.add(new SoftwareVersion(36));
-        //projectVersions.add(new SoftwareVersion(38));
+        projectVersions.add(new SoftwareVersion(38));
         runner = new HashMap<>();
         for (SoftwareVersion version : projectVersions) {
             ///selenium/36-src/selenium-36/org

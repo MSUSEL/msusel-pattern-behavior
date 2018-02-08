@@ -38,44 +38,45 @@ public class SrcMLMessageUMLGenerationTest extends SrcMLTest {
         block3 = new SrcMLBlock(blockEle3);
     }
 
+    @Ignore
     @Test
     public void verifyCall1(){
-        List<SrcMLExpression> expressions = block.getDeclStmts().get(0).getDecls().get(0).getInit().getExpressions();
-        UMLMessage message = UMLMessageGenerationUtils.getUMLMessage(expressions);
-        String verifier1 = "FirefoxBinary.class.getPackage";
-        String verifier2 = "FirefoxBinary.class.getPackage.getName";
-        String verifier3 = "FirefoxBinary.class.getPackage.getName.replace";
-        String verifier4 = "FirefoxBinary.class.getPackage.getName.replace.systemBinary.getChannel";
-        MutableGraph<String> callForest = message.getCallForest();
-
-        assertEquals(callForest.nodes().size(), 4);
-        assertEquals(callForest.hasEdgeConnecting(verifier1,verifier2), true);
-        assertEquals(callForest.hasEdgeConnecting(verifier1,verifier3), false);
-        assertEquals(callForest.hasEdgeConnecting(verifier1,verifier4), false);
-        assertEquals(callForest.hasEdgeConnecting(verifier2,verifier3), true);
-        assertEquals(callForest.hasEdgeConnecting(verifier2,verifier4), false);
-        assertEquals(callForest.hasEdgeConnecting(verifier3,verifier4), true);
+//        List<SrcMLExpression> expressions = block.getDeclStmts().get(0).getDecls().get(0).getInit().getExpressions();
+//        UMLMessage message = UMLMessageGenerationUtils.getUMLMessage(expressions);
+//        String verifier1 = "FirefoxBinary.class.getPackage";
+//        String verifier2 = "FirefoxBinary.class.getPackage.getName";
+//        String verifier3 = "FirefoxBinary.class.getPackage.getName.replace";
+//        String verifier4 = "FirefoxBinary.class.getPackage.getName.replace.systemBinary.getChannel";
+//        MutableGraph<String> callForest = message.getCallForest();
+//
+//        assertEquals(callForest.nodes().size(), 4);
+//        assertEquals(callForest.hasEdgeConnecting(verifier1,verifier2), true);
+//        assertEquals(callForest.hasEdgeConnecting(verifier1,verifier3), false);
+//        assertEquals(callForest.hasEdgeConnecting(verifier1,verifier4), false);
+//        assertEquals(callForest.hasEdgeConnecting(verifier2,verifier3), true);
+//        assertEquals(callForest.hasEdgeConnecting(verifier2,verifier4), false);
+//        assertEquals(callForest.hasEdgeConnecting(verifier3,verifier4), true);
     }
-
+    @Ignore
     @Test
     public void verifyCall2(){
-        List<SrcMLExpression> expressions = block2.getExpr_stmts().get(0).getExpressions();
-        UMLMessage message = UMLMessageGenerationUtils.getUMLMessage(expressions);
-        MutableGraph<String> callForest = message.getCallForest();
-        assertEquals(callForest.nodes().size(), 1);
-        assertEquals(callForest.degree("Executable"), 0);
+//        List<SrcMLExpression> expressions = block2.getExpr_stmts().get(0).getExpressions();
+//        UMLMessage message = UMLMessageGenerationUtils.getUMLMessage(expressions);
+//        MutableGraph<String> callForest = message.getCallForest();
+//        assertEquals(callForest.nodes().size(), 1);
+//        assertEquals(callForest.degree("Executable"), 0);
     }
 
 
     @Test
     @Ignore
     public void verifyCall3(){
-        List<SrcMLExpression> expressions = block3.getExpr_stmts().get(0).getExpressions();
-        UMLMessage message = UMLMessageGenerationUtils.getUMLMessage(expressions);
-        String verifier1 = "locateFirefoxBinaryFromSystemProperty";
-        MutableGraph<String> callForest = message.getCallForest();
-        assertEquals(callForest.nodes().size(), 2);
-        assertEquals(callForest.degree("Executable"), 0);
+//        List<SrcMLExpression> expressions = block3.getExpr_stmts().get(0).getExpressions();
+//        UMLMessage message = UMLMessageGenerationUtils.getUMLMessage(expressions);
+//        String verifier1 = "locateFirefoxBinaryFromSystemProperty";
+//        MutableGraph<String> callForest = message.getCallForest();
+//        assertEquals(callForest.nodes().size(), 2);
+//        assertEquals(callForest.degree("Executable"), 0);
     }
 
 }

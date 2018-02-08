@@ -105,6 +105,7 @@ public abstract class SrcMLNode {
                     nextNode = new SrcMLFunction(e);
                     break;
                 case "if":
+                case "elseif":
                     nextNode = new SrcMLIf(e);
                     break;
                 case "implements":
@@ -152,6 +153,9 @@ public abstract class SrcMLNode {
                 case "switch":
                     nextNode = new SrcMLSwitch(e);
                     break;
+                case "synchronized":
+                    nextNode = new SrcMLSynchronized(e);
+                    break;
                 case "ternary":
                     nextNode = new SrcMLTernary(e);
                     break;
@@ -175,7 +179,9 @@ public abstract class SrcMLNode {
                 case "literal":
                 case "comment":
                 case "index":
-                    //do nothing
+                case "break":
+                case "empty_stmt":
+                    //do nothing; im leaving these in here because they are in teh srcml spec but I may want to do something with them in the future
                     break;
                 default:
                     System.out.println("did not find element " + e.getNodeName() + "  this should have been found.");

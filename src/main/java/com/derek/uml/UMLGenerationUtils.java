@@ -87,7 +87,7 @@ public class UMLGenerationUtils {
                 UMLMessage initMessage = null;
                 if (decl.getInit() != null) {
                     //init statement
-                    initMessage = UMLMessageGenerationUtils.getUMLMessage(decl.getInit().getExpressions());
+                    //initMessage = UMLMessageGenerationUtils.getUMLMessage(decl.getInit().getExpressions());
 
                 }
                 attributes.add(new UMLAttribute(decl.getName(), decl.getName(), initMessage));
@@ -105,7 +105,7 @@ public class UMLGenerationUtils {
                     UMLMessage initMessage = null;
                     if (decl.getInit() != null) {
                         //init statement
-                        initMessage = UMLMessageGenerationUtils.getUMLMessage(decl.getInit().getExpressions());
+                        //initMessage = UMLMessageGenerationUtils.getUMLMessage(decl.getInit().getExpressions());
                     }
                     attributes.add(new UMLAttribute(decl.getName(), decl.getType().getName(), initMessage));
                 }
