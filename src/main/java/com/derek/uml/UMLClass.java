@@ -32,15 +32,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class UMLClass extends UMLClassifier{
+public class UMLClass extends UMLClassifier {
 
     protected Visibility visibility;
     protected boolean isAbstract;
     protected List<UMLAttribute> attributes;
     protected List<UMLOperation> operations;
     protected List<UMLOperation> constructors;
-    protected List<String> extendsParents;
-    protected List<String> implementsParents;
     protected String identifier;
 
     public UMLClass(String name, List<String> residingPackage, List<List<String>> imports, List<UMLAttribute> attributes, List<UMLOperation> operations, List<UMLOperation> constructors,
@@ -50,23 +48,23 @@ public class UMLClass extends UMLClassifier{
         this.operations = operations;
         this.constructors = constructors;
         this.isAbstract = isAbstract;
-        this.extendsParents = extendsParents;
-        this.implementsParents = implementsParents;
+        this.extendsParentsString = extendsParents;
+        this.implementsParentsString = implementsParents;
         this.identifier = identifier;
     }
-    public List<String> getExtendsParents(){
-        if (extendsParents == null){
+    public List<String> getExtendsParentsString(){
+        if (extendsParentsString == null){
             return new ArrayList<>();
         }else{
-            return extendsParents;
+            return extendsParentsString;
         }
     }
-    public List<String> getImplementsParents(){
-        if (implementsParents== null){
+    public List<String> getImplementsParentsString(){
+        if (implementsParentsString == null){
             return new ArrayList<>();
         }else{
         }
-        return implementsParents;
+        return implementsParentsString;
     }
 
     @Override

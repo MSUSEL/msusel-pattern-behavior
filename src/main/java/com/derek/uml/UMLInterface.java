@@ -33,14 +33,12 @@ import java.util.List;
 public class UMLInterface extends UMLClassifier {
 
     private List<UMLOperation> operations;
-    private List<String> extendsParents;
-    private List<String> implementsParents;
 
     public UMLInterface(String name, List<String> residingPackage, List<List<String>> imports, List<UMLOperation> operations, List<String> extendsParents, List<String> implementsParents) {
         super(name, residingPackage, imports);
         this.operations = operations;
-        this.extendsParents = extendsParents;
-        this.implementsParents = implementsParents;
+        this.extendsParentsString = extendsParents;
+        this.implementsParentsString = implementsParents;
     }
 
     @Override
@@ -50,19 +48,19 @@ public class UMLInterface extends UMLClassifier {
         return new ArrayList<>();
     }
 
-    public List<String> getExtendsParents(){
-        if (extendsParents == null){
+    public List<String> getExtendsParentsString(){
+        if (extendsParentsString == null){
             return new ArrayList<>();
         }else{
-            return extendsParents;
+            return extendsParentsString;
         }
     }
-    public List<String> getImplementsParents(){
-        if (implementsParents== null){
+    public List<String> getImplementsParentsString(){
+        if (implementsParentsString == null){
             return new ArrayList<>();
         }else{
         }
-        return implementsParents;
+        return implementsParentsString;
     }
 
     @Override

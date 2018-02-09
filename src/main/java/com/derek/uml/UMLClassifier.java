@@ -25,7 +25,9 @@
 package com.derek.uml;
 
 import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 //base class that represents a uml classifier.
@@ -34,6 +36,13 @@ public abstract class UMLClassifier {
     protected String name;
     protected List<String> residingPackage;
     protected List<List<String>> imports;
+    //need extends/implements info stored twice; once as a string and once as a type (UMLCLassifier)
+    protected List<String> extendsParentsString;
+    protected List<String> implementsParentsString;
+    @Setter
+    protected List<UMLClassifier> extendsParents;
+    @Setter
+    protected List<UMLClassifier> implementsParents;
 
     public UMLClassifier(String name, List<String> residingPackage, List<List<String>> imports){
         this.name = name;
@@ -49,6 +58,19 @@ public abstract class UMLClassifier {
     public abstract List<UMLAttribute> getAttributes();
 
     //used for uml class diagram generation
-    public abstract List<String> getExtendsParents();
-    public abstract List<String> getImplementsParents();
+    public abstract List<String> getExtendsParentsString();
+    public abstract List<String> getImplementsParentsString();
+
+    public void addExtendsParents(UMLClassifier umlClassifier){
+        if (extendsParents == null){
+            extendsParents = new ArrayList<>();
+        }
+        extendsParents.add(umlClassifier);
+    }
+    public void addImplementsParents(UMLClassifier umlClassifier){
+        if (implementsParents== null){
+            implementsParents = new ArrayList<>();
+        }
+        implementsParents.add(umlClassifier);
+    }
 }

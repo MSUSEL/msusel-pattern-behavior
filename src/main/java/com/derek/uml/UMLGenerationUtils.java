@@ -138,7 +138,7 @@ public class UMLGenerationUtils {
         //I need to include use dependencies in here eventually.
 
         //TODO - fix
-        //List<UMLMessage> messages = UMLMessageGenerationUtils.getUMLMessages(srcMLFunction.getBlock());
+        List<UMLMessage> messages = UMLMessageGenerationUtils.getUMLMessages(srcMLFunction.getBlock());
         return new UMLOperation(name, params, returnType);
     }
 

@@ -26,11 +26,13 @@ package com.derek.uml;
 
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
+import lombok.Getter;
 
-public class UmlSequenceDiagram {
+@Getter
+public class UMLSequenceDiagram {
     private MutableValueGraph<UMLLifeline, UMLMessage> sequenceDiagram;
 
-    public UmlSequenceDiagram() {
+    public UMLSequenceDiagram() {
         sequenceDiagram = ValueGraphBuilder.directed().allowsSelfLoops(true).build();
     }
 

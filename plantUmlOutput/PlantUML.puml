@@ -243,12 +243,12 @@ enum Architecture{
 }
 class Augmenter{
 	logger : Logger
-	create(RemoteWebDriver driver, Map<String,AugmenterProvider> augmentors, X objectToAugment) : X
+	create() : X
 	extractRemoteWebDriver(WebDriver driver) : RemoteWebDriver
 	copyFields(Class<?> clazz, Object source, Object target) : void
 	copyField(Object source, Object target, Field field) : void
 	determineAugmentation(RemoteWebDriver driver, Map<String,AugmenterProvider> augmentors, Object objectToAugment) : CompoundHandler
-	performAugmentation(CompoundHandler handler, X from) : X
+	performAugmentation() : X
 }
 interface AugmenterProvider{
 	getDescribedInterface() : Class<?>
@@ -267,7 +267,7 @@ abstract class BaseAugmenter{
 	addElementAugmentation(String capabilityName, AugmenterProvider handlerClass) : void
 	augment(WebDriver driver) : WebDriver
 	augment(RemoteWebElement element) : WebElement
-	create(RemoteWebDriver driver, Map<String,AugmenterProvider> augmentors, X objectToAugment) : X
+	create() : X
 	extractRemoteWebDriver(WebDriver driver) : RemoteWebDriver
 }
 class BeanToJsonConverter{
@@ -348,7 +348,7 @@ interface CapabilitiesFilter{
 	apply(Map<String,Object> capabilities) : Map<String,Object>
 }
 interface CapabilityTransform{
-	apply(Map.Entry<String, Object> entry) : Collection<Map.Entry<String, Object>>
+	apply(Map.Entry<String,Object> entry) : Collection<Map.Entry<String,Object>>
 }
 interface CapabilityType{
 }
@@ -1109,7 +1109,7 @@ class EventFiringWebElement{
 	toString() : String
 	getWrappedDriver() : WebDriver
 	getCoordinates() : Coordinates
-	getScreenshotAs(OutputType<X> outputType) : X
+	getScreenshotAs() : X
 }
 class EventFiringNavigation{
 	navigation : WebDriver.Navigation
@@ -1233,7 +1233,7 @@ class ExpectedConditions{
 	elementToBeClickable(By locator) : ExpectedCondition<WebElement>
 	elementToBeClickable(WebElement element) : ExpectedCondition<WebElement>
 	stalenessOf(WebElement element) : ExpectedCondition<Boolean>
-	refreshed(ExpectedCondition<T> condition) : ExpectedCondition<T>
+	refreshed() : ExpectedCondition<T>
 	elementToBeSelected(WebElement element) : ExpectedCondition<Boolean>
 	elementSelectionStateToBe(WebElement element, boolean selected) : ExpectedCondition<Boolean>
 	elementToBeSelected(By locator) : ExpectedCondition<Boolean>
@@ -1518,10 +1518,10 @@ class FluentWait{
 	withMessage(String message) : FluentWait<T>
 	withMessage(Supplier<String> messageSupplier) : FluentWait<T>
 	pollingEvery(long duration, TimeUnit unit) : FluentWait<T>
-	ignoreAll(Collection<Class<?>> types) : FluentWait<T>
+	ignoreAll() : FluentWait<T>
 	ignoring(Class<?> exceptionType) : FluentWait<T>
 	ignoring(Class<?> firstType, Class<?> secondType) : FluentWait<T>
-	until(Function<?,V> isTrue) : V
+	until() : V
 	propagateIfNotIgnored(Throwable e) : Throwable
 	timeoutException(String message, Throwable lastException) : RuntimeException
 }
@@ -1742,7 +1742,7 @@ class InternetExplorerDriver{
 	InternetExplorerDriver(InternetExplorerDriverService service, Capabilities capabilities, int port)
 	run(InternetExplorerDriverService service, Capabilities capabilities) : void
 	setFileDetector(FileDetector detector) : void
-	getScreenshotAs(OutputType<X> target) : X
+	getScreenshotAs() : X
 	assertOnWindows() : void
 	setupService(Capabilities caps, int port) : InternetExplorerDriverService
 }
@@ -1857,7 +1857,7 @@ interface JavascriptExecutor{
 class JdkAugmenter{
 	JdkAugmenter()
 	extractRemoteWebDriver(WebDriver driver) : RemoteWebDriver
-	create(RemoteWebDriver driver, Map<String,AugmenterProvider> augmentors, X objectToAugment) : X
+	create() : X
 }
 class JreHttpClient{
 	url : URL
@@ -1873,8 +1873,8 @@ class Json{
 	toJson : BeanToJsonConverter
 	toJson(Object toConvert) : String
 	toJsonElement(Object toConvert) : JsonElement
-	toType(Object source, Class<T> typeOfT) : T
-	toType(Object source, Type typeOfT) : T
+	toType() : T
+	toType() : T
 	readValue(JsonReader in, Gson gson) : Object
 	newInput(Reader from) : JsonInput
 	newOutput(Appendable to) : JsonOutput
@@ -1904,7 +1904,7 @@ class JsonInput{
 	endArray() : void
 	hasNext() : boolean
 	nextName() : String
-	read(Type type) : T
+	read() : T
 	skipValue() : void
 }
 class JsonOutput{
@@ -1922,14 +1922,14 @@ class JsonOutput{
 }
 class JsonToBeanConverter{
 	errorCodes : ErrorCodes
-	convert(Class<T> clazz, Object source) : T
-	convert(Class<T> clazz, Object source, int depth) : T
+	convert() : T
+	convert() : T
 	getMethod(Class<?> clazz, String methodName) : Method
 	convertJsonPrimitive(JsonPrimitive json) : Object
 	convertEnum(Class<?> clazz, Object text) : Enum<?>
 	isEnum(Class<?> clazz, Object text) : boolean
-	convertBean(Class<T> clazz, JsonObject toConvert, int depth) : T
-	newInstance(Class<T> clazz) : T
+	convertBean() : T
+	newInstance() : T
 	propertyWriteException(SimplePropertyDescriptor property, Object value, Class<?> type, Throwable cause) : WebDriverException
 	convertMap(JsonObject toConvert, int depth) : Map<String,Object>
 	convertList(JsonArray toConvert, int depth) : List<?>
@@ -2371,12 +2371,12 @@ interface OutputType{
 	convertFromPngBytes(byte png) : T
 }
 class PageFactory{
-	initElements(WebDriver driver, Class<T> pageClassToProxy) : T
+	initElements() : T
 	initElements(WebDriver driver, Object page) : void
 	initElements(ElementLocatorFactory factory, Object page) : void
 	initElements(FieldDecorator decorator, Object page) : void
 	proxyFields(FieldDecorator decorator, Object page, Class<?> proxyIn) : void
-	instantiatePage(WebDriver driver, Class<T> pageClassToProxy) : T
+	instantiatePage() : T
 }
 enum PageLoadStrategy{
 	NONE : NONE
@@ -2581,7 +2581,7 @@ class Proxy{
 	hashCode() : int
 }
 class ProxyTransform{
-	apply(Map.Entry<String, Object> entry) : Collection<Map.Entry<String, Object>>
+	apply(Map.Entry<String,Object> entry) : Collection<Map.Entry<String,Object>>
 }
 class Quotes{
 	escape(String toEscape) : String
@@ -2745,7 +2745,7 @@ class RemoteWebDriver{
 	get(String url) : void
 	getTitle() : String
 	getCurrentUrl() : String
-	getScreenshotAs(OutputType<X> outputType) : X
+	getScreenshotAs() : X
 	findElements(By by) : List<WebElement>
 	findElement(By by) : WebElement
 	findElement(String by, String using) : WebElement
@@ -2843,7 +2843,7 @@ class RemoteWebElement{
 	getSize() : Dimension
 	getRect() : Rectangle
 	getCoordinates() : Coordinates
-	getScreenshotAs(OutputType<X> outputType) : X
+	getScreenshotAs() : X
 	toString() : String
 	toJson() : Map<String,Object>
 }
@@ -3078,7 +3078,7 @@ class StoringLocalLogs{
 	getAvailableLogTypes() : Set<String>
 }
 class StripAnyPlatform{
-	apply(Map.Entry<String, Object> entry) : Collection<Map.Entry<String, Object>>
+	apply(Map.Entry<String,Object> entry) : Collection<Map.Entry<String,Object>>
 }
 class SystemClock{
 	laterBy(long durationInMillis) : long
@@ -3086,7 +3086,7 @@ class SystemClock{
 	now() : long
 }
 interface TakesScreenshot{
-	getScreenshotAs(OutputType<X> target) : X
+	getScreenshotAs() : X
 }
 class TemporaryFilesystem{
 	temporaryFiles : Set<File>
@@ -3276,10 +3276,10 @@ class W3CHttpResponseCodec{
 	createException(String error, String message) : WebDriverException
 }
 class W3CPlatformNameNormaliser{
-	apply(Map.Entry<String, Object> entry) : Collection<Map.Entry<String, Object>>
+	apply(Map.Entry<String,Object> entry) : Collection<Map.Entry<String,Object>>
 }
 interface Wait{
-	until(Function<?,T> isTrue) : T
+	until() : T
 }
 interface WebDriver{
 	get(String url) : void
@@ -3414,38 +3414,38 @@ class Zip{
 	unzipFile(File output, InputStream zipStream, String name) : void
 }
 AbstractAnnotations --> By
-AbstractCapabilities --> Platform
 AbstractCapabilities ..|> Capabilities
+AbstractCapabilities --> Platform
 AbstractFindByBuilder --> By
-AbstractHttpCommandCodec --> SessionId
+AbstractHttpCommandCodec --> JsonToBeanConverter
 AbstractHttpCommandCodec --> BeanToJsonConverter
+AbstractHttpCommandCodec --> SessionId
 AbstractHttpCommandCodec --> HttpRequest
 AbstractHttpCommandCodec --> HttpMethod
 AbstractHttpCommandCodec --> Command
-AbstractHttpCommandCodec --> JsonToBeanConverter
+AbstractHttpResponseCodec --> JsonToBeanConverter
 AbstractHttpResponseCodec --> BeanToJsonConverter
 AbstractHttpResponseCodec --> HttpResponse
-AbstractHttpResponseCodec --> ErrorCodes
-AbstractHttpResponseCodec --> JsonToBeanConverter
 AbstractHttpResponseCodec --> Response
-AbstractWebDriverEventListener --> By
-AbstractWebDriverEventListener --> WebElement
-AbstractWebDriverEventListener ..|> WebDriverEventListener
+AbstractHttpResponseCodec --> ErrorCodes
 AbstractWebDriverEventListener --> WebDriver
-Actions --> Sequence
+AbstractWebDriverEventListener --> By
+AbstractWebDriverEventListener ..|> WebDriverEventListener
+AbstractWebDriverEventListener --> WebElement
+Actions --> KeyInput
 Actions --> Actions
-Actions --> Keyboard
-Actions --> Mouse
-Actions --> WebElement
-Actions --> Duration
-Actions --> WebDriver
-Actions --> Action
 Actions --> PointerInput
 Actions --> Keys
-Actions --> KeyInput
-Actions --> Interaction
-Actions --> InputSource
+Actions --> Duration
 Actions --> CompositeAction
+Actions --> Interaction
+Actions --> Sequence
+Actions --> Action
+Actions --> Keyboard
+Actions --> WebDriver
+Actions --> InputSource
+Actions --> Mouse
+Actions --> WebElement
 AddApplicationCache ..|> AugmenterProvider
 AddApplicationCache --> InterfaceImplementation
 AddFindsByCss ..|> AugmenterProvider
@@ -3462,150 +3462,149 @@ AddRotatable ..|> AugmenterProvider
 AddRotatable --> InterfaceImplementation
 AddWebStorage ..|> AugmenterProvider
 AddWebStorage --> InterfaceImplementation
+AjaxElementLocator --|> DefaultElementLocator
 AjaxElementLocator --> Clock
 AjaxElementLocator --> WebElement
-AjaxElementLocator --|> DefaultElementLocator
 AjaxElementLocatorFactory --> SearchContext
-AjaxElementLocatorFactory --> ElementLocator
 AjaxElementLocatorFactory ..|> ElementLocatorFactory
+AjaxElementLocatorFactory --> ElementLocator
 Alert --> Credentials
 Annotations --> By
 Annotations --|> AbstractAnnotations
-ApacheHttpClient --> HttpResponse
+ApacheHttpClient --> HttpClient
 ApacheHttpClient --> HttpRequest
 ApacheHttpClient --> HttpMethod
-ApacheHttpClient --> HttpClient
+ApacheHttpClient --> HttpResponse
 AppCacheStatus --> AppCacheStatus
 ApplicationCache --> AppCacheStatus
 Architecture --> Architecture
+Augmenter --> AugmenterProvider
 Augmenter --|> BaseAugmenter
 Augmenter --> RemoteWebDriver
-Augmenter --> AugmenterProvider
 Augmenter --> WebDriver
 AugmenterProvider --> InterfaceImplementation
-BaseAction --> WebElement
 BaseAction --> Locatable
-BaseAugmenter --> RemoteWebDriver
-BaseAugmenter --> RemoteWebElement
-BaseAugmenter --> WebElement
-BaseAugmenter --> AugmenterProvider
+BaseAction --> WebElement
 BaseAugmenter --> WebDriver
-ButtonReleaseAction --|> MouseAction
-ButtonReleaseAction ..|> Action
-ButtonReleaseAction --> PointerInput
-ButtonReleaseAction --> Interaction
+BaseAugmenter --> RemoteWebDriver
+BaseAugmenter --> AugmenterProvider
+BaseAugmenter --> WebElement
+BaseAugmenter --> RemoteWebElement
 ButtonReleaseAction --> KeyInput
+ButtonReleaseAction --> PointerInput
+ButtonReleaseAction --|> MouseAction
+ButtonReleaseAction --> Interaction
+ButtonReleaseAction ..|> Action
+By --> SearchContext
 By --> By
 By --> WebElement
-By --> SearchContext
-ByAll --|> By
 ByAll --> SearchContext
+ByAll --|> By
 ByAll --> WebElement
-ByChained --|> By
 ByChained --> SearchContext
+ByChained --|> By
 ByChained --> WebElement
-ByIdOrName --|> By
 ByIdOrName --> SearchContext
+ByIdOrName --|> By
 ByIdOrName --> WebElement
-Capabilities --> Platform
 Capabilities --> Capabilities
+Capabilities --> Platform
 ChromeDriver --> Location
-ChromeDriver --|> RemoteWebDriver
 ChromeDriver --> LocalStorage
+ChromeDriver --> FileDetector
+ChromeDriver ..|> LocationContext
 ChromeDriver --> TouchScreen
+ChromeDriver --|> RemoteWebDriver
+ChromeDriver --> RemoteWebStorage
+ChromeDriver --> SessionStorage
 ChromeDriver --> RemoteNetworkConnection
 ChromeDriver --> RemoteLocationContext
-ChromeDriver --> RemoteWebStorage
-ChromeDriver --> FileDetector
-ChromeDriver --> SessionStorage
-ChromeDriver ..|> NetworkConnection
 ChromeDriverCommandExecutor --> CommandInfo
 ChromeDriverCommandExecutor --|> DriverCommandExecutor
 ChromeDriverService --> ChromeDriverService
 ChromeDriverService --|> DriverService
 ChromeFilter ..|> CapabilitiesFilter
-ChromeOptions --> PageLoadStrategy
 ChromeOptions --> UnexpectedAlertBehaviour
-ChromeOptions --|> MutableCapabilities
 ChromeOptions --> ChromeOptions
+ChromeOptions --|> MutableCapabilities
+ChromeOptions --> PageLoadStrategy
 ClasspathExtension ..|> Extension
-ClickAction --|> MouseAction
-ClickAction ..|> Action
-ClickAction --> PointerInput
-ClickAction --> Interaction
 ClickAction --> KeyInput
-ClickAndHoldAction --|> MouseAction
-ClickAndHoldAction ..|> Action
-ClickAndHoldAction --> PointerInput
-ClickAndHoldAction --> Interaction
+ClickAction --> PointerInput
+ClickAction --|> MouseAction
+ClickAction --> Interaction
+ClickAction ..|> Action
 ClickAndHoldAction --> KeyInput
+ClickAndHoldAction --> PointerInput
+ClickAndHoldAction --|> MouseAction
+ClickAndHoldAction --> Interaction
+ClickAndHoldAction ..|> Action
 Color --> Color
 Colors --> Color
 Command --> SessionId
 CommandCodec --> HttpMethod
 CommandCodec --> Command
-CommandExecutor --> Command
 CommandExecutor --> Response
+CommandExecutor --> Command
 CommandInfo --> HttpMethod
 CommandLine --> OsProcess
-CompositeAction --> Action
-CompositeAction --> PointerInput
-CompositeAction --> Interaction
 CompositeAction --> KeyInput
-CompositeAction ..|> IsInteraction
+CompositeAction --> PointerInput
 CompositeAction --> CompositeAction
-CompositeLocalLogs --> LogEntry
-CompositeLocalLogs --|> LocalLogs
+CompositeAction --> Interaction
+CompositeAction ..|> Action
 CompositeLocalLogs --> LogEntries
+CompositeLocalLogs --|> LocalLogs
+CompositeLocalLogs --> LogEntry
 ConnectionClosedException --|> WebDriverException
 ContextAware --> WebDriver
-ContextClickAction --|> MouseAction
-ContextClickAction ..|> Action
-ContextClickAction --> PointerInput
-ContextClickAction --> Interaction
 ContextClickAction --> KeyInput
+ContextClickAction --> PointerInput
+ContextClickAction --|> MouseAction
+ContextClickAction --> Interaction
+ContextClickAction ..|> Action
 Coordinates --> Point
 CoordinatesUtils --> Coordinates
 DefaultElementLocator --> SearchContext
-DefaultElementLocator --> By
 DefaultElementLocator ..|> ElementLocator
+DefaultElementLocator --> By
 DefaultElementLocator --> WebElement
 DefaultElementLocatorFactory --> SearchContext
-DefaultElementLocatorFactory --> ElementLocator
 DefaultElementLocatorFactory ..|> ElementLocatorFactory
-DefaultFieldDecorator --> ElementLocatorFactory
-DefaultFieldDecorator --> ElementLocator
-DefaultFieldDecorator --> WebElement
+DefaultElementLocatorFactory --> ElementLocator
 DefaultFieldDecorator ..|> FieldDecorator
-DefaultNetworkInterfaceProvider --> NetworkInterface
+DefaultFieldDecorator --> ElementLocatorFactory
+DefaultFieldDecorator --> WebElement
+DefaultFieldDecorator --> ElementLocator
 DefaultNetworkInterfaceProvider ..|> NetworkInterfaceProvider
-DesiredCapabilities --|> MutableCapabilities
-DesiredCapabilities --> Platform
+DefaultNetworkInterfaceProvider --> NetworkInterface
 DesiredCapabilities --> Capabilities
+DesiredCapabilities --> Platform
 DesiredCapabilities --> DesiredCapabilities
-Dialect --> ResponseCodec
+DesiredCapabilities --|> MutableCapabilities
 Dialect --> CommandCodec
-Dialect --> HttpRequest
 Dialect --> HttpResponse
-DisplayAction --> Coordinates
+Dialect --> HttpRequest
+Dialect --> ResponseCodec
 DisplayAction --|> BaseAction
-DoubleClickAction --|> MouseAction
-DoubleClickAction ..|> Action
-DoubleClickAction --> PointerInput
-DoubleClickAction --> Interaction
+DisplayAction --> Coordinates
 DoubleClickAction --> KeyInput
+DoubleClickAction --> PointerInput
+DoubleClickAction --|> MouseAction
+DoubleClickAction --> Interaction
+DoubleClickAction ..|> Action
 DoubleTapAction --|> TouchAction
 DoubleTapAction ..|> Action
 DownAction --|> TouchAction
 DownAction ..|> Action
-DriverCommandExecutor --|> HttpCommandExecutor
 DriverCommandExecutor --> DriverService
-DriverCommandExecutor --> Command
+DriverCommandExecutor --|> HttpCommandExecutor
 DriverCommandExecutor --> Response
+DriverCommandExecutor --> Command
 DriverService --> CommandLine
 EdgeDriver --|> RemoteWebDriver
-EdgeDriverService --> EdgeDriverService
 EdgeDriverService --|> DriverService
+EdgeDriverService --> EdgeDriverService
 EdgeFilter ..|> CapabilitiesFilter
 EdgeOptions --|> MutableCapabilities
 ElementClickInterceptedException --|> ElementNotInteractableException
@@ -3615,50 +3614,47 @@ ElementNotInteractableException --|> InvalidElementStateException
 ElementNotSelectableException --|> InvalidElementStateException
 ElementNotVisibleException --|> ElementNotInteractableException
 ElementScrollBehavior --> ElementScrollBehavior
-ErrorHandler --> ErrorCodes
 ErrorHandler --> Response
+ErrorHandler --> ErrorCodes
 UnknownServerException --|> WebDriverException
 EventFiringKeyboard ..|> Keyboard
-EventFiringKeyboard --> WebDriverEventListener
 EventFiringKeyboard --> WebDriver
-EventFiringMouse ..|> Mouse
-EventFiringMouse --> Coordinates
-EventFiringMouse --> WebDriverEventListener
+EventFiringKeyboard --> WebDriverEventListener
 EventFiringMouse --> WebDriver
+EventFiringMouse --> WebDriverEventListener
+EventFiringMouse --> Coordinates
+EventFiringMouse ..|> Mouse
 EventFiringTouch ..|> TouchScreen
-EventFiringTouch --> Coordinates
-EventFiringTouch --> WebDriverEventListener
 EventFiringTouch --> WebDriver
+EventFiringTouch --> WebDriverEventListener
+EventFiringTouch --> Coordinates
+EventFiringWebDriver ..|> WebDriver
+EventFiringWebDriver --> WebDriverEventListener
 EventFiringWebDriver --> EventFiringWebDriver
-EventFiringWebDriver ..|> Interactive
 EventFiringWebDriver --> By
 EventFiringWebDriver --> WebElement
-EventFiringWebDriver --> WebDriverEventListener
-EventFiringWebDriver --> WebDriver
-EventFiringWebElement --> By
-EventFiringWebElement --> WebElement
-EventFiringWebElement --> Point
-EventFiringWebElement ..|> Locatable
-EventFiringWebElement --> WebDriver
-EventFiringWebElement --> OutputType
 EventFiringWebElement --> Dimension
+EventFiringWebElement --> WebDriver
 EventFiringWebElement --> Coordinates
+EventFiringWebElement --> By
+EventFiringWebElement ..|> WebElement
+EventFiringWebElement --> Point
 EventFiringWebElement --> Rectangle
 EventFiringOptions --> Logs
 EventFiringOptions --> Cookie
+EventFiringTargetLocator --> WebDriver
 EventFiringTargetLocator --> WebElement
 EventFiringTargetLocator --> Alert
-EventFiringTargetLocator --> WebDriver
 EventFiringWindow --> Dimension
 EventFiringWindow --> Point
-EventFiringAlert ..|> Alert
 EventFiringAlert --> Credentials
-ExpectedConditions --> By
-ExpectedConditions --> WebElement
-ExpectedConditions --> Alert
+EventFiringAlert ..|> Alert
 ExpectedConditions --> ExpectedCondition
 ExpectedConditions --> WebDriver
-ExtensionConnection --|> NeedsLocalLogs
+ExpectedConditions --> Alert
+ExpectedConditions --> By
+ExpectedConditions --> WebElement
+ExtensionConnection --|> CommandExecutor
 FileExtension ..|> Extension
 FindsByClassName --> WebElement
 FindsByCssSelector --> WebElement
@@ -3668,43 +3664,43 @@ FindsByName --> WebElement
 FindsByTagName --> WebElement
 FindsByXPath --> WebElement
 FirefoxBinary --> FirefoxOptions
-FirefoxBinary --> CommandLine
 FirefoxBinary --> Executable
+FirefoxBinary --> CommandLine
 FirefoxBinary --> FirefoxProfile
-FirefoxDriver --> FirefoxOptions
-FirefoxDriver --|> RemoteWebDriver
-FirefoxDriver --> CommandExecutor
 FirefoxDriver --> Capabilities
-FirefoxDriver --> FileDetector
+FirefoxDriver --|> RemoteWebDriver
+FirefoxDriver --> FirefoxOptions
 FirefoxDriver --> FirefoxBinary
+FirefoxDriver --> CommandExecutor
+FirefoxDriver --> FileDetector
 FirefoxDriverLogLevel --> FirefoxDriverLogLevel
 FirefoxFilter ..|> CapabilitiesFilter
-FirefoxOptions --> FirefoxOptions
 FirefoxOptions --> UnexpectedAlertBehaviour
-FirefoxOptions --|> MutableCapabilities
-FirefoxOptions --> FirefoxDriverLogLevel
-FirefoxOptions --> Capabilities
+FirefoxOptions --> FirefoxOptions
 FirefoxOptions --> PageLoadStrategy
-FirefoxOptions --> FirefoxProfile
-FirefoxOptions --> FirefoxBinary
+FirefoxOptions --|> MutableCapabilities
+FirefoxOptions --> Capabilities
 FirefoxOptions --> DesiredCapabilities
-FirefoxProfile --> Preferences
+FirefoxOptions --> FirefoxBinary
+FirefoxOptions --> FirefoxDriverLogLevel
+FirefoxOptions --> FirefoxProfile
 FirefoxProfile --> Extension
+FirefoxProfile --> Preferences
 FirefoxProfile --> FirefoxProfile
 FixedIANAPortRange ..|> EphemeralPortRangeDetector
 FlickAction --|> TouchAction
 FlickAction ..|> Action
+FluentWait --> Duration
 FluentWait --> Clock
 FluentWait --> Sleeper
-FluentWait --> Duration
 FluentWait --> FluentWait
 Gecko013ProtocolResponse --> InitialHandshakeResponse
 Gecko013ProtocolResponse ..|> HandshakeResponse
 GeckoDriverService --> GeckoDriverService
 GeckoDriverService --|> DriverService
-HandlerBasedLocalLogs --> LogEntry
-HandlerBasedLocalLogs --> LoggingHandler
 HandlerBasedLocalLogs --> LogEntries
+HandlerBasedLocalLogs --> LoggingHandler
+HandlerBasedLocalLogs --> LogEntry
 HandlerBasedLocalLogs --|> LocalLogs
 HandshakeResponse --> InitialHandshakeResponse
 HasCapabilities --> Capabilities
@@ -3713,45 +3709,45 @@ HasInputDevices --> Mouse
 HasTouchScreen --> TouchScreen
 HttpClient --> HttpResponse
 HttpClient --> HttpRequest
-HttpClientFactory --> Credentials
 HttpClientFactory --> HttpClient
-HttpCommandExecutor --> CommandCodec
-HttpCommandExecutor --> HttpRequest
-HttpCommandExecutor --> HttpClient
-HttpCommandExecutor --> Response
-HttpCommandExecutor ..|> NeedsLocalLogs
-HttpCommandExecutor --> ResponseCodec
-HttpCommandExecutor --> CommandInfo
-HttpCommandExecutor --> LogEntry
+HttpClientFactory --> Credentials
 HttpCommandExecutor --> HttpResponse
-HttpCommandExecutor --> Command
+HttpCommandExecutor --> HttpRequest
 HttpCommandExecutor --> LocalLogs
-HttpProfilerLogEntry --|> ProfilerLogEntry
+HttpCommandExecutor --> LogEntry
+HttpCommandExecutor --> HttpClient
+HttpCommandExecutor --> CommandCodec
+HttpCommandExecutor --> Response
+HttpCommandExecutor ..|> CommandExecutor
+HttpCommandExecutor --> CommandInfo
+HttpCommandExecutor --> ResponseCodec
+HttpCommandExecutor --> Command
 HttpProfilerLogEntry --> EventType
-HttpRequest --> HttpMethod
+HttpProfilerLogEntry --|> ProfilerLogEntry
 HttpRequest --|> HttpMessage
+HttpRequest --> HttpMethod
 HttpResponse --|> HttpMessage
 ImeActivationFailedException --|> WebDriverException
 ImeNotAvailableException --|> WebDriverException
+ImmutableCapabilities ..|> Capabilities
 InitialHandshakeResponse --> Duration
 InputSource --> SourceType
 Interaction --> SourceType
 Interaction --> InputSource
 Interactive --> Sequence
 InterfaceImplementation --> ExecuteMethod
-InternetExplorerDriver --|> RemoteWebDriver
 InternetExplorerDriver --> InternetExplorerDriverService
 InternetExplorerDriver --> Capabilities
+InternetExplorerDriver --|> RemoteWebDriver
 InternetExplorerDriver --> FileDetector
-InternetExplorerDriver --> OutputType
-InternetExplorerDriverService --|> DriverService
 InternetExplorerDriverService --> InternetExplorerDriverService
+InternetExplorerDriverService --|> DriverService
 InternetExplorerFilter ..|> CapabilitiesFilter
 InternetExplorerOptions --> UnexpectedAlertBehaviour
-InternetExplorerOptions --|> MutableCapabilities
-InternetExplorerOptions --> ElementScrollBehavior
 InternetExplorerOptions --> PageLoadStrategy
 InternetExplorerOptions --> Duration
+InternetExplorerOptions --> ElementScrollBehavior
+InternetExplorerOptions --|> MutableCapabilities
 InternetExplorerOptions --> InternetExplorerOptions
 InvalidArgumentException --|> WebDriverException
 InvalidCookieDomainException --|> WebDriverException
@@ -3759,68 +3755,67 @@ InvalidCoordinatesException --|> WebDriverException
 InvalidElementStateException --|> WebDriverException
 InvalidSelectorException --|> NoSuchElementException
 ISelect --> WebElement
+IsInteraction --> KeyInput
 IsInteraction --> PointerInput
 IsInteraction --> Interaction
-IsInteraction --> KeyInput
 JavascriptException --|> WebDriverException
 JdkAugmenter --|> BaseAugmenter
 JdkAugmenter --> RemoteWebDriver
-JdkAugmenter --> AugmenterProvider
 JdkAugmenter --> WebDriver
-JreHttpClient --> HttpResponse
 JreHttpClient --> HttpRequest
 JreHttpClient ..|> HttpClient
-Json --> JsonOutput
-Json --> BeanToJsonConverter
+JreHttpClient --> HttpResponse
 Json --> JsonInput
+Json --> JsonOutput
 Json --> JsonToBeanConverter
+Json --> BeanToJsonConverter
 JsonException --|> WebDriverException
 JsonHttpCommandCodec --|> AbstractHttpCommandCodec
-JsonHttpResponseCodec --|> AbstractHttpResponseCodec
-JsonHttpResponseCodec --> ErrorHandler
 JsonHttpResponseCodec --> Response
+JsonHttpResponseCodec --> ErrorHandler
+JsonHttpResponseCodec --|> AbstractHttpResponseCodec
+JsonOutput --> JsonInput
 JsonOutput --> JsonOutput
 JsonOutput --> BeanToJsonConverter
-JsonOutput --> JsonInput
 JsonToBeanConverter --> WebDriverException
 JsonToBeanConverter --> SimplePropertyDescriptor
 JsonToBeanConverter --> ErrorCodes
 JsonToWebElementConverter --> RemoteWebDriver
 JsonWireProtocolResponse --> InitialHandshakeResponse
 JsonWireProtocolResponse ..|> HandshakeResponse
-KeyDownAction ..|> Action
-KeyDownAction --> PointerInput
-KeyDownAction --|> SingleKeyAction
-KeyDownAction --> Interaction
 KeyDownAction --> KeyInput
-KeyInput --> Interaction
+KeyDownAction --> PointerInput
+KeyDownAction --> Interaction
+KeyDownAction --|> SingleKeyAction
+KeyDownAction ..|> Action
 KeyInput --> SourceType
-KeyInput ..|> Encodable
-KeysRelatedAction --> PointerInput
-KeysRelatedAction --> Interaction
-KeysRelatedAction ..|> IsInteraction
+KeyInput --> Interaction
+KeyInput ..|> InputSource
 KeysRelatedAction --> Keyboard
-KeysRelatedAction --> Mouse
 KeysRelatedAction --|> BaseAction
-KeyUpAction ..|> Action
-KeyUpAction --> PointerInput
-KeyUpAction --|> SingleKeyAction
-KeyUpAction --> Interaction
+KeysRelatedAction --> PointerInput
+KeysRelatedAction --> Mouse
+KeysRelatedAction ..|> IsInteraction
+KeysRelatedAction --> Interaction
 KeyUpAction --> KeyInput
-LinuxEphemeralPortRangeDetector ..|> EphemeralPortRangeDetector
+KeyUpAction --> PointerInput
+KeyUpAction --> Interaction
+KeyUpAction --|> SingleKeyAction
+KeyUpAction ..|> Action
 LinuxEphemeralPortRangeDetector --> LinuxEphemeralPortRangeDetector
+LinuxEphemeralPortRangeDetector ..|> EphemeralPortRangeDetector
 LocalFileDetector ..|> FileDetector
 LocalLogs --> LoggingHandler
-LocalLogs --> LogEntries
+LocalLogs --> LocalLogs
 LocalLogs --> LogEntry
 LocalLogs ..|> Logs
-LocalLogs --> LocalLogs
+LocalLogs --> LogEntries
 Locatable --> Coordinates
 LocatingElementHandler --> ElementLocator
 LocatingElementListHandler --> ElementLocator
 LocationContext --> Location
-LogCombiner --> LogEntry
 LogCombiner --> LogEntries
+LogCombiner --> LogEntry
 LogEntries --> LogEntry
 LoggingHandler --> LogEntry
 LoggingHandler --> LoggingHandler
@@ -3829,40 +3824,40 @@ Logs --> LogEntries
 LongPressAction --|> TouchAction
 LongPressAction ..|> Action
 Mouse --> Coordinates
-MouseAction ..|> IsInteraction
-MouseAction --> Mouse
-MouseAction --|> BaseAction
-MouseAction --> Coordinates
 MouseAction --> PointerInput
 MouseAction --> Interaction
+MouseAction --|> BaseAction
+MouseAction --> Coordinates
+MouseAction --> Mouse
+MouseAction ..|> IsInteraction
 MoveAction --|> TouchAction
 MoveAction ..|> Action
-MoveMouseAction --|> MouseAction
-MoveMouseAction ..|> Action
-MoveMouseAction --> PointerInput
-MoveMouseAction --> Interaction
 MoveMouseAction --> KeyInput
+MoveMouseAction --> PointerInput
+MoveMouseAction --|> MouseAction
+MoveMouseAction --> Interaction
+MoveMouseAction ..|> Action
 MoveTargetOutOfBoundsException --|> WebDriverException
-MoveToOffsetAction --|> MouseAction
-MoveToOffsetAction ..|> Action
-MoveToOffsetAction --> PointerInput
-MoveToOffsetAction --> Interaction
 MoveToOffsetAction --> KeyInput
+MoveToOffsetAction --> PointerInput
+MoveToOffsetAction --|> MouseAction
+MoveToOffsetAction --> Interaction
+MoveToOffsetAction ..|> Action
 MutableCapabilities --> MutableCapabilities
+MutableCapabilities ..|> Capabilities
 MutableCapabilities --> Platform
-MutableCapabilities --> Capabilities
 NeedsLocalLogs --> LocalLogs
 NetworkInterfaceProvider --> NetworkInterface
 NetworkUtils --> NetworkInterfaceProvider
 NetworkUtils --> NetworkInterface
+NewSessionPayload --> Capabilities
+NewSessionPayload --> Json
+NewSessionPayload --> JsonOutput
+NewSessionPayload --> ImmutableCapabilities
+NewSessionPayload --> NewSessionPayload
 NewSessionPayload --> CapabilitiesFilter
 NewSessionPayload --> CapabilityTransform
-NewSessionPayload --> JsonOutput
-NewSessionPayload --> Capabilities
-NewSessionPayload --> ImmutableCapabilities
-NewSessionPayload --> Json
 NewSessionPayload --> Dialect
-NewSessionPayload --> NewSessionPayload
 NoAlertPresentException --|> NotFoundException
 NoSuchCookieException --|> NotFoundException
 NoSuchElementException --|> NotFoundException
@@ -3873,38 +3868,38 @@ NotFoundException --|> WebDriverException
 OlderWindowsVersionEphemeralPortDetector ..|> EphemeralPortRangeDetector
 OperaDriver --> Location
 OperaDriver --|> RemoteWebDriver
-OperaDriver ..|> WebStorage
-OperaDriver --> RemoteLocationContext
 OperaDriver --> RemoteWebStorage
-OperaDriver --> FileDetector
-OperaDriver --> LocalStorage
 OperaDriver --> SessionStorage
-OperaDriverService --|> DriverService
+OperaDriver --> LocalStorage
+OperaDriver --> RemoteLocationContext
+OperaDriver --> FileDetector
+OperaDriver ..|> LocationContext
 OperaDriverService --> OperaDriverService
+OperaDriverService --|> DriverService
 OperaFilter ..|> CapabilitiesFilter
 OperaOptions --|> MutableCapabilities
 OperaOptions --> OperaOptions
-PageFactory --> ElementLocatorFactory
-PageFactory --> FieldDecorator
 PageFactory --> WebDriver
+PageFactory --> FieldDecorator
+PageFactory --> ElementLocatorFactory
 PageLoadStrategy --> PageLoadStrategy
-Pause --|> Interaction
 Pause --> Duration
-Pause --> SourceType
 Pause ..|> Encodable
-PauseAction --> Interaction
+Pause --|> Interaction
+Pause --> SourceType
 PauseAction --> KeyInput
-PauseAction ..|> IsInteraction
+PauseAction --> Interaction
 PauseAction --> PointerInput
+PauseAction ..|> Action
 Platform --> Platform
 Point --> Point
-PointerInput --> Interaction
 PointerInput --> SourceType
-PointerInput ..|> Encodable
+PointerInput --> Interaction
 PointerInput --> Duration
+PointerInput ..|> InputSource
 PortProber --> EphemeralPortRangeDetector
-Preferences --> FirefoxProfile
 Preferences --> Preferences
+Preferences --> FirefoxProfile
 ProfilerLogEntry --|> LogEntry
 ProfilesIni --> FirefoxProfile
 ProfilesIni --> Platform
@@ -3912,17 +3907,17 @@ ProtocolHandshake --> Result
 ProtocolHandshake --> HttpClient
 ProtocolHandshake --> Command
 Result --> SessionId
+Result --> Response
 Result --> Proxy
 Result --> Dialect
-Result --> Response
-Proxy --> Proxy
 Proxy --> Capabilities
+Proxy --> Proxy
 ProxyTransform ..|> CapabilityTransform
 Rectangle --> Dimension
 Rectangle --> Point
-RemoteApplicationCache ..|> ApplicationCache
-RemoteApplicationCache --> ExecuteMethod
 RemoteApplicationCache --> AppCacheStatus
+RemoteApplicationCache --> ExecuteMethod
+RemoteApplicationCache ..|> ApplicationCache
 RemoteExecuteMethod --> RemoteWebDriver
 RemoteExecuteMethod ..|> ExecuteMethod
 RemoteKeyboard ..|> Keyboard
@@ -3934,69 +3929,66 @@ RemoteLocationContext --> ExecuteMethod
 RemoteLocationContext ..|> LocationContext
 RemoteLogs ..|> Logs
 RemoteLogs --> ExecuteMethod
-RemoteLogs --> LocalLogs
 RemoteLogs --> LogEntries
+RemoteLogs --> LocalLogs
 RemoteMouse --> Coordinates
-RemoteMouse ..|> Mouse
 RemoteMouse --> ExecuteMethod
+RemoteMouse ..|> Mouse
 RemoteNetworkConnection --> ExecuteMethod
 RemoteNetworkConnection ..|> NetworkConnection
 RemoteSessionStorage --> ExecuteMethod
 RemoteSessionStorage ..|> SessionStorage
-RemoteTouchScreen --> Coordinates
 RemoteTouchScreen ..|> TouchScreen
+RemoteTouchScreen --> Coordinates
 RemoteTouchScreen --> ExecuteMethod
-RemoteWebDriver --> JsonToWebElementConverter
-RemoteWebDriver --> ErrorHandler
-RemoteWebDriver --> By
-RemoteWebDriver --> WebElement
-RemoteWebDriver --> Keyboard
-RemoteWebDriver --> Capabilities
-RemoteWebDriver --> RemoteKeyboard
-RemoteWebDriver ..|> TakesScreenshot
-RemoteWebDriver --> Sequence
-RemoteWebDriver --> ExecuteMethod
-RemoteWebDriver --> Mouse
 RemoteWebDriver --> RemoteMouse
-RemoteWebDriver --> OutputType
-RemoteWebDriver --> Response
 RemoteWebDriver --> SearchContext
-RemoteWebDriver --> SessionId
-RemoteWebDriver --> CommandExecutor
+RemoteWebDriver --> ExecuteMethod
 RemoteWebDriver --> FileDetector
-RemoteWebDriver --> Logs
 RemoteWebDriver --> LocalLogs
-RemoteWebElement --> RemoteWebDriver
-RemoteWebElement --> By
-RemoteWebElement --> WebElement
-RemoteWebElement --> Point
-RemoteWebElement --> Response
-RemoteWebElement --> WebDriver
-RemoteWebElement --> OutputType
+RemoteWebDriver --> Capabilities
+RemoteWebDriver --> JsonToWebElementConverter
+RemoteWebDriver --> Logs
+RemoteWebDriver --> Mouse
+RemoteWebDriver --> By
+RemoteWebDriver --> ErrorHandler
+RemoteWebDriver --> Sequence
+RemoteWebDriver --> Keyboard
+RemoteWebDriver ..|> WebDriver
+RemoteWebDriver --> RemoteKeyboard
+RemoteWebDriver --> CommandExecutor
+RemoteWebDriver --> SessionId
+RemoteWebDriver --> Response
+RemoteWebDriver --> WebElement
 RemoteWebElement --> SearchContext
 RemoteWebElement --> Dimension
-RemoteWebElement --> Coordinates
-RemoteWebElement --> FileDetector
+RemoteWebElement --> Point
 RemoteWebElement --> Rectangle
-RemoteWebElement ..|> TakesScreenshot
+RemoteWebElement --> FileDetector
+RemoteWebElement --> RemoteWebDriver
+RemoteWebElement --> WebDriver
+RemoteWebElement --> Coordinates
+RemoteWebElement --> Response
+RemoteWebElement --> By
+RemoteWebElement ..|> WebElement
 RemoteWebStorage --> ExecuteMethod
-RemoteWebStorage ..|> WebStorage
-RemoteWebStorage --> LocalStorage
 RemoteWebStorage --> SessionStorage
+RemoteWebStorage --> LocalStorage
+RemoteWebStorage ..|> WebStorage
 ResponseCodec --> Response
-Rotatable --> DeviceRotation
 Rotatable --> ScreenOrientation
-SafariDriver --> FileDetector
-SafariDriver --> SafariOptions
-SafariDriver --|> RemoteWebDriver
+Rotatable --> DeviceRotation
 SafariDriver --> CommandExecutor
-SafariDriverService --> SafariDriverService
+SafariDriver --|> RemoteWebDriver
+SafariDriver --> SafariOptions
+SafariDriver --> FileDetector
 SafariDriverService --> SafariOptions
 SafariDriverService --|> DriverService
+SafariDriverService --> SafariDriverService
 SafariFilter ..|> CapabilitiesFilter
-SafariOptions --|> MutableCapabilities
 SafariOptions --> Capabilities
 SafariOptions --> SafariOptions
+SafariOptions --|> MutableCapabilities
 ScreenshotException --|> WebDriverException
 ScriptTimeoutException --|> WebDriverException
 ScrollAction --|> TouchAction
@@ -4005,18 +3997,18 @@ SearchContext --> By
 SearchContext --> WebElement
 Select --> WebElement
 Select ..|> ISelect
-SendKeysAction ..|> Action
-SendKeysAction --> PointerInput
 SendKeysAction --|> KeysRelatedAction
-SendKeysAction --> Interaction
 SendKeysAction --> KeyInput
-Sequence --> Sequence
+SendKeysAction --> PointerInput
+SendKeysAction --> Interaction
+SendKeysAction ..|> Action
 Sequence ..|> Encodable
-Sequence --> Interaction
 Sequence --> InputSource
+Sequence --> Interaction
+Sequence --> Sequence
 SessionLogHandler --> SessionLogs
-SessionLogs --> SessionLogs
 SessionLogs --> LogEntries
+SessionLogs --> SessionLogs
 SessionNotCreatedException --|> WebDriverException
 SimplePropertyDescriptor --> SimplePropertyDescriptor
 SingleKeyAction --|> KeysRelatedAction
@@ -4025,22 +4017,20 @@ SingleTapAction --|> TouchAction
 SingleTapAction ..|> Action
 Sleeper --> Duration
 SlowLoadableComponent --> Clock
-SocketLock ..|> Lock
 StaleElementReferenceException --|> WebDriverException
-StoringLocalLogs --> LogEntry
 StoringLocalLogs --> LogEntries
+StoringLocalLogs --> LogEntry
 StoringLocalLogs --|> LocalLogs
 StripAnyPlatform ..|> CapabilityTransform
 SystemClock ..|> Clock
-TakesScreenshot --> OutputType
 TemporaryFilesystem --> TemporaryFilesystem
 ThreadGuard --> WebDriver
 TimeoutException --|> WebDriverException
-TouchAction --|> DisplayAction
 TouchAction --> TouchScreen
-TouchActions --|> Actions
+TouchAction --|> DisplayAction
 TouchActions --> TouchScreen
 TouchActions --> TouchActions
+TouchActions --|> Actions
 TouchActions --> WebElement
 TouchScreen --> Coordinates
 UnableToCreateProfileException --|> WebDriverException
@@ -4048,8 +4038,8 @@ UnableToSetCookieException --|> WebDriverException
 UnexpectedAlertBehaviour --> UnexpectedAlertBehaviour
 UnexpectedTagNameException --|> WebDriverException
 UnhandledAlertException --|> WebDriverException
-UnixProcess ..|> OsProcess
 UnixProcess --> CircularOutputStream
+UnixProcess ..|> OsProcess
 UnreachableBrowserException --|> WebDriverException
 UnsupportedCommandException --|> WebDriverException
 UpAction --|> TouchAction
@@ -4060,33 +4050,33 @@ W3CHandshakeResponse --> InitialHandshakeResponse
 W3CHandshakeResponse ..|> HandshakeResponse
 W3CHttpCommandCodec --|> AbstractHttpCommandCodec
 W3CHttpResponseCodec --> WebDriverException
-W3CHttpResponseCodec --> HttpResponse
-W3CHttpResponseCodec --|> AbstractHttpResponseCodec
-W3CHttpResponseCodec --> ErrorCodes
 W3CHttpResponseCodec --> JsonToBeanConverter
+W3CHttpResponseCodec --> HttpResponse
 W3CHttpResponseCodec --> Response
+W3CHttpResponseCodec --> ErrorCodes
+W3CHttpResponseCodec --|> AbstractHttpResponseCodec
 W3CPlatformNameNormaliser ..|> CapabilityTransform
+WebDriver --|> SearchContext
 WebDriver --> By
 WebDriver --> WebElement
-WebDriver --|> SearchContext
+WebDriverEventListener --> WebDriver
 WebDriverEventListener --> By
 WebDriverEventListener --> WebElement
-WebDriverEventListener --> WebDriver
 WebDriverWait --> WebDriver
-WebElement --> WebElement
-WebElement --> Dimension
-WebElement --> Rectangle
 WebElement --> By
+WebElement --> Dimension
+WebElement --> WebElement
+WebElement --|> SearchContext
 WebElement --> Point
-WebElement --|> TakesScreenshot
+WebElement --> Rectangle
 WebStorage --> LocalStorage
 WebStorage --> SessionStorage
 WrapsDriver --> WebDriver
 WrapsElement --> WebElement
-XpiDriverService --> XpiDriverService
 XpiDriverService --> Extension
-XpiDriverService --> Lock
-XpiDriverService --> FirefoxProfile
+XpiDriverService --> XpiDriverService
 XpiDriverService --|> DriverService
 XpiDriverService --> FirefoxBinary
+XpiDriverService --> FirefoxProfile
+XpiDriverService --> Lock
 @enduml

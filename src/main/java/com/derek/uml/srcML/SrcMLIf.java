@@ -24,6 +24,8 @@
  */
 package com.derek.uml.srcML;
 
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.MutableGraph;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -37,15 +39,23 @@ public class SrcMLIf extends SrcMLNode{
     private SrcMLThen then;
     private SrcMLElse else1;
     private SrcMLIf elseIf;
+    private MutableGraph<SrcMLNode> conditionPath;
+    private MutableGraph<SrcMLNode> truePath;
+    private MutableGraph<SrcMLNode> falsePath;
 
     public SrcMLIf(Element ifEle) {
         super(ifEle);
     }
     protected void parse(){
         condition = parseCondition();
+        conditionPath = buildCallTree(this, condition.getExpression());
         then = parseThen();
+        truePath = buildCallTree(this, then.getExpression());
         else1 = parseElse();
+        falsePath = buildCallTree(this, else1.getExpression());
+        //don't know if I need to do anything here.
         elseIf = parseElseIf();
     }
+
 
 }

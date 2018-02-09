@@ -37,10 +37,12 @@ import java.util.List;
 public class UMLGenerator {
     private List<SrcMLBlock> rootBlocks;
     private UMLClassDiagram umlClassDiagram;
+    private UMLSequenceDiagram umlSequenceDiagram;
 
     public UMLGenerator(List<SrcMLBlock> rootBlocks){
         this.rootBlocks = rootBlocks;
         umlClassDiagram = new UMLClassDiagram();
+        umlSequenceDiagram = new UMLSequenceDiagram();
 
         buildStructuralUML();
         buildBehavioralUML();
@@ -56,13 +58,13 @@ public class UMLGenerator {
     }
 
     private void buildMessages(){
-        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
 
-        }
     }
 
     private void buildLifelines(){
+        for (UMLLifeline umlLifeline : umlSequenceDiagram.getSequenceDiagram().nodes()){
 
+        }
     }
 
     private void buildStructuralUML(){
@@ -116,11 +118,12 @@ public class UMLGenerator {
     }
     private List<UMLClassifier> findExtendsParentsObjs(UMLClassifier umlClassifier){
         List<UMLClassifier> parents = new ArrayList<>();
-        for (String parent : umlClassifier.getExtendsParents()){
+        for (String parent : umlClassifier.getExtendsParentsString()){
             for (UMLClassifier potentialParent : umlClassDiagram.getClassDiagram().nodes()){
                 if (parent.equals(potentialParent.getName())){
                     //found it!
                     parents.add(potentialParent);
+                    umlClassifier.addExtendsParents(potentialParent);
                 }
             }
         }
@@ -128,11 +131,12 @@ public class UMLGenerator {
     }
     private List<UMLClassifier> findImplementsParentsObjs(UMLClassifier umlClassifier){
         List<UMLClassifier> parents = new ArrayList<>();
-        for (String parent : umlClassifier.getImplementsParents()) {
+        for (String parent : umlClassifier.getImplementsParentsString()) {
             for (UMLClassifier potentialParent : umlClassDiagram.getClassDiagram().nodes()) {
                 if (parent.equals(potentialParent.getName())) {
                     //found it!
                     parents.add(potentialParent);
+                    umlClassifier.addImplementsParents(potentialParent);
                 }
             }
         }
@@ -157,6 +161,7 @@ public class UMLGenerator {
             for (UMLClassifier nonProjectRelationship : nonProjectRelationships){
                 //in the future if I want to implement associations to non-project types, use the code below to find non-project types
                 //and then incrementally implmeent the missing ones.
+                //I don't think I care about this though...
                 //System.out.println("non project type: " + type);
             }
         }
