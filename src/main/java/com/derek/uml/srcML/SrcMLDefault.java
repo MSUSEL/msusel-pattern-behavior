@@ -29,7 +29,7 @@ import org.w3c.dom.Element;
 
 @Getter
 public class SrcMLDefault extends SrcMLNode{
-    //will likely not have to use this class
+    //will likely not have to use this class - i might actually, because of java interface default.
 
     public SrcMLDefault(Element defaultEle){
         super(defaultEle);

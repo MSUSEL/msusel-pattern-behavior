@@ -37,35 +37,18 @@ import java.util.List;
 public class UMLGenerator {
     private List<SrcMLBlock> rootBlocks;
     private UMLClassDiagram umlClassDiagram;
-    private UMLSequenceDiagram umlSequenceDiagram;
 
     public UMLGenerator(List<SrcMLBlock> rootBlocks){
         this.rootBlocks = rootBlocks;
         umlClassDiagram = new UMLClassDiagram();
-        umlSequenceDiagram = new UMLSequenceDiagram();
 
         buildStructuralUML();
-        buildBehavioralUML();
 
         PlantUMLTransformer pltTransformer = new PlantUMLTransformer(umlClassDiagram);
         //used to print plantuml
         pltTransformer.generateClassDiagram();
     }
 
-    private void buildBehavioralUML(){
-        buildLifelines();
-        buildMessages();
-    }
-
-    private void buildMessages(){
-
-    }
-
-    private void buildLifelines(){
-        for (UMLLifeline umlLifeline : umlSequenceDiagram.getSequenceDiagram().nodes()){
-
-        }
-    }
 
     private void buildStructuralUML(){
         buildClasses();
