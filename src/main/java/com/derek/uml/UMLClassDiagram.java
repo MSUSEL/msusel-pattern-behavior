@@ -30,6 +30,7 @@ import com.google.common.graph.ValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
 import javafx.util.Pair;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.management.relation.Relation;
 import java.util.List;
@@ -41,6 +42,8 @@ public class UMLClassDiagram {
     //while it is true that UML can do ternary relationships, which would be represented as e = <v1,v2,v3>,
     //I assume this wont happen, and if it does I will improvise, adapt, overcome
     private MutableValueGraph<UMLClassifier, Relationship> classDiagram;
+    @Setter
+    private PackageTree packageTree;
 
     public UMLClassDiagram(){
         classDiagram = ValueGraphBuilder.directed().allowsSelfLoops(true).build();
@@ -51,7 +54,7 @@ public class UMLClassDiagram {
     }
 
     //add class without edges; should be used for testing primarily.
-    public void addClassToDiagram(UMLClassifier umlClass){
+    public void addClassToDiagram(UMLClassifier umlClass) {
         classDiagram.addNode(umlClass);
     }
 

@@ -224,6 +224,10 @@ public abstract class SrcMLNode {
         List<SrcMLNode> srcMLNodes = getSameNameElements("then");
         return srcMLNodes.isEmpty() ? null : (SrcMLThen)srcMLNodes.get(0);
     }
+    protected SrcMLElse parseElse(){
+        List<SrcMLNode> srcMLNodes = getSameNameElements("else");
+        return srcMLNodes.isEmpty() ? null : (SrcMLElse)srcMLNodes.get(0);
+    }
     protected SrcMLCondition parseCondition(){
         List<SrcMLNode> srcMLNodes = getSameNameElements("condition");
         return srcMLNodes.isEmpty() ? null : (SrcMLCondition)srcMLNodes.get(0);
@@ -268,9 +272,6 @@ public abstract class SrcMLNode {
             nodes.add((SrcMLDecl)node);
         }
         return nodes;
-    }
-    protected SrcMLElse parseElse(){
-        return parseElses().isEmpty() ? null : parseElses().get(0);
     }
     protected List<SrcMLIf> parseElseIfs(){
         List<SrcMLIf> nodes = new ArrayList<>();
@@ -404,19 +405,21 @@ public abstract class SrcMLNode {
     }
 
     private void fillCallTree(MutableGraph<SrcMLNode> callTree, SrcMLNode parent, SrcMLExpression childNode){
-        List<SrcMLCall> calls = childNode.getCalls();
-        for (SrcMLCall call : calls) {
-            if (callTree.nodes().size() == 0){
-                //first time through forest, add a new root as a caller..
-                parent = call;
-                callTree.addNode(parent);
-            }else{
-                //we already have a parent, add the call as a child of the parent. this will be repeated for each call in the expr.
-                callTree.putEdge(parent, call);
-            }
-            //regardless, fill the rest of the forest with edges for each argument.
-            for (SrcMLArgument argument : call.getArgumentList().getArguments()) {
-                fillCallTree(callTree, call, argument.getExpression());
+        if (childNode != null) {
+            List<SrcMLCall> calls = childNode.getCalls();
+            for (SrcMLCall call : calls) {
+                if (callTree.nodes().size() == 0) {
+                    //first time through forest, add a new root as a caller..
+                    parent = call;
+                    callTree.addNode(parent);
+                } else {
+                    //we already have a parent, add the call as a child of the parent. this will be repeated for each call in the expr.
+                    callTree.putEdge(parent, call);
+                }
+                //regardless, fill the rest of the forest with edges for each argument.
+                for (SrcMLArgument argument : call.getArgumentList().getArguments()) {
+                    fillCallTree(callTree, call, argument.getExpression());
+                }
             }
         }
     }

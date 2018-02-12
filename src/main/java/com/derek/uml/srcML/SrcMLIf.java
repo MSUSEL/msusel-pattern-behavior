@@ -48,14 +48,24 @@ public class SrcMLIf extends SrcMLNode{
     }
     protected void parse(){
         condition = parseCondition();
-        conditionPath = buildCallTree(this, condition.getExpression());
+        if (condition != null) {
+            conditionPath = buildCallTree(this, condition.getExpression());
+        }
         then = parseThen();
-        truePath = buildCallTree(this, then.getExpression());
+        if (then != null) {
+            truePath = buildCallTree(this, then.getExpression());
+        }
         else1 = parseElse();
-        falsePath = buildCallTree(this, else1.getExpression());
+        if (else1 != null) {
+            //this is a special case because an if statment can be if{} with no else. or it can have an else.
+            falsePath = buildCallTree(this, else1.getExpression());
+        }else{
+            falsePath = buildCallTree(this, null);
+        }
         //don't know if I need to do anything here.
         elseIf = parseElseIf();
     }
+
 
 
 }

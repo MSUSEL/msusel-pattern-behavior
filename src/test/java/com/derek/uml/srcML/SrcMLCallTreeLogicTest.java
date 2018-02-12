@@ -31,7 +31,7 @@ public class SrcMLCallTreeLogicTest extends SrcMLTest {
         assertEquals(block.getExpr_stmts().size(), 1);
         assertEquals(block.getExpr_stmts().get(0).getExpressions().size(), 1);
         SrcMLExpression parentExpression = block.getExpr_stmts().get(0).getExpressions().get(0);
-        MutableGraph<SrcMLNode> callTree = parentExpression.getCallTree();
+        MutableGraph<SrcMLNode> callTree = block.getExpr_stmts().get(0).getExpressionPaths().get(0);
         SrcMLCall command = parentExpression.getCalls().get(0);
         SrcMLCall getExtraEnv = command.getArgumentList().getArguments().get(0).getExpression().getCalls().get(0);
         SrcMLCall get = command.getArgumentList().getArguments().get(0).getExpression().getCalls().get(1);
@@ -48,7 +48,7 @@ public class SrcMLCallTreeLogicTest extends SrcMLTest {
         assertEquals(block2.getDeclStmts().get(0).getDecls().size(), 1);
         assertEquals(block2.getDeclStmts().get(0).getDecls().get(0).getInit().getExpressions().size(), 1);
         SrcMLExpression parentExpression = block2.getDeclStmts().get(0).getDecls().get(0).getInit().getExpressions().get(0);
-        MutableGraph<SrcMLNode> callTree = parentExpression.getCallTree();
+        MutableGraph<SrcMLNode> callTree = block2.getDeclStmts().get(0).getDecls().get(0).getInit().getExpressionPaths().get(0);
         //assertEquals(callTree.toString(), "");
         SrcMLCall firefoxBinary = parentExpression.getCalls().get(0);
         SrcMLCall getName = parentExpression.getCalls().get(1);

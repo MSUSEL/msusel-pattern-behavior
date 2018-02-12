@@ -25,8 +25,7 @@
 package com.derek.uml;
 
 import lombok.Getter;
-
-import java.util.List;
+import lombok.Setter;
 
 @Getter
 public class UMLAttribute {
@@ -35,20 +34,22 @@ public class UMLAttribute {
 
     //keeping as a String and not an enum because the datatype this takes on could be a class, and I want to
     //dynamically build them and not have static via an enum.
-    private String dataType;
+    private String stringDataType;
     private Visibility visibility;
-    private UMLMessage callList;
     private boolean isStatic;
     private boolean isFinal;
 
-    public UMLAttribute(String name, String dataType, Visibility visibility) {
+    //type will be set after the first passthrough.
+    @Setter
+    private UMLClassifier type;
+
+    public UMLAttribute(String name, String stringDataType, Visibility visibility) {
         this.name = name;
-        this.dataType = dataType;
+        this.stringDataType = stringDataType;
         this.visibility = visibility;
     }
-    public UMLAttribute(String name, String dataType, UMLMessage callList) {
+    public UMLAttribute(String name, String stringDataType) {
         this.name = name;
-        this.dataType = dataType;
-        this.callList = callList;
+        this.stringDataType = stringDataType;
     }
 }

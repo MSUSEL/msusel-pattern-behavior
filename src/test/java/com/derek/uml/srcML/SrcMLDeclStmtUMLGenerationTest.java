@@ -30,7 +30,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Element;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -60,7 +59,7 @@ public class SrcMLDeclStmtUMLGenerationTest extends SrcMLTest{
     public void verifyDeclStmt1(){
         List<UMLAttribute> atts = UMLGenerationUtils.getUMLAttributes(srcMLBlock);
         assertEquals(atts.size(), 1);
-        assertEquals(atts.get(0).getDataType(), "String");
+        assertEquals(atts.get(0).getStringDataType(), "String");
         assertEquals(atts.get(0).getName(), "HOST");
         //test atts
     }

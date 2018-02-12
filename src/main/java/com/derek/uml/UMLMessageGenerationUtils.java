@@ -24,6 +24,7 @@ public class UMLMessageGenerationUtils {
                     break;
             }
         }
+        return null;
     }
 
     private static MutableGraph<UMLMessage> getIfMessages(SrcMLIf node){
@@ -38,10 +39,8 @@ public class UMLMessageGenerationUtils {
     }
 
     private static MutableGraph<UMLMessage> convertNodeTreeToMessageTree(MutableGraph<SrcMLNode> callTree){
-        UMLClassifier from = getFromClassifier(callTree)
-
-
-
+        //UMLClassifier from = getFromClassifier(callTree)
+        return null;
     }
 
     //should have same root nodes. -- need to test this

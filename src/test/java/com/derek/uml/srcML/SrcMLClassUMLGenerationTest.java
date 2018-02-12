@@ -63,7 +63,7 @@ public class SrcMLClassUMLGenerationTest extends SrcMLTest{
         assertEquals(umlClass.getOperations().size(), 2);
         assertEquals(umlClass.getOperations().get(0).getName(), "buildBy");
         assertEquals(umlClass.getOperations().get(0).getParameters().size(), 0);
-        assertEquals(umlClass.getOperations().get(0).getReturnDataType(), "By");
+        assertEquals(umlClass.getOperations().get(0).getStringReturnDataType(), "By");
     }
     @Test
     public void verifyClass2(){

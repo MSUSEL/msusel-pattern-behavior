@@ -70,7 +70,7 @@ public class UMLInterface extends UMLClassifier {
         for (UMLOperation operation : this.getOperations()){
             output.append("\t" + operation.getName() + "(");
             output.append(operation.buildParamsForPlantUMLDiagram());
-            output.append(") : " + operation.getReturnDataType()  + "\n");
+            output.append(") : " + operation.getStringReturnDataType()  + "\n");
         }
         output.append("}\n");
         return output.toString();

@@ -29,6 +29,7 @@ import com.derek.uml.srcML.SrcMLBlock;
 import com.derek.uml.srcML.SrcMLClass;
 import com.derek.uml.srcML.SrcMLEnum;
 import com.derek.uml.srcML.SrcMLInterface;
+import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
@@ -42,16 +43,65 @@ public class UMLGenerator {
         this.rootBlocks = rootBlocks;
         umlClassDiagram = new UMLClassDiagram();
 
-        buildStructuralUML();
+        //pass 1 is finding all classes/ops/attributes
+        pass1();
+
+        pass2();
+        //pass 2 is connecting all classes/ops/attributes with inter-project types (building package tree)
+        //pass2();
+        //apss 3 is building relationship types.
+        //pass3();
 
         PlantUMLTransformer pltTransformer = new PlantUMLTransformer(umlClassDiagram);
         //used to print plantuml
         pltTransformer.generateClassDiagram();
     }
 
-
     private void buildStructuralUML(){
+        buildRelationships();
+    }
+
+    private void pass1(){
         buildClasses();
+    }
+    private void pass2(){
+        connectPackageStructure();
+        printPackage();
+    }
+    private void printPackage(){
+        PackageTree packageTree = umlClassDiagram.getPackageTree();
+        packageTree.printInOrder(packageTree.getRoot());
+    }
+
+    private void connectPackageStructure(){
+        PackageTree tree = null;
+        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
+            String prevName = "";
+            if (tree == null){
+                //first time through
+                tree = new PackageTree();
+            }else{
+                prevName = umlClassifier.getResidingPackage().get(0);
+            }
+            for (int i = 0; i < umlClassifier.getResidingPackage().size(); i++){
+                String packageTreeString = umlClassifier.getResidingPackage().get(i);
+                //ordered iteration through package, ex: com.org.derek.foo
+                if (i == umlClassifier.getResidingPackage().size()-1) {
+                    //last package option, so i care about the classifier.
+                    tree.addNode(packageTreeString, prevName, umlClassifier);
+                }else{
+                    tree.addNode(packageTreeString, prevName, null);
+                }
+                prevName = packageTreeString;
+            }
+        }
+        umlClassDiagram.setPackageTree(tree);
+    }
+
+
+
+
+    private void pass3(){
         buildRelationships();
     }
 
@@ -74,16 +124,30 @@ public class UMLGenerator {
         }
     }
 
+    private void connectTypes(){
+        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
+            for (UMLAttribute umlAttribute : umlClassifier.getAttributes()){
+                umlAttribute.setType(getTypeFromString(umlClassifier, umlAttribute.getStringDataType()));
+            }
+        }
+    }
+
+    private UMLClassifier getTypeFromString(UMLClassifier owningObj, String s){
+        owningObj.getResidingPackage();
+        return null;
+
+    }
+
     private void buildRelationships(){
         for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
             for (UMLAttribute umlAttribute : umlClassifier.getAttributes()){
                 //standard attribute relationships
-                String type = umlAttribute.getDataType();
+                String type = umlAttribute.getStringDataType();
                 placeAssociation(umlClassifier, type);
             }
             for (UMLOperation operation : umlClassifier.getOperations()){
                 //standard operation relationships
-                String returnType = operation.getReturnDataType();
+                String returnType = operation.getStringReturnDataType();
                 placeAssociation(umlClassifier, returnType);
                 for (Pair<String, String> param : operation.getParameters()){
                     //params in operation
@@ -132,6 +196,11 @@ public class UMLGenerator {
      * @param type
      */
     private void placeAssociation(UMLClassifier umlClassifier, String type){
+        //this logic is wrong.. or at least not entirely correct.
+        //I need to do multiple ordered checks to make sure the correct type is found...
+        //start with files at this package, then move up, etc.
+        //once type is not found in entirety of project files, check libs.
+
         if (isPrimitiveType(type)){
             //dont' care if this is the case.
         } else {

@@ -18,7 +18,7 @@ public class UMLBehaviorGenerator {
 
     private void buildSequenceDiagram(UMLClassifier scope){
         for (UMLClassifier umlClassifier : classDiagram.nodes()){
-            if (scope.equals())
+            //
         }
     }
 }

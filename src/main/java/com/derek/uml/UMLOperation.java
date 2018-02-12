@@ -26,6 +26,7 @@ package com.derek.uml;
 
 import javafx.util.Pair;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -37,14 +38,18 @@ public class UMLOperation {
     private List<Pair<String,String>> parameters;
 
     //datatype of return value, empty string if void.
-    private String returnDataType;
+    private String stringReturnDataType;
     private Visibility visibility;
     private boolean isStatic;
 
-    public UMLOperation(String name, List<Pair<String, String>> parameters, String returnDataType, Visibility visibility) {
+    //type will be set after the first passthrough.
+    @Setter
+    private UMLClassifier type;
+
+    public UMLOperation(String name, List<Pair<String, String>> parameters, String stringReturnDataType, Visibility visibility) {
         this.name = name;
         this.parameters = parameters;
-        this.returnDataType = returnDataType;
+        this.stringReturnDataType = stringReturnDataType;
         this.visibility = visibility;
     }
 
@@ -52,12 +57,12 @@ public class UMLOperation {
      * Constructor without method visibility
      * @param name function name
      * @param parameters list of pairs of strings for function's params
-     * @param returnDataType function return data type
+     * @param stringReturnDataType function return data type
      */
-    public UMLOperation(String name, List<Pair<String, String>> parameters, String returnDataType) {
+    public UMLOperation(String name, List<Pair<String, String>> parameters, String stringReturnDataType) {
         this.name = name;
         this.parameters = parameters;
-        this.returnDataType = returnDataType;
+        this.stringReturnDataType = stringReturnDataType;
     }
 
     public String buildParamsForPlantUMLDiagram(){

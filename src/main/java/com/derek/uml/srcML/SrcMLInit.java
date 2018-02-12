@@ -24,6 +24,7 @@
  */
 package com.derek.uml.srcML;
 
+import com.google.common.graph.MutableGraph;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -36,6 +37,7 @@ public class SrcMLInit extends SrcMLNode{
     //there are a few different types of init, but they generally have the form: (decl|expr)(","(decl|expr))* or some degree
     private List<SrcMLDecl> declarations;
     private List<SrcMLExpression> expressions;
+    private List<MutableGraph<SrcMLNode>> expressionPaths;
 
     public SrcMLInit(Element initEle) {
         super(initEle);
@@ -43,6 +45,10 @@ public class SrcMLInit extends SrcMLNode{
     protected void parse(){
         declarations = parseDecls();
         expressions = parseExpressions();
+        expressionPaths = new ArrayList<>();
+        for (SrcMLExpression srcMLExpression : expressions){
+            expressionPaths.add(buildCallTree(this, srcMLExpression));
+        }
     }
 
 }

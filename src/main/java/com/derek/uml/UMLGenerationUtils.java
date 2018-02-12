@@ -84,13 +84,12 @@ public class UMLGenerationUtils {
             List<SrcMLDecl> decls = block.getDecls();
             for (SrcMLDecl decl : decls) {
                 //in this case the type is the same as the name... I think.. lol
-                UMLMessage initMessage = null;
                 if (decl.getInit() != null) {
                     //init statement
                     //initMessage = UMLMessageGenerationUtils.getUMLMessage(decl.getInit().getExpressions());
 
                 }
-                attributes.add(new UMLAttribute(decl.getName(), decl.getName(), initMessage));
+                attributes.add(new UMLAttribute(decl.getName(), decl.getName()));
             }
         }
         //standard case
@@ -102,12 +101,11 @@ public class UMLGenerationUtils {
                 for (SrcMLDecl decl : declStmt.getDecls()) {
                     //multiple decl would happen with something like: int a,b,c;
                     //otherwise each decl has 1 name/type/etc..
-                    UMLMessage initMessage = null;
                     if (decl.getInit() != null) {
                         //init statement
                         //initMessage = UMLMessageGenerationUtils.getUMLMessage(decl.getInit().getExpressions());
                     }
-                    attributes.add(new UMLAttribute(decl.getName(), decl.getType().getName(), initMessage));
+                    attributes.add(new UMLAttribute(decl.getName(), decl.getType().getName()));
                 }
             }
         }
@@ -204,7 +202,12 @@ public class UMLGenerationUtils {
             //should only ever be 1 residing package.
             residingPackage = srcMLPackage.getNames();
         }
-        return residingPackage;
+        String fullName[] = residingPackage.get(0).split("\\.");
+        List<String> packageAsList = new ArrayList<>();
+        for (int i = 0; i < fullName.length; i++){
+            packageAsList.add(i, fullName[i]);
+        }
+        return packageAsList;
     }
 
     /**
