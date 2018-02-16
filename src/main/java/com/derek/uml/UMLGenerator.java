@@ -24,12 +24,12 @@
  */
 package com.derek.uml;
 
+import com.derek.model.ExternalPartyDataTypeSignature;
 import com.derek.uml.plantUml.PlantUMLTransformer;
 import com.derek.uml.srcML.SrcMLBlock;
 import com.derek.uml.srcML.SrcMLClass;
 import com.derek.uml.srcML.SrcMLEnum;
 import com.derek.uml.srcML.SrcMLInterface;
-import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
@@ -38,8 +38,11 @@ import java.util.List;
 public class UMLGenerator {
     private List<SrcMLBlock> rootBlocks;
     private UMLClassDiagram umlClassDiagram;
+    private ExternalPartyDataTypeSignature languageTypes;
+    private List<ExternalPartyDataTypeSignature> thirdPartyTypes;
 
     public UMLGenerator(List<SrcMLBlock> rootBlocks){
+
         this.rootBlocks = rootBlocks;
         umlClassDiagram = new UMLClassDiagram();
 
@@ -66,36 +69,57 @@ public class UMLGenerator {
     }
     private void pass2(){
         connectPackageStructure();
-        printPackage();
-    }
-    private void printPackage(){
-        PackageTree packageTree = umlClassDiagram.getPackageTree();
-        packageTree.printInOrder(packageTree.getRoot());
+        //if I wanted to connect 3rd party library signatures, I would add a method here that does that.
     }
 
     private void connectPackageStructure(){
-        PackageTree tree = null;
+        PackageTree tree = new PackageTree();
         for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
-            String prevName = "";
-            if (tree == null){
-                //first time through
-                tree = new PackageTree();
-            }else{
-                prevName = umlClassifier.getResidingPackage().get(0);
-            }
-            for (int i = 0; i < umlClassifier.getResidingPackage().size(); i++){
-                String packageTreeString = umlClassifier.getResidingPackage().get(i);
-                //ordered iteration through package, ex: com.org.derek.foo
-                if (i == umlClassifier.getResidingPackage().size()-1) {
-                    //last package option, so i care about the classifier.
-                    tree.addNode(packageTreeString, prevName, umlClassifier);
-                }else{
-                    tree.addNode(packageTreeString, prevName, null);
-                }
-                prevName = packageTreeString;
-            }
+            tree.addEntirePackage(umlClassifier);
         }
         umlClassDiagram.setPackageTree(tree);
+
+        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
+            for (UMLAttribute umlAttribute : umlClassifier.getAttributes()){
+                if (interProjectDataType(umlAttribute.getStringDataType())){
+                    System.out.println(umlAttribute.getStringDataType() + " is a project type");
+                }else if (languageProjectDataType(umlAttribute.getStringDataType())){
+                    System.out.println(umlAttribute.getStringDataType() + " is a language type");
+
+                }else if (thirdPartyDataType(umlAttribute.getStringDataType())){
+
+                }
+            }
+        }
+    }
+
+    private boolean interProjectDataType(String s){
+        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
+            if (s.equals(umlClassifier.getName())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean languageProjectDataType(String s){
+        //language types are interesting because these are any types that can be used WITHOUT importing them.
+        //as an example, String is a type in this category. Any java.lang type is in here.
+        //things like Scanner or List are NOT included here.
+        try{
+            if (languageTypes == null) {
+                //if this is the first time parsing langaugeTypes, load the file and parse it
+                languageTypes = new ExternalPartyDataTypeSignature("resources/javaTypes.txt");
+            }
+            for (String languageType : languageTypes.getStringDataTypes()){
+                if (languageType.equals(s)){
+                    return true;
+                }
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return false;
     }
 
 
@@ -122,20 +146,6 @@ public class UMLGenerator {
                 umlClassDiagram.addClassToDiagram(UMLGenerationUtils.getUMLEnum(srcMLEnum, residingPackage, imports));
             }
         }
-    }
-
-    private void connectTypes(){
-        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
-            for (UMLAttribute umlAttribute : umlClassifier.getAttributes()){
-                umlAttribute.setType(getTypeFromString(umlClassifier, umlAttribute.getStringDataType()));
-            }
-        }
-    }
-
-    private UMLClassifier getTypeFromString(UMLClassifier owningObj, String s){
-        owningObj.getResidingPackage();
-        return null;
-
     }
 
     private void buildRelationships(){
