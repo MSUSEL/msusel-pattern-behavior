@@ -24,6 +24,7 @@
  */
 package com.derek.uml.plantUml;
 
+import com.derek.Main;
 import com.derek.uml.*;
 import com.google.common.graph.EndpointPair;
 import javafx.util.Pair;
@@ -75,7 +76,7 @@ public class PlantUMLTransformer {
             if (!mainDirectory.exists()){
                 Files.createDirectory(Paths.get("plantUmlOutput\\"));
             }
-            File fout = new File("plantUmlOutput\\plantUml.puml");
+            File fout = new File("plantUmlOutput\\plantUml" + Main.currentVersion + ".puml");
             PrintWriter pw = new PrintWriter(fout);
             pw.print(output);
             pw.close();

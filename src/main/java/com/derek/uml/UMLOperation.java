@@ -35,20 +35,29 @@ public class UMLOperation {
 
     private String name;
     //list of pairs, where each pair corresponds to a datatype and a name.
-    private List<Pair<String,String>> parameters;
+    private List<Pair<String,String>> stringParameters;
+
+    //list of parameters referencing actual uml classifier objects.
+    //at the time of writing this code I am not parsing ALL umlclassifiers, the ones not being parsed are specifically third party libs
+    //and generics. Because of this there may be null elements in teh list.
+    @Setter
+    private List<UMLClassifier> parameters;
+
 
     //datatype of return value, empty string if void.
     private String stringReturnDataType;
     private Visibility visibility;
     private boolean isStatic;
 
+    private CallTree callTree;
+
     //type will be set after the first passthrough.
     @Setter
     private UMLClassifier type;
 
-    public UMLOperation(String name, List<Pair<String, String>> parameters, String stringReturnDataType, Visibility visibility) {
+    public UMLOperation(String name, List<Pair<String, String>> stringParameters, String stringReturnDataType, Visibility visibility) {
         this.name = name;
-        this.parameters = parameters;
+        this.stringParameters = stringParameters;
         this.stringReturnDataType = stringReturnDataType;
         this.visibility = visibility;
     }
@@ -56,21 +65,22 @@ public class UMLOperation {
     /***
      * Constructor without method visibility
      * @param name function name
-     * @param parameters list of pairs of strings for function's params
+     * @param stringParameters list of pairs of strings for function's params
      * @param stringReturnDataType function return data type
      */
-    public UMLOperation(String name, List<Pair<String, String>> parameters, String stringReturnDataType) {
+    public UMLOperation(String name, List<Pair<String, String>> stringParameters, String stringReturnDataType, CallTree callTree) {
         this.name = name;
-        this.parameters = parameters;
+        this.stringParameters = stringParameters;
         this.stringReturnDataType = stringReturnDataType;
+        this.callTree = callTree;
     }
 
     public String buildParamsForPlantUMLDiagram(){
         StringBuilder s = new StringBuilder();
         //we have params
-        for (int i = 0; i < parameters.size(); i++){
-            Pair<String, String> param = parameters.get(i);
-            if (i == parameters.size() - 1){
+        for (int i = 0; i < stringParameters.size(); i++){
+            Pair<String, String> param = stringParameters.get(i);
+            if (i == stringParameters.size() - 1){
                 if (param.getKey() == ""){
                     //no params - this will happen during the first iteration of the loop and only if there are no params.
                     return "";

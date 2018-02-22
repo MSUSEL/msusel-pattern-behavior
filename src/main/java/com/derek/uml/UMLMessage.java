@@ -44,4 +44,8 @@ public class UMLMessage {
         this.isRequest = isRequest;
     }
 
+    public UMLMessage(MutableGraph<String> callTree){
+        this.callTree = callTree;
+    }
+
 }

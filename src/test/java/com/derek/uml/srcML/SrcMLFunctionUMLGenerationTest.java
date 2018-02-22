@@ -60,7 +60,7 @@ public class SrcMLFunctionUMLGenerationTest extends SrcMLTest{
         UMLOperation op = UMLGenerationUtils.getUMLOperation(srcMLFunction);
         assertEquals(op.getName(), "getDataModel");
         assertEquals(op.getStringReturnDataType(), "int");
-        assertEquals(op.getParameters().size(), 0); //empty params
+        assertEquals(op.getStringParameters().size(), 0); //empty params
     }
 
     @Test
@@ -68,9 +68,9 @@ public class SrcMLFunctionUMLGenerationTest extends SrcMLTest{
         UMLOperation op = UMLGenerationUtils.getUMLOperation(srcMLFunction2);
         assertEquals(op.getName(), "or");
         assertEquals(op.getStringReturnDataType(), "ExpectedCondition<Boolean>");
-        assertEquals(op.getParameters().size(), 1); //empty params
-        assertEquals(op.getParameters().get(0).getKey(), "ExpectedCondition<?>");
-        assertEquals(op.getParameters().get(0).getValue(), "conditions");
+        assertEquals(op.getStringParameters().size(), 1); //empty params
+        assertEquals(op.getStringParameters().get(0).getKey(), "ExpectedCondition<?>");
+        assertEquals(op.getStringParameters().get(0).getValue(), "conditions");
     }
 
     @Test
@@ -78,9 +78,9 @@ public class SrcMLFunctionUMLGenerationTest extends SrcMLTest{
         UMLOperation op = UMLGenerationUtils.getUMLOperation(srcMLFunction3);
         assertEquals(op.getName(), "apply");
         assertEquals(op.getStringReturnDataType(), "Boolean");
-        assertEquals(op.getParameters().size(), 1); //empty params
-        assertEquals(op.getParameters().get(0).getKey(), "WebDriver");
-        assertEquals(op.getParameters().get(0).getValue(), "driver");
+        assertEquals(op.getStringParameters().size(), 1); //empty params
+        assertEquals(op.getStringParameters().get(0).getKey(), "WebDriver");
+        assertEquals(op.getStringParameters().get(0).getValue(), "driver");
     }
 
 

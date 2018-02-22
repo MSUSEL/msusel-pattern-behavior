@@ -49,5 +49,9 @@ public class SrcMLCall extends SrcMLNode{
         return name.getName();
     }
 
+    public String toString(){
+        return getName();
+    }
+
 
 }

@@ -45,6 +45,7 @@ public class Main {
     public static String projectLanguage;
     private static Map<SoftwareVersion, SrcMLRunner> runner;
     public static List<SoftwareVersion> projectVersions;
+    public static int currentVersion;
 
     public Main(){
 
@@ -70,6 +71,7 @@ public class Main {
         runner = new HashMap<>();
         for (SoftwareVersion version : projectVersions) {
             ///selenium/36-src/selenium-36/org
+            currentVersion = version.getVersionNum();
             String pwd = workingDirectory + version.getVersionNum() + interVersionKey + version.getVersionNum() + "/" + interProjectKey + "openqa/";
             runner.put(version, new SrcMLRunner(pwd, version.getVersionNum()));
             UMLGenerator umlGenerator = new UMLGenerator(runner.get(version).getRootBlocks());

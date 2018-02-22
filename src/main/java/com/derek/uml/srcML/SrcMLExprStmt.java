@@ -1,5 +1,6 @@
 package com.derek.uml.srcML;
 
+import com.derek.uml.CallTreeNode;
 import com.google.common.graph.MutableGraph;
 import lombok.Getter;
 import org.w3c.dom.Element;
@@ -13,7 +14,7 @@ public class SrcMLExprStmt extends SrcMLNode{
     private List<SrcMLExpression> expressions;
     private List<String> operators;
     //for random expressions...
-    private List<MutableGraph<SrcMLNode>> expressionPaths;
+    private List<CallTreeNode<SrcMLNode>> expressionPaths;
 
     public SrcMLExprStmt(Element exprStmtEle) {
         super(exprStmtEle);

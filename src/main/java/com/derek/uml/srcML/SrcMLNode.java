@@ -1,5 +1,7 @@
 package com.derek.uml.srcML;
 
+import com.derek.uml.CallTree;
+import com.derek.uml.CallTreeNode;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import lombok.Getter;
@@ -398,27 +400,22 @@ public abstract class SrcMLNode {
     protected abstract void parse();
 
 
-    protected MutableGraph<SrcMLNode> buildCallTree(SrcMLNode parent, SrcMLExpression expression){
-        MutableGraph<SrcMLNode> callTree = GraphBuilder.directed().allowsSelfLoops(false).build();
-        fillCallTree(callTree, parent, expression);
-        return callTree;
+    //tree is really just the root of the tree underneath.
+    protected CallTreeNode<SrcMLNode> buildCallTree(SrcMLNode parent, SrcMLExpression expression){
+        CallTreeNode<SrcMLNode> root = new CallTreeNode<>(parent);
+        fillCallTree(root, parent, expression);
+        return root;
     }
 
-    private void fillCallTree(MutableGraph<SrcMLNode> callTree, SrcMLNode parent, SrcMLExpression childNode){
+    private void fillCallTree(CallTreeNode<SrcMLNode> callTree, SrcMLNode parent, SrcMLExpression childNode) {
         if (childNode != null) {
             List<SrcMLCall> calls = childNode.getCalls();
             for (SrcMLCall call : calls) {
-                if (callTree.nodes().size() == 0) {
-                    //first time through forest, add a new root as a caller..
-                    parent = call;
-                    callTree.addNode(parent);
-                } else {
-                    //we already have a parent, add the call as a child of the parent. this will be repeated for each call in the expr.
-                    callTree.putEdge(parent, call);
-                }
+                CallTreeNode<SrcMLNode> nextChild = new CallTreeNode<>(call);
+                callTree.addChild(nextChild);
                 //regardless, fill the rest of the forest with edges for each argument.
                 for (SrcMLArgument argument : call.getArgumentList().getArguments()) {
-                    fillCallTree(callTree, call, argument.getExpression());
+                    fillCallTree(nextChild, call, argument.getExpression());
                 }
             }
         }

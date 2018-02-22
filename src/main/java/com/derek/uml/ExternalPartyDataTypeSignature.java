@@ -1,6 +1,7 @@
-package com.derek.model;
+package com.derek.uml;
 
 import com.derek.uml.PackageTree;
+import com.derek.uml.UMLClass;
 import com.derek.uml.UMLClassifier;
 import com.derek.uml.UMLInterface;
 import lombok.Getter;
@@ -14,23 +15,20 @@ import java.util.Scanner;
 public class ExternalPartyDataTypeSignature {
 
     private PackageTree packageTree;
-    private List<String> stringDataTypes;
     private List<UMLClassifier> dataTypes;
 
     public ExternalPartyDataTypeSignature(String file){
         //these files are stored externally for ease of use. So the constructor kicks off parse of that file, which will fill the attributes in this file.
         dataTypes = new ArrayList<>();
-        stringDataTypes = new ArrayList<>();
         parse(file);
     }
     private void parse(String file){
         try{
             Scanner in = new Scanner(new File(file));
+            String classifierTag = "";
             while (in.hasNext()) {
-                String classifierTag = "";
                 String line = in.nextLine();
                 List<String> residingPackage = new ArrayList<>();
-
                 switch(line){
                     case "<I>":
                         classifierTag = "interface";
@@ -51,14 +49,21 @@ public class ExternalPartyDataTypeSignature {
                         //every other case that isn't strictly a type classification
                         switch (classifierTag){
                             case "interface":
-                                //i need to implement this fully.. I might need to make use of javap to do this.
-                                dataTypes.add(new UMLInterface(line,residingPackage, null, null, null, null));
-
+                                //i (might) need to implement this fully.. I might need to make use of javap to do this.
+                                dataTypes.add(new UMLInterface(line, residingPackage, null, null, null, null));
+                                break;
+                            case "class":
+                            case "exception":
+                            case "error":
+                                dataTypes.add(new UMLClass(line, residingPackage, null, null, null, null, false,
+                                        null, null, "class"));
+                                break;
+                            case "enum":
+                                dataTypes.add(new UMLClass(line, residingPackage, null, null, null, null, false,
+                                        null, null, "enum"));
+                                break;
                         }
                 }
-
-
-                dataTypes.add(line);
             }
             in.close();
         }catch(Exception e){

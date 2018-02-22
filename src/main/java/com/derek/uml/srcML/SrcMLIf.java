@@ -24,6 +24,7 @@
  */
 package com.derek.uml.srcML;
 
+import com.derek.uml.CallTreeNode;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import lombok.Getter;
@@ -39,9 +40,9 @@ public class SrcMLIf extends SrcMLNode{
     private SrcMLThen then;
     private SrcMLElse else1;
     private SrcMLIf elseIf;
-    private MutableGraph<SrcMLNode> conditionPath;
-    private MutableGraph<SrcMLNode> truePath;
-    private MutableGraph<SrcMLNode> falsePath;
+    private CallTreeNode<SrcMLNode> conditionPath;
+    private CallTreeNode<SrcMLNode> truePath;
+    private CallTreeNode<SrcMLNode> falsePath;
 
     public SrcMLIf(Element ifEle) {
         super(ifEle);

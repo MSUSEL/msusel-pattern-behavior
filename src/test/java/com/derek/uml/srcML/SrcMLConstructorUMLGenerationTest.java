@@ -49,9 +49,9 @@ public class SrcMLConstructorUMLGenerationTest extends SrcMLTest{
     public void verifyConstructor(){
         UMLOperation op = UMLGenerationUtils.getUMLConstructor(srcMLConstructor);
         assertEquals(op.getName(), "UrlChecker");
-        assertEquals(op.getParameters().size(), 1);
-        assertEquals(op.getParameters().get(0).getKey(), "TimeLimiter");
-        assertEquals(op.getParameters().get(0).getValue(), "timeLimiter");
+        assertEquals(op.getStringParameters().size(), 1);
+        assertEquals(op.getStringParameters().get(0).getKey(), "TimeLimiter");
+        assertEquals(op.getStringParameters().get(0).getValue(), "timeLimiter");
     }
 
 

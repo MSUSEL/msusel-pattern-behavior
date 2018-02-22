@@ -25,8 +25,6 @@
 package com.derek.uml;
 
 import com.derek.uml.srcML.*;
-import com.google.common.graph.GraphBuilder;
-import com.google.common.graph.MutableGraph;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
@@ -134,8 +132,9 @@ public class UMLGenerationUtils {
         String name = srcMLFunction.getName();
         String returnType = srcMLFunction.getType().getName();
         //I need to include use dependencies in here eventually. -- though this might be better done after a behavioral runthrough
-
-        return new UMLOperation(name, params, returnType);
+        CallTree callTree = new CallTree(new CallTreeNode<>(srcMLFunction.getName()));
+        UMLMessageGenerationUtils.getCallTreeFromBlock(callTree.getRoot(), srcMLFunction.getBlock());
+        return new UMLOperation(name, params, returnType, callTree);
     }
 
     public static UMLOperation getUMLConstructor(SrcMLConstructor srcMLConstructor){
@@ -144,7 +143,9 @@ public class UMLGenerationUtils {
         //constructors don't have return types
         String returnType = "null";
         //I need to include use dependencies in here eventually. -- see comment above for umloperation
-        return new UMLOperation(name, params, returnType);
+        CallTree callTree = new CallTree(new CallTreeNode<>(srcMLConstructor.getName()));
+        UMLMessageGenerationUtils.getCallTreeFromBlock(callTree.getRoot(), srcMLConstructor.getBlock());
+        return new UMLOperation(name, params, returnType, callTree);
     }
 
     /**

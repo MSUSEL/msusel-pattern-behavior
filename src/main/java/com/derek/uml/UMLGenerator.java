@@ -24,7 +24,6 @@
  */
 package com.derek.uml;
 
-import com.derek.model.ExternalPartyDataTypeSignature;
 import com.derek.uml.plantUml.PlantUMLTransformer;
 import com.derek.uml.srcML.SrcMLBlock;
 import com.derek.uml.srcML.SrcMLClass;
@@ -53,23 +52,38 @@ public class UMLGenerator {
         //pass 2 is connecting all classes/ops/attributes with inter-project types (building package tree)
         //pass2();
         //apss 3 is building relationship types.
-        //pass3();
+        pass3();
+
+        //pass 4 is building sequence diagram stuff
+        pass4();
 
         PlantUMLTransformer pltTransformer = new PlantUMLTransformer(umlClassDiagram);
         //used to print plantuml
         pltTransformer.generateClassDiagram();
     }
 
-    private void buildStructuralUML(){
-        buildRelationships();
-    }
-
     private void pass1(){
         buildClasses();
     }
+
     private void pass2(){
         connectPackageStructure();
         //if I wanted to connect 3rd party library signatures, I would add a method here that does that.
+        //I have done this now. it is in the connectPackageStructure() and then inter calls. See the ExternalPArtyDataTypeSignature class.
+    }
+
+    private void pass3(){
+        buildRelationships();
+    }
+
+    private void pass4(){
+        //
+        buildSequenceDiagram(getScope("FirefoxBinary"));
+
+    }
+
+    private void buildSequenceDiagram(UMLClassifier scope){
+        UMLBehaviorGenerator behaviorGenerator = new UMLBehaviorGenerator(umlClassDiagram, scope);
     }
 
     private void connectPackageStructure(){
@@ -81,16 +95,59 @@ public class UMLGenerator {
 
         for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
             for (UMLAttribute umlAttribute : umlClassifier.getAttributes()){
-                if (interProjectDataType(umlAttribute.getStringDataType())){
-                    System.out.println(umlAttribute.getStringDataType() + " is a project type");
+                //generics are not being handled - though I don't knwo if they need to be.
+                //right nwo I am doing nothing for many of these.
+                if (interProjectDataType(umlAttribute.getStringDataType())) {
+                    //type within the project
+                    umlAttribute.setType(getTypeFromString(umlAttribute.getStringDataType()));
+                }else if (isPrimitiveType(umlAttribute.getStringDataType())){
+                    //do nothing, but I might in future
                 }else if (languageProjectDataType(umlAttribute.getStringDataType())){
-                    System.out.println(umlAttribute.getStringDataType() + " is a language type");
-
-                }else if (thirdPartyDataType(umlAttribute.getStringDataType())){
-
+                    //language type
+                    umlAttribute.setType(getTypeFromString(umlAttribute.getStringDataType()));
+                }else {
+                    //third party type, or generic I don't want to parse.
+                    //doing nothing with third party types right now.
                 }
             }
+            for (UMLOperation umlOperation : umlClassifier.getOperations()){
+                if (interProjectDataType(umlOperation.getStringReturnDataType())) {
+                    //type comes from project.
+                    umlOperation.setType(getTypeFromString(umlOperation.getStringReturnDataType()));
+                }else if (isPrimitiveType(umlOperation.getStringReturnDataType())){
+                    //do nothing, primitive type. I might later though.
+                }else if (languageProjectDataType(umlOperation.getStringReturnDataType())){
+                    //language type
+                    umlOperation.setType(getTypeFromString(umlOperation.getStringReturnDataType()));
+                }else {
+                    if (!umlOperation.getStringReturnDataType().equals("void")){
+                        //dont' care if the type is void.
+                        //third party type here.
+                    }
+                }
+                //set up params.
+                umlOperation.setParameters(getParamsFromString(umlOperation));
+            }
         }
+    }
+
+    private List<UMLClassifier> getParamsFromString(UMLOperation umlOperation){
+        List<UMLClassifier> params = new ArrayList<>();
+        for (Pair<String, String> stringParam : umlOperation.getStringParameters()){
+            UMLClassifier type = getTypeFromString(stringParam.getKey());
+            //type might be null here. Thats ok.
+            params.add(type);
+        }
+        return params;
+    }
+
+    private UMLClassifier getTypeFromString(String searcher){
+        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
+            if (searcher.equals(umlClassifier.getName())){
+                return umlClassifier;
+            }
+        }
+        return null;
     }
 
     private boolean interProjectDataType(String s){
@@ -111,8 +168,8 @@ public class UMLGenerator {
                 //if this is the first time parsing langaugeTypes, load the file and parse it
                 languageTypes = new ExternalPartyDataTypeSignature("resources/javaTypes.txt");
             }
-            for (String languageType : languageTypes.getStringDataTypes()){
-                if (languageType.equals(s)){
+            for (UMLClassifier umlClassifier : languageTypes.getDataTypes()){
+                if (umlClassifier.getName().equals(s)){
                     return true;
                 }
             }
@@ -120,13 +177,6 @@ public class UMLGenerator {
             e.printStackTrace();
         }
         return false;
-    }
-
-
-
-
-    private void pass3(){
-        buildRelationships();
     }
 
     private void buildClasses(){
@@ -152,14 +202,16 @@ public class UMLGenerator {
         for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
             for (UMLAttribute umlAttribute : umlClassifier.getAttributes()){
                 //standard attribute relationships
-                String type = umlAttribute.getStringDataType();
-                placeAssociation(umlClassifier, type);
+                if (umlAttribute.getType() != null){
+                    //will be null if the type is a third party type... or generic (at this point in tiem)
+                    umlClassDiagram.addRelationshipToDiagram(umlClassifier, umlAttribute.getType(), Relationship.ASSOCIATION);
+                }
             }
             for (UMLOperation operation : umlClassifier.getOperations()){
                 //standard operation relationships
                 String returnType = operation.getStringReturnDataType();
                 placeAssociation(umlClassifier, returnType);
-                for (Pair<String, String> param : operation.getParameters()){
+                for (Pair<String, String> param : operation.getStringParameters()){
                     //params in operation
                     String paramType = param.getKey();
                     placeAssociation(umlClassifier, paramType);
@@ -286,12 +338,19 @@ public class UMLGenerator {
             case "long":
             case "float":
             case "double":
-            case "String":
-                //while String technically isn't a primitive, I think its worth including because its so common and
-                //I don't want to pull from the String java class.
                 return true;
         }
         return false;
+    }
+
+    private UMLClassifier getScope(String searcher){
+        UMLClassifier toRet = null;
+        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
+            if (umlClassifier.getName().equals(searcher)){
+                return umlClassifier;
+            }
+        }
+        return toRet;
     }
 
 }
