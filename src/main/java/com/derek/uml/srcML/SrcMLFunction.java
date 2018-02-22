@@ -24,6 +24,7 @@
  */
 package com.derek.uml.srcML;
 
+import com.derek.uml.CallTreeNode;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -44,6 +45,8 @@ public class SrcMLFunction extends SrcMLNode{
     private SrcMLBlock block;
     private SrcMLDefault default1;
 
+    private CallTreeNode<SrcMLNode> callTree;
+
 
     public SrcMLFunction(Element functionEle){
         super(functionEle);
@@ -59,6 +62,8 @@ public class SrcMLFunction extends SrcMLNode{
         block = parseBlock();
         //default is the only difference between 'function' and 'function_Decl' elements.. default exists in function_decl only
         default1 = parseDefault();
+        callTree = new CallTreeNode<>(this, "function");
+        block.fillCallTree(callTree);
     }
     public String getName(){
         return name.getName();

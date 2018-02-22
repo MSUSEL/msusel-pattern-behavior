@@ -132,9 +132,7 @@ public class UMLGenerationUtils {
         String name = srcMLFunction.getName();
         String returnType = srcMLFunction.getType().getName();
         //I need to include use dependencies in here eventually. -- though this might be better done after a behavioral runthrough
-        CallTree callTree = new CallTree(new CallTreeNode<>(srcMLFunction.getName()));
-        UMLMessageGenerationUtils.getCallTreeFromBlock(callTree.getRoot(), srcMLFunction.getBlock());
-        return new UMLOperation(name, params, returnType, callTree);
+        return new UMLOperation(name, params, returnType);
     }
 
     public static UMLOperation getUMLConstructor(SrcMLConstructor srcMLConstructor){
@@ -143,9 +141,7 @@ public class UMLGenerationUtils {
         //constructors don't have return types
         String returnType = "null";
         //I need to include use dependencies in here eventually. -- see comment above for umloperation
-        CallTree callTree = new CallTree(new CallTreeNode<>(srcMLConstructor.getName()));
-        UMLMessageGenerationUtils.getCallTreeFromBlock(callTree.getRoot(), srcMLConstructor.getBlock());
-        return new UMLOperation(name, params, returnType, callTree);
+        return new UMLOperation(name, params, returnType);
     }
 
     /**
@@ -157,7 +153,15 @@ public class UMLGenerationUtils {
     public static List<UMLOperation> getUMLOperations(List<SrcMLFunction> functions, List<SrcMLFunction> functionDecls){
         List<UMLOperation> operations = new ArrayList<>();
         for (SrcMLFunction function : functions){
-            operations.add(getUMLOperation(function));
+            UMLOperation operation = getUMLOperation(function);
+
+            //this code is put here because function_decls don't ahve behaviors, but I want structural umloperations
+            //being instantiated the same way for functions and function_decls
+            CallTreeNode<SrcMLNode> callTreeSrcML = function.getCallTree();
+            //call tree is a string here. I will make it a call tree of umlClassifiers in the 4th pass.
+            UMLMessageGenerationUtils.getCallTreeFromBlock(callTreeSrcML, function.getBlock());
+            operation.setCallTreeString(UMLMessageGenerationUtils.convertSrcMLCallTreeToString(callTreeSrcML));
+            operations.add(operation);
         }
         for (SrcMLFunction function : functionDecls){
             operations.add(getUMLOperation(function));
@@ -168,7 +172,13 @@ public class UMLGenerationUtils {
     public static List<UMLOperation> getUMLConstructors(List<SrcMLConstructor> constructorsList, List<SrcMLConstructor> constructorDecls){
         List<UMLOperation> constructors = new ArrayList<>();
         for (SrcMLConstructor constructor : constructorsList){
-            constructors.add(getUMLConstructor(constructor));
+            UMLOperation constructor2 = getUMLConstructor(constructor);
+            //see comment above for functions -- constructor decls will not have behavior.
+            CallTreeNode<SrcMLNode> callTreeSrcML = constructor.getCallTree();
+            //again, call tree is a string here.
+            UMLMessageGenerationUtils.getCallTreeFromBlock(callTreeSrcML, constructor.getBlock());
+            constructor2.setCallTreeString(UMLMessageGenerationUtils.convertSrcMLCallTreeToString(callTreeSrcML));
+            constructors.add(constructor2);
         }
         for (SrcMLConstructor constructor : constructorDecls){
             //bug here. I don't think I can have constructor decls in java.

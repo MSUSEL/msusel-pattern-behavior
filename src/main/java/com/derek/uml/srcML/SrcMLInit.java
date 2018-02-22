@@ -38,7 +38,7 @@ public class SrcMLInit extends SrcMLNode{
     //there are a few different types of init, but they generally have the form: (decl|expr)(","(decl|expr))* or some degree
     private List<SrcMLDecl> declarations;
     private List<SrcMLExpression> expressions;
-    private List<CallTreeNode<SrcMLNode>> expressionPaths;
+    private CallTreeNode<SrcMLNode> callTree;
 
     public SrcMLInit(Element initEle) {
         super(initEle);
@@ -46,9 +46,10 @@ public class SrcMLInit extends SrcMLNode{
     protected void parse(){
         declarations = parseDecls();
         expressions = parseExpressions();
-        expressionPaths = new ArrayList<>();
+        callTree = new CallTreeNode<>(this, "init");
+
         for (SrcMLExpression srcMLExpression : expressions){
-            expressionPaths.add(buildCallTree(this, srcMLExpression));
+            buildCallTree(callTree, srcMLExpression);
         }
     }
 

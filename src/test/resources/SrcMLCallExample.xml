@@ -93,6 +93,106 @@
                 </init>
             </decl>;</decl_stmt>
     </block>
+    <block>
+        <for>for <control>(<init>
+            <decl>
+                <type>
+                    <name>
+                        <name>ExpectedCondition</name>
+                        <argument_list type="generic">&lt;<argument>
+                            <name>?</name>
+                        </argument>&gt;</argument_list>
+                    </name>
+                </type>
+                <name>condition</name>
+                <range>: <expr>
+                    <name>conditions</name>
+                </expr>
+                </range>
+            </decl>
+        </init>)</control>
+            <block>{          <try>try <block>{            <decl_stmt>
+                <decl>
+                    <type>
+                        <name>Object</name>
+                    </type>
+                    <name>result</name>
+                    <init>= <expr>
+                        <call>
+                            <name>
+                                <name>condition</name>
+                                <operator>.</operator>
+                                <name>apply</name>
+                            </name>
+                            <argument_list>(<argument>
+                                <expr>
+                                    <name>driver</name>
+                                </expr>
+                            </argument>)</argument_list>
+                        </call>
+                    </expr>
+                    </init>
+                </decl>;</decl_stmt>
+                <if>if <condition>(<expr>
+                    <name>result</name>
+                    <operator>!=</operator>
+                    <literal type="null">null</literal>
+                </expr>)</condition>
+                    <then>
+                        <block>{              <if>if <condition>(<expr>
+                            <name>result</name>
+                            <operator>instanceof</operator>
+                            <name>Boolean</name>
+                        </expr>)</condition>
+                            <then>
+                                <block>{                <if>if <condition>(<expr>
+                                    <call>
+                                        <name>
+                                            <name>Boolean</name>
+                                            <operator>.</operator>
+                                            <name>TRUE</name>
+                                            <operator>.</operator>
+                                            <name>equals</name>
+                                        </name>
+                                        <argument_list>(<argument>
+                                            <expr>
+                                                <name>result</name>
+                                            </expr>
+                                        </argument>)</argument_list>
+                                    </call>
+                                </expr>)</condition>
+                                    <then>
+                                        <block>{                  <return>return <expr>
+                                            <literal type="boolean">true</literal>
+                                        </expr>;</return>                }</block>
+                                    </then>
+                                </if>              }</block>
+                            </then>
+                            <else>else <block>{                <return>return <expr>
+                                <literal type="boolean">true</literal>
+                            </expr>;</return>              }</block>
+                            </else>
+                        </if>            }</block>
+                    </then>
+                </if>          }</block>
+                <catch>catch <parameter_list>(<parameter>
+                    <decl>
+                        <type>
+                            <name>RuntimeException</name>
+                        </type>
+                        <name>e</name>
+                    </decl>
+                </parameter>)</parameter_list>
+                    <block>{            <expr_stmt>
+                        <expr>
+                            <name>lastException</name>
+                            <operator>=</operator>
+                            <name>e</name>
+                        </expr>;</expr_stmt>          }</block>
+                </catch>
+            </try>        }</block>
+        </for>
+    </block>
     <block>{
         <expr_stmt>
             <expr>
@@ -207,106 +307,106 @@
             </call>
         </expr>;</throw>  }
     </block>
-<block>{      <decl_stmt>
-    <decl>
-        <type>
-            <specifier>final</specifier>
-            <name>String</name>
-        </type>
-        <name>lcName</name>
-        <init>= <expr>
+    <block>{      <decl_stmt>
+        <decl>
+            <type>
+                <specifier>final</specifier>
+                <name>String</name>
+            </type>
+            <name>lcName</name>
+            <init>= <expr>
+                <call>
+                    <name>
+                        <name>name</name>
+                        <operator>.</operator>
+                        <name>toLowerCase</name>
+                    </name>
+                    <argument_list>()</argument_list>
+                </call>
+            </expr>
+            </init>
+        </decl>;</decl_stmt>
+        <return>return <expr>
             <call>
-                <name>
-                    <name>name</name>
-                    <operator>.</operator>
-                    <name>toLowerCase</name>
-                </name>
+                <name>stream</name>
+                <argument_list>(<argument>
+                    <expr>
+                        <call>
+                            <name>
+                                <name>Channel</name>
+                                <operator>.</operator>
+                                <name>values</name>
+                            </name>
+                            <argument_list>()</argument_list>
+                        </call>
+                    </expr>
+                </argument>)</argument_list>
+            </call>
+            <operator>.</operator>
+            <call>
+                <name>filter</name>
+                <argument_list>(<argument>
+                    <expr>
+                        <lambda>
+                            <parameter_list type="pseudo">
+                                <parameter>
+                                    <decl>
+                                        <name>ch</name>
+                                    </decl>
+                                </parameter>
+                            </parameter_list> -&gt; <block type="pseudo">
+                            <expr>
+                                <call>
+                                    <name>
+                                        <name>ch</name>
+                                        <operator>.</operator>
+                                        <name>name</name>
+                                        <operator>.</operator>
+                                        <name>equals</name>
+                                    </name>
+                                    <argument_list>(<argument>
+                                        <expr>
+                                            <name>lcName</name>
+                                        </expr>
+                                    </argument>)</argument_list>
+                                </call>
+                            </expr>
+                        </block>
+                        </lambda>
+                    </expr>
+                </argument>)</argument_list>
+            </call>
+            <operator>.</operator>
+            <call>
+                <name>findFirst</name>
                 <argument_list>()</argument_list>
             </call>
-        </expr>
-        </init>
-    </decl>;</decl_stmt>
-    <return>return <expr>
-        <call>
-            <name>stream</name>
-            <argument_list>(<argument>
-                <expr>
-                    <call>
-                        <name>
-                            <name>Channel</name>
-                            <operator>.</operator>
-                            <name>values</name>
-                        </name>
-                        <argument_list>()</argument_list>
-                    </call>
-                </expr>
-            </argument>)</argument_list>
-        </call>
-        <operator>.</operator>
-        <call>
-            <name>filter</name>
-            <argument_list>(<argument>
-                <expr>
-                    <lambda>
-                        <parameter_list type="pseudo">
-                            <parameter>
-                                <decl>
-                                    <name>ch</name>
-                                </decl>
-                            </parameter>
-                        </parameter_list> -&gt; <block type="pseudo">
-                        <expr>
-                            <call>
-                                <name>
-                                    <name>ch</name>
-                                    <operator>.</operator>
-                                    <name>name</name>
-                                    <operator>.</operator>
-                                    <name>equals</name>
-                                </name>
-                                <argument_list>(<argument>
-                                    <expr>
-                                        <name>lcName</name>
-                                    </expr>
-                                </argument>)</argument_list>
-                            </call>
-                        </expr>
-                    </block>
-                    </lambda>
-                </expr>
-            </argument>)</argument_list>
-        </call>
-        <operator>.</operator>
-        <call>
-            <name>findFirst</name>
-            <argument_list>()</argument_list>
-        </call>
-        <operator>.</operator>
-        <call>
-            <name>orElseThrow</name>
-            <argument_list>(<argument>
-                <expr>
-                    <lambda>
-                        <parameter_list>()</parameter_list> -&gt; <block type="pseudo">
-                        <expr>
-                            <operator>new</operator>
-                            <call>
-                                <name>WebDriverException</name>
-                                <argument_list>(<argument>
-                                    <expr>
-                                        <literal type="string">"Unrecognized channel: "</literal>
-                                        <operator>+</operator>
-                                        <name>name</name>
-                                    </expr>
-                                </argument>)</argument_list>
-                            </call>
-                        </expr>
-                    </block>
-                    </lambda>
-                </expr>
-            </argument>)</argument_list>
-        </call>
-    </expr>;</return>
-    }
-</block>
+            <operator>.</operator>
+            <call>
+                <name>orElseThrow</name>
+                <argument_list>(<argument>
+                    <expr>
+                        <lambda>
+                            <parameter_list>()</parameter_list> -&gt; <block type="pseudo">
+                            <expr>
+                                <operator>new</operator>
+                                <call>
+                                    <name>WebDriverException</name>
+                                    <argument_list>(<argument>
+                                        <expr>
+                                            <literal type="string">"Unrecognized channel: "</literal>
+                                            <operator>+</operator>
+                                            <name>name</name>
+                                        </expr>
+                                    </argument>)</argument_list>
+                                </call>
+                            </expr>
+                        </block>
+                        </lambda>
+                    </expr>
+                </argument>)</argument_list>
+            </call>
+        </expr>;</return>
+        }
+    </block>
 </root>

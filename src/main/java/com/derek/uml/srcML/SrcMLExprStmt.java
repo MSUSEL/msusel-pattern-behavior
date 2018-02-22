@@ -14,18 +14,19 @@ public class SrcMLExprStmt extends SrcMLNode{
     private List<SrcMLExpression> expressions;
     private List<String> operators;
     //for random expressions...
-    private List<CallTreeNode<SrcMLNode>> expressionPaths;
 
     public SrcMLExprStmt(Element exprStmtEle) {
         super(exprStmtEle);
     }
     protected void parse(){
         expressions = parseExpressions();
-        expressionPaths = new ArrayList<>();
-        for (SrcMLExpression srcMLExpression : expressions) {
-            expressionPaths.add(buildCallTree(this, srcMLExpression));
-        }
         operators = parseOperators();
+    }
+
+    public void fillCallTree(CallTreeNode<SrcMLNode> root){
+        for (SrcMLExpression srcMLExpression : expressions) {
+            buildCallTree(root, srcMLExpression);
+        }
     }
 
 }

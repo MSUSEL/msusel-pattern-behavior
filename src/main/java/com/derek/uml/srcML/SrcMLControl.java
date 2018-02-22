@@ -1,5 +1,6 @@
 package com.derek.uml.srcML;
 
+import com.derek.uml.CallTreeNode;
 import lombok.Getter;
 import org.w3c.dom.Element;
 
@@ -18,5 +19,17 @@ public class SrcMLControl extends SrcMLNode{
         init = parseInit();
         condition = parseCondition();
         incr = parseIncr();
+    }
+    public void fillCallTree(CallTreeNode<SrcMLNode> root){
+        //init is its own structural lifeline, and it will have a callTree independently.
+        root.addChild(init.getCallTree());
+
+        if (condition != null) {
+            buildCallTree(root, condition.getExpression());
+        }
+        if (incr != null) {
+            buildCallTree(root, incr.getExpression());
+        }
+
     }
 }

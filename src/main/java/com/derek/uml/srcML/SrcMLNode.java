@@ -1,9 +1,6 @@
 package com.derek.uml.srcML;
 
-import com.derek.uml.CallTree;
 import com.derek.uml.CallTreeNode;
-import com.google.common.graph.GraphBuilder;
-import com.google.common.graph.MutableGraph;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -401,9 +398,8 @@ public abstract class SrcMLNode {
 
 
     //tree is really just the root of the tree underneath.
-    protected CallTreeNode<SrcMLNode> buildCallTree(SrcMLNode parent, SrcMLExpression expression){
-        CallTreeNode<SrcMLNode> root = new CallTreeNode<>(parent);
-        fillCallTree(root, parent, expression);
+    protected CallTreeNode<SrcMLNode> buildCallTree(CallTreeNode<SrcMLNode> root, SrcMLExpression expression){
+        fillCallTree(root, root.getName(), expression);
         return root;
     }
 
@@ -411,7 +407,7 @@ public abstract class SrcMLNode {
         if (childNode != null) {
             List<SrcMLCall> calls = childNode.getCalls();
             for (SrcMLCall call : calls) {
-                CallTreeNode<SrcMLNode> nextChild = new CallTreeNode<>(call);
+                CallTreeNode<SrcMLNode> nextChild = new CallTreeNode<>(call, "call");
                 callTree.addChild(nextChild);
                 //regardless, fill the rest of the forest with edges for each argument.
                 for (SrcMLArgument argument : call.getArgumentList().getArguments()) {

@@ -24,6 +24,7 @@
  */
 package com.derek.uml.srcML;
 
+import com.derek.uml.CallTreeNode;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -38,6 +39,7 @@ public class SrcMLConstructor extends SrcMLNode{
     private SrcMLName name;
     private SrcMLParameterList parameterList;
     private SrcMLBlock block;
+    private CallTreeNode<SrcMLNode> callTree;
 
     public SrcMLConstructor(Element constructorEle) {
         super(constructorEle);
@@ -49,6 +51,8 @@ public class SrcMLConstructor extends SrcMLNode{
         name = parseName();
         parameterList = parseParameterList();
         block = parseBlock();
+        callTree = new CallTreeNode<>(this, "constructor");
+        block.fillCallTree(callTree);
     }
 
     public String getName(){

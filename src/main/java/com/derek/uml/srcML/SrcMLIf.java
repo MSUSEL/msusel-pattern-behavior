@@ -40,31 +40,32 @@ public class SrcMLIf extends SrcMLNode{
     private SrcMLThen then;
     private SrcMLElse else1;
     private SrcMLIf elseIf;
-    private CallTreeNode<SrcMLNode> conditionPath;
-    private CallTreeNode<SrcMLNode> truePath;
-    private CallTreeNode<SrcMLNode> falsePath;
+    private CallTreeNode<SrcMLNode> callTree;
 
     public SrcMLIf(Element ifEle) {
         super(ifEle);
     }
     protected void parse(){
         condition = parseCondition();
-        if (condition != null) {
-            conditionPath = buildCallTree(this, condition.getExpression());
-        }
         then = parseThen();
-        if (then != null) {
-            truePath = buildCallTree(this, then.getExpression());
-        }
         else1 = parseElse();
-        if (else1 != null) {
-            //this is a special case because an if statment can be if{} with no else. or it can have an else.
-            falsePath = buildCallTree(this, else1.getExpression());
-        }else{
-            falsePath = buildCallTree(this, null);
-        }
         //don't know if I need to do anything here.
         elseIf = parseElseIf();
+
+
+        callTree = new CallTreeNode<>(this, "if");
+        if (condition != null) {
+            buildCallTree(callTree, condition.getExpression());
+        }
+        if (then != null) {
+            buildCallTree(callTree, then.getExpression());
+        }
+        if (else1 != null) {
+            //this is a special case because an if statment can be if{} with no else. or it can have an else.
+            buildCallTree(callTree, else1.getExpression());
+        }else{
+            buildCallTree(callTree, null);
+        }
     }
 
 

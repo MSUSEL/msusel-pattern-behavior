@@ -180,7 +180,7 @@ public class UMLGenerator {
     }
 
     private void buildClasses(){
-        for (SrcMLBlock rootBlock :  rootBlocks) {
+        for (SrcMLBlock rootBlock : rootBlocks) {
             List<SrcMLClass> srcMLClasses = rootBlock.getClasses();
             List<String> residingPackage = UMLGenerationUtils.getResidingPackage(rootBlock);
             List<List<String>> imports = UMLGenerationUtils.getImports(rootBlock);

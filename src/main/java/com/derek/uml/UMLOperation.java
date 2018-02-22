@@ -44,12 +44,13 @@ public class UMLOperation {
     private List<UMLClassifier> parameters;
 
 
-    //datatype of return value, empty string if void.
+    //datatype of return value, empty string if void., "null" as string if constructor. I mikght need to change this in the future though.
     private String stringReturnDataType;
     private Visibility visibility;
     private boolean isStatic;
 
-    private CallTree callTree;
+    @Setter
+    private CallTreeNode<String> callTreeString;
 
     //type will be set after the first passthrough.
     @Setter
@@ -68,11 +69,10 @@ public class UMLOperation {
      * @param stringParameters list of pairs of strings for function's params
      * @param stringReturnDataType function return data type
      */
-    public UMLOperation(String name, List<Pair<String, String>> stringParameters, String stringReturnDataType, CallTree callTree) {
+    public UMLOperation(String name, List<Pair<String, String>> stringParameters, String stringReturnDataType) {
         this.name = name;
         this.stringParameters = stringParameters;
         this.stringReturnDataType = stringReturnDataType;
-        this.callTree = callTree;
     }
 
     public String buildParamsForPlantUMLDiagram(){

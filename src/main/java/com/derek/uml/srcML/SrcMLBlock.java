@@ -24,6 +24,7 @@
  */
 package com.derek.uml.srcML;
 
+import com.derek.uml.CallTreeNode;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -254,5 +255,30 @@ public class SrcMLBlock extends SrcMLNode{
             whiles.add((SrcMLWhile)while1);
         }
         return whiles;
+    }
+
+    public void fillCallTree(CallTreeNode<SrcMLNode> root){
+        for (SrcMLNode node : this.getChildNodeOrder()){
+            switch(node.getElement().getNodeName()){
+                case "if":
+                case "elseif":
+                    root.addChild(((SrcMLIf)node).getCallTree());
+                    break;
+                case "expr_stmt":
+                    ((SrcMLExprStmt)node).fillCallTree(root);
+                    break;
+                case "for":
+                    root.addChild(((SrcMLFor)node).getCallTree());
+                    break;
+                case "block":
+                    fillCallTree(root);
+                    break;
+                case "try":
+                    //etc.
+
+
+
+            }
+        }
     }
 }
