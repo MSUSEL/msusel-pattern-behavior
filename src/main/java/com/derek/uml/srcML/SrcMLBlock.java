@@ -260,6 +260,11 @@ public class SrcMLBlock extends SrcMLNode{
     public void fillCallTree(CallTreeNode<SrcMLNode> root){
         for (SrcMLNode node : this.getChildNodeOrder()){
             switch(node.getElement().getNodeName()){
+
+                //getCallTree is used when each child node under this block is a significant and structural callTree.
+                //as an example, 'if' is significant because I want 'if' blocks individualized in the final sequence diagram,
+                //meaning I can isolate them and configure on/off.
+                //otherwise fillCall is used - fillCall will keep the root that comes in here as the root.
                 case "if":
                 case "elseif":
                     root.addChild(((SrcMLIf)node).getCallTree());
@@ -274,6 +279,12 @@ public class SrcMLBlock extends SrcMLNode{
                     fillCallTree(root);
                     break;
                 case "try":
+                    //tries can have inits.. called a resource statement
+                    root.addChild(((SrcMLTry)node).getCallTree());
+                case "decl_stmt":
+                    ((SrcMLDeclStmt)node).fillCallTree(root);
+
+
                     //etc.
 
 

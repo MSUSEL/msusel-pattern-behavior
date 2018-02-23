@@ -54,17 +54,23 @@ public class SrcMLIf extends SrcMLNode{
 
 
         callTree = new CallTreeNode<>(this, "if");
+
         if (condition != null) {
             buildCallTree(callTree, condition.getExpression());
         }
         if (then != null) {
             buildCallTree(callTree, then.getExpression());
+            then.fillCallTree(callTree);
         }
         if (else1 != null) {
             //this is a special case because an if statment can be if{} with no else. or it can have an else.
             buildCallTree(callTree, else1.getExpression());
+            else1.fillCallTree(callTree);
         }else{
             buildCallTree(callTree, null);
+        }
+        if (elseIf != null){
+            callTree.addChild(elseIf.getCallTree());
         }
     }
 

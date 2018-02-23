@@ -24,6 +24,7 @@
  */
 package com.derek.uml.srcML;
 
+import com.derek.uml.CallTreeNode;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -38,6 +39,8 @@ public class SrcMLTry extends SrcMLNode{
     private List<SrcMLCatch> catches;
     private List<SrcMLFinally> finallies;
 
+    private CallTreeNode<SrcMLNode> callTree;
+
     public SrcMLTry(Element tryEle) {
         super(tryEle);
     }
@@ -46,6 +49,16 @@ public class SrcMLTry extends SrcMLNode{
         block = parseBlock();
         catches = parseCatches();
         finallies = parseFinallies();
+
+        callTree = new CallTreeNode<>(this, "try");
+        if (init != null) {
+            //will rarely happen, but it might -- see resource statement of java 7
+            callTree.addChild(init.getCallTree());
+        }
+        block.fillCallTree(callTree);
+        for (SrcMLCatch srcMLCatch : catches){
+            srcMLCatch.fillCallTree(callTree);
+        }
     }
     private List<SrcMLCatch> parseCatches(){
         List<SrcMLCatch> nodes = new ArrayList<>();

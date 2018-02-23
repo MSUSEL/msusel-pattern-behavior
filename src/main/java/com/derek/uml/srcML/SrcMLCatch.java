@@ -24,6 +24,7 @@
  */
 package com.derek.uml.srcML;
 
+import com.derek.uml.CallTreeNode;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -42,6 +43,10 @@ public class SrcMLCatch extends SrcMLNode{
     protected void parse(){
         parameterList = parseParameterList();
         block = parseBlock();
+    }
+
+    public void fillCallTree(CallTreeNode<SrcMLNode> callTreeRoot){
+        block.fillCallTree(callTreeRoot);
     }
 
 }
