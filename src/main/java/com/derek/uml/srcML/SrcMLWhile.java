@@ -24,6 +24,7 @@
  */
 package com.derek.uml.srcML;
 
+import com.derek.uml.CallTreeNode;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -35,6 +36,7 @@ public class SrcMLWhile extends SrcMLNode{
     //this class will fulfill both the 'while' and 'do-while' keywords, because they are the same at a grammar perspective.
     private SrcMLCondition condition;
     private SrcMLBlock block;
+    private CallTreeNode<SrcMLNode> callTree;
 
     public SrcMLWhile(Element whileEle) {
         super(whileEle);
@@ -42,5 +44,13 @@ public class SrcMLWhile extends SrcMLNode{
     protected void parse(){
         condition = parseCondition();
         block = parseBlock();
+
+        callTree = new CallTreeNode<>(this, "while");
+        if (condition != null){
+            buildCallTree(callTree, condition.getExpression());
+        }
+        block.fillCallTree(callTree);
     }
+
+
 }

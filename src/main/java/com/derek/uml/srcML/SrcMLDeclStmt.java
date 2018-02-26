@@ -46,7 +46,7 @@ public class SrcMLDeclStmt extends SrcMLNode{
 
     public void fillCallTree(CallTreeNode<SrcMLNode> callTreeRoot){
         for (SrcMLDecl srcMLDecl : decls){
-            srcMLDecl.fillCallTree(callTreeRoot);
+            callTreeRoot.addChild(srcMLDecl.getCallTree());
         }
     }
 

@@ -24,6 +24,7 @@
  */
 package com.derek.uml.srcML;
 
+import com.derek.uml.CallTreeNode;
 import com.derek.uml.UMLMessage;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
@@ -95,6 +96,20 @@ public class SrcMLExpression extends SrcMLNode{
             literals.add(XmlUtils.elementify(literalNode).getNodeName());
         }
         return literals;
+    }
+
+    public void fillCallTree(CallTreeNode<SrcMLNode> callTree){
+        for (SrcMLNode node : this.getChildNodeOrder()){
+            switch(node.getElement().getNodeName()){
+                case "lambda":
+                    callTree.addChild(((SrcMLJavaLambda)node).getCallTree());
+                    break;
+                case "":
+
+            }
+        }
+
+
     }
 
 }

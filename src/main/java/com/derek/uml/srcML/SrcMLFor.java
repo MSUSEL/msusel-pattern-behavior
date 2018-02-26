@@ -45,7 +45,9 @@ public class SrcMLFor extends SrcMLNode{
         block = parseBlock();
 
         callTree = new CallTreeNode<>(this, "for");
-        control.fillCallTree(callTree);
+        if (control != null) {
+            control.fillCallTree(callTree);
+        }
         block.fillCallTree(callTree);
     }
 }

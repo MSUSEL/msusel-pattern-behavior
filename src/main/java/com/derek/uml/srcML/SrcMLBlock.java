@@ -281,8 +281,26 @@ public class SrcMLBlock extends SrcMLNode{
                 case "try":
                     //tries can have inits.. called a resource statement
                     root.addChild(((SrcMLTry)node).getCallTree());
+                    break;
                 case "decl_stmt":
                     ((SrcMLDeclStmt)node).fillCallTree(root);
+                    break;
+                case "decl":
+                    root.addChild(((SrcMLDecl)node).getCallTree());
+                    break;
+                case "function":
+                case "function_decl":
+                    root.addChild(((SrcMLFunction)node).getCallTree());
+                    break;
+                case "constructor":
+                case "constructor_decl":
+                    root.addChild(((SrcMLConstructor)node).getCallTree());
+                    break;
+                case "while":
+                case "do":
+                    root.addChild(((SrcMLWhile)node).getCallTree());
+                    break;
+
 
 
                     //etc.

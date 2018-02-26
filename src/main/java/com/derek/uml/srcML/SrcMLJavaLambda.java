@@ -24,6 +24,7 @@
  */
 package com.derek.uml.srcML;
 
+import com.derek.uml.CallTreeNode;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -35,6 +36,7 @@ public class SrcMLJavaLambda extends SrcMLNode{
     //might not need to use this class.
     private SrcMLParameterList parameterList;
     private SrcMLBlock block;
+    private CallTreeNode<SrcMLNode> callTree;
 
     public SrcMLJavaLambda(Element lambdaEle) {
         super(lambdaEle);
@@ -42,6 +44,9 @@ public class SrcMLJavaLambda extends SrcMLNode{
     protected void parse() {
         parameterList = parseParameterList();
         block = parseBlock();
+
+        callTree = new CallTreeNode<>(this, "lambda");
+        block.fillCallTree(callTree);
     }
 
 }

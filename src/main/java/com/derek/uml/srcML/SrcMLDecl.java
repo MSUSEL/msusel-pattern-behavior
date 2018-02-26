@@ -27,9 +27,7 @@ package com.derek.uml.srcML;
 import com.derek.uml.CallTreeNode;
 import lombok.Getter;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -39,6 +37,7 @@ public class SrcMLDecl extends SrcMLNode{
     private SrcMLRange range;
     private SrcMLInit init;
     private List<String> specifiers;
+    private CallTreeNode<SrcMLNode> callTree;
 
     public SrcMLDecl(Element declEle) {
         super(declEle);
@@ -49,6 +48,14 @@ public class SrcMLDecl extends SrcMLNode{
         range = parseRange();
         init = parseInit();
         specifiers = parseSpecifiers();
+        callTree = new CallTreeNode<>(this, "decl");
+
+        if (range != null){
+            buildCallTree(callTree, range.getExpression());
+        }
+        if (init != null){
+            callTree.addChild(init.getCallTree());
+        }
     }
 
     public String getName(){
@@ -61,10 +68,4 @@ public class SrcMLDecl extends SrcMLNode{
         }
     }
 
-    public void fillCallTree(CallTreeNode<SrcMLNode> callTreeRoot){
-        range.fillCalltree(callTreeRoot);
-        callTreeRoot.addChild(init.getCallTree());
-            srcMLDecl.fillCallTree(callTreeRoot);
-        }
-    }
 }
