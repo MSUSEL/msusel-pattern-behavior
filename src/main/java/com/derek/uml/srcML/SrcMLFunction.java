@@ -63,9 +63,16 @@ public class SrcMLFunction extends SrcMLNode{
         //default is the only difference between 'function' and 'function_Decl' elements.. default exists in function_decl only
         default1 = parseDefault();
         callTree = new CallTreeNode<>(this, "function");
-        block.fillCallTree(callTree);
+        if (block != null) {
+            //will happen in function_decl
+            block.fillCallTree(callTree);
+        }
     }
     public String getName(){
         return name.getName();
+    }
+
+    public String toString(){
+        return getName();
     }
 }

@@ -52,7 +52,9 @@ public class SrcMLConstructor extends SrcMLNode{
         parameterList = parseParameterList();
         block = parseBlock();
         callTree = new CallTreeNode<>(this, "constructor");
-        block.fillCallTree(callTree);
+        if (block != null) {
+            block.fillCallTree(callTree);
+        }
     }
 
     public String getName(){

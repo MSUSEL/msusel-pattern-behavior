@@ -104,7 +104,12 @@ public class SrcMLExpression extends SrcMLNode{
                 case "lambda":
                     callTree.addChild(((SrcMLJavaLambda)node).getCallTree());
                     break;
-                case "":
+                case "ternary":
+                    callTree.addChild(((SrcMLTernary)node).getCallTree());
+                    break;
+                case "expr":
+                    buildCallTree(callTree, (SrcMLExpression)node);
+                    break;
 
             }
         }

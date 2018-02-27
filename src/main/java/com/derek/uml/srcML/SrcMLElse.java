@@ -44,6 +44,8 @@ public class SrcMLElse extends SrcMLSingleExpression{
         block = parseBlock();
     }
     public void fillCallTree(CallTreeNode<SrcMLNode> root){
-        block.fillCallTree(root);
+        if (block != null) {
+            block.fillCallTree(root);
+        }
     }
 }

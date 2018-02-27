@@ -70,7 +70,8 @@ public class SrcMLCallTreeLogicTest extends SrcMLTest {
         assertEquals(block2.getDeclStmts().size(), 1);
         assertEquals(block2.getDeclStmts().get(0).getDecls().size(), 1);
         assertEquals(block2.getDeclStmts().get(0).getDecls().get(0).getInit().getExpressions().size(), 1);
-        CallTreeNode<SrcMLNode> callTree = block2.getDeclStmts().get(0).getDecls().get(0).getInit().getCallTree();
+        //modified this and removed init so many tests here will likely fail.
+        CallTreeNode<SrcMLNode> callTree = block2.getDeclStmts().get(0).getDecls().get(0).getCallTree();
         callTree.printTree();
         //visualize tree
         //assertEquals("", outContent.toString());

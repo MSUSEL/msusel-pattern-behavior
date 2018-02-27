@@ -53,9 +53,11 @@ public class SrcMLTry extends SrcMLNode{
         callTree = new CallTreeNode<>(this, "try");
         if (init != null) {
             //will rarely happen, but it might -- see resource statement of java 7
-            callTree.addChild(init.getCallTree());
+            init.fillCallTree(callTree);
         }
-        block.fillCallTree(callTree);
+        if (block != null) {
+            block.fillCallTree(callTree);
+        }
         for (SrcMLCatch srcMLCatch : catches){
             srcMLCatch.fillCallTree(callTree);
         }
@@ -66,6 +68,9 @@ public class SrcMLTry extends SrcMLNode{
             nodes.add((SrcMLCatch)node);
         }
         return nodes;
+    }
+    public String toString(){
+        return "try";
     }
 
 }

@@ -24,6 +24,7 @@
  */
 package com.derek.uml.srcML;
 
+import com.derek.uml.CallTreeNode;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -36,6 +37,8 @@ public class SrcMLTernary extends SrcMLNode{
     private SrcMLThen then;
     private SrcMLElse else1;
 
+    private CallTreeNode<SrcMLNode> callTree;
+
     public SrcMLTernary(Element ternaryEle){
         super(ternaryEle);
     }
@@ -43,6 +46,19 @@ public class SrcMLTernary extends SrcMLNode{
         condition = parseCondition();
         then = parseThen();
         else1 = parseElse();
+
+        callTree = new CallTreeNode<>(this, "ternary");
+        if (condition != null){
+            buildCallTree(callTree, condition.getExpression());
+        }
+        if (then != null){
+            buildCallTree(callTree, then.getExpression());
+            then.fillCallTree(callTree);
+        }
+        if (else1 != null){
+            buildCallTree(callTree, else1.getExpression());
+            else1.fillCallTree(callTree);
+        }
     }
 
 }

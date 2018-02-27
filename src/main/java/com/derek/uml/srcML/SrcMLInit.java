@@ -38,7 +38,8 @@ public class SrcMLInit extends SrcMLNode{
     //there are a few different types of init, but they generally have the form: (decl|expr)(","(decl|expr))* or some degree
     private List<SrcMLDecl> declarations;
     private List<SrcMLExpression> expressions;
-    private CallTreeNode<SrcMLNode> callTree;
+    // i dont; think i need a call tree with init. i think its implied. I do think I need fillcallTree though.
+    //private CallTreeNode<SrcMLNode> callTree;
 
     public SrcMLInit(Element initEle) {
         super(initEle);
@@ -46,11 +47,19 @@ public class SrcMLInit extends SrcMLNode{
     protected void parse(){
         declarations = parseDecls();
         expressions = parseExpressions();
-        callTree = new CallTreeNode<>(this, "init");
+    }
 
+    public void fillCallTree(CallTreeNode<SrcMLNode> callTree){
         for (SrcMLExpression srcMLExpression : expressions){
             buildCallTree(callTree, srcMLExpression);
         }
+        for (SrcMLDecl srcMLDecl : declarations){
+            callTree.addChild(srcMLDecl.getCallTree());
+        }
+    }
+
+    public String toString(){
+        return "new";
     }
 
 }

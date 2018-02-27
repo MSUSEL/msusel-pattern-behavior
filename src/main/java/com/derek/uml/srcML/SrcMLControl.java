@@ -21,8 +21,7 @@ public class SrcMLControl extends SrcMLNode{
         incr = parseIncr();
     }
     public void fillCallTree(CallTreeNode<SrcMLNode> root){
-        //init is its own structural lifeline, and it will have a callTree independently.
-        root.addChild(init.getCallTree());
+        init.fillCallTree(root);
 
         if (condition != null) {
             buildCallTree(root, condition.getExpression());

@@ -40,7 +40,7 @@ public class SrcMLFor extends SrcMLNode{
     public SrcMLFor(Element forEle) {
         super(forEle);
     }
-    protected void parse(){
+    protected void parse() {
         control = parseControl();
         block = parseBlock();
 
@@ -48,6 +48,8 @@ public class SrcMLFor extends SrcMLNode{
         if (control != null) {
             control.fillCallTree(callTree);
         }
-        block.fillCallTree(callTree);
+        if (block != null) {
+            block.fillCallTree(callTree);
+        }
     }
 }

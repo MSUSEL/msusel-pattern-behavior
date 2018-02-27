@@ -54,7 +54,7 @@ public class SrcMLDecl extends SrcMLNode{
             buildCallTree(callTree, range.getExpression());
         }
         if (init != null){
-            callTree.addChild(init.getCallTree());
+            init.fillCallTree(callTree);
         }
     }
 
@@ -66,6 +66,10 @@ public class SrcMLDecl extends SrcMLNode{
         }else {
             return name.getName();
         }
+    }
+
+    public String toString(){
+        return getName();
     }
 
 }

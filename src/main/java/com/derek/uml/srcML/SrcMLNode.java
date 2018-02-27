@@ -414,6 +414,11 @@ public abstract class SrcMLNode {
                     fillCallTree(nextChild, call, argument.getExpression());
                 }
             }
+            List<SrcMLJavaLambda> lambdas = childNode.getJavaLambdas();
+            for (SrcMLJavaLambda lambda : lambdas){
+                CallTreeNode<SrcMLNode> nextChild = lambda.getCallTree();
+                callTree.addChild(nextChild);
+            }
         }
     }
 }

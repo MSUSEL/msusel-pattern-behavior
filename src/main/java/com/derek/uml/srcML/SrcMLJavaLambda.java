@@ -46,7 +46,9 @@ public class SrcMLJavaLambda extends SrcMLNode{
         block = parseBlock();
 
         callTree = new CallTreeNode<>(this, "lambda");
-        block.fillCallTree(callTree);
+        if (block != null) {
+            block.fillCallTree(callTree);
+        }
     }
 
 }

@@ -159,7 +159,6 @@ public class UMLGenerationUtils {
             //being instantiated the same way for functions and function_decls
             CallTreeNode<SrcMLNode> callTreeSrcML = function.getCallTree();
             //call tree is a string here. I will make it a call tree of umlClassifiers in the 4th pass.
-            UMLMessageGenerationUtils.getCallTreeFromBlock(callTreeSrcML, function.getBlock());
             operation.setCallTreeString(UMLMessageGenerationUtils.convertSrcMLCallTreeToString(callTreeSrcML));
             operations.add(operation);
         }
@@ -172,12 +171,18 @@ public class UMLGenerationUtils {
     public static List<UMLOperation> getUMLConstructors(List<SrcMLConstructor> constructorsList, List<SrcMLConstructor> constructorDecls){
         List<UMLOperation> constructors = new ArrayList<>();
         for (SrcMLConstructor constructor : constructorsList){
+
             UMLOperation constructor2 = getUMLConstructor(constructor);
             //see comment above for functions -- constructor decls will not have behavior.
             CallTreeNode<SrcMLNode> callTreeSrcML = constructor.getCallTree();
             //again, call tree is a string here.
-            UMLMessageGenerationUtils.getCallTreeFromBlock(callTreeSrcML, constructor.getBlock());
-            constructor2.setCallTreeString(UMLMessageGenerationUtils.convertSrcMLCallTreeToString(callTreeSrcML));
+
+            if (constructor.getBlock() != null){
+                //another srcml bug here. This bug can be seen in selenium3.6-Keys.java.. the LEFT_SHIFT enum type thinks 'Keys.Left' is a
+                //constructor, when in fact it is a variable instantiation in the enum. Because of this I need to insert a
+                // bizarre 'if block = null'
+                constructor2.setCallTreeString(UMLMessageGenerationUtils.convertSrcMLCallTreeToString(callTreeSrcML));
+            }
             constructors.add(constructor2);
         }
         for (SrcMLConstructor constructor : constructorDecls){

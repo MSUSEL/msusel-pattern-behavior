@@ -56,10 +56,14 @@ public class SrcMLIf extends SrcMLNode{
         callTree = new CallTreeNode<>(this, "if");
 
         if (condition != null) {
+            //tricky situation here. So, every if has (at least one) condition statement, and the condition can be a
+            //call or not. However, typically the condition is placed in the guard during sequence diagram generation.
+            //if the condition is a call, I still care about its messages because they represent dependencies.
+            //so, I think im just going to avoid the guard. In the basic case, the condition will be a simple expression
+            //(not a call) and therefore will not show up anyway.
             buildCallTree(callTree, condition.getExpression());
         }
         if (then != null) {
-            buildCallTree(callTree, then.getExpression());
             then.fillCallTree(callTree);
         }
         if (else1 != null) {
