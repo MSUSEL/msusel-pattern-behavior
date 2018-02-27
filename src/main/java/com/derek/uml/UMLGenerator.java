@@ -78,12 +78,13 @@ public class UMLGenerator {
 
     private void pass4(){
         //
-        buildSequenceDiagram(getScope("FirefoxBinary"));
+        buildSequenceDiagram();
 
     }
 
-    private void buildSequenceDiagram(UMLClassifier scope){
-        UMLBehaviorGenerator behaviorGenerator = new UMLBehaviorGenerator(umlClassDiagram, scope);
+    private void buildSequenceDiagram(){
+        System.out.println("Generating sequence diagram");
+        UMLBehaviorGenerator behaviorGenerator = new UMLBehaviorGenerator(umlClassDiagram);
     }
 
     private void connectPackageStructure(){
@@ -343,14 +344,6 @@ public class UMLGenerator {
         return false;
     }
 
-    private UMLClassifier getScope(String searcher){
-        UMLClassifier toRet = null;
-        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
-            if (umlClassifier.getName().equals(searcher)){
-                return umlClassifier;
-            }
-        }
-        return toRet;
-    }
+
 
 }

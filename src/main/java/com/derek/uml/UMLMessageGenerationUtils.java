@@ -14,10 +14,10 @@ public class UMLMessageGenerationUtils {
 
 
     public static CallTreeNode<String> convertSrcMLCallTreeToString(CallTreeNode<SrcMLNode> callTree){
-        CallTreeNode<String> callTreeString = null;
-        callTree.printTree();
-
-
-        return callTreeString;
+        CallTreeNode<String> asString = new CallTreeNode<>(callTree.getName().toString(), callTree.getTagName());
+        for (CallTreeNode<SrcMLNode> child : callTree.getChildren()){
+            asString.addChild(convertSrcMLCallTreeToString(child));
+        }
+        return asString;
     }
 }
