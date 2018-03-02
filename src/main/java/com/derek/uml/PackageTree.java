@@ -39,10 +39,9 @@ public class PackageTree {
                 holder = potentialChild;
             }
             //we have package already, continue;
-
         }
-
     }
+
 
     private PackageNode packageExistsOfChild(PackageNode node, String packageSubName){
         if (node.getChildren() != null) {
@@ -62,6 +61,22 @@ public class PackageTree {
                 printInOrder(child);
             }
         }
+    }
+
+    public PackageNode getLevelOfClassifier(UMLClassifier owningType){
+        PackageNode pointer = root;
+        List<String> residingPackage = owningType.getResidingPackage();
+        for (int i = 0; i < residingPackage.size(); i++){
+            String currentPackage = residingPackage.get(i);
+            for (PackageNode n : pointer.getChildren()){
+                if (n.getName().equals(currentPackage)){
+                    //found match
+                    pointer = n;
+                    break;
+                }
+            }
+        }
+        return pointer;
     }
 
     @Getter
@@ -90,8 +105,6 @@ public class PackageTree {
             }
             return s;
         }
-
     }
-
 
 }

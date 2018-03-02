@@ -1,15 +1,21 @@
 package com.derek.uml;
 
 import com.google.common.graph.MutableValueGraph;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
 public class UMLBehaviorGenerator {
     private MutableValueGraph<UMLClassifier, Relationship> classDiagram;
     private UMLClassifier scope;
+    @Setter
     private String defaultFunction = "startProfile";
+    @Setter
+    private String defaultClass = "FirefoxBinary";
 
     public UMLBehaviorGenerator(UMLClassDiagram umlClassDiagram){
         this.classDiagram = umlClassDiagram.getClassDiagram();
-        scope = getScope("FirefoxBinary");
+        scope = getClassScope(defaultClass);
         buildBehavioralUML(scope);
     }
 
@@ -30,7 +36,7 @@ public class UMLBehaviorGenerator {
         return null;
     }
 
-    private UMLClassifier getScope(String searcher){
+    private UMLClassifier getClassScope(String searcher){
         UMLClassifier toRet = null;
         for (UMLClassifier umlClassifier : classDiagram.nodes()){
             if (umlClassifier.getName().equals(searcher)){

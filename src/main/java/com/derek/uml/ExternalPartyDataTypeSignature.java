@@ -1,9 +1,5 @@
 package com.derek.uml;
 
-import com.derek.uml.PackageTree;
-import com.derek.uml.UMLClass;
-import com.derek.uml.UMLClassifier;
-import com.derek.uml.UMLInterface;
 import lombok.Getter;
 
 import java.io.File;

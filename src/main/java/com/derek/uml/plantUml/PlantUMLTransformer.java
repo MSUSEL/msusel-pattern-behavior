@@ -41,25 +41,32 @@ import java.util.Optional;
 public class PlantUMLTransformer {
 
     private UMLClassDiagram umlClassDiagram;
+    private UMLSequenceDiagram umlSequenceDiagram;
 
     //will add sequence diagram to constructor params in near future
-    public PlantUMLTransformer(UMLClassDiagram umlClassDiagram){
+    public PlantUMLTransformer(UMLClassDiagram umlClassDiagram, UMLSequenceDiagram umlSequenceDiagram){
         this.umlClassDiagram = umlClassDiagram;
+        this.umlSequenceDiagram = umlSequenceDiagram;
+    }
+
+
+    public void generateSequenceDiagram(){
+
     }
 
     public void generateClassDiagram(){
-        StringBuilder output = new StringBuilder();
-        output.append("@startuml\n");
+        StringBuilder structuralOutput = new StringBuilder();
+        structuralOutput.append("@startuml\n");
         for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()) {
-            output.append(umlClassifier.plantUMLTransform());
+            structuralOutput.append(umlClassifier.plantUMLTransform());
         }
-        generateRelationships(output);
+        generateRelationships(structuralOutput);
 
-        output.append("@enduml\n");
+        structuralOutput.append("@enduml\n");
 
         //below is for printing to console
         //System.out.println(output.toString());
-        printToFile(output);
+        printStructureToFile(structuralOutput);
     }
 
     public void generateRelationships(StringBuilder output){
@@ -70,20 +77,24 @@ public class PlantUMLTransformer {
             output.append(endpointPair.nodeV().getName() + "\n");
         }
     }
-    private void printToFile(StringBuilder output){
+    private void printStructureToFile(StringBuilder structureOutput){
         try{
             File mainDirectory = new File("plantUmlOutput\\");
             if (!mainDirectory.exists()){
                 Files.createDirectory(Paths.get("plantUmlOutput\\"));
             }
-            File fout = new File("plantUmlOutput\\plantUml" + Main.currentVersion + ".puml");
+            File fout = new File("plantUmlOutput\\plantUmlStructure" + Main.currentVersion + ".puml");
             PrintWriter pw = new PrintWriter(fout);
-            pw.print(output);
+            pw.print(structureOutput);
             pw.close();
 
         }catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    private void printBehaviorToFile(StringBuilder behaviorOutput){
+
     }
 
 }

@@ -52,4 +52,8 @@ public class SrcMLFor extends SrcMLNode{
             block.fillCallTree(callTree);
         }
     }
+
+    public String toString(){
+        return "{for}";
+    }
 }

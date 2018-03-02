@@ -77,7 +77,9 @@ public class SrcMLIf extends SrcMLNode{
             callTree.addChild(elseIf.getCallTree());
         }
     }
-
+    public String toString(){
+        return "{if}";
+    }
 
 
 }
