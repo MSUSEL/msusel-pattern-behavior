@@ -22,6 +22,7 @@ public class CallTreeNode<T>{
         //in the second pass through the tree, once the UMLClassifiers are identified, thew name will be
         //turned into the Classifier
         this.name = name;
+        this.tagName = tagName;
         children = new ArrayList<>();
     }
     public void addChild(CallTreeNode<T> child){
@@ -39,7 +40,7 @@ public class CallTreeNode<T>{
     }
 
     private void printTree(String prefix, boolean isTail) {
-        System.out.println(prefix + (isTail ? "└── " : "├── ") + name.toString());
+        System.out.println(prefix + (isTail ? "└── " : "├── ") + name.toString() + " " + tagName);
         for (int i = 0; i < children.size() - 1; i++) {
             children.get(i).printTree(prefix + (isTail ? "    " : "│   "), false);
         }

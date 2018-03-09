@@ -268,7 +268,7 @@ public abstract class SrcMLNode {
     protected List<SrcMLDecl> parseDecls(){
         List<SrcMLDecl> nodes = new ArrayList<>();
         for (SrcMLNode node : getSameNameElements("decl")){
-            nodes.add((SrcMLDecl)node);
+            nodes.add((SrcMLDecl) node);
         }
         return nodes;
     }

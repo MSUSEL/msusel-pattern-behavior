@@ -46,6 +46,9 @@ public class SrcMLInit extends SrcMLNode{
     }
     protected void parse(){
         declarations = parseDecls();
+        for (SrcMLDecl decl : declarations){
+            decl.buildCallTree();
+        }
         expressions = parseExpressions();
     }
 

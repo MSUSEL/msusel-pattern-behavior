@@ -25,6 +25,7 @@
 package com.derek.uml.srcML;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -37,7 +38,9 @@ public class SrcMLDataType extends SrcMLNode{
     private List<String> modifiers;
     //not sure if I'll need argumentlist, but at least it is there.
     private SrcMLArgumentList argumentList;
+    @Setter
     private SrcMLName name;
+    private String optionalAttribute;
 
     public SrcMLDataType(Element typeEle){
         super(typeEle);
@@ -48,8 +51,19 @@ public class SrcMLDataType extends SrcMLNode{
         modifiers = parseModifiers();
         argumentList = parseArgumentList();
         name = parseName();
+        if (name == null){
+            //happens when vars are declared using commas (int r,g,b)
+            optionalAttribute = element.getAttribute("ref");
+        }else{
+            //init it so it isn't null
+            optionalAttribute = "";
+        }
     }
     public String getName(){
         return name.getName();
+    }
+
+    public SrcMLName getNameObj(){
+        return name;
     }
 }

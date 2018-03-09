@@ -240,7 +240,7 @@ public class UMLGenerator {
 
                     if (param != null) {
                         if (!umlClassDiagram.getClassDiagram().nodes().contains(param.getName())){
-                            System.out.println(param.getName() + " is not in the class diagram graph for params");
+                            //System.out.println(param.getName() + " is not in the class diagram graph for params");
                         }
                         umlClassDiagram.addRelationshipToDiagram(umlClassifier, param, Relationship.ASSOCIATION);
                     }

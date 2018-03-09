@@ -7,7 +7,8 @@ import lombok.Setter;
 @Getter
 public class UMLBehaviorGenerator {
     private MutableValueGraph<UMLClassifier, Relationship> classDiagram;
-    private UMLClassifier scope;
+    private UMLClassifier scopeClassifier;
+    private UMLOperation scopeOperation;
     @Setter
     private String defaultFunction = "startProfile";
     @Setter
@@ -15,20 +16,30 @@ public class UMLBehaviorGenerator {
 
     public UMLBehaviorGenerator(UMLClassDiagram umlClassDiagram){
         this.classDiagram = umlClassDiagram.getClassDiagram();
-        scope = getClassScope(defaultClass);
-        buildBehavioralUML(scope);
-    }
+        scopeClassifier = getClassScope(defaultClass);
+        scopeOperation = matchFunction(defaultFunction);
 
-    private void buildBehavioralUML(UMLClassifier scope){
-        buildSequenceDiagram(scope, matchFunction(defaultFunction));
+        buildSequenceDiagram(scopeClassifier, scopeOperation);
     }
 
     private void buildSequenceDiagram(UMLClassifier scope, UMLOperation function){
         function.getCallTreeString().printTree();
+        CallTreeNode<String> root = function.getCallTreeString();
+        System.out.println(root);
+        for (CallTreeNode<String> child : root.getChildren()){
+            if (child.getName().contains("{")){
+                //controlling character, such as '{if}'
+
+            }else{
+                //todo
+                UMLClassifier calledType = giveMeThatType(scope, child.getName());
+
+            }
+        }
     }
 
     private UMLOperation matchFunction(String functionName){
-        for (UMLOperation operation : scope.getOperations()){
+        for (UMLOperation operation : scopeClassifier.getOperations()){
             if (operation.getName().equals(functionName)){
                 return operation;
             }
@@ -44,5 +55,9 @@ public class UMLBehaviorGenerator {
             }
         }
         return toRet;
+    }
+
+    private UMLClassifier giveMeThatType(UMLClassifier initialScope, String searchString){
+        return null;
     }
 }

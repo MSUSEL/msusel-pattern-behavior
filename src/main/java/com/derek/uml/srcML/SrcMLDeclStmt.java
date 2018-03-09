@@ -42,6 +42,17 @@ public class SrcMLDeclStmt extends SrcMLNode{
     }
     protected void parse() {
         decls = parseDecls();
+        SrcMLName dataTypeName = null;
+        for (SrcMLDecl decl : decls){
+            //fix any decls that are declared using commas
+            if (decl.getType().getOptionalAttribute().equals("prev")){
+                //references last type
+                decl.getType().setName(dataTypeName);
+            }else{
+                dataTypeName = decl.getType().getNameObj();
+            }
+            decl.buildCallTree();
+        }
     }
 
     public void fillCallTree(CallTreeNode<SrcMLNode> callTreeRoot){

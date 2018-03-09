@@ -48,7 +48,10 @@ public class SrcMLDecl extends SrcMLNode{
         range = parseRange();
         init = parseInit();
         specifiers = parseSpecifiers();
-        callTree = new CallTreeNode<>(this, "decl");
+
+    }
+    public void buildCallTree(){
+        callTree = new CallTreeNode<>(this, "decl{" + type.getName() + "}");
 
         if (range != null){
             buildCallTree(callTree, range.getExpression());
@@ -71,5 +74,6 @@ public class SrcMLDecl extends SrcMLNode{
     public String toString(){
         return getName();
     }
+
 
 }

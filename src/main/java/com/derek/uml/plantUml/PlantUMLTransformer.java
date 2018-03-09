@@ -51,7 +51,18 @@ public class PlantUMLTransformer {
 
 
     public void generateSequenceDiagram(){
+        StringBuilder behaviorOutput = new StringBuilder();
+        behaviorOutput.append("@startuml\n");
+        for (UMLLifeline umlLifeline : umlSequenceDiagram.getSequenceDiagram().nodes()){
+            //TODO
+            //behaviorOutput.append(umlLifeline.plantUMLTransform());
+        }
 
+        behaviorOutput.append("@enduml\n");
+
+        //below is for printing to console
+        //System.out.println(output.toString());
+        printStructureToFile(behaviorOutput);
     }
 
     public void generateClassDiagram(){
@@ -94,7 +105,19 @@ public class PlantUMLTransformer {
     }
 
     private void printBehaviorToFile(StringBuilder behaviorOutput){
+        try{
+            File mainDirectory = new File("plantUmlOutput\\");
+            if (!mainDirectory.exists()){
+                Files.createDirectory(Paths.get("plantUmlOutput\\"));
+            }
+            File fout = new File("plantUmlOutput\\plantUmlBehavior" + Main.currentVersion + ".puml");
+            PrintWriter pw = new PrintWriter(fout);
+            pw.print(behaviorOutput);
+            pw.close();
 
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
 }
