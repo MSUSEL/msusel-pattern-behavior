@@ -278,7 +278,7 @@ public class UMLGenerationUtils {
 
         //null for extends parents because enums can't have extends parents.. while then can have implements (i think), srcml doesn't support
         //that as far as I can tell.
-        UMLClass umlEnum = new UMLClass(srcMLEnum.getName(), residingPackage, imports, attributes, operations, constructors, false, null, null,"enum");
+        UMLClass umlEnum = new UMLClass(srcMLEnum.getName(), residingPackage, imports, attributes, operations, constructors, false, new ArrayList<>(), new ArrayList<>(),"enum");
         return umlEnum;
     }
 

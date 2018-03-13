@@ -30,6 +30,7 @@ import com.derek.uml.srcML.SrcMLClass;
 import com.derek.uml.srcML.SrcMLEnum;
 import com.derek.uml.srcML.SrcMLInterface;
 import javafx.util.Pair;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,8 @@ public class UMLGenerator {
     private List<SrcMLBlock> rootBlocks;
     private UMLClassDiagram umlClassDiagram;
     private UMLSequenceDiagram umlSequenceDiagram;
-    private ExternalPartyDataTypeSignature languageTypes;
+    @Getter
+    protected static ExternalPartyDataTypeSignature languageTypes;
     private List<ExternalPartyDataTypeSignature> thirdPartyTypes;
 
     public UMLGenerator(List<SrcMLBlock> rootBlocks){
@@ -99,12 +101,20 @@ public class UMLGenerator {
             tree.addEntirePackage(umlClassifier);
         }
         umlClassDiagram.setPackageTree(tree);
+        //initial pass building the inheritance hierarchy.
+        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
+            umlClassifier.setExtendsParents(new ArrayList<>());
+            umlClassifier.setImplementsParents(new ArrayList<>());
+            assignExtendsParentsObjs(umlClassifier);
+            assignImplementsParentsObjs(umlClassifier);
+        }
 
+        //at this point we have knowledge of all built-in classes, language types, and 3rd party classes if applicable (at time of this no 3rd parties are included)
         for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
             for (UMLAttribute umlAttribute : umlClassifier.getAttributes()){
                 //generics are not being handled - though I don't knwo if they need to be.
                 //right nwo I am doing nothing for many of these.
-                UMLClassifier potentialMatch = getClassifierFromType(umlClassifier, umlAttribute.getStringDataType());
+                UMLClassifier potentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, umlAttribute.getStringDataType());
                 if (potentialMatch != null) {
                     //type within the project
                     umlAttribute.setType(potentialMatch);
@@ -120,7 +130,7 @@ public class UMLGenerator {
             }
             //the issue is that language types (Object, etc.,) do not have their operations imported. so it looks like they are null.
             for (UMLOperation umlOperation : umlClassifier.getOperations()){
-                UMLClassifier potentialMatch = getClassifierFromType(umlClassifier, umlOperation.getStringReturnDataType());
+                UMLClassifier potentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, umlOperation.getStringReturnDataType());
                 if (potentialMatch != null) {
                     //type within the project
                     umlOperation.setType(potentialMatch);
@@ -143,7 +153,7 @@ public class UMLGenerator {
     private List<UMLClassifier> getParamsFromString(UMLClassifier owningClassifier, UMLOperation umlOperation){
         List<UMLClassifier> params = new ArrayList<>();
         for (Pair<String, String> stringParam : umlOperation.getStringParameters()){
-            UMLClassifier potentialMatch = getClassifierFromType(owningClassifier, stringParam.getKey());
+            UMLClassifier potentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, owningClassifier, stringParam.getKey());
             if (potentialMatch == null) {
                 //did not find param in project, so we check in language types.
                 potentialMatch = getLanguageClassifierFromString(stringParam.getKey());
@@ -246,59 +256,33 @@ public class UMLGenerator {
                     }
                 }
             }
-            for (UMLClassifier parent : findExtendsParentsObjs(umlClassifier)){
+            for (UMLClassifier parent : umlClassifier.getExtendsParents()){
                 umlClassDiagram.addRelationshipToDiagram(umlClassifier, parent, Relationship.GENERALIZATION);
             }
-            for (UMLClassifier parent : findImplementsParentsObjs(umlClassifier)){
+            for (UMLClassifier parent : umlClassifier.getImplementsParents()){
                 umlClassDiagram.addRelationshipToDiagram(umlClassifier, parent, Relationship.REALIZATION);
             }
         }
     }
-    private List<UMLClassifier> findExtendsParentsObjs(UMLClassifier umlClassifier){
-        List<UMLClassifier> parents = new ArrayList<>();
-        for (String parent : umlClassifier.getExtendsParentsString()){
-            for (UMLClassifier potentialParent : umlClassDiagram.getClassDiagram().nodes()){
-                if (parent.equals(potentialParent.getName())){
-                    //found it!
-                    parents.add(potentialParent);
-                    umlClassifier.addExtendsParents(potentialParent);
-                }
-            }
+    private void assignExtendsParentsObjs(UMLClassifier umlClassifier){
+        ArrayList<UMLClassifier> extendsParents = new ArrayList<>();
+        for (String parent : umlClassifier.getExtendsParentsString()) {
+            UMLClassifier extendParent = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, parent);
+            extendsParents.add(extendParent);
         }
-        return parents;
+        umlClassifier.setExtendsParents(extendsParents);
     }
-    private List<UMLClassifier> findImplementsParentsObjs(UMLClassifier umlClassifier){
-        List<UMLClassifier> parents = new ArrayList<>();
+    private void assignImplementsParentsObjs(UMLClassifier umlClassifier){
+        ArrayList<UMLClassifier> implementsParents = new ArrayList<>();
+        //doing this set because the first time through both extends parents and implemlents parents will be null.
         for (String parent : umlClassifier.getImplementsParentsString()) {
-            for (UMLClassifier potentialParent : umlClassDiagram.getClassDiagram().nodes()) {
-                if (parent.equals(potentialParent.getName())) {
-                    //found it!
-                    parents.add(potentialParent);
-                    umlClassifier.addImplementsParents(potentialParent);
-                }
-            }
+            UMLClassifier implementParent = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, parent);
+            implementsParents.add(implementParent);
         }
-        return parents;
+        umlClassifier.setImplementsParents(implementsParents);
     }
 
 
-    private List<String> typeSplitter(String type){
-        //because I have generics (foo<bar>), combo generics (foo<bar1,bar2>), and ownership (foo.bar)
-        List<String> types = new ArrayList<>();
-
-        //initial case
-        String[] splitter = type.split("<");
-        types.add(splitter[0]);
-        for (int i = 1; i < splitter.length; i++){
-            String segment = splitter[i].replaceAll(">", "");
-            String[] segmentSplitter = segment.split(",");
-            types.add(segmentSplitter[0]);
-            for (int j = 1; j < segmentSplitter.length; j++){
-                types.add(segmentSplitter[j]);
-            }
-        }
-        return types;
-    }
 
 
     //returns true if the type is a primitive type (including Strring)
@@ -317,24 +301,6 @@ public class UMLGenerator {
         }
         return false;
     }
-
-    private UMLClassifier getClassifierFromType(UMLClassifier owningType, String typeToMatch){
-        PackageTree owningPackage = umlClassDiagram.getPackageTree();
-
-        PackageTree.PackageNode bottomLevel = owningPackage.getLevelOfClassifier(owningType);
-        for (UMLClassifier potentialMatch : bottomLevel.getClassifiers()){
-            if (potentialMatch.getName().equals(typeToMatch)){
-                //found a match!
-                return potentialMatch;
-            }
-        }
-        //will happen if the data type is not of the residing package.
-        return null;
-    }
-
-
-
-
 
 
 }

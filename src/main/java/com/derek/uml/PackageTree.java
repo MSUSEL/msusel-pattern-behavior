@@ -79,6 +79,71 @@ public class PackageTree {
         return pointer;
     }
 
+
+    //happens when an import ends in *
+    public List<UMLClassifier> getClassifiersFromImport(List<String> imports){
+        List<UMLClassifier> packageClassifiers = new ArrayList<>();
+        int importPointer = 0;
+        String importVal = imports.get(importPointer);
+        PackageNode packageTreePointer = root;
+        if (!importVal.equals(packageTreePointer.getName())){
+            //kick it off -- but if the roots are different then its a 3rd party lib.
+            return packageClassifiers;
+        }
+        importPointer++;
+        while (importPointer < imports.size()){
+            importVal = imports.get(importPointer);
+            if (importPointer == imports.size()-1){
+                //end of tree, match classifier
+                packageClassifiers = packageTreePointer.getClassifiers();
+            }else{
+                //middle of tree
+                for (PackageNode nextPackageLevel : packageTreePointer.getChildren()){
+                    if (importVal.equals(nextPackageLevel.getName())){
+                        //found match, continue
+                        importPointer++;
+                        packageTreePointer = nextPackageLevel;
+                    }
+                }
+            }
+        }
+        return packageClassifiers;
+    }
+
+    public UMLClassifier getClassifierFromImport(List<String> imports){
+        int importPointer = 0;
+        String importVal = imports.get(importPointer);
+        PackageNode packageTreePointer = root;
+        if (!importVal.equals(packageTreePointer.getName())){
+            //kick it off -- but if the roots are different then its a 3rd party lib.
+            return null;
+        }
+        importPointer++;
+        while (importPointer < imports.size()){
+            importVal = imports.get(importPointer);
+            if (importPointer == imports.size()-1){
+                //end of tree, match classifier
+                for (UMLClassifier classifiers : packageTreePointer.getClassifiers()){
+                    if (imports.get(importPointer).equals(classifiers.getName())){
+                        System.out.println("Matched: " + imports + " to package level: " + packageTreePointer.getName());
+                        return classifiers;
+                    }
+                }
+            }else{
+                //middle of tree
+                for (PackageNode nextPackageLevel : packageTreePointer.getChildren()){
+                    if (importVal.equals(nextPackageLevel.getName())){
+                        //found match, continue
+                        importPointer++;
+                        packageTreePointer = nextPackageLevel;
+                    }
+                }
+            }
+        }
+        System.out.println("no matches: " + imports);
+        return null;
+    }
+
     @Getter
     public class PackageNode{
         private String name;

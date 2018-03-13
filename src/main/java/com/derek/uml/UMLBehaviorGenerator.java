@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 public class UMLBehaviorGenerator {
-    private MutableValueGraph<UMLClassifier, Relationship> classDiagram;
+    private UMLClassDiagram umlClassDiagram;
     private UMLClassifier scopeClassifier;
     private UMLOperation scopeOperation;
     @Setter
@@ -15,7 +15,7 @@ public class UMLBehaviorGenerator {
     private String defaultClass = "FirefoxBinary";
 
     public UMLBehaviorGenerator(UMLClassDiagram umlClassDiagram){
-        this.classDiagram = umlClassDiagram.getClassDiagram();
+        this.umlClassDiagram = umlClassDiagram;
         scopeClassifier = getClassScope(defaultClass);
         scopeOperation = matchFunction(defaultFunction);
 
@@ -27,12 +27,19 @@ public class UMLBehaviorGenerator {
         CallTreeNode<String> root = function.getCallTreeString();
         System.out.println(root);
         for (CallTreeNode<String> child : root.getChildren()){
+            String operator = child.getTagName();
+            UMLClassifier type;
+            if (child.getTagName().contains("decl")){
+                //get type
+                String stringType = getTypeFromDeclaration(child.getTagName());
+                type = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, scope, stringType);
+            }
+
             if (child.getName().contains("{")){
                 //controlling character, such as '{if}'
 
             }else{
-                //todo
-                UMLClassifier calledType = giveMeThatType(scope, child.getName());
+                UMLClassifier calledType = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, scope, child.getName());
 
             }
         }
@@ -49,7 +56,7 @@ public class UMLBehaviorGenerator {
 
     private UMLClassifier getClassScope(String searcher){
         UMLClassifier toRet = null;
-        for (UMLClassifier umlClassifier : classDiagram.nodes()){
+        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
             if (umlClassifier.getName().equals(searcher)){
                 return umlClassifier;
             }
@@ -57,7 +64,11 @@ public class UMLBehaviorGenerator {
         return toRet;
     }
 
-    private UMLClassifier giveMeThatType(UMLClassifier initialScope, String searchString){
-        return null;
+
+
+    private String getTypeFromDeclaration(String decl){
+        int start = decl.indexOf("{");
+        int end = decl.lastIndexOf("}");
+        return decl.substring(start+1, end);
     }
 }

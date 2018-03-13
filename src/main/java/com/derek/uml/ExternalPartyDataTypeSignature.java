@@ -46,17 +46,17 @@ public class ExternalPartyDataTypeSignature {
                         switch (classifierTag){
                             case "interface":
                                 //i (might) need to implement this fully.. I might need to make use of javap to do this.
-                                dataTypes.add(new UMLInterface(line, residingPackage, null, new ArrayList<>(), null, null));
+                                dataTypes.add(new UMLInterface(line, residingPackage, null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
                                 break;
                             case "class":
                             case "exception":
                             case "error":
                                 dataTypes.add(new UMLClass(line, residingPackage, null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), false,
-                                        null, null, "class"));
+                                        new ArrayList<>(), new ArrayList<>(), "class"));
                                 break;
                             case "enum":
                                 dataTypes.add(new UMLClass(line, residingPackage, null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), false,
-                                        null, null, "enum"));
+                                        new ArrayList<>(), new ArrayList<>(), "enum"));
                                 break;
                         }
                 }
