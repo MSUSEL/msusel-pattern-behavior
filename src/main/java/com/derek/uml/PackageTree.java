@@ -10,6 +10,8 @@ import java.util.List;
 public class PackageTree {
     private PackageNode root;
 
+
+    //TODO - bug here. root is org, but second iteration makes a second org as a child of root....
     public void addEntirePackage(UMLClassifier umlClassifier){
         List<String> packageStructure = umlClassifier.getResidingPackage();
         PackageNode holder = null;
@@ -18,6 +20,9 @@ public class PackageTree {
             if (i == 0){
                 if (root == null){
                     root = new PackageNode(s, null);
+                    holder = root;
+                    continue;
+
                 }
                 //first iteration, need this to kick things off
                 holder = root;
@@ -55,7 +60,9 @@ public class PackageTree {
     }
 
     public void printInOrder(PackageNode node){
-        if (node != null){
+        if(node == root){
+            System.out.println(node.toString());
+        }else if (node != null){
             for (PackageNode child : node.getChildren()){
                 System.out.println(child.toString());
                 printInOrder(child);
@@ -81,66 +88,43 @@ public class PackageTree {
 
 
     //happens when an import ends in *
-    public List<UMLClassifier> getClassifiersFromImport(List<String> imports){
-        List<UMLClassifier> packageClassifiers = new ArrayList<>();
-        int importPointer = 0;
-        String importVal = imports.get(importPointer);
-        PackageNode packageTreePointer = root;
-        if (!importVal.equals(packageTreePointer.getName())){
-            //kick it off -- but if the roots are different then its a 3rd party lib.
-            return packageClassifiers;
+    public List<UMLClassifier> getClassifiersFromImport(List<String> imports, int pointer, PackageNode node){
+        if (pointer == imports.size()-1){
+            //base case
+            return node.getClassifiers();
         }
-        importPointer++;
-        while (importPointer < imports.size()){
-            importVal = imports.get(importPointer);
-            if (importPointer == imports.size()-1){
-                //end of tree, match classifier
-                packageClassifiers = packageTreePointer.getClassifiers();
-            }else{
-                //middle of tree
-                for (PackageNode nextPackageLevel : packageTreePointer.getChildren()){
-                    if (importVal.equals(nextPackageLevel.getName())){
-                        //found match, continue
-                        importPointer++;
-                        packageTreePointer = nextPackageLevel;
-                    }
-                }
+        for (PackageNode child : node.getChildren()){
+            if (imports.get(pointer).equals(child.getName())){
+                //package level node we matched
+                return getClassifiersFromImport(imports, pointer++, child);
             }
         }
-        return packageClassifiers;
+        //if we get here, we never reached a match. This coudl be because a third party lib has a smiilar package structure
+        System.out.println("no match: " + imports  + " is not in the package structure.");
+        return null;
     }
 
-    public UMLClassifier getClassifierFromImport(List<String> imports){
-        int importPointer = 0;
-        String importVal = imports.get(importPointer);
-        PackageNode packageTreePointer = root;
-        if (!importVal.equals(packageTreePointer.getName())){
-            //kick it off -- but if the roots are different then its a 3rd party lib.
-            return null;
-        }
-        importPointer++;
-        while (importPointer < imports.size()){
-            importVal = imports.get(importPointer);
-            if (importPointer == imports.size()-1){
-                //end of tree, match classifier
-                for (UMLClassifier classifiers : packageTreePointer.getClassifiers()){
-                    if (imports.get(importPointer).equals(classifiers.getName())){
-                        System.out.println("Matched: " + imports + " to package level: " + packageTreePointer.getName());
-                        return classifiers;
-                    }
-                }
-            }else{
-                //middle of tree
-                for (PackageNode nextPackageLevel : packageTreePointer.getChildren()){
-                    if (importVal.equals(nextPackageLevel.getName())){
-                        //found match, continue
-                        importPointer++;
-                        packageTreePointer = nextPackageLevel;
-                    }
+    public UMLClassifier getClassifierFromImport(List<String> imports, int pointer, PackageNode node){
+        if (pointer == imports.size()-1){
+            //base case
+            for (UMLClassifier umlClassifier : node.getClassifiers()){
+                if (imports.get(pointer).equals(umlClassifier.getName())){
+                    //positive match
+                    return umlClassifier;
                 }
             }
+            //somehow did not find.. this should never happen.
+            System.out.println("did not find class file even though we dug down into hte package successfully. big issue.");
+            System.exit(0);
         }
-        System.out.println("no matches: " + imports);
+        for (PackageNode child : node.getChildren()){
+            if (imports.get(pointer).equals(child.getName())){
+                //package level node we matched
+                return getClassifierFromImport(imports, pointer++, child);
+            }
+        }
+        //if we get here, we never reached a match. This coudl be because a third party lib has a smiilar package structure
+        System.out.println("no match: " + imports  + " is not in the package structure.");
         return null;
     }
 

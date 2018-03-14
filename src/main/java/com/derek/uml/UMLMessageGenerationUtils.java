@@ -22,7 +22,22 @@ public class UMLMessageGenerationUtils {
             searchString = getLastType(searchString);
         }
         System.out.println("finding type from: " + initialScope.getName() + " and looking for: " + searchString);
+        if (searchString.contains(".")){
+            //type is directly linked to a package
+            //this is an easy one
+            List<String> searchStrings = listify(searchString);
+            UMLClassifier importer = umlClassDiagram.getPackageTree().getClassifierFromImport(searchStrings, 0, umlClassDiagram.getPackageTree().getRoot());
+            if (importer != null) {
+                //will be null if package points to a 3rd party lib.
+                if (searchString.equals(importer.getName())){
+                    //finally found match.
+                    return importer;
+                }
+            }else
+                //third part type.
+                return null;
 
+        }
 
         //check classifier's vars
         if (searchString.equals(initialScope.getName())){
@@ -31,6 +46,9 @@ public class UMLMessageGenerationUtils {
         }
         for (UMLClassifier parent : initialScope.getExtendsParents()){
             //var is from a parent class
+            if (parent== null){
+                System.out.println("here with null parent??" + parent);
+            }
             if (searchString.equals(parent.getName())){
                 return parent;
             }
@@ -52,27 +70,20 @@ public class UMLMessageGenerationUtils {
                 return sibling;
             }
         }
-        if (searchString.equals("org.openqa.selenium.remote.http.HttpClient")){
-            System.out.println();
-            //so there is a bug here. basically, i haven't allowed for the situation where you direct the type (the search
-            //string here is above, which is different from the immport path. I think right now the impelments extends parents
-            //are being stored as single Strings, not multiple strings like this. fortunately the logic is realitvley the same
-            //inside the package tree, but I still need to (1) identify when this search string appears and (2) parse it to
-            //find the HTTPCLient object under selenium/remote/http/
-        }
+
         //look through imports now
         for (List<String> singleImport : initialScope.getImports()){
             if (singleImport.get(singleImport.size()-1).equals("*")){
                 //catch-all for imports, will return a list of umlClassifiers.
-                List<UMLClassifier> packageClassifiers = umlClassDiagram.getPackageTree().getClassifiersFromImport(singleImport);
-                for (UMLClassifier packageClassifier : packageClassifiers){
+                List<UMLClassifier> packageClassifiers = umlClassDiagram.getPackageTree().getClassifiersFromImport(listify(singleImport.get(0)),0, umlClassDiagram.getPackageTree().getRoot());
+                    for (UMLClassifier packageClassifier : packageClassifiers){
                     if (searchString.equals(packageClassifier.getName())){
                         //finally found match.
                         return packageClassifier;
                     }
                 }
             }else{
-                UMLClassifier importer = umlClassDiagram.getPackageTree().getClassifierFromImport(singleImport);
+                UMLClassifier importer = umlClassDiagram.getPackageTree().getClassifierFromImport(listify(singleImport.get(0)),0, umlClassDiagram.getPackageTree().getRoot());
                 if (importer != null) {
                     //will be null if package points to a 3rd party lib.
                     if (searchString.equals(importer.getName())){
@@ -110,6 +121,15 @@ public class UMLMessageGenerationUtils {
     public static String getLastType(String type){
         List<String> types = typeSplitter(type);
         return types.get(types.size()-1);
+    }
+
+    public static List<String> listify(String stringToList){
+        String[] splitter = stringToList.split("\\.");
+        List<String> toRet = new ArrayList<>();
+        for (String s : splitter){
+            toRet.add(s);
+        }
+        return toRet;
     }
 
 }
