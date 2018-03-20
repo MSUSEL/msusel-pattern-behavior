@@ -10,23 +10,21 @@ import java.util.List;
 public class PackageTree {
     private PackageNode root;
 
-
-    //TODO - bug here. root is org, but second iteration makes a second org as a child of root....
     public void addEntirePackage(UMLClassifier umlClassifier){
         List<String> packageStructure = umlClassifier.getResidingPackage();
-        PackageNode holder = null;
+        PackageNode holder = root;
         for (int i = 0; i < packageStructure.size(); i++){
             String s = packageStructure.get(i);
-            if (i == 0){
-                if (root == null){
-                    root = new PackageNode(s, null);
-                    holder = root;
-                    continue;
-
-                }
-                //first iteration, need this to kick things off
+            if (root == null){
+                root = new PackageNode(s, null);
                 holder = root;
+                continue;
             }
+            if (i == 0){
+                //first time through, so we don't need to match anything.. btw this is assuming that any children under this are children of root.
+                continue;
+            }
+
             UMLClassifier isLeafPackage = null;
             if (i == packageStructure.size() - 1){
                 //last one.
@@ -99,7 +97,7 @@ public class PackageTree {
                 return getClassifiersFromImport(imports, pointer++, child);
             }
         }
-        //if we get here, we never reached a match. This coudl be because a third party lib has a smiilar package structure
+        //if we get here, we never reached a match
         System.out.println("no match: " + imports  + " is not in the package structure.");
         return null;
     }
@@ -109,13 +107,19 @@ public class PackageTree {
             //base case
             for (UMLClassifier umlClassifier : node.getClassifiers()){
                 if (imports.get(pointer).equals(umlClassifier.getName())){
-                    //positive match
                     return umlClassifier;
                 }
             }
             //somehow did not find.. this should never happen.
             System.out.println("did not find class file even though we dug down into hte package successfully. big issue.");
             System.exit(0);
+        }
+        if (pointer == 0){
+            if (!imports.get(pointer).equals(root.getName())){
+                //root is different from package root.
+                return null;
+            }
+            pointer++;
         }
         for (PackageNode child : node.getChildren()){
             if (imports.get(pointer).equals(child.getName())){
@@ -124,7 +128,7 @@ public class PackageTree {
             }
         }
         //if we get here, we never reached a match. This coudl be because a third party lib has a smiilar package structure
-        System.out.println("no match: " + imports  + " is not in the package structure.");
+        System.out.println("no match: " + imports  + " is not in the immediate package structure");
         return null;
     }
 

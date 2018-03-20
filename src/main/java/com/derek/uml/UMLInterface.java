@@ -64,6 +64,24 @@ public class UMLInterface extends UMLClassifier {
     }
 
     @Override
+    public List<UMLClassifier> getExtendsParents() {
+        if (extendsParents == null){
+            return new ArrayList<>();
+        }else{
+            return extendsParents;
+        }
+    }
+
+    @Override
+    public List<UMLClassifier> getImplementsParents() {
+        if (implementsParents == null){
+            return new ArrayList<>();
+        }else{
+            return implementsParents;
+        }
+    }
+
+    @Override
     public String plantUMLTransform() {
         StringBuilder output = new StringBuilder();
         output.append("interface " + this.getName() + "{\n");

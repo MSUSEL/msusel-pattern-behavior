@@ -62,7 +62,7 @@ public class PlantUMLTransformer {
 
         //below is for printing to console
         //System.out.println(output.toString());
-        printStructureToFile(behaviorOutput);
+        printBehaviorToFile(behaviorOutput);
     }
 
     public void generateClassDiagram(){
@@ -74,6 +74,7 @@ public class PlantUMLTransformer {
         generateRelationships(structuralOutput);
 
         structuralOutput.append("@enduml\n");
+
 
         //below is for printing to console
         //System.out.println(output.toString());
@@ -96,6 +97,7 @@ public class PlantUMLTransformer {
             }
             File fout = new File("plantUmlOutput\\plantUmlStructure" + Main.currentVersion + ".puml");
             PrintWriter pw = new PrintWriter(fout);
+
             pw.print(structureOutput);
             pw.close();
 

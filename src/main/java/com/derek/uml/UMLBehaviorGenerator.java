@@ -25,7 +25,7 @@ public class UMLBehaviorGenerator {
     private void buildSequenceDiagram(UMLClassifier scope, UMLOperation function){
         function.getCallTreeString().printTree();
         CallTreeNode<String> root = function.getCallTreeString();
-        System.out.println(root);
+        System.out.println("root obj: " + root);
         for (CallTreeNode<String> child : root.getChildren()){
             String operator = child.getTagName();
             UMLClassifier type;
@@ -63,8 +63,6 @@ public class UMLBehaviorGenerator {
         }
         return toRet;
     }
-
-
 
     private String getTypeFromDeclaration(String decl){
         int start = decl.indexOf("{");

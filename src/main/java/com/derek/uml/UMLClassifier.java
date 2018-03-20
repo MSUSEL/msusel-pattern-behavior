@@ -61,16 +61,7 @@ public abstract class UMLClassifier {
     public abstract List<String> getExtendsParentsString();
     public abstract List<String> getImplementsParentsString();
 
-    public void addExtendsParents(UMLClassifier umlClassifier){
-        if (extendsParents == null){
-            extendsParents = new ArrayList<>();
-        }
-        extendsParents.add(umlClassifier);
-    }
-    public void addImplementsParents(UMLClassifier umlClassifier){
-        if (implementsParents== null){
-            implementsParents = new ArrayList<>();
-        }
-        implementsParents.add(umlClassifier);
-    }
+
+    public abstract List<UMLClassifier> getExtendsParents();
+    public abstract List<UMLClassifier> getImplementsParents();
 }

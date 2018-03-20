@@ -61,8 +61,26 @@ public class UMLClass extends UMLClassifier {
         if (implementsParentsString == null){
             return new ArrayList<>();
         }else{
+            return implementsParentsString;
         }
-        return implementsParentsString;
+    }
+
+    @Override
+    public List<UMLClassifier> getExtendsParents() {
+        if (extendsParents == null){
+            return new ArrayList<>();
+        }else{
+            return extendsParents;
+        }
+    }
+
+    @Override
+    public List<UMLClassifier> getImplementsParents() {
+        if (implementsParents == null){
+            return new ArrayList<>();
+        }else{
+            return implementsParents;
+        }
     }
 
     @Override

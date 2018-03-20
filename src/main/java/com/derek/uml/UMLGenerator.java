@@ -47,7 +47,6 @@ public class UMLGenerator {
 
         this.rootBlocks = rootBlocks;
         umlClassDiagram = new UMLClassDiagram();
-        //TODO sequence diagram stuff
         umlSequenceDiagram = new UMLSequenceDiagram();
 
         //pass 1 is finding all classes/ops/attributes
@@ -81,7 +80,7 @@ public class UMLGenerator {
     }
 
     private void pass3(){
-        placeAssociations();
+        placeRelationships();
     }
 
     private void pass4(){
@@ -102,12 +101,7 @@ public class UMLGenerator {
         }
         umlClassDiagram.setPackageTree(tree);
         //initial pass building the inheritance hierarchy.
-        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
-            umlClassifier.setExtendsParents(new ArrayList<>());
-            umlClassifier.setImplementsParents(new ArrayList<>());
-            assignExtendsParentsObjs(umlClassifier);
-            assignImplementsParentsObjs(umlClassifier);
-        }
+        buildInheritanceHierarchy();
 
         //at this point we have knowledge of all built-in classes, language types, and 3rd party classes if applicable (at time of this no 3rd parties are included)
         for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
@@ -118,11 +112,11 @@ public class UMLGenerator {
                 if (potentialMatch != null) {
                     //type within the project
                     umlAttribute.setType(potentialMatch);
-                }else if (isPrimitiveType(umlAttribute.getStringDataType())){
+                }else if (UMLMessageGenerationUtils.isPrimitiveType(umlAttribute.getStringDataType())){
                     //do nothing, but I might in future
                 }else if (languageProjectDataType(umlAttribute.getStringDataType())){
-                    //language type
-                    umlAttribute.setType(getLanguageClassifierFromString(umlAttribute.getStringDataType()));
+                    //language type, I won't set anything because its redundant (being done in getUMLClassifierFromStringType())
+                    //umlAttribute.setType(getLanguageClassifierFromString(umlAttribute.getStringDataType()));
                 }else {
                     //third party type, or generic I don't want to parse.
                     //doing nothing with third party types right now.
@@ -130,24 +124,42 @@ public class UMLGenerator {
             }
             //the issue is that language types (Object, etc.,) do not have their operations imported. so it looks like they are null.
             for (UMLOperation umlOperation : umlClassifier.getOperations()){
-                UMLClassifier potentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, umlOperation.getStringReturnDataType());
-                if (potentialMatch != null) {
-                    //type within the project
-                    umlOperation.setType(potentialMatch);
-                    umlOperation.setParameters(getParamsFromString(umlClassifier, umlOperation));
-                }else if (isPrimitiveType(umlOperation.getStringReturnDataType())){
-                    //do nothing, primitive type. I might later though.
-                }else if (languageProjectDataType(umlOperation.getStringReturnDataType())){
-                    //language type
-                    umlOperation.setType(getLanguageClassifierFromString(umlOperation.getStringReturnDataType()));
-                }else {
-                    if (!umlOperation.getStringReturnDataType().equals("void")){
-                        //dont' care if the type is void.
-                        //third party type here.
-                    }
+                if (!umlOperation.getStringReturnDataType().equals("void")){
+                    UMLClassifier potentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, umlOperation.getStringReturnDataType());
+                    if (potentialMatch != null) {
+                        //type within the project
+                        umlOperation.setType(potentialMatch);
+                        umlOperation.setParameters(getParamsFromString(umlClassifier, umlOperation));
+                    }else if (UMLMessageGenerationUtils.isPrimitiveType(umlOperation.getStringReturnDataType())){
+                        //do nothing, primitive type. I might later though.
+                    }else if (languageProjectDataType(umlOperation.getStringReturnDataType())){
+                        //language type, I won't set anything because its redundant (being done in getUMLClassifierFromStringType())
+                        //umlOperation.setType(getLanguageClassifierFromString(umlOperation.getStringReturnDataType()));
+                    }else {
+                            //dont' care if the type is void.
+                            //third party type here.
+                        }
                 }
             }
         }
+    }
+
+    private void buildInheritanceHierarchy(){
+        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
+            List<UMLClassifier> extendsParents = new ArrayList<>();
+            for (String extendsString : umlClassifier.getExtendsParentsString()){
+                UMLClassifier match = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, extendsString);
+                extendsParents.add(match);
+            }
+            umlClassifier.setExtendsParents(extendsParents);
+            List<UMLClassifier> implementsParents = new ArrayList<>();
+            for (String implementsString : umlClassifier.getImplementsParentsString()){
+                UMLClassifier match = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, implementsString);
+                implementsParents.add(match);
+            }
+            umlClassifier.setImplementsParents(implementsParents);
+        }
+
     }
 
     private List<UMLClassifier> getParamsFromString(UMLClassifier owningClassifier, UMLOperation umlOperation){
@@ -179,7 +191,6 @@ public class UMLGenerator {
         //if this is the first time parsing langaugeTypes, load the file and parse it
         languageTypes = new ExternalPartyDataTypeSignature("resources/javaTypes.txt");
     }
-
 
     private boolean languageProjectDataType(String s){
         //language types are interesting because these are any types that can be used WITHOUT importing them.
@@ -221,7 +232,7 @@ public class UMLGenerator {
         }
     }
 
-    private void placeAssociations(){
+    private void placeRelationships(){
         for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
             for (UMLAttribute umlAttribute : umlClassifier.getAttributes()){
                 //standard attribute relationships
@@ -264,43 +275,5 @@ public class UMLGenerator {
             }
         }
     }
-    private void assignExtendsParentsObjs(UMLClassifier umlClassifier){
-        ArrayList<UMLClassifier> extendsParents = new ArrayList<>();
-        for (String parent : umlClassifier.getExtendsParentsString()) {
-            UMLClassifier extendParent = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, parent);
-            extendsParents.add(extendParent);
-        }
-        umlClassifier.setExtendsParents(extendsParents);
-    }
-    private void assignImplementsParentsObjs(UMLClassifier umlClassifier){
-        ArrayList<UMLClassifier> implementsParents = new ArrayList<>();
-        //doing this set because the first time through both extends parents and implemlents parents will be null.
-        for (String parent : umlClassifier.getImplementsParentsString()) {
-            UMLClassifier implementParent = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, parent);
-            implementsParents.add(implementParent);
-        }
-        umlClassifier.setImplementsParents(implementsParents);
-    }
-
-
-
-
-    //returns true if the type is a primitive type (including Strring)
-    //flase otherwise
-    private boolean isPrimitiveType(String type){
-        switch(type){
-            case "boolean":
-            case "byte":
-            case "char":
-            case "short":
-            case "int":
-            case "long":
-            case "float":
-            case "double":
-                return true;
-        }
-        return false;
-    }
-
 
 }

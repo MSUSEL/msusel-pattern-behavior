@@ -15,7 +15,6 @@ public class UMLMessageGenerationUtils {
         }
         return asString;
     }
-
     public static UMLClassifier getUMLClassifierFromStringType(UMLClassDiagram umlClassDiagram, UMLClassifier initialScope, String searchString){
         if (searchString.contains("<")){
             //generic
@@ -33,10 +32,14 @@ public class UMLMessageGenerationUtils {
                     //finally found match.
                     return importer;
                 }
-            }else
+            }else {
                 //third part type.
                 return null;
-
+            }
+        }
+        if (isPrimitiveType(searchString)){
+            //primitivie type
+            return new UMLClass(searchString, null, null, null, null, null, false, null, null, "primitive");
         }
 
         //check classifier's vars
@@ -44,10 +47,11 @@ public class UMLMessageGenerationUtils {
             //var is of this class type
             return initialScope;
         }
+
         for (UMLClassifier parent : initialScope.getExtendsParents()){
             //var is from a parent class
-            if (parent== null){
-                System.out.println("here with null parent??" + parent);
+            if (parent == null){
+                System.out.println("here with null parent in extends??" + parent);
             }
             if (searchString.equals(parent.getName())){
                 return parent;
@@ -55,6 +59,9 @@ public class UMLMessageGenerationUtils {
         }
         for (UMLClassifier parent : initialScope.getImplementsParents()){
             //var is from a parent implementing interface
+            if (parent == null){
+                System.out.println("here with null parent in implements??" + parent);
+            }
             if (searchString.equals(parent.getName())){
                 return parent;
             }
@@ -71,6 +78,9 @@ public class UMLMessageGenerationUtils {
             }
         }
 
+        if (searchString.equals("HttpClient")){
+            System.out.println("debug");
+        }
         //look through imports now
         for (List<String> singleImport : initialScope.getImports()){
             if (singleImport.get(singleImport.size()-1).equals("*")){
@@ -93,7 +103,13 @@ public class UMLMessageGenerationUtils {
                 }
             }
         }
-
+        //do a direct match on imports to see if we can at least find the same type.
+        for (List<String> singleImport : initialScope.getImports()){
+            List<String> realImport = listify(singleImport.get(0));
+            if (realImport.get(realImport.size()-1).equals(searchString)){
+                return new UMLClass(searchString, realImport, null, null, null, null, false, null, null, "thirdPartyClass");
+            }
+        }
 
         //if we get here the type is a third party type
         System.out.println("could not find type: " + searchString);
@@ -130,6 +146,23 @@ public class UMLMessageGenerationUtils {
             toRet.add(s);
         }
         return toRet;
+    }
+
+    //returns true if the type is a primitive type
+    //flase otherwise
+    public static boolean isPrimitiveType(String type){
+        switch(type){
+            case "boolean":
+            case "byte":
+            case "char":
+            case "short":
+            case "int":
+            case "long":
+            case "float":
+            case "double":
+                return true;
+        }
+        return false;
     }
 
 }
