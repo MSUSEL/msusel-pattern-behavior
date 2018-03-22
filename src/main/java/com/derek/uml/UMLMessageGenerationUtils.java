@@ -16,86 +16,75 @@ public class UMLMessageGenerationUtils {
         return asString;
     }
 
-    public static UMLClassifier getUMLClassifierFromStringType(UMLClassDiagram umlClassDiagram, UMLClassifier initialScope, String searchString){
-        if (searchString.contains("<")){
+    public static UMLClassifier getUMLClassifierFromStringType(UMLClassDiagram umlClassDiagram, UMLClassifier initialScope, String searchString) {
+        if (searchString.contains("<")) {
             //generic
             searchString = getLastType(searchString);
         }
-
-        if (initialScope.getName().equals("EventFiringOptions")){
-            System.out.println();
-        }
-
-
-        System.out.println("finding type from: " + initialScope.getName() + " and looking for: " + searchString);
-        if (searchString.contains(".")){
+        if (searchString.contains(".")) {
             //type is directly linked to a package
             //this is an easy one
             List<String> searchStrings = listify(searchString);
             UMLClassifier importer = umlClassDiagram.getPackageTree().getClassifier(searchStrings, 0, umlClassDiagram.getPackageTree().getRoot());
             if (importer != null) {
                 //will be null if package points to a 3rd party lib.
-                if (searchStrings.get(searchStrings .size() - 1).equals(importer.getName())){
+                if (searchStrings.get(searchStrings.size() - 1).equals(importer.getName())) {
                     //finally found match.
                     return importer;
                 }
-            }else {
+            } else {
                 //third part type.
                 return null;
             }
         }
-        if (isPrimitiveType(searchString)){
-            //primitivie type
-            return new UMLClass(searchString, null, null, null, null, null, false, null, null, "primitive");
-        }
-
         //check classifier's vars
-        if (searchString.equals(initialScope.getName())){
+        if (searchString.equals(initialScope.getName())) {
             //var is of this class type
             return initialScope;
         }
 
-        for (UMLClassifier parent : initialScope.getExtendsParents()){
+        for (UMLClassifier parent : initialScope.getExtendsParents()) {
             //var is from a parent class
-            if (searchString.equals(parent.getName())){
+            if (searchString.equals(parent.getName())) {
                 return parent;
             }
         }
-        for (UMLClassifier parent : initialScope.getImplementsParents()){
+        for (UMLClassifier parent : initialScope.getImplementsParents()) {
             //var is from a parent implementing interface
-            if (searchString.equals(parent.getName())){
+            if (searchString.equals(parent.getName())) {
                 return parent;
             }
         }
-        for (UMLClassifier langType : UMLGenerator.languageTypes.getDataTypes()){
-            if (searchString.equals(langType.getName())){
+        for (UMLClassifier langType : UMLGenerator.languageTypes.getDataTypes()) {
+            if (searchString.equals(langType.getName())) {
                 return langType;
             }
         }
-        for (UMLClassifier sibling : umlClassDiagram.getPackageTree().getLevelOfClassifier(initialScope).getClassifiers()){
+        for (UMLClassifier sibling : umlClassDiagram.getPackageTree().getLevelOfClassifier(initialScope).getClassifiers()) {
             //check siblings at same package level for type match
-            if (searchString.equals(sibling.getName())){
+
+            if (searchString.equals(sibling.getName())) {
                 return sibling;
             }
         }
 
 
         //look through imports now
-        for (List<String> singleImport : initialScope.getImports()){
-            if (singleImport.get(singleImport.size()-1).equals("*")){
+        for (List<String> singleImport : initialScope.getImports()) {
+            if (singleImport.get(singleImport.size() - 1).equals("*")) {
                 //catch-all for imports, will return a list of umlClassifiers.
-                List<UMLClassifier> packageClassifiers = umlClassDiagram.getPackageTree().getClassifiersFromImport(listify(singleImport.get(0)),0, umlClassDiagram.getPackageTree().getRoot());
-                    for (UMLClassifier packageClassifier : packageClassifiers){
-                    if (searchString.equals(packageClassifier.getName())){
+                List<UMLClassifier> packageClassifiers = umlClassDiagram.getPackageTree().getClassifiersFromImport(listify(singleImport.get(0)), 0, umlClassDiagram.getPackageTree().getRoot());
+                for (UMLClassifier packageClassifier : packageClassifiers) {
+                    if (searchString.equals(packageClassifier.getName())) {
                         //finally found match.
                         return packageClassifier;
                     }
                 }
-            }else{
-                UMLClassifier importer = umlClassDiagram.getPackageTree().getClassifier(listify(singleImport.get(0)),0, umlClassDiagram.getPackageTree().getRoot());
+            } else {
+                UMLClassifier importer = umlClassDiagram.getPackageTree().getClassifier(listify(singleImport.get(0)), 0, umlClassDiagram.getPackageTree().getRoot());
                 if (importer != null) {
                     //will be null if package points to a 3rd party lib.
-                    if (searchString.equals(importer.getName())){
+                    if (searchString.equals(importer.getName())) {
                         //finally found match.
                         return importer;
                     }
@@ -103,16 +92,17 @@ public class UMLMessageGenerationUtils {
             }
         }
         //do a direct match on imports to see if we can at least find the same type.
-        for (List<String> singleImport : initialScope.getImports()){
+        for (List<String> singleImport : initialScope.getImports()) {
             List<String> realImport = listify(singleImport.get(0));
-            if (realImport.get(realImport.size()-1).equals(searchString)){
-                return new UMLClass(searchString, realImport, null, null, null, null, false, null, null, "thirdPartyClass");
+            if (realImport.get(realImport.size() - 1).equals(searchString)) {
+                UMLClassifier thirdPartyClassifier = new UMLClass(searchString, realImport, null, null, null, null, false, null, null, "thirdPartyClass");
+                return thirdPartyClassifier;
             }
         }
 
-        //if we get here the type is a third party type
-        System.out.println("could not find type: " + searchString);
-        return null;
+        //if we get here we really fucked up.
+        UMLClassifier fuckUp = new UMLClass(searchString, null, null, null, null, null, false, null, null, "unknown");
+        return fuckUp;
     }
 
     public static List<String> typeSplitter(String type){

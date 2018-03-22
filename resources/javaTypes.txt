@@ -9,6 +9,14 @@ Readable
 Runnable
 Thread.UncaughtExceptionHandler
 <C>
+boolean
+byte
+char
+short
+int
+long
+float
+double
 Boolean
 Byte
 Character

@@ -98,7 +98,6 @@ public class PackageTree {
             }
         }
         //if we get here, we never reached a match
-        System.out.println("no match: " + imports  + " is not in the package structure.");
         return null;
     }
 
@@ -126,34 +125,6 @@ public class PackageTree {
             }
         }
         //if we get here, we never reached a match. This coudl be because a third party lib has a smiilar package structure
-        System.out.println("no match: " + importer  + " is not in the immediate package structure");
-        return null;
-    }
-
-    public UMLClassifier getClassifierFromImport(List<String> imports, int pointer, PackageNode node){
-        if (pointer == imports.size()-1){
-            //base case -- I use -2 because -1 points at a package, not a class file.
-            for (UMLClassifier umlClassifier : node.getClassifiers()){
-                if (imports.get(pointer).equals(umlClassifier.getName())){
-                    return umlClassifier;
-                }
-            }
-        }
-        if (pointer == 0){
-            if (!imports.get(pointer).equals(root.getName())){
-                //root is different from package root.
-                return null;
-            }
-        }
-        pointer++;
-        for (PackageNode child : node.getChildren()){
-            if (imports.get(pointer).equals(child.getName())){
-                //package level node we matched
-                return getClassifierFromImport(imports, pointer, child);
-            }
-        }
-        //if we get here, we never reached a match. This coudl be because a third party lib has a smiilar package structure
-        System.out.println("no match: " + imports  + " is not in the immediate package structure");
         return null;
     }
 

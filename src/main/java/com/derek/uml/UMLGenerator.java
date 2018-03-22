@@ -109,54 +109,38 @@ public class UMLGenerator {
                 //generics are not being handled - though I don't knwo if they need to be.
                 //right nwo I am doing nothing for many of these.
                 UMLClassifier potentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, umlAttribute.getStringDataType());
-                if (potentialMatch != null) {
                     //type within the project
-                    umlAttribute.setType(potentialMatch);
-                }else if (UMLMessageGenerationUtils.isPrimitiveType(umlAttribute.getStringDataType())){
-                    //do nothing, but I might in future
-                }else if (languageProjectDataType(umlAttribute.getStringDataType())){
-                    //language type, I won't set anything because its redundant (being done in getUMLClassifierFromStringType())
-                    //umlAttribute.setType(getLanguageClassifierFromString(umlAttribute.getStringDataType()));
-                }else {
-                    //third party type, or generic I don't want to parse.
-                    //doing nothing with third party types right now.
-                }
+                umlAttribute.setType(potentialMatch);
             }
             //the issue is that language types (Object, etc.,) do not have their operations imported. so it looks like they are null.
             for (UMLOperation umlOperation : umlClassifier.getOperations()){
                 if (!umlOperation.getStringReturnDataType().equals("void")){
                     UMLClassifier potentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, umlOperation.getStringReturnDataType());
-                    if (potentialMatch != null) {
-                        //type within the project
-                        umlOperation.setType(potentialMatch);
-                        umlOperation.setParameters(getParamsFromString(umlClassifier, umlOperation));
-                    }else if (UMLMessageGenerationUtils.isPrimitiveType(umlOperation.getStringReturnDataType())){
-                        //do nothing, primitive type. I might later though.
-                    }else if (languageProjectDataType(umlOperation.getStringReturnDataType())){
-                        //language type, I won't set anything because its redundant (being done in getUMLClassifierFromStringType())
-                        //umlOperation.setType(getLanguageClassifierFromString(umlOperation.getStringReturnDataType()));
-                    }else {
-                            //dont' care if the type is void.
-                            //third party type here.
-                        }
+                    //type within the project
+                    umlOperation.setType(potentialMatch);
+                    umlOperation.setParameters(getParamsFromString(umlClassifier, umlOperation));
                 }
             }
         }
     }
 
     private void buildInheritanceHierarchy(){
-
         for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
             List<UMLClassifier> extendsParents = new ArrayList<>();
             for (String extendsString : umlClassifier.getExtendsParentsString()){
                 UMLClassifier match = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, extendsString);
-                extendsParents.add(match);
+                if (match != null){
+                    //might  be null, especially if its a 3rd party lib.
+                    extendsParents.add(match);
+                }
             }
             umlClassifier.setExtendsParents(extendsParents);
             List<UMLClassifier> implementsParents = new ArrayList<>();
             for (String implementsString : umlClassifier.getImplementsParentsString()){
                 UMLClassifier match = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, implementsString);
-                implementsParents.add(match);
+                if (match != null) {
+                    implementsParents.add(match);
+                }
             }
             umlClassifier.setImplementsParents(implementsParents);
         }
@@ -166,47 +150,16 @@ public class UMLGenerator {
     private List<UMLClassifier> getParamsFromString(UMLClassifier owningClassifier, UMLOperation umlOperation){
         List<UMLClassifier> params = new ArrayList<>();
         for (Pair<String, String> stringParam : umlOperation.getStringParameters()){
-            UMLClassifier potentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, owningClassifier, stringParam.getKey());
-            if (potentialMatch == null) {
-                //did not find param in project, so we check in language types.
-                potentialMatch = getLanguageClassifierFromString(stringParam.getKey());
-            }
-            //if I include 3rd party libs, here i will say:
-            //if (potentialMatch == null){potentialMatch = getThirdPartyClassifierType(stringParam.getKey())}
 
+            UMLClassifier potentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, owningClassifier, stringParam.getKey());
             params.add(potentialMatch);
         }
         return params;
     }
 
-    private UMLClassifier getLanguageClassifierFromString(String searcher){
-        for (UMLClassifier umlClassifier : languageTypes.getDataTypes()){
-            if (umlClassifier.getName().equals(searcher)){
-                return umlClassifier;
-            }
-        }
-        return null;
-    }
-
     private void buildLanguageTypes(){
         //if this is the first time parsing langaugeTypes, load the file and parse it
         languageTypes = new ExternalPartyDataTypeSignature("resources/javaTypes.txt");
-    }
-
-    private boolean languageProjectDataType(String s){
-        //language types are interesting because these are any types that can be used WITHOUT importing them.
-        //as an example, String is a type in this category. Any java.lang type is in here.
-        //things like Scanner or List are NOT included here.
-        try{
-            for (UMLClassifier umlClassifier : languageTypes.getDataTypes()){
-                if (umlClassifier.getName().equals(s)){
-                    return true;
-                }
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return false;
     }
 
     private void buildClasses(){
@@ -227,6 +180,7 @@ public class UMLGenerator {
             }
         }
     }
+
     private void buildLanguageClasses(){
         for (UMLClassifier languageType : languageTypes.getDataTypes()){
             umlClassDiagram.addClassToDiagram(languageType);
@@ -239,40 +193,38 @@ public class UMLGenerator {
                 //standard attribute relationships
 
                 if (umlAttribute.getType() != null){
-                    if (!umlClassDiagram.getClassDiagram().nodes().contains(umlAttribute.getType())){
-                        System.out.println(umlAttribute.getType().getName() + " is not in the class diagram graph for attributes");
+                    if (umlClassDiagram.getClassDiagram().nodes().contains(umlAttribute.getType())) {
+                        umlClassDiagram.addRelationshipToDiagram(umlClassifier, umlAttribute.getType(), Relationship.ASSOCIATION);
                     }
-
-                    //will be null if the type is a third party type... or generic (at this point in tiem)
-                    umlClassDiagram.addRelationshipToDiagram(umlClassifier, umlAttribute.getType(), Relationship.ASSOCIATION);
                 }
             }
             for (UMLOperation operation : umlClassifier.getOperations()){
 
                 //standard operation relationships
                 if (operation.getType() != null) {
-                    if (!umlClassDiagram.getClassDiagram().nodes().contains(operation.getType())){
-                        System.out.println(operation.getType().getName() + " is not in the class diagram graph for operations");
+                    if (umlClassDiagram.getClassDiagram().nodes().contains(operation.getType())){
+                        umlClassDiagram.addRelationshipToDiagram(umlClassifier, operation.getType(), Relationship.ASSOCIATION);
                     }
-                    umlClassDiagram.addRelationshipToDiagram(umlClassifier, operation.getType(), Relationship.ASSOCIATION);
                 }
                 //set params
                 operation.setParameters(getParamsFromString(umlClassifier, operation));
                 for (UMLClassifier param : operation.getParameters()){
-
                     if (param != null) {
-                        if (!umlClassDiagram.getClassDiagram().nodes().contains(param.getName())){
-                            //System.out.println(param.getName() + " is not in the class diagram graph for params");
+                        if (umlClassDiagram.getClassDiagram().nodes().contains(param)){
+                            umlClassDiagram.addRelationshipToDiagram(umlClassifier, param, Relationship.ASSOCIATION);
                         }
-                        umlClassDiagram.addRelationshipToDiagram(umlClassifier, param, Relationship.ASSOCIATION);
                     }
                 }
             }
             for (UMLClassifier parent : umlClassifier.getExtendsParents()){
-                umlClassDiagram.addRelationshipToDiagram(umlClassifier, parent, Relationship.GENERALIZATION);
+                if (umlClassDiagram.getClassDiagram().nodes().contains(parent)){
+                    umlClassDiagram.addRelationshipToDiagram(umlClassifier, parent, Relationship.GENERALIZATION);
+                }
             }
             for (UMLClassifier parent : umlClassifier.getImplementsParents()){
-                umlClassDiagram.addRelationshipToDiagram(umlClassifier, parent, Relationship.REALIZATION);
+                if (umlClassDiagram.getClassDiagram().nodes().contains(parent)){
+                    umlClassDiagram.addRelationshipToDiagram(umlClassifier, parent, Relationship.REALIZATION);
+                }
             }
         }
     }
