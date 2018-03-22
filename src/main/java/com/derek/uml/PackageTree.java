@@ -102,29 +102,54 @@ public class PackageTree {
         return null;
     }
 
+
+    public UMLClassifier getClassifier(List<String> importer, int pointer, PackageNode node){
+        if (pointer == importer.size() - 2){
+            for (UMLClassifier umlClassifier : node.getClassifiers()){
+                if (umlClassifier.getName().equals(importer.get(importer.size()-1))){
+                    return umlClassifier;
+                }
+            }
+        }else{
+            if (pointer == 0){
+                if (!importer.get(pointer).equals(root.getName())){
+                    //root is different from package root.
+                    return null;
+                }
+            }
+            pointer++;
+            for (PackageNode child : node.getChildren()){
+                if (importer.get(pointer).equals(child.getName())){
+                    //package level node we matched
+                    return getClassifier(importer, pointer, child);
+                }
+            }
+        }
+        //if we get here, we never reached a match. This coudl be because a third party lib has a smiilar package structure
+        System.out.println("no match: " + importer  + " is not in the immediate package structure");
+        return null;
+    }
+
     public UMLClassifier getClassifierFromImport(List<String> imports, int pointer, PackageNode node){
         if (pointer == imports.size()-1){
-            //base case
+            //base case -- I use -2 because -1 points at a package, not a class file.
             for (UMLClassifier umlClassifier : node.getClassifiers()){
                 if (imports.get(pointer).equals(umlClassifier.getName())){
                     return umlClassifier;
                 }
             }
-            //somehow did not find.. this should never happen.
-            System.out.println("did not find class file even though we dug down into hte package successfully. big issue.");
-            System.exit(0);
         }
         if (pointer == 0){
             if (!imports.get(pointer).equals(root.getName())){
                 //root is different from package root.
                 return null;
             }
-            pointer++;
         }
+        pointer++;
         for (PackageNode child : node.getChildren()){
             if (imports.get(pointer).equals(child.getName())){
                 //package level node we matched
-                return getClassifierFromImport(imports, pointer++, child);
+                return getClassifierFromImport(imports, pointer, child);
             }
         }
         //if we get here, we never reached a match. This coudl be because a third party lib has a smiilar package structure

@@ -145,6 +145,7 @@ public class UMLGenerator {
     }
 
     private void buildInheritanceHierarchy(){
+
         for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
             List<UMLClassifier> extendsParents = new ArrayList<>();
             for (String extendsString : umlClassifier.getExtendsParentsString()){

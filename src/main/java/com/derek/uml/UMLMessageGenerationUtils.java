@@ -15,20 +15,27 @@ public class UMLMessageGenerationUtils {
         }
         return asString;
     }
+
     public static UMLClassifier getUMLClassifierFromStringType(UMLClassDiagram umlClassDiagram, UMLClassifier initialScope, String searchString){
         if (searchString.contains("<")){
             //generic
             searchString = getLastType(searchString);
         }
+
+        if (initialScope.getName().equals("EventFiringOptions")){
+            System.out.println();
+        }
+
+
         System.out.println("finding type from: " + initialScope.getName() + " and looking for: " + searchString);
         if (searchString.contains(".")){
             //type is directly linked to a package
             //this is an easy one
             List<String> searchStrings = listify(searchString);
-            UMLClassifier importer = umlClassDiagram.getPackageTree().getClassifierFromImport(searchStrings, 0, umlClassDiagram.getPackageTree().getRoot());
+            UMLClassifier importer = umlClassDiagram.getPackageTree().getClassifier(searchStrings, 0, umlClassDiagram.getPackageTree().getRoot());
             if (importer != null) {
                 //will be null if package points to a 3rd party lib.
-                if (searchString.equals(importer.getName())){
+                if (searchStrings.get(searchStrings .size() - 1).equals(importer.getName())){
                     //finally found match.
                     return importer;
                 }
@@ -50,18 +57,12 @@ public class UMLMessageGenerationUtils {
 
         for (UMLClassifier parent : initialScope.getExtendsParents()){
             //var is from a parent class
-            if (parent == null){
-                System.out.println("here with null parent in extends??" + parent);
-            }
             if (searchString.equals(parent.getName())){
                 return parent;
             }
         }
         for (UMLClassifier parent : initialScope.getImplementsParents()){
             //var is from a parent implementing interface
-            if (parent == null){
-                System.out.println("here with null parent in implements??" + parent);
-            }
             if (searchString.equals(parent.getName())){
                 return parent;
             }
@@ -78,9 +79,7 @@ public class UMLMessageGenerationUtils {
             }
         }
 
-        if (searchString.equals("HttpClient")){
-            System.out.println("debug");
-        }
+
         //look through imports now
         for (List<String> singleImport : initialScope.getImports()){
             if (singleImport.get(singleImport.size()-1).equals("*")){
@@ -93,7 +92,7 @@ public class UMLMessageGenerationUtils {
                     }
                 }
             }else{
-                UMLClassifier importer = umlClassDiagram.getPackageTree().getClassifierFromImport(listify(singleImport.get(0)),0, umlClassDiagram.getPackageTree().getRoot());
+                UMLClassifier importer = umlClassDiagram.getPackageTree().getClassifier(listify(singleImport.get(0)),0, umlClassDiagram.getPackageTree().getRoot());
                 if (importer != null) {
                     //will be null if package points to a 3rd party lib.
                     if (searchString.equals(importer.getName())){
