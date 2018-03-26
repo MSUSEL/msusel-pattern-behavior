@@ -283,7 +283,7 @@ public class Model {
 
                             patternInstances.add(buildPatternInstance(listOfRoles, patternType, version));
                         }
-                        System.out.println("Placing pattern instance: " + patternInstances + " into version: " + version.getVersionNum());
+                        //System.out.println("Placing pattern instance: " + patternInstances + " into version: " + version.getVersionNum());
                         patternSummaryTable.put(version, patternType, patternInstances);
                     }
                 }

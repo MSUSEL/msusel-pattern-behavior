@@ -43,7 +43,6 @@ public class UMLOperation {
     @Setter
     private List<UMLClassifier> parameters;
 
-
     //datatype of return value, empty string if void., "null" as string if constructor. I mikght need to change this in the future though.
     private String stringReturnDataType;
     private Visibility visibility;

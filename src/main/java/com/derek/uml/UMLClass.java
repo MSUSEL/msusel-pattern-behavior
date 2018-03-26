@@ -37,18 +37,16 @@ public class UMLClass extends UMLClassifier {
     protected List<UMLAttribute> attributes;
     protected List<UMLOperation> operations;
     protected List<UMLOperation> constructors;
-    protected String identifier;
 
     public UMLClass(String name, List<String> residingPackage, List<List<String>> imports, List<UMLAttribute> attributes, List<UMLOperation> operations, List<UMLOperation> constructors,
                     boolean isAbstract, List<String> extendsParents, List<String> implementsParents, String identifier) {
-        super(name, residingPackage, imports);
+        super(name, residingPackage, imports, identifier);
         this.attributes = attributes;
         this.operations = operations;
         this.constructors = constructors;
         this.isAbstract = isAbstract;
         this.extendsParentsString = extendsParents;
         this.implementsParentsString = implementsParents;
-        this.identifier = identifier;
     }
     public List<String> getExtendsParentsString(){
         if (extendsParentsString == null){

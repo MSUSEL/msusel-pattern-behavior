@@ -26,18 +26,26 @@ package com.derek.uml;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class UMLLifeline {
     private UMLClassifier umlClassifier;
-    private List<UMLMessage> inboundMessages;
-    private List<UMLMessage> outboundMessages;
+    private List<UMLMessage> messages;
     //ill worry about activators/deactivators for this later.
-    public UMLLifeline(UMLClassifier umlClassifier, List<UMLMessage> inboundMessages, List<UMLMessage> outboundMessages){
+    public UMLLifeline(UMLClassifier umlClassifier){
         this.umlClassifier = umlClassifier;
-        this.inboundMessages = inboundMessages;
-        this.outboundMessages = outboundMessages;
+    }
+
+    /**
+     * assumes order is preserved
+     */
+    public void addMessageToLifeline(UMLMessage message){
+        if (messages == null){
+            messages = new ArrayList<>();
+        }
+        messages.add(message);
     }
 
     public String getName(){

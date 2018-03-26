@@ -35,6 +35,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class UMLGenerator {
     private List<SrcMLBlock> rootBlocks;
     private UMLClassDiagram umlClassDiagram;
@@ -144,7 +145,6 @@ public class UMLGenerator {
             }
             umlClassifier.setImplementsParents(implementsParents);
         }
-
     }
 
     private List<UMLClassifier> getParamsFromString(UMLClassifier owningClassifier, UMLOperation umlOperation){

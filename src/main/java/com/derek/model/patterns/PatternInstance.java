@@ -28,6 +28,7 @@ import com.derek.model.PatternType;
 import com.derek.model.SoftwareVersion;
 import javafx.util.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PatternInstance {
@@ -155,6 +156,16 @@ public class PatternInstance {
         }
         //either pattern only has one major role or we are looking at two different pattern isntances
         return "null";
+    }
+
+    public List<Pair<String, String>> getMinorRoles(){
+        List<Pair<String, String>> minorRoles = new ArrayList<>();
+        for (Pair p : this.getListOfPatternRoles()){
+            if (!p.getKey().equals(this.getMajorRole()) && !p.getKey().equals(this.getSecondMajorRole())){
+                minorRoles.add(p);
+            }
+        }
+        return minorRoles;
     }
 
     public PatternType getPatternType() {

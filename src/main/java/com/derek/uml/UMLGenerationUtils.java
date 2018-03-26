@@ -267,7 +267,7 @@ public class UMLGenerationUtils {
         List<UMLOperation> operations = UMLGenerationUtils.getUMLOperations(block.getFunctions(), block.getFunctionDecls());
         List<String> extendsParents = UMLGenerationUtils.getUMLExtendsParents(srcMLInterface.getSuperLink());
         List<String> implementsParents = UMLGenerationUtils.getUMLImplementsParents(srcMLInterface.getSuperLink());
-        UMLInterface umlInterface = new UMLInterface(srcMLInterface.getName(), residingPackage, imports, operations, extendsParents, implementsParents);
+        UMLInterface umlInterface = new UMLInterface(srcMLInterface.getName(), residingPackage, imports, operations, extendsParents, implementsParents, "interface");
         return umlInterface;
     }
     public static UMLClass getUMLEnum(SrcMLEnum srcMLEnum, List<String> residingPackage, List<List<String>> imports){

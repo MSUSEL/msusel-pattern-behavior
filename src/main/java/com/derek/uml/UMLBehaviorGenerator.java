@@ -23,25 +23,45 @@ public class UMLBehaviorGenerator {
     }
 
     private void buildSequenceDiagram(UMLClassifier scope, UMLOperation function){
-        function.getCallTreeString().printTree();
+        //function.getCallTreeString().printTree();
         CallTreeNode<String> root = function.getCallTreeString();
-        System.out.println("root obj: " + root);
+        UMLLifeline lifeLineScope = new UMLLifeline(scope);
+        lifeLineScope.addMessageToLifeline(new UMLMessage("init", null, scope));
         for (CallTreeNode<String> child : root.getChildren()){
             String operator = child.getTagName();
             UMLClassifier type;
-            if (child.getTagName().contains("decl")){
+            //lots of this is commented out because I don't techincally need to use if for research purposes. IT is mostly type matching
+
+            if (child.getName().contains("//.")){
+                //multiple calls --> as in foo.bar.foo2
+                //I need to separate calls.
+            }
+            if (operator.contains("decl")){
                 //get type
-                String stringType = getTypeFromDeclaration(child.getTagName());
-                type = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, scope, stringType);
+//                String stringType = getTypeFromDeclaration(child.getTagName());
+//                type = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, scope, stringType);
+//                addMessageIfKnown(lifeLineScope, scope, type, "declaration");
             }
 
-            if (child.getName().contains("{")){
+            if (operator.contains("{")){
                 //controlling character, such as '{if}'
 
             }else{
-                UMLClassifier calledType = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, scope, child.getName());
+                //operator is a call
+//                if (child.getName().equals("cmdArray.addAll")){
+//                    System.out.println("null called type from: " + scope + " " + child.getName());
+//
+//                }
+//                UMLClassifier calledType = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, scope, child.getName());
+//                addMessageIfKnown(lifeLineScope, scope, calledType, child.getName());
 
             }
+        }
+    }
+
+    private void addMessageIfKnown(UMLLifeline lifeLine, UMLClassifier from, UMLClassifier to, String messageName){
+        if (!to.getIdentifier().equals("unknown") && !to.getIdentifier().equals("thirdPartyClass")) {
+            lifeLine.addMessageToLifeline(new UMLMessage(messageName, from, to));
         }
     }
 

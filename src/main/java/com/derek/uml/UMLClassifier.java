@@ -43,11 +43,13 @@ public abstract class UMLClassifier {
     protected List<UMLClassifier> extendsParents;
     @Setter
     protected List<UMLClassifier> implementsParents;
+    protected String identifier;
 
-    public UMLClassifier(String name, List<String> residingPackage, List<List<String>> imports){
+    public UMLClassifier(String name, List<String> residingPackage, List<List<String>> imports, String identifier){
         this.name = name;
         this.residingPackage = residingPackage;
         this.imports = imports;
+        this.identifier = identifier;
     }
 
 

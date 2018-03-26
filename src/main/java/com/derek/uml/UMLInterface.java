@@ -34,8 +34,8 @@ public class UMLInterface extends UMLClassifier {
 
     private List<UMLOperation> operations;
 
-    public UMLInterface(String name, List<String> residingPackage, List<List<String>> imports, List<UMLOperation> operations, List<String> extendsParents, List<String> implementsParents) {
-        super(name, residingPackage, imports);
+    public UMLInterface(String name, List<String> residingPackage, List<List<String>> imports, List<UMLOperation> operations, List<String> extendsParents, List<String> implementsParents, String identifier) {
+        super(name, residingPackage, imports, identifier);
         this.operations = operations;
         this.extendsParentsString = extendsParents;
         this.implementsParentsString = implementsParents;

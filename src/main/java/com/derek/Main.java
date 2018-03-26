@@ -55,6 +55,7 @@ public class Main {
 
 
         //not working right now.
+
         //new View(new Model(projectVersions));
         //view builds the model too. This might change as this project matures.
     }
@@ -75,6 +76,9 @@ public class Main {
             String pwd = workingDirectory + version.getVersionNum() + interVersionKey + version.getVersionNum() + "/" + interProjectKey + "openqa/";
             runner.put(version, new SrcMLRunner(pwd, version.getVersionNum()));
             UMLGenerator umlGenerator = new UMLGenerator(runner.get(version).getRootBlocks());
+            Model m = new Model(projectVersions);
+            Comparatizer cpt = new Comparatizer(m, umlGenerator.getUmlClassDiagram());
+            cpt.testComparisons();
         }
     }
 

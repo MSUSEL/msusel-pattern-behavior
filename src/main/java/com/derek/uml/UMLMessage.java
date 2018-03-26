@@ -33,19 +33,14 @@ import java.util.Map;
 @Getter
 public class UMLMessage {
 
-    private MutableGraph<String> callTree;
+    private String messageName;
     private UMLClassifier from;
     private UMLClassifier to;
-    private boolean isRequest;
 
-    public UMLMessage(UMLClassifier from, UMLClassifier to, boolean isRequest) {
+
+    public UMLMessage(String messageName, UMLClassifier from, UMLClassifier to) {
+        this.messageName = messageName;
         this.from = from;
         this.to = to;
-        this.isRequest = isRequest;
     }
-
-    public UMLMessage(MutableGraph<String> callTree){
-        this.callTree = callTree;
-    }
-
 }
