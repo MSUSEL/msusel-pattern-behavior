@@ -37,6 +37,8 @@ import java.util.Map;
 
 public class Main {
 
+    public static int debug = 0;
+
     //configs
     public static String workingDirectory;
     public static String projectID;
@@ -49,8 +51,8 @@ public class Main {
 
     public Main(){
 
-        buildSeleniumConfigs();
-
+        //buildSeleniumConfigs();
+        buildJHotDrawConfigs();
         //buildGuavaConfigs();
 
 
@@ -74,6 +76,27 @@ public class Main {
             ///selenium/36-src/selenium-36/org
             currentVersion = version.getVersionNum();
             String pwd = workingDirectory + version.getVersionNum() + interVersionKey + version.getVersionNum() + "/" + interProjectKey + "openqa/";
+            runner.put(version, new SrcMLRunner(pwd, version.getVersionNum()));
+            UMLGenerator umlGenerator = new UMLGenerator(runner.get(version).getRootBlocks());
+            Model m = new Model(projectVersions);
+            Comparatizer cpt = new Comparatizer(m, umlGenerator.getUmlClassDiagram());
+            cpt.testComparisons();
+        }
+    }
+
+    private void buildJHotDrawConfigs(){
+        projectID = "jhotDraw";
+        workingDirectory = "C://Users/Derek Reimanis/Documents/research/behavior/projects/jhotdraw/";
+        interVersionKey = "-src/sources";
+        interProjectKey = "CH/";
+        projectLanguage = ".java";
+        projectVersions = new ArrayList<>();
+        projectVersions.add(new SoftwareVersion(52));
+        //projectVersions.add(new SoftwareVersion(38));
+        runner = new HashMap<>();
+        for (SoftwareVersion version : projectVersions) {
+            currentVersion = version.getVersionNum();
+            String pwd = workingDirectory + version.getVersionNum() + interVersionKey + "/" + interProjectKey + "ifa/";
             runner.put(version, new SrcMLRunner(pwd, version.getVersionNum()));
             UMLGenerator umlGenerator = new UMLGenerator(runner.get(version).getRootBlocks());
             Model m = new Model(projectVersions);

@@ -1,0 +1,442 @@
+@startuml
+interface WebStorage{
+	getLocalStorage() : LocalStorage
+	getSessionStorage() : SessionStorage
+}
+interface LocalStorage{
+	getItem(String key) : String
+	keySet() : Set<String>
+	setItem(String key, String value) : void
+	removeItem(String key) : String
+	clear() : void
+	size() : int
+}
+class OperaDriver{
+	locationContext : RemoteLocationContext
+	webStorage : RemoteWebStorage
+	OperaDriver()
+	OperaDriver(OperaDriverService service)
+	OperaDriver(Capabilities capabilities)
+	OperaDriver(OperaOptions options)
+	OperaDriver(OperaDriverService service, OperaOptions options)
+	OperaDriver(OperaDriverService service, Capabilities capabilities)
+	setFileDetector(FileDetector detector) : void
+	getLocalStorage() : LocalStorage
+	getSessionStorage() : SessionStorage
+	location() : Location
+	setLocation(Location location) : void
+}
+class RemoteLocalStorage{
+	executeMethod : ExecuteMethod
+	RemoteLocalStorage(ExecuteMethod executeMethod)
+	getItem(String key) : String
+	keySet() : Set<String>
+	setItem(String key, String value) : void
+	removeItem(String key) : String
+	clear() : void
+	size() : int
+}
+class RemoteLocationContext{
+	executeMethod : ExecuteMethod
+	RemoteLocationContext(ExecuteMethod executeMethod)
+	location() : Location
+	setLocation(Location location) : void
+}
+class RemoteWebDriver{
+	logger : Logger
+	level : Level
+	errorHandler : ErrorHandler
+	executor : CommandExecutor
+	capabilities : Capabilities
+	sessionId : SessionId
+	fileDetector : FileDetector
+	executeMethod : ExecuteMethod
+	converter : JsonToWebElementConverter
+	keyboard : RemoteKeyboard
+	mouse : RemoteMouse
+	remoteLogs : Logs
+	localLogs : LocalLogs
+	RemoteWebDriver()
+	RemoteWebDriver(Capabilities desiredCapabilities)
+	RemoteWebDriver(CommandExecutor executor, Capabilities desiredCapabilities)
+	RemoteWebDriver(URL remoteAddress, Capabilities desiredCapabilities)
+	init(Capabilities capabilities) : void
+	setFileDetector(FileDetector detector) : void
+	getSessionId() : SessionId
+	setSessionId(String opaqueKey) : void
+	startSession(Capabilities desiredCapabilities) : void
+	startClient() : void
+	startClient(Capabilities desiredCapabilities) : void
+	stopClient() : void
+	stopClient(Capabilities desiredCapbilities) : void
+	getErrorHandler() : ErrorHandler
+	setErrorHandler(ErrorHandler handler) : void
+	getCommandExecutor() : CommandExecutor
+	setCommandExecutor(CommandExecutor executor) : void
+	getCapabilities() : Capabilities
+	get(String url) : void
+	getTitle() : String
+	getCurrentUrl() : String
+	getScreenshotAs() : X
+	findElements(By by) : List<WebElement>
+	findElement(By by) : WebElement
+	findElement(String by, String using) : WebElement
+	setFoundBy(SearchContext context, WebElement element, String by, String using) : void
+	findElements(String by, String using) : List<WebElement>
+	findElementById(String using) : WebElement
+	findElementsById(String using) : List<WebElement>
+	findElementByLinkText(String using) : WebElement
+	findElementsByLinkText(String using) : List<WebElement>
+	findElementByPartialLinkText(String using) : WebElement
+	findElementsByPartialLinkText(String using) : List<WebElement>
+	findElementByTagName(String using) : WebElement
+	findElementsByTagName(String using) : List<WebElement>
+	findElementByName(String using) : WebElement
+	findElementsByName(String using) : List<WebElement>
+	findElementByClassName(String using) : WebElement
+	findElementsByClassName(String using) : List<WebElement>
+	findElementByCssSelector(String using) : WebElement
+	findElementsByCssSelector(String using) : List<WebElement>
+	findElementByXPath(String using) : WebElement
+	findElementsByXPath(String using) : List<WebElement>
+	getPageSource() : String
+	close() : void
+	quit() : void
+	getWindowHandles() : Set<String>
+	getWindowHandle() : String
+	executeScript(String script, Object args) : Object
+	executeAsyncScript(String script, Object args) : Object
+	isJavascriptEnabled() : boolean
+	switchTo() : TargetLocator
+	navigate() : Navigation
+	manage() : Options
+	setElementConverter(JsonToWebElementConverter converter) : void
+	getElementConverter() : JsonToWebElementConverter
+	setLogLevel(Level level) : void
+	execute(String driverCommand, Map<String,?> parameters) : Response
+	execute(String command) : Response
+	getExecuteMethod() : ExecuteMethod
+	perform(Collection<Sequence> actions) : void
+	resetInputState() : void
+	getKeyboard() : Keyboard
+	getMouse() : Mouse
+	log(SessionId sessionId, String commandName, Object toLog, When when) : void
+	getFileDetector() : FileDetector
+	toString() : String
+}
+class RemoteWebElement{
+	foundBy : String
+	id : String
+	parent : RemoteWebDriver
+	fileDetector : FileDetector
+	setFoundBy(SearchContext foundFrom, String locator, String term) : void
+	setParent(RemoteWebDriver parent) : void
+	getId() : String
+	setId(String id) : void
+	setFileDetector(FileDetector detector) : void
+	click() : void
+	submit() : void
+	sendKeys(CharSequence keysToSend) : void
+	upload(File localFile) : String
+	clear() : void
+	getTagName() : String
+	getAttribute(String name) : String
+	stringValueOf(Object o) : String
+	isSelected() : boolean
+	isEnabled() : boolean
+	getText() : String
+	getCssValue(String propertyName) : String
+	findElements(By by) : List<WebElement>
+	findElement(By by) : WebElement
+	findElement(String using, String value) : WebElement
+	findElements(String using, String value) : List<WebElement>
+	findElementById(String using) : WebElement
+	findElementsById(String using) : List<WebElement>
+	findElementByLinkText(String using) : WebElement
+	findElementsByLinkText(String using) : List<WebElement>
+	findElementByName(String using) : WebElement
+	findElementsByName(String using) : List<WebElement>
+	findElementByClassName(String using) : WebElement
+	findElementsByClassName(String using) : List<WebElement>
+	findElementByCssSelector(String using) : WebElement
+	findElementsByCssSelector(String using) : List<WebElement>
+	findElementByXPath(String using) : WebElement
+	findElementsByXPath(String using) : List<WebElement>
+	findElementByPartialLinkText(String using) : WebElement
+	findElementsByPartialLinkText(String using) : List<WebElement>
+	findElementByTagName(String using) : WebElement
+	findElementsByTagName(String using) : List<WebElement>
+	execute(String command, Map<String,?> parameters) : Response
+	equals(Object obj) : boolean
+	hashCode() : int
+	getWrappedDriver() : WebDriver
+	isDisplayed() : boolean
+	getLocation() : Point
+	getSize() : Dimension
+	getRect() : Rectangle
+	getCoordinates() : Coordinates
+	getScreenshotAs() : X
+	toString() : String
+	toJson() : Map<String,Object>
+}
+class RemoteWebStorage{
+	executeMethod : ExecuteMethod
+	RemoteWebStorage(ExecuteMethod executeMethod)
+	getLocalStorage() : LocalStorage
+	getSessionStorage() : SessionStorage
+}
+class Response{
+	value : Object
+	sessionId : String
+	status : Integer
+	state : String
+	Response()
+	Response(SessionId sessionId)
+	getStatus() : Integer
+	setStatus(Integer status) : void
+	getState() : String
+	setState(String state) : void
+	setValue(Object value) : void
+	getValue() : Object
+	setSessionId(String sessionId) : void
+	getSessionId() : String
+	toString() : String
+}
+interface ResponseCodec{
+	encode(Supplier<T> factory, Response response) : T
+	decode(T encodedResponse) : Response
+}
+class SafariDriver{
+	SafariDriver()
+	SafariDriver(Capabilities desiredCapabilities)
+	SafariDriver(SafariOptions safariOptions)
+	getExecutor(SafariOptions options) : CommandExecutor
+	setFileDetector(FileDetector detector) : void
+}
+class SafariOptions{
+	CAPABILITY : String
+	options : Map<String,Object>
+	SafariOptions()
+	fromCapabilities(Capabilities capabilities) : SafariOptions
+	setPort(int port) : SafariOptions
+	setUseCleanSession(boolean useCleanSession) : SafariOptions
+	setUseTechnologyPreview(boolean useTechnologyPreview) : SafariOptions
+	getPort() : int
+	getUseCleanSession() : boolean
+	getUseTechnologyPreview() : boolean
+	fromJsonMap(Map<?,?> options) : SafariOptions
+	toCapabilities() : MutableCapabilities
+}
+interface SearchContext{
+	findElements(By by) : List<WebElement>
+	findElement(By by) : WebElement
+}
+class Sequence{
+	actions : List<Encodable>
+	device : InputSource
+	Sequence(InputSource device, int initialLength)
+	addAction(Interaction action) : Sequence
+	encode() : Map<String,Object>
+	toJson() : Map<String,Object>
+	size() : int
+}
+class SessionId{
+	opaqueKey : String
+	SessionId(String opaqueKey)
+	toString() : String
+	hashCode() : int
+	equals(Object obj) : boolean
+}
+interface SessionStorage{
+	getItem(String key) : String
+	keySet() : Set<String>
+	setItem(String key, String value) : void
+	removeItem(String key) : String
+	clear() : void
+	size() : int
+}
+class W3CHttpResponseCodec{
+	log : Logger
+	errorCodes : ErrorCodes
+	jsonToBeanConverter : JsonToBeanConverter
+	elementConverter : Function<Object,Object>
+	decode(HttpResponse encodedResponse) : Response
+	getValueToEncode(Response response) : Object
+	reconstructValue(Response response) : Response
+	createException(String error, String message) : WebDriverException
+}
+interface WebDriver{
+	get(String url) : void
+	getCurrentUrl() : String
+	getTitle() : String
+	findElements(By by) : List<WebElement>
+	findElement(By by) : WebElement
+	getPageSource() : String
+	close() : void
+	quit() : void
+	getWindowHandles() : Set<String>
+	getWindowHandle() : String
+	switchTo() : TargetLocator
+	navigate() : Navigation
+	manage() : Options
+}
+interface WebDriverEventListener{
+	beforeAlertAccept(WebDriver driver) : void
+	afterAlertAccept(WebDriver driver) : void
+	afterAlertDismiss(WebDriver driver) : void
+	beforeAlertDismiss(WebDriver driver) : void
+	beforeNavigateTo(String url, WebDriver driver) : void
+	afterNavigateTo(String url, WebDriver driver) : void
+	beforeNavigateBack(WebDriver driver) : void
+	afterNavigateBack(WebDriver driver) : void
+	beforeNavigateForward(WebDriver driver) : void
+	afterNavigateForward(WebDriver driver) : void
+	beforeNavigateRefresh(WebDriver driver) : void
+	afterNavigateRefresh(WebDriver driver) : void
+	beforeFindBy(By by, WebElement element, WebDriver driver) : void
+	afterFindBy(By by, WebElement element, WebDriver driver) : void
+	beforeClickOn(WebElement element, WebDriver driver) : void
+	afterClickOn(WebElement element, WebDriver driver) : void
+	beforeChangeValueOf(WebElement element, WebDriver driver, CharSequence keysToSend) : void
+	afterChangeValueOf(WebElement element, WebDriver driver, CharSequence keysToSend) : void
+	beforeScript(String script, WebDriver driver) : void
+	afterScript(String script, WebDriver driver) : void
+	onException(Throwable throwable, WebDriver driver) : void
+}
+class WebDriverException{
+	SESSION_ID : String
+	DRIVER_INFO : String
+	BASE_SUPPORT_URL : String
+	HOST_NAME : String
+	HOST_ADDRESS : String
+	extraInfo : Map<String,String>
+	address : String
+}
+class WebDriverWait{
+	DEFAULT_SLEEP_TIMEOUT : long
+	driver : WebDriver
+	WebDriverWait(WebDriver driver, long timeOutInSeconds)
+	WebDriverWait(WebDriver driver, long timeOutInSeconds, long sleepInMillis)
+	WebDriverWait(WebDriver driver, Clock clock, Sleeper sleeper, long timeOutInSeconds, long sleepTimeOut)
+	timeoutException(String message, Throwable lastException) : RuntimeException
+}
+interface WebElement{
+	click() : void
+	submit() : void
+	sendKeys(CharSequence keysToSend) : void
+	clear() : void
+	getTagName() : String
+	getAttribute(String name) : String
+	isSelected() : boolean
+	isEnabled() : boolean
+	getText() : String
+	findElements(By by) : List<WebElement>
+	findElement(By by) : WebElement
+	isDisplayed() : boolean
+	getLocation() : Point
+	getSize() : Dimension
+	getRect() : Rectangle
+	getCssValue(String propertyName) : String
+}
+interface WrapsDriver{
+	getWrappedDriver() : WebDriver
+}
+interface WrapsElement{
+	getWrappedElement() : WebElement
+}
+interface CharSequence{
+}
+class boolean{
+}
+class int{
+}
+class long{
+}
+class Integer{
+}
+class Object{
+}
+class String{
+}
+class Throwable{
+}
+class RuntimeException{
+}
+WebStorage --> LocalStorage
+OperaDriver --> LocalStorage
+RemoteLocalStorage ..|> LocalStorage
+OperaDriver --> RemoteLocationContext
+OperaDriver --|> RemoteWebDriver
+RemoteWebElement --> RemoteWebDriver
+RemoteWebStorage ..|> WebStorage
+RemoteWebStorage --> LocalStorage
+OperaDriver --> RemoteWebStorage
+RemoteWebDriver --> Response
+RemoteWebElement --> Response
+ResponseCodec --> Response
+SafariDriver --|> RemoteWebDriver
+SafariDriver --> SafariOptions
+RemoteWebDriver --> SearchContext
+RemoteWebElement --> SearchContext
+RemoteWebDriver --> Sequence
+RemoteWebDriver --> SessionId
+WebStorage --> SessionStorage
+OperaDriver --> SessionStorage
+RemoteWebStorage --> SessionStorage
+W3CHttpResponseCodec --> Response
+RemoteWebDriver ..|> WebDriver
+RemoteWebElement --> WebDriver
+WebDriver --|> SearchContext
+WebDriverEventListener --> WebDriver
+W3CHttpResponseCodec --> WebDriverException
+WebDriverWait --|> WebDriver
+RemoteWebDriver --> WebElement
+RemoteWebElement ..|> WebElement
+WebElement --|> SearchContext
+WebDriver --> WebElement
+WebDriverEventListener --> WebElement
+WrapsDriver --> WebDriver
+WrapsElement --> WebElement
+RemoteWebElement --> CharSequence
+WebDriverEventListener --> CharSequence
+WebElement --> CharSequence
+RemoteWebDriver --> boolean
+RemoteWebElement --> boolean
+SafariOptions --> boolean
+SessionId --> boolean
+WebElement --> boolean
+LocalStorage --> int
+RemoteLocalStorage --> int
+RemoteWebElement --> int
+SafariOptions --> int
+Sequence --> int
+SessionId --> int
+SessionStorage --> int
+WebDriverWait --> long
+Response --> Integer
+RemoteWebDriver --> Object
+RemoteWebElement --> Object
+Response --> Object
+SafariOptions --> Object
+Sequence --> Object
+SessionId --> Object
+W3CHttpResponseCodec --> Object
+LocalStorage --> String
+RemoteLocalStorage --> String
+RemoteWebDriver --> String
+RemoteWebElement --> String
+Response --> String
+SafariOptions --> String
+SessionId --> String
+SessionStorage --> String
+W3CHttpResponseCodec --> String
+WebDriver --> String
+WebDriverEventListener --> String
+WebDriverException --> String
+WebDriverWait --> String
+WebElement --> String
+WebDriverEventListener --> Throwable
+WebDriverWait --> Throwable
+WebDriverException --|> RuntimeException
+WebDriverWait --> RuntimeException
+@enduml

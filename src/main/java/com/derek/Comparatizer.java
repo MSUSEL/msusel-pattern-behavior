@@ -27,10 +27,19 @@ public class Comparatizer {
 
     public void testComparisons(){
         SoftwareVersion version = model.getVersions().get(0);
+
+        //state tests
+        PatternType patternType = PatternType.STATE;
+        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, patternType);
+        PatternInstance pi = patternInstances.get(0);
+        compareState(pi);
+
+        /**factory tests
         PatternType patternType = PatternType.FACTORY_METHOD;
         List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, patternType);
         PatternInstance pi = patternInstances.get(0);
         compareFactory(pi);
+         */
     }
 
 
@@ -72,7 +81,19 @@ public class Comparatizer {
             Pair<UMLClassifier, UMLOperation> minorRoleRealization = new Pair<>(minorClass, minorClassOperation);
             factoryMinorRoles.add(minorRoleRealization);
         }
+        List<UMLClassifier> relevantClassifiers = new ArrayList<>();
+        relevantClassifiers.add(creatorMajorRole);
+        for (Pair<UMLClassifier, UMLOperation> p : factoryMinorRoles){
+            if (!relevantClassifiers.contains(p.getKey())) {
+                relevantClassifiers.add(p.getKey());
+            }
+        }
+        printWithRelationships(relevantClassifiers, 1);
         System.out.println("matched pattern and classes!");
+
+    }
+
+    public void compareState(PatternInstance pi){
 
     }
 
@@ -136,5 +157,48 @@ public class Comparatizer {
             toRet.add(s);
         }
         return toRet;
+    }
+
+    private void printWithRelationships(List<UMLClassifier> relevantClassifiers, int expanse){
+        StringBuilder output = new StringBuilder();
+        StringBuilder relationshipOutput = new StringBuilder();
+        List<UMLClassifier> expanded = new ArrayList<>();
+        expanded.addAll(relevantClassifiers);
+        output.append("@startuml\n");
+        for (int i = 0; i < expanse; i++){
+            for (UMLClassifier node : umlClassDiagram.getClassDiagram().nodes()){
+                List<UMLClassifier> tempClassifiers = new ArrayList<>();
+                tempClassifiers.addAll(expanded);
+                for (UMLClassifier relevant : expanded) {
+                    if (umlClassDiagram.getClassDiagram().hasEdgeConnecting(node, relevant)){
+                        if (!expanded.contains(node)){
+                            tempClassifiers.add(node);
+                            relationshipOutput.append(node.getName() + " ");
+                            relationshipOutput.append(umlClassDiagram.getClassDiagram().edgeValue(node, relevant).get().plantUMLTransform() + " ");
+                            relationshipOutput.append(relevant.getName() + "\n");
+                        }
+                    }else if (umlClassDiagram.getClassDiagram().hasEdgeConnecting(relevant, node)){
+                        //need both directions because graph is directed.
+                        if (!expanded.contains(node)){
+                            tempClassifiers.add(node);
+                            relationshipOutput.append(relevant.getName() + " ");
+                            relationshipOutput.append(umlClassDiagram.getClassDiagram().edgeValue(relevant, node).get().plantUMLTransform() + " ");
+                            relationshipOutput.append(node.getName() + "\n");
+                        }
+                    }
+                }
+                for (UMLClassifier temp : tempClassifiers){
+                    if (!expanded.contains(temp)){
+                        expanded.add(temp);
+                    }
+                }
+            }
+        }
+        for (UMLClassifier expand : expanded){
+            output.append(expand.plantUMLTransform());
+        }
+        output.append(relationshipOutput);
+        output.append("@enduml\n");
+        System.out.println(output);
     }
 }

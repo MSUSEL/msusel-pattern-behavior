@@ -24,6 +24,7 @@
  */
 package com.derek.uml.srcML;
 
+import com.derek.Main;
 import com.derek.uml.CallTreeNode;
 import lombok.Getter;
 import org.w3c.dom.Element;
@@ -57,6 +58,10 @@ public class SrcMLDeclStmt extends SrcMLNode{
 
     public void fillCallTree(CallTreeNode<SrcMLNode> callTreeRoot){
         for (SrcMLDecl srcMLDecl : decls){
+            if (Main.debug > 100){
+                System.out.println();
+            }
+            Main.debug++;
             callTreeRoot.addChild(srcMLDecl.getCallTree());
         }
     }
