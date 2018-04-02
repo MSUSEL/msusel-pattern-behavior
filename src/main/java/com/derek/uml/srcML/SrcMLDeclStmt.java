@@ -58,10 +58,6 @@ public class SrcMLDeclStmt extends SrcMLNode{
 
     public void fillCallTree(CallTreeNode<SrcMLNode> callTreeRoot){
         for (SrcMLDecl srcMLDecl : decls){
-            if (Main.debug > 100){
-                System.out.println();
-            }
-            Main.debug++;
             callTreeRoot.addChild(srcMLDecl.getCallTree());
         }
     }

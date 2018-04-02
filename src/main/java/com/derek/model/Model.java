@@ -205,6 +205,9 @@ public class Model {
     private boolean doesPatternInstanceExistInEvolutions(PatternInstance pi, List<PatternInstanceEvolution> pies, SoftwareVersion v){
         boolean toRet = false;
         for (PatternInstanceEvolution pie : pies){
+            if (pie.getFirstPatternInstance() == null){
+                System.out.println("null pie");
+            }
             if (pie.getFirstPatternInstance().isInstanceEqual(pi)){
                 //found a pattern instance evolution
 
@@ -317,16 +320,16 @@ public class Model {
             case BRIDGE:
             case PROXY:
             case PROXY2:
+            case OBSERVER:
+            case PROTOTYPE:
+            case COMPOSITE:
                 return new PatternInstance(listOfRoles, patternType, version);
 
 
             //patterns that have not been detected yet.
-            case PROTOTYPE:return null;//TODO;
-            case COMPOSITE:return null;//TODO
-            case OBSERVER:return null;//TODO
-            case VISITOR:return null; //TODO
+            case VISITOR: //TODO
             default:
-                System.out.println("Did not match a pattern type with a built-in class of that type. Exiting and fix ");
+                System.out.println("Did not match a pattern type with a built-in class of that type. Exiting and fix " + patternType + " patterns.");
                 System.exit(0);
         }
         return null;

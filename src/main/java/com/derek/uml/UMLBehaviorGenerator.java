@@ -10,9 +10,11 @@ public class UMLBehaviorGenerator {
     private UMLClassifier scopeClassifier;
     private UMLOperation scopeOperation;
     @Setter
-    private String defaultFunction = "startProfile";
+    private String defaultFunction = "figureInvalidated";
+    //"startProfile"; //used for selenium tests
     @Setter
-    private String defaultClass = "FirefoxBinary";
+    private String defaultClass = "StandardDrawing";
+            //"FirefoxBinary"; //used for selenium tests
 
     public UMLBehaviorGenerator(UMLClassDiagram umlClassDiagram){
         this.umlClassDiagram = umlClassDiagram;

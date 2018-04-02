@@ -58,13 +58,13 @@ public class PatternInstance {
         switch(patternType){
             case FACTORY_METHOD:return "Creator";
             case CHAIN_OF_RESPONSIBILITY:return "Handler";
-            case PROTOTYPE:return "TODO";//TODO
+            case PROTOTYPE:return "Client";
             case SINGLETON:return "Singleton";
             case OBJECT_ADAPTER:return "Adaptee";
             case COMMAND:return "Receiver";
-            case COMPOSITE:return "TODO";//TODO
-            case DECORATOR:return "Decorator";//TODO
-            case OBSERVER:return "TODO";//TODO
+            case COMPOSITE:return "Component";
+            case DECORATOR:return "Decorator";
+            case OBSERVER:return "Observer";
             case STATE:return "State";
             case STRATEGY:return "Strategy";
             case BRIDGE:return "Abstraction";
@@ -112,13 +112,13 @@ public class PatternInstance {
         switch(patternType){
             case FACTORY_METHOD:return "";
             case CHAIN_OF_RESPONSIBILITY:return "";
-            case PROTOTYPE:return "TODO";//TODO
+            case PROTOTYPE:return "Prototype";
             case SINGLETON:return "";
             case OBJECT_ADAPTER:return "Adapter";
             case COMMAND:return "ConcreteCommand";
-            case COMPOSITE:return "TODO";//TODO
-            case DECORATOR:return "Component";//TODO
-            case OBSERVER:return "TODO";//TODO
+            case COMPOSITE:return "Composite";
+            case DECORATOR:return "Component";
+            case OBSERVER:return "Subject";
             case STATE:return "Context";
             case STRATEGY:return "Context";
             case BRIDGE:return "Implementor";
@@ -215,6 +215,9 @@ public class PatternInstance {
     //In guava23, the tool points at com.google.common.collect.Multiset as the State role, but actually the Multiset object
     //HOLDS the state role (which is adequately named 'State').
     //I think I can still get around this issue but I need to make sure I manually verify anything concerning the state pattern.
+
+    //Observer:
+    //pretty intuitive. Observer is major role and Subject is second major role
 
     //Also, I am going to use a unique pair of State and Context to identify State patterns.
 
