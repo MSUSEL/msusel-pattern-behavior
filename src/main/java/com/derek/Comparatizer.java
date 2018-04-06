@@ -108,6 +108,19 @@ public class Comparatizer {
         return paramsList;
     }
 
+    private UMLAttribute getAttributeFromString(UMLClassifier umlClassifier, String attributeName){
+        for (UMLAttribute attribute : umlClassifier.getAttributes()){
+            if (attribute.getName().equals(attributeName)){
+                //dont need to check type because attribute names are unique.
+                return attribute;
+            }
+        }
+        //should not happen.
+        System.out.println("did not find a match between classifier: " + umlClassifier.getName() + " and attribute: " + attributeName);
+        System.exit(0);
+        return null;
+    }
+
     private UMLOperation getOperationFromString(UMLClassifier umlClassifier, String operationName, String returnType, List<String> params){
         for (UMLOperation op : umlClassifier.getOperations()){
             if (op.getName().equals(operationName)){
@@ -211,8 +224,15 @@ public class Comparatizer {
             //a bug here --  the minor roles can either be realized via operations or vars. Operations is working as intended here
             //but I need to implement vars. //TODO
             String minorClassOperationNameParams = minorValueSplitter[1].split("\\:")[0];
-            String minorClassOperationName = getNameFromNameParams(minorClassOperationNameParams);
-            List<String> minorClassOperationParams = getParamsFromNameParams(minorClassOperationNameParams);
+            String minorClassOperationName = "";
+            List<String> minorClassOperationParams = new ArrayList<>();
+            if (minorClassOperationNameParams.contains("(")) {
+                 minorClassOperationName = getNameFromNameParams(minorClassOperationNameParams);
+                 minorClassOperationParams = getParamsFromNameParams(minorClassOperationNameParams);
+            }else{
+                //is a var
+                minorClassOperationName = minorClassOperationNameParams;
+            }
 
             String minorClassReturnType = minorValueSplitter[1].split("\\:")[1];
             //there is a really strange case here... so the minorClassReturnType will be a string pointing at a type in a project
