@@ -54,114 +54,31 @@ public class Comparatizer {
 
 
     public void compareFactory(PatternInstance pi){
-        //factory has "Creator" as the major role name.
-        UMLClassifier creatorMajorRole = getOneMajorRole(pi);
-        List<Pair<UMLClassifier, UMLOperation>> factoryMinorRoles = getMinorRoles(pi);
-
-        List<UMLClassifier> relevantClassifiers = new ArrayList<>();
-        relevantClassifiers.add(creatorMajorRole);
-        for (Pair<UMLClassifier, UMLOperation> p : factoryMinorRoles){
-            if (!relevantClassifiers.contains(p.getKey())) {
-                relevantClassifiers.add(p.getKey());
-            }
-        }
-        //print plantuml of surrounding uml for this pattern instance
-        //printWithRelationships(relevantClassifiers, 1);
-        System.out.println("matched pattern and classes!");
+//        //factory has "Creator" as the major role name.
+//        UMLClassifier creatorMajorRole = getOneMajorRole(pi);
+//        List<Pair<UMLClassifier, UMLOperation>> factoryMinorRoles = getMinorRoles(pi);
+//
+//        List<UMLClassifier> relevantClassifiers = new ArrayList<>();
+//        relevantClassifiers.add(creatorMajorRole);
+//        for (Pair<UMLClassifier, UMLOperation> p : factoryMinorRoles){
+//            if (!relevantClassifiers.contains(p.getKey())) {
+//                relevantClassifiers.add(p.getKey());
+//            }
+//        }
+//        //print plantuml of surrounding uml for this pattern instance
+//        //printWithRelationships(relevantClassifiers, 1);
+//        System.out.println("matched pattern and classes!");
 
     }
 
     public void compareCommand(PatternInstance pi){
-        UMLClassifier receiverMajorRole = getOneMajorRole(pi);
-        UMLClassifier concreteCommandMajorRole = getSecondMajorRole(pi);
-        List<Pair<UMLClassifier, UMLOperation>> minorRoles = getMinorRoles(pi);
-
-        System.out.println(receiverMajorRole.getName());
-        System.out.println(concreteCommandMajorRole.getName());
-        for (Pair<UMLClassifier, UMLOperation> p : minorRoles){
-            System.out.println(p.getKey().getName() + "  with op: " + p.getValue().getName());
-        }
+        CommandPattern commandPattern = new CommandPattern(pi, umlClassDiagram);
+        commandPattern.mapToUML();
+        commandPattern.printSummary();
     }
 
     public void compareState(PatternInstance pi){
 
-    }
-
-    //input will look like this: execute(org.openqa.selenium.remote.http.HttpRequest, boolean)
-    private String getNameFromNameParams(String minorClassOperationNameParams){
-        return minorClassOperationNameParams.split("\\(")[0];
-    }
-
-    //input will look like this: execute(org.openqa.selenium.remote.http.HttpRequest, boolean)
-    private List<String> getParamsFromNameParams(String minorClassOperationNameParams){
-        List<String> paramsList = new ArrayList<>();
-        System.out.println(minorClassOperationNameParams);
-        String paramsBlock = minorClassOperationNameParams.split("\\(")[1];
-        //minus 2 becuase last char is a ')'
-        if (paramsBlock.length() == 1){
-            return paramsList;
-        }
-        String[] params = paramsBlock.substring(0, paramsBlock.length()-2).split("\\,");
-        for (String s : params){
-            paramsList.add(s);
-        }
-        return paramsList;
-    }
-
-    private UMLAttribute getAttributeFromString(UMLClassifier umlClassifier, String attributeName){
-        for (UMLAttribute attribute : umlClassifier.getAttributes()){
-            if (attribute.getName().equals(attributeName)){
-                //dont need to check type because attribute names are unique.
-                return attribute;
-            }
-        }
-        //should not happen.
-        System.out.println("did not find a match between classifier: " + umlClassifier.getName() + " and attribute: " + attributeName);
-        System.exit(0);
-        return null;
-    }
-
-    private UMLOperation getOperationFromString(UMLClassifier umlClassifier, String operationName, String returnType, List<String> params){
-        for (UMLOperation op : umlClassifier.getOperations()){
-            if (op.getName().equals(operationName)){
-                //will work for most things but we also need ot check params and return type (basically check method signature)
-                if (op.getStringReturnDataType().equals(returnType)){
-                    boolean foundDifference = false;
-                    if (params.size() != op.getParameters().size()){
-                        //same method name, but different number of params.. so different method signature. break and check other ops.
-                        break;
-                    }
-                    for (int i = 0; i < params.size(); i++){
-                        //param order needs to be preserved too
-                        if (!params.get(i).equals(op.getParameters().get(i).getName())){
-                            foundDifference = true;
-                            break;
-                        }
-                    }
-                    //same method signature!
-                    if (foundDifference == false){
-                        return op;
-                    }
-                }
-            }
-        }
-        //should not happen.
-        System.out.println("did not find a match between classifier: " + umlClassifier.getName() + " and method name: " + operationName);
-        System.exit(0);
-        return null;
-    }
-
-    private UMLClassifier getClassifierFromString(String majorRoleValue){
-        return umlClassDiagram.getPackageTree().getClassifier(convertStringToPackagedString(majorRoleValue), 0, umlClassDiagram.getPackageTree().getRoot());
-    }
-
-    private List<String> convertStringToPackagedString(String value){
-        List<String> toRet = new ArrayList<>();
-        String[] splitter = value.split("\\.");
-        for (String s : splitter){
-            toRet.add(s);
-        }
-        return toRet;
     }
 
     private void printWithRelationships(List<UMLClassifier> relevantClassifiers, int expanse){
@@ -207,59 +124,5 @@ public class Comparatizer {
         System.out.println(output);
     }
 
-    private UMLClassifier getOneMajorRole(PatternInstance pi){
-        return getClassifierFromString(pi.getValueOfMajorRole(pi));
-    }
 
-    private UMLClassifier getSecondMajorRole(PatternInstance pi){
-        return getClassifierFromString(pi.getValueOfSecondMajorRole(pi));
-    }
-
-    private List<Pair<UMLClassifier, UMLOperation>> getMinorRoles(PatternInstance pi){
-        List<Pair<UMLClassifier, UMLOperation>> minorRoles = new ArrayList<>();
-        for (Pair<String, String> p : pi.getMinorRoles()) {
-            String[] minorValueSplitter = p.getValue().split("\\:\\:");
-            String minorClassName = minorValueSplitter[0];
-            UMLClassifier minorClass = getClassifierFromString(minorClassName);
-            //a bug here --  the minor roles can either be realized via operations or vars. Operations is working as intended here
-            //but I need to implement vars. //TODO
-            String minorClassOperationNameParams = minorValueSplitter[1].split("\\:")[0];
-            String minorClassOperationName = "";
-            List<String> minorClassOperationParams = new ArrayList<>();
-            if (minorClassOperationNameParams.contains("(")) {
-                 minorClassOperationName = getNameFromNameParams(minorClassOperationNameParams);
-                 minorClassOperationParams = getParamsFromNameParams(minorClassOperationNameParams);
-            }else{
-                //is a var
-                minorClassOperationName = minorClassOperationNameParams;
-            }
-
-            String minorClassReturnType = minorValueSplitter[1].split("\\:")[1];
-            //there is a really strange case here... so the minorClassReturnType will be a string pointing at a type in a project
-            //e.g.: "org.openqa.selenium.Http". Now, I think I can just strip the package header off and match based on return type.
-            //The only case where this wouldn't work is if 2 or more operations within the same class return a type with the same name
-            //where the name points to different class files within the projec.t. But I also think that cannot happen because of erasure
-            //rules in java. So I am just going to strip the leading package directions.
-            //Same is true for params.
-            if (minorClassReturnType.contains(".")) {
-                String[] stripper = minorClassReturnType.split("\\.");
-                minorClassReturnType = stripper[stripper.length - 1];
-            }
-            List<String> minorClassOperationParamsStripped = new ArrayList<>();
-            for (String param : minorClassOperationParams) {
-                if (param.contains(".")) {
-                    String[] stripper = param.split("\\.");
-                    minorClassOperationParamsStripped.add(stripper[stripper.length - 1]);
-                } else {
-                    //primitive type, e.g.
-                    minorClassOperationParamsStripped.add(param);
-                }
-            }
-
-            UMLOperation minorClassOperation = getOperationFromString(minorClass, minorClassOperationName, minorClassReturnType, minorClassOperationParamsStripped);
-            Pair<UMLClassifier, UMLOperation> minorRoleRealization = new Pair<>(minorClass, minorClassOperation);
-            minorRoles.add(minorRoleRealization);
-        }
-        return minorRoles;
-    }
 }
