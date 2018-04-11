@@ -81,6 +81,21 @@ public class Comparatizer {
 
     }
 
+    /***
+     * algorithm that checks conformance according to Kim's "Evaluating Pattern Conformance..." paper
+     *
+     * @param sps
+     * @param patternMapper
+     */
+    public void verifyConformance(SPS sps, PatternMapper patternMapper){
+        for (String roleBlock : sps.getRoleBlocks()){
+
+        }
+
+    }
+
+
+
     private void printWithRelationships(List<UMLClassifier> relevantClassifiers, int expanse){
         StringBuilder output = new StringBuilder();
         StringBuilder relationshipOutput = new StringBuilder();
