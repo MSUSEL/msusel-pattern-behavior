@@ -73,5 +73,5 @@ public class StructuralRole extends Role{
             //Matcher m = p.matcher(s);
         }
 
-    }
+    } 
 }
