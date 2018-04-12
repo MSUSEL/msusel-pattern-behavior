@@ -1,4 +1,4 @@
-package com.derek;
+package com.derek.rbml;
 
 import com.derek.rbml.RelationshipRole;
 import com.derek.rbml.StructuralRole;
@@ -25,6 +25,9 @@ public class SPS {
         dependencyRoles = new ArrayList<>();
         implementationRoles = new ArrayList<>();
         parseRoles(descriptorFileName);
+        for (StructuralRole strRole : classifierRoles){
+            strRole.printSummary();
+        }
     }
 
     private void parseRoles(String descriptorFileName){

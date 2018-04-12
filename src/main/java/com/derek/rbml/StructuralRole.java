@@ -13,16 +13,16 @@ import java.util.regex.Pattern;
  */
 @Getter
 public class StructuralRole extends Role{
-    private String type;
-    private String name;
+
+
+    protected String type;
     //how many instances of class x we can have
-    private Pair<Integer, Integer> structuralMultiplicity;
+    private Pair<Integer, Integer> multiplicity;
     private List<RoleAttribute> attributes;
     private List<RoleOperation> operations;
 
     public StructuralRole(String lineDescription){
         super(lineDescription);
-        parseLineDescription(lineDescription);
     }
 
     /***
@@ -39,25 +39,10 @@ public class StructuralRole extends Role{
             //group counts can include index length of array.
             type = m.group(1);
             name = m.group(2);
-            findStructuralMultiplicity(m.group(3));
+            multiplicity = findMultiplicity(m.group(3));
             buildAttribues(m.group(4));
+            buildOperations(m.group(5));
         }
-    }
-
-    /***
-     * s will be of this form: 0..0, or 1..*, but will always be exactly 4 chars.
-     * @param s
-     */
-    private void findStructuralMultiplicity(String s){
-        Integer minimum = Integer.parseInt(s.substring(0,1));
-        Integer maximum = 0;
-        String stringMax = s.substring(3,4);
-        if (stringMax.equals("*")){
-            maximum = Integer.MAX_VALUE;
-        }else{
-            maximum = Integer.parseInt(stringMax);
-        }
-        structuralMultiplicity = new Pair<>(minimum, maximum);
     }
 
     /***
@@ -65,13 +50,51 @@ public class StructuralRole extends Role{
      * @param s
      */
     private void buildAttribues(String s){
+        attributes = new ArrayList<>();
         if (s.equals("[]")){
             //no attributes
-            attributes = new ArrayList<>();
+            return;
         }else{
-            Pattern p = Pattern.compile("\\[\\]");
-            //Matcher m = p.matcher(s);
+            if (s.contains(";")){
+                //contains more than 1 attribute.
+                String[] splitter = s.split(";");
+                for (int i = 0; i < splitter.length; i++){
+                    attributes.add(new RoleAttribute(splitter[i]));
+                }
+            }else{
+                attributes.add(new RoleAttribute(s));
+            }
         }
+    }
 
-    } 
+    private void buildOperations(String s){
+        operations = new ArrayList<>();
+        if (s.equals("{}")){
+            //no operations
+            return;
+        }else{
+            if (s.contains(";")){
+                String[] splitter = s.split(";");
+                for (int i = 0; i < splitter.length; i++){
+                    operations.add(new RoleOperation(splitter[i]));
+                }
+            }else{
+                operations.add(new RoleOperation(s));
+            }
+        }
+    }
+
+    @Override
+    protected void printSummary() {
+        System.out.println("Structural Aspect");
+        System.out.println("Name: " + name);
+        System.out.println("Type: " + type);
+        System.out.println("Multiplicities: " + multiplicity.getKey() + ".." + multiplicity.getValue());
+        for (RoleAttribute attr : attributes){
+            attr.printSummary();
+        }
+        for (RoleOperation op : operations){
+            op.printSummary();
+        }
+    }
 }

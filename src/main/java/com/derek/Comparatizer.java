@@ -5,8 +5,8 @@ import com.derek.model.PatternType;
 import com.derek.model.RBMLSpec;
 import com.derek.model.SoftwareVersion;
 import com.derek.model.patterns.PatternInstance;
+import com.derek.rbml.SPS;
 import com.derek.uml.*;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;

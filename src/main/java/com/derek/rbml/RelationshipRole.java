@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 @Getter
 public class RelationshipRole extends Role {
 
-    private Relationship relationshipType;
+    private Relationship type;
     private String name;
     private Pair<String, String> connection1;
     private Pair<Integer, Integer> connection1Multiplicities;
@@ -34,6 +34,14 @@ public class RelationshipRole extends Role {
         //https://stackoverflow.com/questions/237061/using-regular-expressions-to-extract-a-value-in-java
         Pattern p = Pattern.compile("[A-Za-z]+[ ]|[A-Za-z]+,\\d\\.\\.[\\d|\\*]");
 
+    }
+
+    @Override
+    protected void printSummary() {
+        System.out.println("Relationship");
+        System.out.println("Name: " + name);
+        System.out.println("Type: " + type);
+        //TODO
     }
 
 }
