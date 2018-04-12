@@ -1,0 +1,14 @@
+Classifier |Receiver,1..*[]{|Action():void,1..*}
+Classifier |Command,1..*[]{|Execute():void,1..1}
+Classifier |AbstractCommand,0..*[]{}
+Class |ConcreteCommand,1..*[|state:|Receiver,1..1]{|Execute():void,1..1}
+Class |Invoker,1..*[]{}
+Class |Client,1..*[]{}
+Association |ClntRecvr{|Client,|Receiver,1..*}{|Receiver,|Client,1..*}
+Association |Stores{|Reciver,|ConcreteCommand,1..1}{|ConcereteCommand,|Reciver,1..1}
+Association |Invokes{|Invoker,|Command,1..*}{|Command,|Invoker,1..*}
+Generalization |CommandInstantiation{|ConcreteCommand,|Command}
+Generalization |CommandAbstraction{|AbstractCommand,|Command}
+Dependency |CreateCommand{|Client,|ConcereteCommand,1..*}
+
+

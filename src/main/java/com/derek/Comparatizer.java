@@ -74,7 +74,7 @@ public class Comparatizer {
     public void compareCommand(PatternInstance pi){
         CommandPattern commandPattern = new CommandPattern(pi, umlClassDiagram);
         commandPattern.mapToUML();
-        commandPattern.printSummary();
+        SPS strictCommand = new SPS("resources/sps/commandPatternSPS_strict.txt");
     }
 
     public void compareState(PatternInstance pi){
@@ -88,9 +88,7 @@ public class Comparatizer {
      * @param patternMapper
      */
     public void verifyConformance(SPS sps, PatternMapper patternMapper){
-        for (String roleBlock : sps.getRoleBlocks()){
 
-        }
 
     }
 

@@ -18,6 +18,15 @@ public class CommandPattern extends PatternMapper{
     private UMLAttribute receiverAttribute;
     private UMLOperation executeOperation;
 
+    //I think I want to store relationships here too... which will be gathered from teh uml class diagram.
+    //well, this is all stored implicitly in each role's object.
+    //generalizations: umlClassifier.getExtendsParents()
+    //implementations: umlClassifier.getImplementsParents()
+    //associations: umlClassifier.getAttributes().getType() & umlClassifier.getOperations().getType()
+    //dependencies can be done by digging into executeOperation, but are not done as of now. (4/12)
+
+
+
     public CommandPattern(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         super(pi, umlClassDiagram);
     }
@@ -49,11 +58,6 @@ public class CommandPattern extends PatternMapper{
         System.out.println("receiver role (attribute): " + receiverAttribute.getName());
         System.out.println("execute() role (operation): " + executeOperation.getName());
     }
-
-    protected void verifyStructure(SPS commandPatternSPS){
-
-    }
-
 
 
 
