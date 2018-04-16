@@ -5,7 +5,10 @@ import com.derek.model.PatternType;
 import com.derek.model.RBMLSpec;
 import com.derek.model.SoftwareVersion;
 import com.derek.model.patterns.PatternInstance;
+import com.derek.rbml.RBMLMapping;
+import com.derek.rbml.Role;
 import com.derek.rbml.SPS;
+import com.derek.rbml.StructuralRole;
 import com.derek.uml.*;
 
 import java.util.ArrayList;
@@ -75,6 +78,9 @@ public class Comparatizer {
         CommandPattern commandPattern = new CommandPattern(pi, umlClassDiagram);
         commandPattern.mapToUML();
         SPS strictCommand = new SPS("resources/sps/commandPatternSPS_strict.txt");
+
+        verifyConformance(strictCommand, commandPattern);
+
     }
 
     public void compareState(PatternInstance pi){
@@ -88,7 +94,7 @@ public class Comparatizer {
      * @param patternMapper
      */
     public void verifyConformance(SPS sps, PatternMapper patternMapper){
-
+        patternMapper.map(sps);
 
     }
 

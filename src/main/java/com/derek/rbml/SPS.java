@@ -1,13 +1,13 @@
 package com.derek.rbml;
 
-import com.derek.rbml.RelationshipRole;
-import com.derek.rbml.StructuralRole;
+import lombok.Getter;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+@Getter
 public class SPS {
 
     //classifier roles are declared abstractly (as a classifier) but the actual role will be either a UMLInterface or UMLClass
@@ -20,14 +20,11 @@ public class SPS {
 
     public SPS(String descriptorFileName) {
         classifierRoles = new ArrayList<>();
-        associationRoles= new ArrayList<>();
+        associationRoles = new ArrayList<>();
         generalizationRoles = new ArrayList<>();
         dependencyRoles = new ArrayList<>();
         implementationRoles = new ArrayList<>();
         parseRoles(descriptorFileName);
-        for (StructuralRole strRole : classifierRoles){
-            strRole.printSummary();
-        }
     }
 
     private void parseRoles(String descriptorFileName){
@@ -59,6 +56,7 @@ public class SPS {
             case "Dependency":
                 dependencyRoles.add(new RelationshipRole(lineDescription));
                 break;
+                //no implementation roles yet
             case "Implementation":
                 implementationRoles.add(new RelationshipRole(lineDescription));
                 break;
@@ -67,8 +65,5 @@ public class SPS {
                 System.exit(0);
         }
     }
-
-
-
 
 }
