@@ -32,18 +32,17 @@ public class Comparatizer {
         SoftwareVersion version = model.getVersions().get(0);
 
         //command tests
-        PatternType patternType = PatternType.COMMAND;
-        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, patternType);
-        PatternInstance pi = patternInstances.get(0);
-        compareCommand(pi);
+//        PatternType patternType = PatternType.COMMAND;
+//        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, patternType);
+//        PatternInstance pi = patternInstances.get(0);
+//        compareCommand(pi);
 
         //state tests
-        /*
         PatternType patternType = PatternType.STATE;
         List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, patternType);
         PatternInstance pi = patternInstances.get(0);
         compareState(pi);
-        */
+
 
         //factory tests
         /*
@@ -84,7 +83,10 @@ public class Comparatizer {
     }
 
     public void compareState(PatternInstance pi){
-
+        StatePattern statePattern = new StatePattern(pi, umlClassDiagram);
+        statePattern.mapToUML();
+        SPS strictState = new SPS("resources/sps/statePatternSPS_strict.txt");
+        verifyConformance(strictState, statePattern);
     }
 
     /***

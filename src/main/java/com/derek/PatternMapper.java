@@ -83,14 +83,19 @@ public abstract class PatternMapper {
     //input will look like this: execute(org.openqa.selenium.remote.http.HttpRequest, boolean)
     protected List<String> getParamsFromNameParams(String minorClassOperationNameParams){
         List<String> paramsList = new ArrayList<>();
-        System.out.println(minorClassOperationNameParams);
         String paramsBlock = minorClassOperationNameParams.split("\\(")[1];
         //minus 2 becuase last char is a ')'
         if (paramsBlock.length() == 1){
             return paramsList;
         }
-        String[] params = paramsBlock.substring(0, paramsBlock.length()-2).split("\\,");
+        String[] params = paramsBlock.substring(0, paramsBlock.length()-1).split("\\,");
         for (String s : params){
+            s = s.replace(" ", "");//remove spaces
+            if (s.contains(".")){
+                //package
+                String[] splitter = s.split("\\.");
+                s = splitter[splitter.length-1];
+            }
             paramsList.add(s);
         }
         return paramsList;
@@ -123,6 +128,7 @@ public abstract class PatternMapper {
         List<String> params = getParamsFromNameParams(roleName);
         //remove parens from roleName
         roleName = roleName.split("\\(")[0];
+
         UMLOperation operation = matchOperation(umlClassifier, roleName, roleType, params);
         return operation;
     }
@@ -164,5 +170,7 @@ public abstract class PatternMapper {
     public abstract List<UMLAttribute> getAttributeModelBlocks();
 
     public abstract List<RBMLMapping> map(SPS sps);
+
+    public abstract void printSummary();
 
 }

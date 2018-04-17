@@ -2,15 +2,13 @@ package com.derek;
 
 import com.derek.model.patterns.PatternInstance;
 import com.derek.rbml.*;
-import com.derek.uml.UMLAttribute;
-import com.derek.uml.UMLClassDiagram;
-import com.derek.uml.UMLClassifier;
-import com.derek.uml.UMLOperation;
+import com.derek.uml.*;
 import javafx.util.Pair;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 public class CommandPattern extends PatternMapper{
@@ -96,12 +94,12 @@ public class CommandPattern extends PatternMapper{
                     break;
                 case "|ConcreteCommand":
                     knownStructuralMappings.add(new RBMLMapping(strRole, concreteCommand));
-                    for (RoleAttribute attrRole : strRole.getAttributes()){
+                    for (AttributeRole attrRole : strRole.getAttributes()){
                         if (attrRole.getType().equals("|Receiver")) {
                             knownStructuralMappings.add(new RBMLMapping(attrRole, receiverAttribute));
                         }
                     }
-                    for (RoleOperation opRole : strRole.getOperations()){
+                    for (OperationRole opRole : strRole.getOperations()){
                         if (opRole.getName().equals("|Execute()")){
                             knownStructuralMappings.add(new RBMLMapping(opRole, executeOperation));
                         }
@@ -114,12 +112,20 @@ public class CommandPattern extends PatternMapper{
     private List<RBMLMapping> associationMap(SPS sps){
         List<RBMLMapping> knownRelationshipMappings = new ArrayList<>();
         for (RelationshipRole relationshipRole : sps.getAssociationRoles()){
+            for (UMLClassifier incoming : umlClassDiagram.getClassDiagram().predecessors(receiverClassifier)){
+                //receiver should have 2 incoming edges - from client and from concretecommand. everything else is bad.
+                if (incoming.getName().equals(concreteCommand)){
+                    //match made; mapping from receiver to command.
+                    //
+                }
+            }
             switch(relationshipRole.getName()){
                 case "|Stores":
-                    if (umlClassDiagram.getClassDiagram().hasEdgeConnecting(receiverClassifier, concreteCommand)){
+                    Optional<Relationship> isEdge = umlClassDiagram.getClassDiagram().edgeValue(receiverClassifier, concreteCommand);
+                    if (isEdge.isPresent()){
+                        //TODO - i would love a better rbml spec for the command pattern.
                         //map exists here.
-
-
+                        knownRelationshipMappings.add(new RBMLMapping(relationshipRole, Relationship.ASSOCIATION));
                     }
                     break;
 
@@ -128,7 +134,7 @@ public class CommandPattern extends PatternMapper{
         return knownRelationshipMappings;
     }
 
-    protected void printSummary(){
+    public void printSummary(){
         System.out.println("Reciever role: " + receiverClassifier.getName());
         System.out.println("Concrete Command role: " + concreteCommand.getName());
         System.out.println("receiver role (attribute): " + receiverAttribute.getName());

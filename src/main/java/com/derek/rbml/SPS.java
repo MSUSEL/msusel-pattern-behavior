@@ -2,6 +2,7 @@ package com.derek.rbml;
 
 import lombok.Getter;
 
+import javax.management.relation.Relation;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +64,24 @@ public class SPS {
             default:
                 System.out.println("did not fine an rbml role for the input. Debug parseRoleType. But likely the input was messed up. (sps text file)");
                 System.exit(0);
+        }
+    }
+
+    public void printRoles(){
+        for (StructuralRole structuralRole : classifierRoles){
+            structuralRole.printSummary();
+        }
+        for (RelationshipRole relationshipRole : associationRoles){
+            relationshipRole.printSummary();
+        }
+        for (RelationshipRole relationshipRole : generalizationRoles){
+            relationshipRole.printSummary();
+        }
+        for (RelationshipRole relationshipRole : dependencyRoles){
+            relationshipRole.printSummary();
+        }
+        for (RelationshipRole relationshipRole : implementationRoles){
+            relationshipRole.printSummary();
         }
     }
 

@@ -18,8 +18,8 @@ public class StructuralRole extends Role{
     protected String type;
     //how many instances of class x we can have
     private Pair<Integer, Integer> multiplicity;
-    private List<RoleAttribute> attributes;
-    private List<RoleOperation> operations;
+    private List<AttributeRole> attributes;
+    private List<OperationRole> operations;
 
     public StructuralRole(String lineDescription){
         super(lineDescription);
@@ -59,10 +59,10 @@ public class StructuralRole extends Role{
                 //contains more than 1 attribute.
                 String[] splitter = s.split(";");
                 for (int i = 0; i < splitter.length; i++){
-                    attributes.add(new RoleAttribute(splitter[i]));
+                    attributes.add(new AttributeRole(splitter[i]));
                 }
             }else{
-                attributes.add(new RoleAttribute(s));
+                attributes.add(new AttributeRole(s));
             }
         }
     }
@@ -76,10 +76,10 @@ public class StructuralRole extends Role{
             if (s.contains(";")){
                 String[] splitter = s.split(";");
                 for (int i = 0; i < splitter.length; i++){
-                    operations.add(new RoleOperation(splitter[i]));
+                    operations.add(new OperationRole(splitter[i]));
                 }
             }else{
-                operations.add(new RoleOperation(s));
+                operations.add(new OperationRole(s));
             }
         }
     }
@@ -90,10 +90,10 @@ public class StructuralRole extends Role{
         System.out.println("Name: " + name);
         System.out.println("Type: " + type);
         System.out.println("Multiplicities: " + multiplicity.getKey() + ".." + multiplicity.getValue());
-        for (RoleAttribute attr : attributes){
+        for (AttributeRole attr : attributes){
             attr.printSummary();
         }
-        for (RoleOperation op : operations){
+        for (OperationRole op : operations){
             op.printSummary();
         }
     }

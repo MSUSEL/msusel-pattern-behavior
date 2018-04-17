@@ -24,11 +24,6 @@
  */
 package com.derek.uml;
 
-import com.google.common.graph.GraphBuilder;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseListener;
-
 public enum Relationship{
     REALIZATION,
     GENERALIZATION,

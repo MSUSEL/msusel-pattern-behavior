@@ -75,6 +75,8 @@ public class RelationshipRole extends Role {
     }
 
     private Pair<String, String> parseConnection(String s){
+        s = s.replace("{","");
+        s = s.replace("}","");
         String[] splitter = s.split(",");
         return new Pair<>(splitter[0], splitter[1]);
     }
@@ -90,7 +92,10 @@ public class RelationshipRole extends Role {
         System.out.println("Name: " + name);
         System.out.println("Type: " + type);
         System.out.println("connection 1: " + connection1.getKey() + " to " + connection1.getValue());
-        System.out.println("connection 1 multiplicities: " + connection1Multiplicities.getKey() + " to " + connection1Multiplicities.getValue());
+        if (connection1Multiplicities != null) {
+            //generalizations have no mults.
+            System.out.println("connection 1 multiplicities: " + connection1Multiplicities.getKey() + " to " + connection1Multiplicities.getValue());
+        }
         if (connection2 != null){
             System.out.println("connection 2: " + connection2.getKey() + " to " + connection2.getValue());
             if (connection2Multiplicities != null){

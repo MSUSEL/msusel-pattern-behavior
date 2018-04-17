@@ -27,10 +27,12 @@ package com.derek.model.patterns;
 import com.derek.model.PatternType;
 import com.derek.model.SoftwareVersion;
 import javafx.util.Pair;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class PatternInstance {
 
     //key: role
@@ -54,7 +56,7 @@ public class PatternInstance {
         return listOfPatternRoles;
     }
 
-    private String getMajorRole(){
+    public String getMajorRole(){
         switch(patternType){
             case FACTORY_METHOD:return "Creator";
             case CHAIN_OF_RESPONSIBILITY:return "Handler";
@@ -65,7 +67,7 @@ public class PatternInstance {
             case COMPOSITE:return "Component";
             case DECORATOR:return "Decorator";
             case OBSERVER:return "Observer";
-            case STATE:return "State";
+            case STATE:return "Context";
             case STRATEGY:return "Strategy";
             case BRIDGE:return "Abstraction";
             case TEMPLATE_METHOD:return "AbstractClass";
@@ -108,7 +110,7 @@ public class PatternInstance {
 
     //some patterns do not have a secondary major role, so they return blank. They will never get called anyway because
     //of the way this class is being instantiated.
-    private String getSecondMajorRole(){
+    public String getSecondMajorRole(){
         switch(patternType){
             case FACTORY_METHOD:return "";
             case CHAIN_OF_RESPONSIBILITY:return "";
@@ -119,7 +121,7 @@ public class PatternInstance {
             case COMPOSITE:return "Composite";
             case DECORATOR:return "Component";
             case OBSERVER:return "Subject";
-            case STATE:return "Context";
+            case STATE:return "State";
             case STRATEGY:return "Context";
             case BRIDGE:return "Implementor";
             case TEMPLATE_METHOD:return "";
