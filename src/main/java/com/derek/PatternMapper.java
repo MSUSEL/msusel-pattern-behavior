@@ -4,6 +4,7 @@ import com.derek.model.patterns.PatternInstance;
 import com.derek.rbml.RBMLMapping;
 import com.derek.rbml.SPS;
 import com.derek.uml.*;
+import javafx.util.Pair;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -165,9 +166,9 @@ public abstract class PatternMapper {
         return nameRemoved;
     }
 
-    public abstract List<UMLClassifier> getClassifierModelBlocks();
-    public abstract List<UMLOperation> getOperationModelBlocks();
-    public abstract List<UMLAttribute> getAttributeModelBlocks();
+    public abstract List<Pair<String, UMLClassifier>> getClassifierModelBlocks();
+    public abstract List<Pair<String, UMLOperation>> getOperationModelBlocks();
+    public abstract List<Pair<String, UMLAttribute>> getAttributeModelBlocks();
 
     public abstract List<RBMLMapping> map(SPS sps);
 

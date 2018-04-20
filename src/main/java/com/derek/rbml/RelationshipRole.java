@@ -4,6 +4,8 @@ import com.derek.uml.Relationship;
 import javafx.util.Pair;
 import lombok.Getter;
 
+import java.sql.Struct;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,10 +13,10 @@ import java.util.regex.Pattern;
 public class RelationshipRole extends Role {
 
     private Relationship type;
-    private Pair<String, String> connection1;
+    private Pair<String, String> connection1String;
+    private Pair<StructuralRole, StructuralRole> connection1;
     private Pair<Integer, Integer> connection1Multiplicities;
     //connection 2 is optional
-    private Pair<String, String> connection2;
     private Pair<Integer, Integer> connection2Multiplicities;
 
     public RelationshipRole(String lineDescription){
@@ -57,20 +59,17 @@ public class RelationshipRole extends Role {
     }
 
     private void parseRelationshipRoleNames(String roleNames){
-        Pattern p = Pattern.compile("(\\{.*\\})*");
+        Pattern p = Pattern.compile("\\{(\\|[a-zA-Z]+),(\\|[a-zA-Z]+)([,\\d\\.\\.[\\d|\\*]]*)\\}");
         Matcher m = p.matcher(roleNames);
         m.find();
-        if (m.groupCount() == 1){
-            //single directional relationship
-            connection1 = parseConnection(m.group(1));
-            if (!this.type.equals(Relationship.GENERALIZATION)){
-                //no multiplicities on generalization.
-                connection1Multiplicities = parseConnectionMultiplicities(m.group(1));
+        connection1String = new Pair<>(m.group(1), m.group(2));
+        //one single directional multiplicity
+        String[] splitter = m.group(3).split(",");
+        if (splitter.length > 1) {
+            connection1Multiplicities = findMultiplicity(splitter[1]);
+            if (splitter.length == 3) {
+                connection2Multiplicities = findMultiplicity(splitter[2]);
             }
-        }else{
-            //bidirectional
-            connection2 = parseConnection(m.group(2));
-            connection2Multiplicities = parseConnectionMultiplicities(m.group(2));
         }
     }
 
@@ -86,22 +85,34 @@ public class RelationshipRole extends Role {
         return findMultiplicity(splitter[2]);
     }
 
+    protected void buildConnectionStructure(List<StructuralRole> structuralRoles){
+        StructuralRole nodeU = matchStructuralRole(structuralRoles, connection1String.getKey());
+        StructuralRole nodeV = matchStructuralRole(structuralRoles, connection1String.getValue());
+        connection1 = new Pair<>(nodeU, nodeV);
+    }
+
+    private StructuralRole matchStructuralRole(List<StructuralRole> structuralRoles, String nameToMatch){
+        for (StructuralRole structuralRole : structuralRoles){
+            if (nameToMatch.equals(structuralRole.getName())){
+                return structuralRole;
+            }
+        }
+        System.out.println("Failed to match a structural role.  This is likely because of a bad text format.");
+        return null;
+    }
+
     @Override
     protected void printSummary() {
         System.out.println("Relationship");
         System.out.println("Name: " + name);
         System.out.println("Type: " + type);
-        System.out.println("connection 1: " + connection1.getKey() + " to " + connection1.getValue());
+        System.out.println("connection 1: " + connection1String.getKey() + " to " + connection1String.getValue());
         if (connection1Multiplicities != null) {
             //generalizations have no mults.
             System.out.println("connection 1 multiplicities: " + connection1Multiplicities.getKey() + " to " + connection1Multiplicities.getValue());
+            System.out.println("connection 1 reverse multiplicities: " + connection2Multiplicities.getKey() + " to " + connection2Multiplicities.getValue());
         }
-        if (connection2 != null){
-            System.out.println("connection 2: " + connection2.getKey() + " to " + connection2.getValue());
-            if (connection2Multiplicities != null){
-                System.out.println("connection 2 multiplicities: " + connection2Multiplicities.getKey() + " to " + connection2Multiplicities.getValue());
-            }
-        }
+
     }
 
 }

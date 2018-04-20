@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
 @Getter
 public class StructuralRole extends Role{
 
-
     protected String type;
     //how many instances of class x we can have
     private Pair<Integer, Integer> multiplicity;

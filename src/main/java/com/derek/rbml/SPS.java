@@ -1,5 +1,6 @@
 package com.derek.rbml;
 
+import com.derek.uml.Relationship;
 import lombok.Getter;
 
 import javax.management.relation.Relation;
@@ -26,6 +27,25 @@ public class SPS {
         dependencyRoles = new ArrayList<>();
         implementationRoles = new ArrayList<>();
         parseRoles(descriptorFileName);
+        buildRelationships();
+    }
+
+    /***
+     * meant as a 'second pass', where the structural roles are matched up to each behavioral role.
+     */
+    private void buildRelationships(){
+        for (RelationshipRole association : associationRoles){
+            association.buildConnectionStructure(classifierRoles);
+        }
+        for (RelationshipRole generalization : generalizationRoles){
+            generalization.buildConnectionStructure(classifierRoles);
+        }
+        for (RelationshipRole dependency : dependencyRoles){
+            dependency.buildConnectionStructure(classifierRoles);
+        }
+        for (RelationshipRole implementation : implementationRoles){
+            implementation.buildConnectionStructure(classifierRoles);
+        }
     }
 
     private void parseRoles(String descriptorFileName){

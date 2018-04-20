@@ -31,6 +31,7 @@ public class CommandPattern extends PatternMapper{
         super(pi, umlClassDiagram);
     }
 
+    //TODO - make 'receiverClassifier' hold Pair<String, UMLCLassifier>, like statepattern. etc. for the other vars
     /***
      * example input:
      * 		<instance>
@@ -53,23 +54,18 @@ public class CommandPattern extends PatternMapper{
     }
 
     @Override
-    public List<UMLClassifier> getClassifierModelBlocks() {
-        List<UMLClassifier> modelBlocks= new ArrayList<>();
-        modelBlocks.add(receiverClassifier);
-        modelBlocks.add(concreteCommand);
-        return modelBlocks;
+    public List<Pair<String, UMLClassifier>> getClassifierModelBlocks() {
+        return null;
     }
+
     @Override
-    public List<UMLOperation> getOperationModelBlocks() {
-        List<UMLOperation> modelBlocks= new ArrayList<>();
-        modelBlocks.add(executeOperation);
-        return modelBlocks;
+    public List<Pair<String, UMLOperation>> getOperationModelBlocks() {
+        return null;
     }
+
     @Override
-    public List<UMLAttribute> getAttributeModelBlocks() {
-        List<UMLAttribute> modelBlocks= new ArrayList<>();
-        modelBlocks.add(receiverAttribute);
-        return modelBlocks;
+    public List<Pair<String, UMLAttribute>> getAttributeModelBlocks() {
+        return null;
     }
 
     @Override

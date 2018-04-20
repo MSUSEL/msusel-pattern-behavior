@@ -32,4 +32,8 @@ public abstract class Role {
 
     protected abstract void printSummary();
 
+    public String compareName(){
+        return name.replace("|", "");
+    }
+
 }

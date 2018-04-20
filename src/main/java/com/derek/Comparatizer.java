@@ -96,8 +96,10 @@ public class Comparatizer {
      * @param patternMapper
      */
     public void verifyConformance(SPS sps, PatternMapper patternMapper){
-        patternMapper.map(sps);
-
+        List<RBMLMapping> rbmlMappings = patternMapper.map(sps);
+        for (RBMLMapping rbmlMapping : rbmlMappings){
+            rbmlMapping.printSummary();
+        }
     }
 
 

@@ -12,4 +12,8 @@ public class RBMLMapping<Role, T> {
     public RBMLMapping(Role role, T umlRole) {
         this.mappedPair = new Pair<>(role, umlRole);
     }
+
+    public void printSummary(){
+        System.out.println("RBML mapping from RBML element: " + mappedPair.getKey() + " to " + mappedPair.getValue());
+    }
 }
