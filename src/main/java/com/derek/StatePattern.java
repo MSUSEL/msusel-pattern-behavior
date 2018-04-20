@@ -112,9 +112,13 @@ public class StatePattern extends PatternMapper {
         List<RBMLMapping> relationshipMappings = new ArrayList<>();
         List<RBMLMapping> associationMappings = mapAssociations(sps, structuralMappings);
         List<RBMLMapping> generalizationMappings = mapGeneralizations(sps, structuralMappings);
+        List<RBMLMapping> dependencyMappings = mapDependencies(sps, structuralMappings);
+        List<RBMLMapping> realizationMappings = mapRealizations(sps, structuralMappings);
 
         relationshipMappings.addAll(associationMappings);
         relationshipMappings.addAll(generalizationMappings);
+        relationshipMappings.addAll(dependencyMappings);
+        relationshipMappings.addAll(realizationMappings);
         return relationshipMappings;
     }
 
@@ -168,6 +172,58 @@ public class StatePattern extends PatternMapper {
             }
         }
         return associationMappings;
+    }
+
+    private List<RBMLMapping> mapDependencies(SPS sps, List<RBMLMapping> structuralMappings){
+        List<RBMLMapping> dependencyMappings = new ArrayList<>();
+        for (RelationshipRole dependencyRole : sps.getDependencyRoles()){
+            System.out.println("entering association role comparison: " + dependencyRole.getConnection1().getKey());
+            for (Pair<String, UMLClassifier> modelBlockPair : getClassifierModelBlocks()){
+                if (modelBlockPair.getKey().equals(dependencyRole.getConnection1().getKey().compareName())){
+                    //rbml association and uml class have same single endpoint. now we check other endpoint.
+                    StructuralRole nodeV = dependencyRole.getConnection1().getValue();
+                    RBMLMapping endpointMap = getMappingIfExists(structuralMappings, nodeV);
+                    if (endpointMap != null){
+                        //will be null if the role was not mapped in the first place.
+                        UMLClassifier mappedRoleEndpoint = (UMLClassifier)endpointMap.getMappedPair().getValue();
+                        System.out.println("attempting to add dependency mapping from rbml : " + dependencyRole.getName() + " to classifiers: " + modelBlockPair.getValue() + " to " + mappedRoleEndpoint);
+                        if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).equals(Relationship.DEPENDENCY)){
+                            //omg. found a relationship mapping finally.
+                            //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
+                            dependencyMappings.add(new RBMLMapping(dependencyRole, new Pair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
+                            System.out.println("added dependency mapping from rbml : " + dependencyRole.getName() + " to classifiers: " + modelBlockPair.getValue() + " to " + mappedRoleEndpoint);
+                        }
+                    }
+                }
+            }
+        }
+        return dependencyMappings;
+    }
+
+    private List<RBMLMapping> mapRealizations(SPS sps, List<RBMLMapping> structuralMappings){
+        List<RBMLMapping> realizationMappings = new ArrayList<>();
+        for (RelationshipRole realizationRole : sps.getImplementationRoles()){
+            System.out.println("entering association role comparison: " + realizationRole.getConnection1().getKey());
+            for (Pair<String, UMLClassifier> modelBlockPair : getClassifierModelBlocks()){
+                if (modelBlockPair.getKey().equals(realizationRole.getConnection1().getKey().compareName())){
+                    //rbml association and uml class have same single endpoint. now we check other endpoint.
+                    StructuralRole nodeV = realizationRole.getConnection1().getValue();
+                    RBMLMapping endpointMap = getMappingIfExists(structuralMappings, nodeV);
+                    if (endpointMap != null){
+                        //will be null if the role was not mapped in the first place.
+                        UMLClassifier mappedRoleEndpoint = (UMLClassifier)endpointMap.getMappedPair().getValue();
+                        System.out.println("attempting to add realization mapping from rbml : " + realizationRole.getName() + " to classifiers: " + modelBlockPair.getValue() + " to " + mappedRoleEndpoint);
+                        if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).equals(Relationship.REALIZATION)){
+                            //omg. found a relationship mapping finally.
+                            //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
+                            realizationMappings.add(new RBMLMapping(realizationRole, new Pair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
+                            System.out.println("added realization mapping from rbml : " + realizationRole.getName() + " to classifiers: " + modelBlockPair.getValue() + " to " + mappedRoleEndpoint);
+                        }
+                    }
+                }
+            }
+        }
+        return realizationMappings;
     }
 
     private RBMLMapping getMappingIfExists(List<RBMLMapping> mappings, StructuralRole structuralRole){
