@@ -28,6 +28,7 @@ public class OperationRole extends Role {
         if (m.matches()){
             name = m.group(1);
             //type might be void, which is the big difference from attributes.
+            //group 2 is parameters... not implemented yet... and i might not need it.
             type = m.group(3);
             multiplicity = findMultiplicity(m.group(4));
         }

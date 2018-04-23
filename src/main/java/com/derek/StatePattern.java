@@ -76,4 +76,5 @@ public class StatePattern extends PatternMapper {
             System.out.println("Request() role (operation): " + op.getValue().getName());
         }
     }
+
 }

@@ -5,11 +5,9 @@ import com.derek.model.PatternType;
 import com.derek.model.RBMLSpec;
 import com.derek.model.SoftwareVersion;
 import com.derek.model.patterns.PatternInstance;
-import com.derek.rbml.RBMLMapping;
-import com.derek.rbml.Role;
-import com.derek.rbml.SPS;
-import com.derek.rbml.StructuralRole;
+import com.derek.rbml.*;
 import com.derek.uml.*;
+import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,15 +76,22 @@ public class Comparatizer {
         commandPattern.mapToUML();
         SPS strictCommand = new SPS("resources/sps/commandPatternSPS_strict.txt");
 
-        verifyConformance(strictCommand, commandPattern);
+        //verifyConformance(strictCommand, commandPattern);
+
 
     }
 
     public void compareState(PatternInstance pi){
         StatePattern statePattern = new StatePattern(pi, umlClassDiagram);
         statePattern.mapToUML();
-        SPS strictState = new SPS("resources/sps/statePatternSPS_strict.txt");
-        verifyConformance(strictState, statePattern);
+        SPS strictStateSPS = new SPS("resources/sps/statePatternSPS_strict.txt");
+        IPS strictStateIPS = new IPS("resources/ips/statePatternIPS_strict.txt", strictStateSPS);
+
+        verifyConformance(strictStateSPS, strictStateIPS, statePattern);
+//        for (Pair<String, UMLOperation> behaviors : statePattern.getOperationModelBlocks()){
+//            System.out.println("call tree for: " + behaviors.getValue().getName());
+//            behaviors.getValue().getCallTreeString().printTree();
+//        }
     }
 
     /***
@@ -95,7 +100,7 @@ public class Comparatizer {
      * @param sps
      * @param patternMapper
      */
-    public void verifyConformance(SPS sps, PatternMapper patternMapper){
+    public void verifyConformance(SPS sps, IPS ips, PatternMapper patternMapper){
         List<RBMLMapping> rbmlMappings = patternMapper.map(sps);
         for (RBMLMapping rbmlMapping : rbmlMappings){
             rbmlMapping.printSummary();
@@ -109,6 +114,7 @@ public class Comparatizer {
                 }
             }
         }
+        //sps conformance checks - but this is printing; it does not include any logic.
         for (Role role : sps.getAllRoles()){
             if (conformingRoles.contains(role)){
                 System.out.println("Role " + role.getName() + " is satisfied.");
@@ -116,9 +122,9 @@ public class Comparatizer {
                 System.out.println("Role " + role.getName() + " is violated.");
             }
         }
+
+
     }
-
-
 
     private void printWithRelationships(List<UMLClassifier> relevantClassifiers, int expanse){
         StringBuilder output = new StringBuilder();

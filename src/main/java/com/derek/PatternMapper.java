@@ -330,11 +330,7 @@ public abstract class PatternMapper {
     private void multiplicityChecks(List<RBMLMapping> mappings){
         for (Role role : sps.getAllRolesWithMultiplicities()){
             int numberOfTimesRoleIsMapped = countNumberOfTimesRoleIsMapped(role, mappings);
-            System.out.println("Role: " + role.getName() + " is mapped " + numberOfTimesRoleIsMapped + " times.");
-            if (checkBetweeness(role, numberOfTimesRoleIsMapped)){
-                System.out.println("Role " + role.getName() + " is satisfied. ");
-            }else{
-                System.out.println("Role " + role.getName() + " is violated. ");
+            if (!checkBetweeness(role, numberOfTimesRoleIsMapped)){
                 //remove mapping from list of mappings
                 mappings = removeMapping(role, mappings);
             }
