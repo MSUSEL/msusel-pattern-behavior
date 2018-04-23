@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 public class AttributeRole extends Role {
 
     protected String type;
-    private Pair<Integer, Integer> multiplicity;
 
     public AttributeRole(String lineDescription) {
         super(lineDescription);

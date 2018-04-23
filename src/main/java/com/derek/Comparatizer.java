@@ -100,6 +100,22 @@ public class Comparatizer {
         for (RBMLMapping rbmlMapping : rbmlMappings){
             rbmlMapping.printSummary();
         }
+        //print all things that don't conform.
+        List<Role> conformingRoles = new ArrayList<>();
+        for (Role role : sps.getAllRoles()){
+            for (RBMLMapping rbmlMapping : rbmlMappings){
+                if (rbmlMapping.getRole().equals(role) && !conformingRoles.contains(role)){
+                    conformingRoles.add(role);
+                }
+            }
+        }
+        for (Role role : sps.getAllRoles()){
+            if (conformingRoles.contains(role)){
+                System.out.println("Role " + role.getName() + " is satisfied.");
+            }else{
+                System.out.println("Role " + role.getName() + " is violated.");
+            }
+        }
     }
 
 

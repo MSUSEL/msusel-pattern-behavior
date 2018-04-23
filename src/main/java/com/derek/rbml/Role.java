@@ -7,6 +7,8 @@ import lombok.Getter;
 public abstract class Role {
     protected String name;
 
+    protected Pair<Integer, Integer> multiplicity;
+
     public Role(String lineDescription){
         parseLineDescription(lineDescription);
     }

@@ -1,8 +1,7 @@
 package com.derek;
 
 import com.derek.model.patterns.PatternInstance;
-import com.derek.rbml.RBMLMapping;
-import com.derek.rbml.SPS;
+import com.derek.rbml.*;
 import com.derek.uml.*;
 import javafx.util.Pair;
 import lombok.Getter;
@@ -15,6 +14,7 @@ public abstract class PatternMapper {
 
     protected PatternInstance pi;
     protected UMLClassDiagram umlClassDiagram;
+    protected SPS sps;
 
     public PatternMapper(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         this.pi = pi;
@@ -170,7 +170,216 @@ public abstract class PatternMapper {
     public abstract List<Pair<String, UMLOperation>> getOperationModelBlocks();
     public abstract List<Pair<String, UMLAttribute>> getAttributeModelBlocks();
 
-    public abstract List<RBMLMapping> map(SPS sps);
+    public List<RBMLMapping> map(SPS sps) {
+        this.sps = sps;
+        List<RBMLMapping> allMappings = new ArrayList<>();
+        List<RBMLMapping> structuralMappings = mapStructure(sps);
+        List<RBMLMapping> relationshipMappings = mapRelationships(sps, structuralMappings);
+
+
+        allMappings.addAll(structuralMappings);
+        allMappings.addAll(relationshipMappings);
+
+        //removed mapping by pass by ref.
+        multiplicityChecks(allMappings);
+        return allMappings;
+    }
+
+    public List<RBMLMapping> mapStructure(SPS sps){
+        List<RBMLMapping> structuralMappings = new ArrayList<>();
+        for (StructuralRole strRole : sps.getClassifierRoles()) {
+            for (Pair<String, UMLClassifier> modelBlockPair : getClassifierModelBlocks()) {
+                if (modelBlockPair.getKey().equals(strRole.compareName())) {
+                    //match found!
+                    structuralMappings.add(new RBMLMapping(strRole, modelBlockPair.getValue()));
+                }
+
+            }
+            for (AttributeRole attributeRole : strRole.getAttributes()) {
+                for (Pair<String, UMLAttribute> attributePairBlock : getAttributeModelBlocks()) {
+                    if (attributePairBlock.getKey().equals(attributeRole.compareName())) {
+                        //attribute match found!
+                        structuralMappings.add(new RBMLMapping(attributeRole, attributePairBlock.getValue()));
+                    }
+                }
+            }
+            for (OperationRole operationRole : strRole.getOperations()){
+                for (Pair<String, UMLOperation> operationPairBlock : getOperationModelBlocks()) {
+                    if (operationPairBlock.getKey().equals(operationRole.compareName())) {
+                        //operation match found!
+                        structuralMappings.add(new RBMLMapping(operationRole, operationPairBlock.getValue()));
+                    }
+                }
+            }
+        }
+        return structuralMappings;
+    }
+
+    public List<RBMLMapping> mapRelationships(SPS sps, List<RBMLMapping> structuralMappings){
+        List<RBMLMapping> relationshipMappings = new ArrayList<>();
+        List<RBMLMapping> associationMappings = mapAssociations(sps, structuralMappings);
+        List<RBMLMapping> generalizationMappings = mapGeneralizations(sps, structuralMappings);
+        List<RBMLMapping> dependencyMappings = mapDependencies(sps, structuralMappings);
+        List<RBMLMapping> realizationMappings = mapRealizations(sps, structuralMappings);
+
+        relationshipMappings.addAll(associationMappings);
+        relationshipMappings.addAll(generalizationMappings);
+        relationshipMappings.addAll(dependencyMappings);
+        relationshipMappings.addAll(realizationMappings);
+
+        return relationshipMappings;
+    }
+
+    private List<RBMLMapping> mapGeneralizations(SPS sps, List<RBMLMapping> structuralMappings){
+        List<RBMLMapping> generalizationMappings = new ArrayList<>();
+        for (RelationshipRole generalizationRole : sps.getGeneralizationRoles()){
+            for (Pair<String, UMLClassifier> modelBlockPair : getClassifierModelBlocks()){
+                if (modelBlockPair.getKey().equals(generalizationRole.getConnection1().getKey().compareName())){
+                    //rbml association and uml class have same single endpoint. now we check other endpoint.
+                    StructuralRole nodeV = generalizationRole.getConnection1().getValue();
+                    RBMLMapping endpointMap = getMappingIfExists(structuralMappings, nodeV);
+                    if (endpointMap != null){
+                        //will be null if the role was not mapped in the first place.
+                        UMLClassifier mappedRoleEndpoint = (UMLClassifier)endpointMap.getMappedPair().getValue();
+                        if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).equals(Relationship.GENERALIZATION)){
+                            //omg. found a relationship mapping finally.
+                            //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
+                            generalizationMappings.add(new RBMLMapping(generalizationRole, new Pair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
+                        }
+                    }
+                }
+            }
+        }
+        return generalizationMappings;
+    }
+
+    private List<RBMLMapping> mapAssociations(SPS sps, List<RBMLMapping> structuralMappings){
+        List<RBMLMapping> associationMappings = new ArrayList<>();
+        for (RelationshipRole associationRole : sps.getAssociationRoles()){
+            for (Pair<String, UMLClassifier> modelBlockPair : getClassifierModelBlocks()){
+                if (modelBlockPair.getKey().equals(associationRole.getConnection1().getKey().compareName())){
+                    //rbml association and uml class have same single endpoint. now we check other endpoint.
+                    StructuralRole nodeV = associationRole.getConnection1().getValue();
+                    RBMLMapping endpointMap = getMappingIfExists(structuralMappings, nodeV);
+                    if (endpointMap != null){
+                        //will be null if the role was not mapped in the first place.
+                        UMLClassifier mappedRoleEndpoint = (UMLClassifier)endpointMap.getMappedPair().getValue();
+                        if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).equals(Relationship.ASSOCIATION)){
+                            //omg. found a relationship mapping finally.
+                            //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
+                            associationMappings.add(new RBMLMapping(associationRole, new Pair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
+                        }
+                    }
+                }
+            }
+        }
+        return associationMappings;
+    }
+
+    private List<RBMLMapping> mapDependencies(SPS sps, List<RBMLMapping> structuralMappings){
+        List<RBMLMapping> dependencyMappings = new ArrayList<>();
+        for (RelationshipRole dependencyRole : sps.getDependencyRoles()){
+            for (Pair<String, UMLClassifier> modelBlockPair : getClassifierModelBlocks()){
+                if (modelBlockPair.getKey().equals(dependencyRole.getConnection1().getKey().compareName())){
+                    //rbml association and uml class have same single endpoint. now we check other endpoint.
+                    StructuralRole nodeV = dependencyRole.getConnection1().getValue();
+                    RBMLMapping endpointMap = getMappingIfExists(structuralMappings, nodeV);
+                    if (endpointMap != null){
+                        //will be null if the role was not mapped in the first place.
+                        UMLClassifier mappedRoleEndpoint = (UMLClassifier)endpointMap.getMappedPair().getValue();
+                        if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).equals(Relationship.DEPENDENCY)){
+                            //omg. found a relationship mapping finally.
+                            //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
+                            dependencyMappings.add(new RBMLMapping(dependencyRole, new Pair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
+                        }
+                    }
+                }
+            }
+        }
+        return dependencyMappings;
+    }
+
+    private List<RBMLMapping> mapRealizations(SPS sps, List<RBMLMapping> structuralMappings){
+        List<RBMLMapping> realizationMappings = new ArrayList<>();
+        for (RelationshipRole realizationRole : sps.getImplementationRoles()){
+            for (Pair<String, UMLClassifier> modelBlockPair : getClassifierModelBlocks()){
+                if (modelBlockPair.getKey().equals(realizationRole.getConnection1().getKey().compareName())){
+                    //rbml association and uml class have same single endpoint. now we check other endpoint.
+                    StructuralRole nodeV = realizationRole.getConnection1().getValue();
+                    RBMLMapping endpointMap = getMappingIfExists(structuralMappings, nodeV);
+                    if (endpointMap != null){
+                        //will be null if the role was not mapped in the first place.
+                        UMLClassifier mappedRoleEndpoint = (UMLClassifier)endpointMap.getMappedPair().getValue();
+                        if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).equals(Relationship.REALIZATION)){
+                            //omg. found a relationship mapping finally.
+                            //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
+                            realizationMappings.add(new RBMLMapping(realizationRole, new Pair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
+                        }
+                    }
+                }
+            }
+        }
+        return realizationMappings;
+    }
+
+    /***
+     * This method runs through the current mappings and removes all multiplicities that do not conform.
+     * @param mappings
+     *  pass by ref return value (mappings)
+     */
+    private void multiplicityChecks(List<RBMLMapping> mappings){
+        for (Role role : sps.getAllRolesWithMultiplicities()){
+            int numberOfTimesRoleIsMapped = countNumberOfTimesRoleIsMapped(role, mappings);
+            System.out.println("Role: " + role.getName() + " is mapped " + numberOfTimesRoleIsMapped + " times.");
+            if (checkBetweeness(role, numberOfTimesRoleIsMapped)){
+                System.out.println("Role " + role.getName() + " is satisfied. ");
+            }else{
+                System.out.println("Role " + role.getName() + " is violated. ");
+                //remove mapping from list of mappings
+                mappings = removeMapping(role, mappings);
+            }
+        }
+    }
+
+    private List<RBMLMapping> removeMapping(Role role, List<RBMLMapping> mappings){
+        List<RBMLMapping> removedMapping = new ArrayList<>();
+        for (RBMLMapping rbmlMapping : mappings){
+            if (!rbmlMapping.getRole().equals(role)){
+                //not flagged for removal
+                removedMapping.add(rbmlMapping);
+            }
+        }
+        return removedMapping;
+    }
+
+    private boolean checkBetweeness(Role role, int numberOfTimesMapped){
+        if (numberOfTimesMapped >= role.getMultiplicity().getKey() && numberOfTimesMapped <= role.getMultiplicity().getValue()){
+            //is in between
+            return true;
+        }
+        return false;
+    }
+
+    private int countNumberOfTimesRoleIsMapped(Role role, List<RBMLMapping> mappings){
+        int count = 0;
+        for (RBMLMapping mapping : mappings){
+            if (mapping.getRole().equals(role)){
+                //mapping exists
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private RBMLMapping getMappingIfExists(List<RBMLMapping> mappings, StructuralRole structuralRole){
+        for (RBMLMapping rbmlMapping : mappings){
+            if (rbmlMapping.getMappedPair().getKey().equals(structuralRole)){
+                return rbmlMapping;
+            }
+        }
+        //might happen if structural role was not mapped in the first place.
+        return null;
+    }
 
     public abstract void printSummary();
 

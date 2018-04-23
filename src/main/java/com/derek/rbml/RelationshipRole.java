@@ -67,22 +67,11 @@ public class RelationshipRole extends Role {
         String[] splitter = m.group(3).split(",");
         if (splitter.length > 1) {
             connection1Multiplicities = findMultiplicity(splitter[1]);
+            multiplicity = connection1Multiplicities;
             if (splitter.length == 3) {
                 connection2Multiplicities = findMultiplicity(splitter[2]);
             }
         }
-    }
-
-    private Pair<String, String> parseConnection(String s){
-        s = s.replace("{","");
-        s = s.replace("}","");
-        String[] splitter = s.split(",");
-        return new Pair<>(splitter[0], splitter[1]);
-    }
-
-    private Pair<Integer, Integer> parseConnectionMultiplicities(String s){
-        String[] splitter = s.split(",");
-        return findMultiplicity(splitter[2]);
     }
 
     protected void buildConnectionStructure(List<StructuralRole> structuralRoles){

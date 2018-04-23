@@ -1,11 +1,10 @@
 package com.derek.rbml;
 
-import com.derek.PatternMapper;
 import javafx.util.Pair;
 import lombok.Getter;
 
 @Getter
-public class RBMLMapping<Role, T> {
+public class RBMLMapping<T> {
 
     private Pair<Role, T> mappedPair;
 
@@ -15,5 +14,13 @@ public class RBMLMapping<Role, T> {
 
     public void printSummary(){
         System.out.println("RBML mapping from RBML element: " + mappedPair.getKey() + " to " + mappedPair.getValue());
+    }
+
+    public Role getRole(){
+        return mappedPair.getKey();
+    }
+
+    public T getUMLArtifact(){
+        return mappedPair.getValue();
     }
 }

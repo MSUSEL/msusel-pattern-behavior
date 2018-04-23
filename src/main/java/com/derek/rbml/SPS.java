@@ -105,4 +105,31 @@ public class SPS {
         }
     }
 
+    public List<Role> getAllRoles(){
+        List<Role> roles = new ArrayList<>();
+        roles.addAll(classifierRoles);
+        for (StructuralRole classifierRole : classifierRoles){
+            roles.addAll(classifierRole.getAttributes());
+            roles.addAll(classifierRole.getOperations());
+        }
+        roles.addAll(associationRoles);
+        roles.addAll(generalizationRoles);
+        roles.addAll(dependencyRoles);
+        roles.addAll(implementationRoles);
+        return roles;
+    }
+
+    public List<Role> getAllRolesWithMultiplicities(){
+        List<Role> roles = new ArrayList<>();
+        roles.addAll(classifierRoles);
+        for (StructuralRole classifierRole : classifierRoles){
+            roles.addAll(classifierRole.getAttributes());
+            roles.addAll(classifierRole.getOperations());
+        }
+        roles.addAll(associationRoles);
+        roles.addAll(dependencyRoles);
+        return roles;
+    }
+
+
 }

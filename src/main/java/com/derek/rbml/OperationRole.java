@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 public class OperationRole extends Role {
 
     protected String type;
-    private Pair<Integer, Integer> multiplicity;
 
     //while not explicitly required, at most we will have one param name and param type.
     private String paramName;

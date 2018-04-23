@@ -9,14 +9,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /***
- * class reponsible for holding
+ * class reponsible for holding all structural roles, such as Classifiers, Classes, and Features (Attributes and Operations)
  */
 @Getter
 public class StructuralRole extends Role{
 
     protected String type;
-    //how many instances of class x we can have
-    private Pair<Integer, Integer> multiplicity;
     private List<AttributeRole> attributes;
     private List<OperationRole> operations;
 
