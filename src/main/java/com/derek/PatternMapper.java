@@ -8,6 +8,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 @Getter
 public abstract class PatternMapper {
@@ -170,10 +171,10 @@ public abstract class PatternMapper {
     public abstract List<Pair<String, UMLOperation>> getOperationModelBlocks();
     public abstract List<Pair<String, UMLAttribute>> getAttributeModelBlocks();
 
-    public List<RBMLMapping> map(SPS sps) {
+    public List<RBMLMapping> mapStructure(SPS sps) {
         this.sps = sps;
         List<RBMLMapping> allMappings = new ArrayList<>();
-        List<RBMLMapping> structuralMappings = mapStructure(sps);
+        List<RBMLMapping> structuralMappings = mapStructuralComponents(sps);
         List<RBMLMapping> relationshipMappings = mapRelationships(sps, structuralMappings);
 
 
@@ -185,7 +186,7 @@ public abstract class PatternMapper {
         return allMappings;
     }
 
-    public List<RBMLMapping> mapStructure(SPS sps){
+    public List<RBMLMapping> mapStructuralComponents(SPS sps){
         List<RBMLMapping> structuralMappings = new ArrayList<>();
         for (StructuralRole strRole : sps.getClassifierRoles()) {
             for (Pair<String, UMLClassifier> modelBlockPair : getClassifierModelBlocks()) {
@@ -207,7 +208,8 @@ public abstract class PatternMapper {
                 for (Pair<String, UMLOperation> operationPairBlock : getOperationModelBlocks()) {
                     if (operationPairBlock.getKey().equals(operationRole.compareName())) {
                         //operation match found!
-                        structuralMappings.add(new RBMLMapping(operationRole, operationPairBlock.getValue()));
+                        RBMLMapping mapping = new RBMLMapping(operationRole, operationPairBlock.getValue());
+                        structuralMappings.add(mapping);
                     }
                 }
             }
@@ -365,6 +367,92 @@ public abstract class PatternMapper {
             }
         }
         return count;
+    }
+
+    public List<RBMLMapping> mapBehavior(List<RBMLMapping> structureMappings, IPS ips){
+        List<RBMLMapping> behaviorMappings = new ArrayList<>();
+        for (OperationRole operationRole : getOperationsFromMappings(structureMappings)){
+            List<UMLOperation> umlOperations = getOperationsFromMapping(operationRole, structureMappings);
+            for (UMLOperation mappedOperation : umlOperations) {
+                CallTreeNode<String> callTree = mappedOperation.getCallTreeString();
+                List<CallTreeNode<String>> callTreeAsList = callTree.convertMeToOrderedList();
+                orderedListSubsetComparison(callTreeAsList, ips.getInteractions(), structureMappings);
+            }
+        }
+        return behaviorMappings;
+    }
+
+    private List<OperationRole> getOperationsFromMappings(List<RBMLMapping> structureMappings){
+        List<OperationRole> operationRoles = new ArrayList<>();
+        for (RBMLMapping rbmlMapping : structureMappings){
+            if (rbmlMapping.getRole() instanceof OperationRole){
+                operationRoles.add((OperationRole) rbmlMapping.getRole());
+            }
+        }
+        return operationRoles;
+    }
+
+    /***
+     * becasue I can have more than one uml operation mapped to one role, I need to return a list of uml operations
+     * @param opRole
+     * @param structureMappings
+     * @return
+     */
+    private List<UMLOperation> getOperationsFromMapping(OperationRole opRole, List<RBMLMapping> structureMappings){
+        List<UMLOperation> operations = new ArrayList<>();
+        for (RBMLMapping rbmlMapping : structureMappings){
+            if (rbmlMapping.getRole().equals(opRole)){
+                operations.add((UMLOperation)rbmlMapping.getUmlArtifact());
+            }
+        }
+        if (operations.size() != 0){
+            return operations;
+        }
+        System.out.println("was not able to find a mapped uml operation from the list of structural mappings. ");
+        System.out.println("likely this means no operation was found that runs the behavior of this pattern.");
+        System.out.println("Exiting.. ");
+        System.exit(0);
+        return null;
+    }
+
+    /***
+     * method to perform the ordered list subset comparison. Initially takes in a list representation of the call tree and a list of interaction roles.
+     * Will iteratively traverse interactions and also call tree nodes, matching the two if they map.
+     *
+     * Note that this will not focus on variable semantics (names), but rather focus on types that are called from teh callTree.
+     *
+     * @param callTreeAsList
+     * @param interactionRoles
+     */
+    private List<RBMLMapping> orderedListSubsetComparison(List<CallTreeNode<String>> callTreeAsList, List<InteractionRole> interactionRoles, List<RBMLMapping> structuralMappings){
+        List<RBMLMapping> behaviorMappings = new ArrayList<>();
+        for (int i = 0; i < interactionRoles.size(); i++){
+            InteractionRole interactionRole = interactionRoles.get(i);
+            for (int j = 0; j < callTreeAsList.size(); j++){
+                CallTreeNode<String> callTreeNode = callTreeAsList.get(j);
+                if (i == 0 && j == 0){
+                    //'base case', in a sense. By definition we start here as we enter a method.
+                    UMLOperation baseCase = getUMLOperationObjFromName(structuralMappings, callTreeNode.getName());
+                    behaviorMappings.add(new RBMLMapping(interactionRole, baseCase));
+                    System.out.println("Added ips mapping from: " + interactionRole.getOperationRole().getName() + " " + baseCase.getName());
+                }
+            }
+        }
+        return behaviorMappings;
+    }
+
+    private UMLOperation getUMLOperationObjFromName(List<RBMLMapping> structionalMappings, String opName){
+        for (RBMLMapping rbmlMapping : structionalMappings){
+            if (rbmlMapping.getUmlArtifact() instanceof UMLOperation){
+                UMLOperation mappedOperation = (UMLOperation) rbmlMapping.getUmlArtifact();
+                if (mappedOperation.getName().equals(opName)){
+                    //found a map!
+                    return mappedOperation;
+                }
+            }
+        }
+        //might return null here.. would happen if an operation is called that is not mapped structurally.
+        return null;
     }
 
     private RBMLMapping getMappingIfExists(List<RBMLMapping> mappings, StructuralRole structuralRole){

@@ -7,7 +7,6 @@ import com.derek.model.SoftwareVersion;
 import com.derek.model.patterns.PatternInstance;
 import com.derek.rbml.*;
 import com.derek.uml.*;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -101,14 +100,15 @@ public class Comparatizer {
      * @param patternMapper
      */
     public void verifyConformance(SPS sps, IPS ips, PatternMapper patternMapper){
-        List<RBMLMapping> rbmlMappings = patternMapper.map(sps);
-        for (RBMLMapping rbmlMapping : rbmlMappings){
+        List<RBMLMapping> rbmlStructureMappings = patternMapper.mapStructure(sps);
+        List<RBMLMapping> rbmlBehaviorMappings = patternMapper.mapBehavior(rbmlStructureMappings, ips);
+        for (RBMLMapping rbmlMapping : rbmlStructureMappings){
             rbmlMapping.printSummary();
         }
         //print all things that don't conform.
         List<Role> conformingRoles = new ArrayList<>();
         for (Role role : sps.getAllRoles()){
-            for (RBMLMapping rbmlMapping : rbmlMappings){
+            for (RBMLMapping rbmlMapping : rbmlStructureMappings){
                 if (rbmlMapping.getRole().equals(role) && !conformingRoles.contains(role)){
                     conformingRoles.add(role);
                 }

@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 @Getter
 public class InteractionRole extends Role {
 
+    //upon initial file parsing, roles will be stored as strings. In a second pass, after SPS has been configured, they
+    //will be set to actual SPS Role objects.
     private String operationRoleString;
     private String structuralRoleString;
 
@@ -16,7 +18,6 @@ public class InteractionRole extends Role {
     private OperationRole operationRole;
     @Setter
     private StructuralRole structuralRole;
-
 
     public InteractionRole(String lineDescription) {
         super(lineDescription);

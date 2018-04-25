@@ -17,7 +17,6 @@ public class IPS {
     public IPS(String descriptorFileName, SPS sps) {
         interactions = new ArrayList<>();
         parseRoles(descriptorFileName);
-
         matchSPSObjects(sps);
     }
 

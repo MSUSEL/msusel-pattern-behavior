@@ -69,7 +69,7 @@ public class CommandPattern extends PatternMapper{
     }
 
     @Override
-    public List<RBMLMapping> map(SPS sps) {
+    public List<RBMLMapping> mapStructure(SPS sps) {
         List<RBMLMapping> knownMappings = new ArrayList<>();
         knownMappings.addAll(structureMap(sps));
         knownMappings.addAll(associationMap(sps));
@@ -120,7 +120,7 @@ public class CommandPattern extends PatternMapper{
                     Optional<Relationship> isEdge = umlClassDiagram.getClassDiagram().edgeValue(receiverClassifier, concreteCommand);
                     if (isEdge.isPresent()){
                         //TODO - i would love a better rbml spec for the command pattern.
-                        //map exists here.
+                        //mapStructure exists here.
                         knownRelationshipMappings.add(new RBMLMapping(relationshipRole, Relationship.ASSOCIATION));
                     }
                     break;

@@ -29,12 +29,6 @@ public class CallTreeNode<T>{
         children.add(child);
     }
 
-    //used for multiple additions for a given depth, such as if statements. Generally the list will not make up ALL of the children.
-    public void addChildren(List<CallTreeNode<T>> children2){
-        children.addAll(children2);
-    }
-
-
     public void printTree() {
         printTree("", true);
     }
@@ -48,5 +42,16 @@ public class CallTreeNode<T>{
             children.get(children.size() - 1)
                     .printTree(prefix + (isTail ?"    " : "│   "), true);
         }
+    }
+
+
+    public List<CallTreeNode<T>> convertMeToOrderedList(){
+        //method to turn me and my children to an ordered list. child links will still be maintained in this structure.
+        List<CallTreeNode<T>> asList = new ArrayList<>();
+        asList.add(this);
+        for (CallTreeNode<T> child : children){
+            asList.addAll(child.convertMeToOrderedList());
+        }
+        return asList;
     }
 }

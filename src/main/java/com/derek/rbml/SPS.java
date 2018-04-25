@@ -131,5 +131,16 @@ public class SPS {
         return roles;
     }
 
+    public List<OperationRole> getAllOperationRoles(){
+        List<OperationRole> operationRoles = new ArrayList<>();
+        for (StructuralRole structuralRole : classifierRoles){
+            for (OperationRole operationRole : structuralRole.getOperations()){
+                operationRoles.add(operationRole);
+            }
+            //operationRoles.addAll(structuralRole.getOperations());
+        }
+        return operationRoles;
+    }
+
 
 }
