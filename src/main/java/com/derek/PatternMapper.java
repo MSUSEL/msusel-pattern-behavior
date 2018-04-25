@@ -386,7 +386,10 @@ public abstract class PatternMapper {
         List<OperationRole> operationRoles = new ArrayList<>();
         for (RBMLMapping rbmlMapping : structureMappings){
             if (rbmlMapping.getRole() instanceof OperationRole){
-                operationRoles.add((OperationRole) rbmlMapping.getRole());
+                OperationRole operationRole = (OperationRole) rbmlMapping.getRole();
+                if (!operationRoles.contains(operationRole)) {
+                    operationRoles.add(operationRole);
+                }
             }
         }
         return operationRoles;
@@ -435,6 +438,13 @@ public abstract class PatternMapper {
                     UMLOperation baseCase = getUMLOperationObjFromName(structuralMappings, callTreeNode.getName());
                     behaviorMappings.add(new RBMLMapping(interactionRole, baseCase));
                     System.out.println("Added ips mapping from: " + interactionRole.getOperationRole().getName() + " " + baseCase.getName());
+                    //tricky because technically we can map the same role to more than one callTree node.
+                }else{
+                    if (callTreeNode.getTagName().contains("decl{")){
+                        //declaration, indicates a use dependency (declaration) and potentially a behavioral mapping
+                        String typeOfDecl = getTypeFromCallTreeTagDecl(callTreeNode.getTagName());
+                        UMLClassifier
+                    }
                 }
             }
         }
@@ -466,5 +476,14 @@ public abstract class PatternMapper {
     }
 
     public abstract void printSummary();
+
+    /***
+     * input is of form: decl{TYPE}, we want TYPE
+     * @param tagName
+     * @return
+     */
+    private String getTypeFromCallTreeTagDecl(String tagName){
+        return tagName.replace("decl{", "").replace("}","");
+    }
 
 }
