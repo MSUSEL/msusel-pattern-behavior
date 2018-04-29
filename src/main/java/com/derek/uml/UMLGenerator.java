@@ -96,11 +96,7 @@ public class UMLGenerator {
     }
 
     private void connectPackageStructure(){
-        PackageTree tree = new PackageTree();
-        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
-            tree.addEntirePackage(umlClassifier);
-        }
-        umlClassDiagram.setPackageTree(tree);
+        umlClassDiagram.buildPackageTree();
         //initial pass building the inheritance hierarchy.
         buildInheritanceHierarchy();
 

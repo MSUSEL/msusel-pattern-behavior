@@ -45,12 +45,14 @@ Currently working on:
 
 Generating UML class diagrams from srcML output. Progress ~ 100%
 
-Generating UML sequence diagrams from srcML output. Progress ~ 0%
+Generating UML sequence diagrams from srcML output. Progress ~ 80%
 
-Transforming UML data model to PlantUML. Progress ~ 50%
+Transforming UML data model to PlantUML. Progress ~ 50% (don't know if I will do sequence diagram generation)
 
-Implementing design pattern specifications in UML ~ 0%
+Implementing design pattern specifications in UML ~ 12% (State pattern first target.)
 
-Linking visualizer to UML segments ~ 0%
+conformance checking algos (Structural ~ 100%) (Behavioral ~ 50%)
+
+Linking visualizer to UML segments ~ 0% (deciding against visualizer until I get results)
 
 </br>

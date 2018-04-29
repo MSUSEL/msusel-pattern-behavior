@@ -82,7 +82,6 @@ public class Comparatizer {
 
     public void compareState(PatternInstance pi){
         StatePattern statePattern = new StatePattern(pi, umlClassDiagram);
-        statePattern.mapToUML();
         SPS strictStateSPS = new SPS("resources/sps/statePatternSPS_strict.txt");
         IPS strictStateIPS = new IPS("resources/ips/statePatternIPS_strict.txt", strictStateSPS);
 
@@ -100,8 +99,9 @@ public class Comparatizer {
      * @param patternMapper
      */
     public void verifyConformance(SPS sps, IPS ips, PatternMapper patternMapper){
-        List<RBMLMapping> rbmlStructureMappings = patternMapper.mapStructure(sps);
-        List<RBMLMapping> rbmlBehaviorMappings = patternMapper.mapBehavior(rbmlStructureMappings, ips);
+        Conformance conformance = new Conformance(sps, ips, patternMapper, umlClassDiagram);
+        List<RBMLMapping> rbmlStructureMappings = conformance.mapStructure();
+        List<RBMLMapping> rbmlBehaviorMappings = conformance.mapBehavior(rbmlStructureMappings);
         for (RBMLMapping rbmlMapping : rbmlStructureMappings){
             rbmlMapping.printSummary();
         }

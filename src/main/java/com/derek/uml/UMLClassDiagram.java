@@ -58,4 +58,12 @@ public class UMLClassDiagram {
         classDiagram.addNode(umlClass);
     }
 
+    public void buildPackageTree(){
+        PackageTree tree = new PackageTree();
+        for (UMLClassifier umlClassifier : getClassDiagram().nodes()){
+            tree.addEntirePackage(umlClassifier);
+        }
+        this.setPackageTree(tree);
+    }
+
 }

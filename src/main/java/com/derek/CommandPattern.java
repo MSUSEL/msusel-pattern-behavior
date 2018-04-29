@@ -68,18 +68,6 @@ public class CommandPattern extends PatternMapper{
         return null;
     }
 
-    @Override
-    public List<RBMLMapping> mapStructure(SPS sps) {
-        List<RBMLMapping> knownMappings = new ArrayList<>();
-        knownMappings.addAll(structureMap(sps));
-        knownMappings.addAll(associationMap(sps));
-
-
-
-
-
-        return knownMappings;
-    }
 
     private List<RBMLMapping> structureMap(SPS sps){
         List<RBMLMapping> knownStructuralMappings = new ArrayList<>();
