@@ -1,0 +1,3 @@
+|RequestAdapteeInteraction
+|Request(){|Adapter}
+|SpecificRequest(){|Adaptee}

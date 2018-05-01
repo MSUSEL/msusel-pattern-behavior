@@ -3,6 +3,7 @@ package com.derek;
 import com.derek.model.patterns.PatternInstance;
 import com.derek.rbml.*;
 import com.derek.uml.*;
+import com.google.common.graph.EndpointPair;
 import javafx.util.Pair;
 import lombok.Getter;
 
@@ -169,6 +170,23 @@ public abstract class PatternMapper {
     public abstract List<Pair<String, UMLClassifier>> getClassifierModelBlocks();
     public abstract List<Pair<String, UMLOperation>> getOperationModelBlocks();
     public abstract List<Pair<String, UMLAttribute>> getAttributeModelBlocks();
+
+    public List<Pair<UMLClassifier, UMLClassifier>> getRelationships(Relationship relationship){
+        List<Pair<UMLClassifier, UMLClassifier>> relationships = new ArrayList<>();
+        for (Pair<String, UMLClassifier> self : getClassifierModelBlocks()) {
+            for (UMLClassifier predecessor : umlClassDiagram.getClassDiagram().predecessors(self.getValue())){
+                if (relationship.equals(umlClassDiagram.getClassDiagram().edgeValue(predecessor, self.getValue()).get())){
+                    relationships.add(new Pair<>(predecessor, self.getValue()));
+                }
+            }
+            for (UMLClassifier successor : umlClassDiagram.getClassDiagram().successors(self.getValue())){
+                if (relationship.equals(umlClassDiagram.getClassDiagram().edgeValue(self.getValue(), successor).get())){
+                    relationships.add(new Pair<>(self.getValue(), successor));
+                }
+            }
+        }
+        return relationships;
+    }
 
 
     public abstract void printSummary();

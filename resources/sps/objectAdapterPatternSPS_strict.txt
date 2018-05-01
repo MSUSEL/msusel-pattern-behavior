@@ -1,0 +1,5 @@
+Classifier |Target,1..*[]{|Request():*,1..*}
+Class |Adapter,1..*[]{|Request():*,1..*}
+Class |Adaptee,1..*[]{|SpecificRequest():*,1..*}
+Association |Adaptation{|Adapter,|Adaptee,1..1,0..0}
+Generalization |Instantiation{|Adapter,|Target}

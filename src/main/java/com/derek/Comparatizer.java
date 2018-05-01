@@ -7,6 +7,7 @@ import com.derek.model.SoftwareVersion;
 import com.derek.model.patterns.PatternInstance;
 import com.derek.rbml.*;
 import com.derek.uml.*;
+import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,10 +36,16 @@ public class Comparatizer {
 //        compareCommand(pi);
 
         //state tests
-        PatternType patternType = PatternType.STATE;
-        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, patternType);
-        PatternInstance pi = patternInstances.get(0);
-        compareState(pi);
+        PatternType statePatternType = PatternType.STATE;
+        List<PatternInstance> statePatternInstances = model.getPatternSummaryTable().get(version, statePatternType);
+        PatternInstance piState = statePatternInstances.get(0);
+        //compareState(piState);
+
+        //object adapter tests
+        PatternType objectAdapterPatternType = PatternType.OBJECT_ADAPTER;
+        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, objectAdapterPatternType);
+        PatternInstance piObjectAdapter = patternInstances.get(0);
+        compareObjectAdapter(piObjectAdapter);
 
 
         //factory tests
@@ -92,6 +99,17 @@ public class Comparatizer {
 //        }
     }
 
+    public void compareObjectAdapter(PatternInstance pi){
+        ObjectAdapterPattern objectAdapterPattern = new ObjectAdapterPattern(pi, umlClassDiagram);
+        SPS strictObjectAdapterSPS = new SPS("resources/sps/objectAdapterPatternSPS_strict.txt");
+        IPS strictStateIPS = new IPS("resources/ips/objectAdapterPatternIPS_strict.txt", strictObjectAdapterSPS);
+        verifyConformance(strictObjectAdapterSPS, strictStateIPS, objectAdapterPattern);
+
+        List<UMLClassifier> classifiers = new ArrayList<>();
+        classifiers.addAll(objectAdapterPattern.getUMLClassifiers());
+        //printWithRelationships(classifiers, 1);
+    }
+
     /***
      * algorithm that checks conformance according to Kim's "Evaluating Pattern Conformance..." paper
      *
@@ -101,10 +119,41 @@ public class Comparatizer {
     public void verifyConformance(SPS sps, IPS ips, PatternMapper patternMapper){
         Conformance conformance = new Conformance(sps, ips, patternMapper, umlClassDiagram);
         List<RBMLMapping> rbmlStructureMappings = conformance.mapStructure();
-        List<RBMLMapping> rbmlBehaviorMappings = conformance.mapBehavior(rbmlStructureMappings);
-        for (RBMLMapping rbmlMapping : rbmlStructureMappings){
-            rbmlMapping.printSummary();
+        //TODO  - uncomment and fix behavior mappings once I move onto beahvior.
+        //List<RBMLMapping> rbmlBehaviorMappings = conformance.mapBehavior(rbmlStructureMappings);
+//        for (RBMLMapping rbmlMapping : rbmlStructureMappings){
+//            rbmlMapping.printSummary();
+//        }
+        for (Pair<String, UMLClassifier> classifier : patternMapper.getClassifierModelBlocks()){
+            for (RBMLMapping rbmlMapping : rbmlStructureMappings){
+                if (rbmlMapping.getUmlArtifact().equals(classifier.getValue())){
+                    System.out.println(classifier.getValue().getName() + " has a mapping to " + rbmlMapping.getRole().getName());
+                }
+            }
         }
+        for (Pair<String, UMLOperation> operation : patternMapper.getOperationModelBlocks()){
+            for (RBMLMapping rbmlMapping : rbmlStructureMappings){
+                if (rbmlMapping.getUmlArtifact().equals(operation.getValue())){
+                    System.out.println(operation.getValue().getName() + " has a mapping to " + rbmlMapping.getRole().getName());
+                }
+            }
+        }
+        for (Pair<String, UMLAttribute> attribute : patternMapper.getAttributeModelBlocks()){
+            for (RBMLMapping rbmlMapping : rbmlStructureMappings){
+                if (rbmlMapping.getUmlArtifact().equals(attribute.getValue())){
+                    System.out.println(attribute.getValue().getName() + " has a mapping to " + rbmlMapping.getRole().getName());
+                }
+            }
+        }
+        for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.ASSOCIATION)){
+            System.out.println("Associaiton exists from: " + attribute.getKey() + " to " + attribute.getValue());
+        }
+        for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.GENERALIZATION)){
+            System.out.println("Generalization exists from: " + attribute.getKey() + " to " + attribute.getValue());
+        }
+    }
+
+    private void printViolatedRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings){
         //print all things that don't conform.
         List<Role> conformingRoles = new ArrayList<>();
         for (Role role : sps.getAllRoles()){
@@ -122,8 +171,6 @@ public class Comparatizer {
                 System.out.println("Role " + role.getName() + " is violated.");
             }
         }
-
-
     }
 
     private void printWithRelationships(List<UMLClassifier> relevantClassifiers, int expanse){
