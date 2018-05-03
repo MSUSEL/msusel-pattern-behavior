@@ -1,0 +1,7 @@
+|NotifyInteractions
+|SetState(){|ConcreteSubject}
+|Notfify(){|ConcreteSubject}
+<loop>
+|Update(){|Observer[i]}
+|GetState(){|ConcreteSubject}
+</loop>

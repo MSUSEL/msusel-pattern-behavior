@@ -184,7 +184,10 @@ public class Conformance {
             int numberOfTimesRoleIsMapped = countNumberOfTimesRoleIsMapped(role, mappings);
             if (!checkBetweeness(role, numberOfTimesRoleIsMapped)){
                 //remove mapping from list of mappings
-                mappings = removeMapping(role, mappings);
+                System.out.println("mulitplicity violations. " + role + " was mapped " +numberOfTimesRoleIsMapped);
+                for (RBMLMapping toRemove : removeMapping(role, mappings)){
+                    mappings.remove(toRemove);
+                }
             }
         }
     }
@@ -192,7 +195,7 @@ public class Conformance {
     private List<RBMLMapping> removeMapping(Role role, List<RBMLMapping> mappings){
         List<RBMLMapping> removedMapping = new ArrayList<>();
         for (RBMLMapping rbmlMapping : mappings){
-            if (!rbmlMapping.getRole().equals(role)){
+            if (rbmlMapping.getRole().equals(role)){
                 //not flagged for removal
                 removedMapping.add(rbmlMapping);
             }

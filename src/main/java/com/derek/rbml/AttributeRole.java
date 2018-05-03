@@ -21,7 +21,7 @@ public class AttributeRole extends Role {
      */
     @Override
     protected void parseLineDescription(String lineDescription) {
-        Pattern p = Pattern.compile("\\[(\\|[a-zA-Z]+):(\\|[a-zA-Z]+),(\\d\\.\\.[\\d|\\*])\\]");
+        Pattern p = Pattern.compile("(\\|[a-zA-Z]+):(\\|[a-zA-Z]+|\\*),(\\d\\.\\.[\\d|\\*])");
         Matcher m = p.matcher(lineDescription);
         if (m.matches()){
             name = m.group(1);

@@ -75,7 +75,12 @@ public abstract class PatternMapper {
                 }
             }
         }
-        //should not happen.
+        //greedily try to find classifier - by removing package info. If this fails then just kill it.
+        if (returnType.contains(".")) {
+            String[] splitter = returnType.split("\\.");
+            return matchOperation(umlClassifier, operationName, splitter[splitter.length-1], params);
+        }
+        //should not happen - but will if we are looking at a third party return type rn.
         System.out.println("did not find a match between classifier: " + umlClassifier.getName() + " and method name: " + operationName);
         System.exit(0);
         return null;

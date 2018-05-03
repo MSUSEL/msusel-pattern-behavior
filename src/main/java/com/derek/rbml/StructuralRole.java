@@ -52,6 +52,8 @@ public class StructuralRole extends Role{
             //no attributes
             return;
         }else{
+            s = s.replace("[", "");
+            s = s.replace("]", "");
             if (s.contains(";")){
                 //contains more than 1 attribute.
                 String[] splitter = s.split(";");
@@ -70,6 +72,8 @@ public class StructuralRole extends Role{
             //no operations
             return;
         }else{
+            s = s.replace("{", "");
+            s = s.replace("}", "");
             if (s.contains(";")){
                 String[] splitter = s.split(";");
                 for (int i = 0; i < splitter.length; i++){

@@ -12,7 +12,6 @@ public class OperationRole extends Role {
     protected String type;
 
     //while not explicitly required, at most we will have one param name and param type.
-    private String paramName;
     private String paramType;
 
     public OperationRole(String lineDescription) {
@@ -22,7 +21,7 @@ public class OperationRole extends Role {
     @Override
     protected void parseLineDescription(String lineDescription) {
         //parameters not implemented yet. soon though.
-        Pattern p = Pattern.compile("\\{(\\|[a-zA-Z]+)(\\([\\|[a-zA-Z]+,]*\\*{0,1}\\)):(\\|[a-zA-Z]+|void|\\*),(\\d\\.\\.[\\d|\\*])\\}");
+        Pattern p = Pattern.compile("(\\|[a-zA-Z]+)(\\([\\|[a-zA-Z]+,]*\\*{0,1}\\)):(\\|[a-zA-Z]+|void|\\*),(\\d\\.\\.[\\d|\\*])");
         Matcher m = p.matcher(lineDescription);
         m.find();
         if (m.matches()){

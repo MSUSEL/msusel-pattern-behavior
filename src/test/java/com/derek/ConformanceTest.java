@@ -7,16 +7,21 @@ import com.derek.rbml.RBMLMapping;
 import com.derek.rbml.SPS;
 import com.derek.uml.*;
 import javafx.util.Pair;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class ConformanceTest {
+
+    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private Conformance strictConformance;
     private Conformance relaxedConformance;
 
@@ -35,15 +40,12 @@ public class ConformanceTest {
 
     @Before
     public void buildTest(){
+        System.setOut(new PrintStream(outContent));
         oneStateOneRequest = buildOneStateOneRequest();
         twoStateOneRequest = buildTwoStateOneRequest();
         oneStateTwoRequest = buildOneStateTwoRequest();
         twoStateTwoRequest = buildTwoStateTwoRequest();
         stateSPSRelaxed = new SPS("src/test/resources/sps/StateSPSRelaxed.txt");
-        stateSPSStrict = new SPS("src/test/resources/sps/StateSPSStrict.txt");
-
-        testOneStateOneRequest();
-
     }
 
     public StatePattern buildOneStateOneRequest(){
@@ -62,6 +64,7 @@ public class ConformanceTest {
         params.add(new Pair<>("Tool", "a"));
         params.add(new Pair<>("String", "b"));
         drawAppletOps.add(new UMLOperation("setTool", params, "void"));
+        drawAppletOps.get(0).setParameters(new ArrayList<>());
         List<String> residingPackage = new ArrayList<>();
         residingPackage.add("CH");
         UMLClass drawApplet = new UMLClass("DrawApplet", new ArrayList<>(), new ArrayList<>(), drawAppletAttributes, drawAppletOps,
@@ -71,7 +74,11 @@ public class ConformanceTest {
         umlClassDiagram.addClassToDiagram(drawApplet);
         umlClassDiagram.addClassToDiagram(tool);
         umlClassDiagram.addRelationshipToDiagram(drawApplet, tool, Relationship.ASSOCIATION);
-        umlClassDiagram.buildPackageTree();
+        PackageTree packageTree = new PackageTree();
+        PackageTree.PackageNode root = packageTree.new PackageNode("CH", drawApplet);
+        root.addClassifierAtThisLevel(tool);
+        packageTree.setRoot(root);
+        umlClassDiagram.setPackageTree(packageTree);
         return new StatePattern(pi, umlClassDiagram);
     }
 
@@ -168,8 +175,14 @@ public class ConformanceTest {
     @Test
     public void testOneStateOneRequest(){
         strictConformance = new Conformance(stateSPSStrict, null, oneStateOneRequest, oneStateOneRequest.getUmlClassDiagram());
-        relaxedConformance= new Conformance(stateSPSRelaxed, null, oneStateOneRequest, oneStateOneRequest.getUmlClassDiagram());
+        relaxedConformance = new Conformance(stateSPSRelaxed, null, oneStateOneRequest, oneStateOneRequest.getUmlClassDiagram());
         List<RBMLMapping> rbmlStructureMappings = strictConformance.mapStructure();
         assertEquals(4, rbmlStructureMappings.size());
+
+    }
+
+    @After
+    public void after(){
+        System.setOut(System.out);
     }
 }

@@ -1,16 +1,12 @@
 package com.derek;
 
 import com.derek.model.patterns.PatternInstance;
-import com.derek.rbml.*;
 import com.derek.uml.*;
-import com.google.common.graph.EndpointPair;
 import javafx.util.Pair;
 import lombok.Getter;
-import org.omg.CORBA.SystemException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 public class StatePattern extends PatternMapper {

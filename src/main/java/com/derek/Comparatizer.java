@@ -36,16 +36,28 @@ public class Comparatizer {
 //        compareCommand(pi);
 
         //state tests
-        PatternType statePatternType = PatternType.STATE;
-        List<PatternInstance> statePatternInstances = model.getPatternSummaryTable().get(version, statePatternType);
-        PatternInstance piState = statePatternInstances.get(0);
-        //compareState(piState);
+//        PatternType statePatternType = PatternType.STATE;
+//        List<PatternInstance> statePatternInstances = model.getPatternSummaryTable().get(version, statePatternType);
+//        PatternInstance piState = statePatternInstances.get(0);
+//        compareState(piState);
 
         //object adapter tests
-        PatternType objectAdapterPatternType = PatternType.OBJECT_ADAPTER;
-        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, objectAdapterPatternType);
-        PatternInstance piObjectAdapter = patternInstances.get(0);
-        compareObjectAdapter(piObjectAdapter);
+//        PatternType objectAdapterPatternType = PatternType.OBJECT_ADAPTER;
+//        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, objectAdapterPatternType);
+//        PatternInstance piObjectAdapter = patternInstances.get(0);
+//        compareObjectAdapter(piObjectAdapter);
+
+        //observer tests
+//        PatternType observerPatternType = PatternType.OBSERVER;
+//        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, observerPatternType);
+//        PatternInstance piObserver = patternInstances.get(0);
+//        compareObserver(piObserver);
+
+        //Template method tests
+        PatternType templateMethodPatternType = PatternType.TEMPLATE_METHOD;
+        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, templateMethodPatternType);
+        PatternInstance piTemplateMethod = patternInstances.get(1);
+        compareTemplateMethod(piTemplateMethod);
 
 
         //factory tests
@@ -80,9 +92,10 @@ public class Comparatizer {
     public void compareCommand(PatternInstance pi){
         CommandPattern commandPattern = new CommandPattern(pi, umlClassDiagram);
         commandPattern.mapToUML();
-        SPS strictCommand = new SPS("resources/sps/commandPatternSPS_strict.txt");
+        SPS strictCommandSPS = new SPS("resources/sps/commandPatternSPS_strict.txt");
+        IPS strictCommandIPS = new IPS("resources/sps/commandPatternIPS_strict.txt", strictCommandSPS);
 
-        //verifyConformance(strictCommand, commandPattern);
+        verifyConformance(strictCommandSPS, strictCommandIPS, commandPattern);
 
 
     }
@@ -102,12 +115,26 @@ public class Comparatizer {
     public void compareObjectAdapter(PatternInstance pi){
         ObjectAdapterPattern objectAdapterPattern = new ObjectAdapterPattern(pi, umlClassDiagram);
         SPS strictObjectAdapterSPS = new SPS("resources/sps/objectAdapterPatternSPS_strict.txt");
-        IPS strictStateIPS = new IPS("resources/ips/objectAdapterPatternIPS_strict.txt", strictObjectAdapterSPS);
-        verifyConformance(strictObjectAdapterSPS, strictStateIPS, objectAdapterPattern);
+        IPS strictObjectAdapterIPS = new IPS("resources/ips/objectAdapterPatternIPS_strict.txt", strictObjectAdapterSPS);
+        verifyConformance(strictObjectAdapterSPS, strictObjectAdapterIPS, objectAdapterPattern);
 
         List<UMLClassifier> classifiers = new ArrayList<>();
         classifiers.addAll(objectAdapterPattern.getUMLClassifiers());
         //printWithRelationships(classifiers, 1);
+    }
+
+    public void compareObserver(PatternInstance pi){
+        ObserverPattern observerPattern = new ObserverPattern(pi, umlClassDiagram);
+        SPS strictObserverSPS = new SPS("resources/sps/observerPatternSPS_strict.txt");
+        IPS strictObserverIPS = null;//new IPS("resources/ips/observerPatternIPS_strict.txt", strictObserverSPS);
+        verifyConformance(strictObserverSPS, strictObserverIPS, observerPattern);
+    }
+
+    public void compareTemplateMethod(PatternInstance pi){
+        TemplateMethodPattern templateMethodPattern = new TemplateMethodPattern(pi, umlClassDiagram);
+        SPS strictTemplateMethodSPS = new SPS("resources/sps/templateMethodPatternSPS_strict.txt");
+        IPS strictTemplateMethodIPS = null;// new IPS("resources/sps/templateMethodPatternIPS_strict.txt", strictTemplateMethodSPS);
+        verifyConformance(strictTemplateMethodSPS, strictTemplateMethodIPS, templateMethodPattern);
     }
 
     /***
@@ -145,12 +172,13 @@ public class Comparatizer {
                 }
             }
         }
-        for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.ASSOCIATION)){
-            System.out.println("Associaiton exists from: " + attribute.getKey() + " to " + attribute.getValue());
-        }
-        for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.GENERALIZATION)){
-            System.out.println("Generalization exists from: " + attribute.getKey() + " to " + attribute.getValue());
-        }
+//        for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.ASSOCIATION)){
+//            System.out.println("Association exists from: " + attribute.getKey().getName() + " to " + attribute.getValue().getName());
+//        }
+//        for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.GENERALIZATION)){
+//            System.out.println("Generalization exists from: " + attribute.getKey().getName() + " to " + attribute.getValue().getName());
+//        }
+        printViolatedRoles(sps, rbmlStructureMappings);
     }
 
     private void printViolatedRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings){
