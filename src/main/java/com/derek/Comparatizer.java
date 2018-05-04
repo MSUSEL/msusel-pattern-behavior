@@ -54,10 +54,16 @@ public class Comparatizer {
 //        compareObserver(piObserver);
 
         //Template method tests
-        PatternType templateMethodPatternType = PatternType.TEMPLATE_METHOD;
-        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, templateMethodPatternType);
-        PatternInstance piTemplateMethod = patternInstances.get(1);
-        compareTemplateMethod(piTemplateMethod);
+//        PatternType templateMethodPatternType = PatternType.TEMPLATE_METHOD;
+//        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, templateMethodPatternType);
+//        PatternInstance piTemplateMethod = patternInstances.get(1);
+//        compareTemplateMethod(piTemplateMethod);
+
+        //Singleton tests
+        PatternType singletonType = PatternType.SINGLETON;
+        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, singletonType);
+        PatternInstance piSingleton = patternInstances.get(0);
+        compareSingleton(piSingleton);
 
 
         //factory tests
@@ -135,6 +141,13 @@ public class Comparatizer {
         SPS strictTemplateMethodSPS = new SPS("resources/sps/templateMethodPatternSPS_strict.txt");
         IPS strictTemplateMethodIPS = null;// new IPS("resources/sps/templateMethodPatternIPS_strict.txt", strictTemplateMethodSPS);
         verifyConformance(strictTemplateMethodSPS, strictTemplateMethodIPS, templateMethodPattern);
+    }
+
+    public void compareSingleton(PatternInstance pi){
+        SingletonPattern singletonPattern = new SingletonPattern(pi, umlClassDiagram);
+        SPS strictSingletonSPS = new SPS("resources/sps/singletonPatternSPS_strict.txt");
+        IPS strictSingletonIPS = null;// new IPS("resources/sps/templateMethodPatternIPS_strict.txt", strictTemplateMethodSPS);
+        verifyConformance(strictSingletonSPS, strictSingletonIPS, singletonPattern);
     }
 
     /***

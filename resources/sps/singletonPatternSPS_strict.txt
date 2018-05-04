@@ -1,0 +1,1 @@
+Class |Singleton,1..1[|UniqueInstance:|Singleton,1..1;|SingletonData:*,1..*]{|GetInstance():|Singleton,1..1;|Operation():*,1..*;|GetData():*,1..*}
