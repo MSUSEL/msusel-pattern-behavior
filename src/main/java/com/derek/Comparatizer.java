@@ -42,15 +42,15 @@ public class Comparatizer {
 //        compareState(piState);
 
         //object adapter tests
-//        PatternType objectAdapterPatternType = PatternType.OBJECT_ADAPTER;
-//        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, objectAdapterPatternType);
-//        PatternInstance piObjectAdapter = patternInstances.get(0);
-//        compareObjectAdapter(piObjectAdapter);
+        PatternType objectAdapterPatternType = PatternType.OBJECT_ADAPTER;
+        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, objectAdapterPatternType);
+        PatternInstance piObjectAdapter = patternInstances.get(0);
+        compareObjectAdapter(piObjectAdapter);
 
         //observer tests
 //        PatternType observerPatternType = PatternType.OBSERVER;
 //        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, observerPatternType);
-//        PatternInstance piObserver = patternInstances.get(0);
+//        PatternInstance piObserver = patternInstances.get(2);
 //        compareObserver(piObserver);
 
         //Template method tests
@@ -60,10 +60,10 @@ public class Comparatizer {
 //        compareTemplateMethod(piTemplateMethod);
 
         //Singleton tests
-        PatternType singletonType = PatternType.SINGLETON;
-        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, singletonType);
-        PatternInstance piSingleton = patternInstances.get(0);
-        compareSingleton(piSingleton);
+//        PatternType singletonType = PatternType.SINGLETON;
+//        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, singletonType);
+//        PatternInstance piSingleton = patternInstances.get(0);
+//        compareSingleton(piSingleton);
 
 
         //factory tests
@@ -165,6 +165,17 @@ public class Comparatizer {
 //            rbmlMapping.printSummary();
 //        }
         for (Pair<String, UMLClassifier> classifier : patternMapper.getClassifierModelBlocks()){
+            if (classifier.getValue().getName().equals("AbstractFigure")){
+                System.out.println("Abstract figure atts: ");
+                for (UMLAttribute att : classifier.getValue().getAttributes()){
+                    System.out.println(att.getName() + " and type "  + att.getType().getName());
+                    if (!umlClassDiagram.getClassDiagram().edgeValue(classifier.getValue(), att.getType()).isPresent()){
+                        System.out.println("no edge exists between " + classifier.getValue().getName() + " and " + att.getName() );
+                    }
+                }
+
+                System.exit(0);
+            }
             for (RBMLMapping rbmlMapping : rbmlStructureMappings){
                 if (rbmlMapping.getUmlArtifact().equals(classifier.getValue())){
                     System.out.println(classifier.getValue().getName() + " has a mapping to " + rbmlMapping.getRole().getName());
@@ -185,13 +196,14 @@ public class Comparatizer {
                 }
             }
         }
-//        for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.ASSOCIATION)){
-//            System.out.println("Association exists from: " + attribute.getKey().getName() + " to " + attribute.getValue().getName());
-//        }
-//        for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.GENERALIZATION)){
-//            System.out.println("Generalization exists from: " + attribute.getKey().getName() + " to " + attribute.getValue().getName());
-//        }
+        for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.ASSOCIATION)){
+            System.out.println("Association exists from: " + attribute.getKey().getName() + " to " + attribute.getValue().getName());
+        }
+        for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.GENERALIZATION)){
+            System.out.println("Generalization exists from: " + attribute.getKey().getName() + " to " + attribute.getValue().getName());
+        }
         printViolatedRoles(sps, rbmlStructureMappings);
+        MetricSuite ms = new MetricSuite(rbmlStructureMappings, patternMapper);
     }
 
     private void printViolatedRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings){

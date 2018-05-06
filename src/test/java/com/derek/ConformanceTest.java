@@ -21,6 +21,8 @@ import static org.junit.Assert.*;
 
 public class ConformanceTest {
 
+    //jspec
+
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private Conformance strictConformance;
     private Conformance relaxedConformance;

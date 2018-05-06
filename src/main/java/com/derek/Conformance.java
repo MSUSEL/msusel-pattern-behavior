@@ -44,7 +44,6 @@ public class Conformance {
                     //match found!
                     structuralMappings.add(new RBMLMapping(strRole, modelBlockPair.getValue()));
                 }
-
             }
             for (AttributeRole attributeRole : strRole.getAttributes()) {
                 for (Pair<String, UMLAttribute> attributePairBlock : patternInstance.getAttributeModelBlocks()) {
@@ -97,7 +96,7 @@ public class Conformance {
                             //omg. found a relationship mapping finally.
                             //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
                             generalizationMappings.add(new RBMLMapping(generalizationRole, new Pair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
-                        }
+                    }
                     }
                 }
             }
@@ -184,8 +183,7 @@ public class Conformance {
             int numberOfTimesRoleIsMapped = countNumberOfTimesRoleIsMapped(role, mappings);
             if (!checkBetweeness(role, numberOfTimesRoleIsMapped)){
                 //remove mapping from list of mappings
-                System.out.println("mulitplicity violations. " + role + " was mapped " +numberOfTimesRoleIsMapped);
-                for (RBMLMapping toRemove : removeMapping(role, mappings)){
+                 for (RBMLMapping toRemove : removeMapping(role, mappings)){
                     mappings.remove(toRemove);
                 }
             }
