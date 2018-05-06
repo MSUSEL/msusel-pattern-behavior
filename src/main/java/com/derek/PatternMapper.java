@@ -181,12 +181,36 @@ public abstract class PatternMapper {
         for (Pair<String, UMLClassifier> self : getClassifierModelBlocks()) {
             for (UMLClassifier predecessor : umlClassDiagram.getClassDiagram().predecessors(self.getValue())){
                 if (relationship.equals(umlClassDiagram.getClassDiagram().edgeValue(predecessor, self.getValue()).get())){
-                    relationships.add(new Pair<>(predecessor, self.getValue()));
+                    boolean hasBeenAdded = false;
+                    Pair<UMLClassifier, UMLClassifier> potentialPair = new Pair<>(predecessor, self.getValue());
+                    for (Pair<UMLClassifier, UMLClassifier> existingPair : relationships){
+                        //check to see if already added
+                        if (existingPair.getKey().equals(potentialPair.getKey()) && existingPair.getValue().equals(potentialPair.getValue())){
+                            //already here.
+                            hasBeenAdded = true;
+                        }
+                    }
+                    if (!hasBeenAdded) {
+                        //only add if unique.
+                        relationships.add(new Pair<>(predecessor, self.getValue()));
+                    }
                 }
             }
             for (UMLClassifier successor : umlClassDiagram.getClassDiagram().successors(self.getValue())){
                 if (relationship.equals(umlClassDiagram.getClassDiagram().edgeValue(self.getValue(), successor).get())){
-                    relationships.add(new Pair<>(self.getValue(), successor));
+                    boolean hasBeenAdded = false;
+                    Pair<UMLClassifier, UMLClassifier> potentialPair = new Pair<>(self.getValue(), successor);
+                    for (Pair<UMLClassifier, UMLClassifier> existingPair : relationships){
+                        //check to see if already added
+                        if (existingPair.getKey().equals(potentialPair.getKey()) && existingPair.getValue().equals(potentialPair.getValue())){
+                            //already here.
+                            hasBeenAdded = true;
+                        }
+                    }
+                    if (!hasBeenAdded) {
+                        //only add if unique.
+                        relationships.add(new Pair<>(self.getValue(), successor));
+                    }
                 }
             }
         }

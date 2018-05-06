@@ -192,7 +192,8 @@ public class Comparatizer {
             System.out.println("Generalization exists from: " + attribute.getKey().getName() + " to " + attribute.getValue().getName());
         }
         printViolatedRoles(sps, rbmlStructureMappings);
-        MetricSuite ms = new MetricSuite(rbmlStructureMappings, patternMapper);
+        MetricSuite ms = new MetricSuite(rbmlStructureMappings, patternMapper, sps);
+        ms.printSummary();
     }
 
     private void printViolatedRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings){

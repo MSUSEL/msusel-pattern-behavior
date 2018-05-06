@@ -92,7 +92,7 @@ public class Conformance {
                     if (endpointMap != null){
                         //will be null if the role was not mapped in the first place.
                         UMLClassifier mappedRoleEndpoint = (UMLClassifier)endpointMap.getMappedPair().getValue();
-                        if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).equals(Relationship.GENERALIZATION)){
+                        if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).get().equals(Relationship.GENERALIZATION)){
                             //omg. found a relationship mapping finally.
                             //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
                             generalizationMappings.add(new RBMLMapping(generalizationRole, new Pair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
@@ -115,7 +115,7 @@ public class Conformance {
                     if (endpointMap != null){
                         //will be null if the role was not mapped in the first place.
                         UMLClassifier mappedRoleEndpoint = (UMLClassifier)endpointMap.getMappedPair().getValue();
-                        if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).equals(Relationship.ASSOCIATION)){
+                        if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).get().equals(Relationship.ASSOCIATION)){
                             //omg. found a relationship mapping finally.
                             //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
                             associationMappings.add(new RBMLMapping(associationRole, new Pair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
@@ -138,7 +138,7 @@ public class Conformance {
                     if (endpointMap != null){
                         //will be null if the role was not mapped in the first place.
                         UMLClassifier mappedRoleEndpoint = (UMLClassifier)endpointMap.getMappedPair().getValue();
-                        if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).equals(Relationship.DEPENDENCY)){
+                        if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).get().equals(Relationship.DEPENDENCY)){
                             //omg. found a relationship mapping finally.
                             //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
                             dependencyMappings.add(new RBMLMapping(dependencyRole, new Pair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
@@ -161,7 +161,7 @@ public class Conformance {
                     if (endpointMap != null){
                         //will be null if the role was not mapped in the first place.
                         UMLClassifier mappedRoleEndpoint = (UMLClassifier)endpointMap.getMappedPair().getValue();
-                        if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).equals(Relationship.REALIZATION)){
+                        if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).get().equals(Relationship.REALIZATION)){
                             //omg. found a relationship mapping finally.
                             //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
                             realizationMappings.add(new RBMLMapping(realizationRole, new Pair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
