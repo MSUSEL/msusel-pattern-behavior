@@ -68,20 +68,27 @@ public class UMLMessageGenerationUtils {
             }
         }
 
+        if (initialScope.getName().equals("AbstractFigure") && searchString.equals("FigureChangeListener")){
+            System.out.println("debug");
+        }
 
         //look through imports now
         for (List<String> singleImport : initialScope.getImports()) {
-            if (singleImport.get(singleImport.size() - 1).equals("*")) {
+            List<String> listified = listify(singleImport.get(0));
+            if (listified.get(listified.size() - 1).equals("*")) {
                 //catch-all for imports, will return a list of umlClassifiers.
-                List<UMLClassifier> packageClassifiers = umlClassDiagram.getPackageTree().getClassifiersFromImport(listify(singleImport.get(0)), 0, umlClassDiagram.getPackageTree().getRoot());
-                for (UMLClassifier packageClassifier : packageClassifiers) {
-                    if (searchString.equals(packageClassifier.getName())) {
-                        //finally found match.
-                        return packageClassifier;
+                List<UMLClassifier> packageClassifiers = umlClassDiagram.getPackageTree().getClassifiersFromImport(listified, 0, umlClassDiagram.getPackageTree().getRoot());
+                if (packageClassifiers != null) {
+                    //if this is null, it might be a third party type. such as java.awt.*;
+                    for (UMLClassifier packageClassifier : packageClassifiers) {
+                        if (searchString.equals(packageClassifier.getName())) {
+                            //finally found match.
+                            return packageClassifier;
+                        }
                     }
                 }
             } else {
-                UMLClassifier importer = umlClassDiagram.getPackageTree().getClassifier(listify(singleImport.get(0)), 0, umlClassDiagram.getPackageTree().getRoot());
+                UMLClassifier importer = umlClassDiagram.getPackageTree().getClassifier(listified, 0, umlClassDiagram.getPackageTree().getRoot());
                 if (importer != null) {
                     //will be null if package points to a 3rd party lib.
                     if (searchString.equals(importer.getName())) {

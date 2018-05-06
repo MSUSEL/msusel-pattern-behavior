@@ -107,6 +107,7 @@ public class UMLGenerator {
                 //right nwo I am doing nothing for many of these.
                 UMLClassifier potentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, umlAttribute.getStringDataType());
                     //type within the project
+
                 umlAttribute.setType(potentialMatch);
             }
             //the issue is that language types (Object, etc.,) do not have their operations imported. so it looks like they are null.

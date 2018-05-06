@@ -89,14 +89,14 @@ public class PackageTree {
 
     //happens when an import ends in *
     public List<UMLClassifier> getClassifiersFromImport(List<String> imports, int pointer, PackageNode node){
-        if (pointer == imports.size()-1){
+        if (pointer == imports.size()-2){
             //base case
             return node.getClassifiers();
         }
         for (PackageNode child : node.getChildren()){
-            if (imports.get(pointer).equals(child.getName())){
+            if (imports.get(pointer+1).equals(child.getName())){
                 //package level node we matched
-                return getClassifiersFromImport(imports, pointer++, child);
+                return getClassifiersFromImport(imports, pointer+1, child);
             }
         }
         //if we get here, we never reached a match

@@ -165,18 +165,7 @@ public class Comparatizer {
 //            rbmlMapping.printSummary();
 //        }
         for (Pair<String, UMLClassifier> classifier : patternMapper.getClassifierModelBlocks()){
-            if (classifier.getValue().getName().equals("AbstractFigure")){
-                System.out.println("Abstract figure atts: ");
-                for (UMLAttribute att : classifier.getValue().getAttributes()){
-                    System.out.println(att.getName() + " and type "  + att.getType().getName());
-                    if (!umlClassDiagram.getClassDiagram().edgeValue(classifier.getValue(), att.getType()).isPresent()){
-                        System.out.println("no edge exists between " + classifier.getValue().getName() + " and " + att.getName() );
-                    }
-                }
-
-                System.exit(0);
-            }
-            for (RBMLMapping rbmlMapping : rbmlStructureMappings){
+             for (RBMLMapping rbmlMapping : rbmlStructureMappings){
                 if (rbmlMapping.getUmlArtifact().equals(classifier.getValue())){
                     System.out.println(classifier.getValue().getName() + " has a mapping to " + rbmlMapping.getRole().getName());
                 }
