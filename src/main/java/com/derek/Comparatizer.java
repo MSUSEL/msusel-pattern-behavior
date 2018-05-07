@@ -1,9 +1,6 @@
 package com.derek;
 
-import com.derek.model.Model;
-import com.derek.model.PatternType;
-import com.derek.model.RBMLSpec;
-import com.derek.model.SoftwareVersion;
+import com.derek.model.*;
 import com.derek.model.patterns.PatternInstance;
 import com.derek.rbml.*;
 import com.derek.uml.*;
@@ -18,16 +15,27 @@ public class Comparatizer {
 
     private Map<PatternType, RBMLSpec> rbml;
     private Model model;
-    private UMLClassDiagram umlClassDiagram;
+    private Map<SoftwareVersion, UMLClassDiagram> umlClassDiagrams;
 
-    public Comparatizer(Model model, UMLClassDiagram umlClassDiagram){
+    public Comparatizer(Model model){
         this.model = model;
-        this.umlClassDiagram = umlClassDiagram;
+        this.umlClassDiagrams = model.getClassDiagramMap();
         rbml = new HashMap<>();
     }
 
-    public void testComparisons(){
-        SoftwareVersion version = model.getVersions().get(0);
+    public void runAnalysis(){
+        for (PatternInstanceEvolution pie : model.getPatternEvolutions().get(PatternType.OBJECT_ADAPTER)){
+            for (Pair<SoftwareVersion, PatternInstance> pair : pie.getPatternLifetime()){
+                System.out.println(pair.getKey() + " and " + pair.getValue());
+            }
+        }
+
+//        for (SoftwareVersion version : umlClassDiagrams.keySet()){
+//            testComparisons(version, umlClassDiagrams.get(version));
+//        }
+    }
+
+    public void testComparisons(SoftwareVersion version, UMLClassDiagram umlClassDiagram){
 
         //command tests
 //        PatternType patternType = PatternType.COMMAND;
@@ -45,7 +53,7 @@ public class Comparatizer {
         PatternType objectAdapterPatternType = PatternType.OBJECT_ADAPTER;
         List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, objectAdapterPatternType);
         PatternInstance piObjectAdapter = patternInstances.get(0);
-        compareObjectAdapter(piObjectAdapter);
+        compareObjectAdapter(piObjectAdapter, umlClassDiagram);
 
         //observer tests
 //        PatternType observerPatternType = PatternType.OBSERVER;
@@ -64,90 +72,49 @@ public class Comparatizer {
 //        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, singletonType);
 //        PatternInstance piSingleton = patternInstances.get(0);
 //        compareSingleton(piSingleton);
-
-
-        //factory tests
-        /*
-        PatternType patternType = PatternType.FACTORY_METHOD;
-        List<PatternInstance> patternInstances = model.getPatternSummaryTable().get(version, patternType);
-        PatternInstance pi = patternInstances.get(0);
-        compareFactory(pi);
-        */
-
     }
 
-
-    public void compareFactory(PatternInstance pi){
-//        //factory has "Creator" as the major role name.
-//        UMLClassifier creatorMajorRole = getOneMajorRole(pi);
-//        List<Pair<UMLClassifier, UMLOperation>> factoryMinorRoles = getMinorRoles(pi);
-//
-//        List<UMLClassifier> relevantClassifiers = new ArrayList<>();
-//        relevantClassifiers.add(creatorMajorRole);
-//        for (Pair<UMLClassifier, UMLOperation> p : factoryMinorRoles){
-//            if (!relevantClassifiers.contains(p.getKey())) {
-//                relevantClassifiers.add(p.getKey());
-//            }
-//        }
-//        //print plantuml of surrounding uml for this pattern instance
-//        //printWithRelationships(relevantClassifiers, 1);
-//        System.out.println("matched pattern and classes!");
-
-    }
-
-    public void compareCommand(PatternInstance pi){
+    public void compareCommand(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         CommandPattern commandPattern = new CommandPattern(pi, umlClassDiagram);
         commandPattern.mapToUML();
         SPS strictCommandSPS = new SPS("resources/sps/commandPatternSPS_strict.txt");
         IPS strictCommandIPS = new IPS("resources/sps/commandPatternIPS_strict.txt", strictCommandSPS);
-
-        verifyConformance(strictCommandSPS, strictCommandIPS, commandPattern);
-
-
+        verifyConformance(strictCommandSPS, strictCommandIPS, commandPattern, umlClassDiagram);
     }
 
-    public void compareState(PatternInstance pi){
+    public void compareState(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         StatePattern statePattern = new StatePattern(pi, umlClassDiagram);
         SPS strictStateSPS = new SPS("resources/sps/statePatternSPS_strict.txt");
-        IPS strictStateIPS = new IPS("resources/ips/statePatternIPS_strict.txt", strictStateSPS);
-
-        verifyConformance(strictStateSPS, strictStateIPS, statePattern);
-//        for (Pair<String, UMLOperation> behaviors : statePattern.getOperationModelBlocks()){
-//            System.out.println("call tree for: " + behaviors.getValue().getName());
-//            behaviors.getValue().getCallTreeString().printTree();
-//        }
+        IPS strictStateIPS = null;//new IPS("resources/ips/statePatternIPS_strict.txt", strictStateSPS);
+        verifyConformance(strictStateSPS, strictStateIPS, statePattern, umlClassDiagram);
     }
 
-    public void compareObjectAdapter(PatternInstance pi){
+    public void compareObjectAdapter(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         ObjectAdapterPattern objectAdapterPattern = new ObjectAdapterPattern(pi, umlClassDiagram);
         SPS strictObjectAdapterSPS = new SPS("resources/sps/objectAdapterPatternSPS_strict.txt");
-        IPS strictObjectAdapterIPS = new IPS("resources/ips/objectAdapterPatternIPS_strict.txt", strictObjectAdapterSPS);
-        verifyConformance(strictObjectAdapterSPS, strictObjectAdapterIPS, objectAdapterPattern);
-
-        List<UMLClassifier> classifiers = new ArrayList<>();
-        classifiers.addAll(objectAdapterPattern.getUMLClassifiers());
-        //printWithRelationships(classifiers, 1);
+        IPS strictObjectAdapterIPS = null;//new IPS("resources/ips/objectAdapterPatternIPS_strict.txt", strictObjectAdapterSPS);
+        verifyConformance(strictObjectAdapterSPS, strictObjectAdapterIPS, objectAdapterPattern, umlClassDiagram);
     }
 
-    public void compareObserver(PatternInstance pi){
+    public void compareObserver(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         ObserverPattern observerPattern = new ObserverPattern(pi, umlClassDiagram);
         SPS strictObserverSPS = new SPS("resources/sps/observerPatternSPS_strict.txt");
         IPS strictObserverIPS = null;//new IPS("resources/ips/observerPatternIPS_strict.txt", strictObserverSPS);
-        verifyConformance(strictObserverSPS, strictObserverIPS, observerPattern);
+        verifyConformance(strictObserverSPS, strictObserverIPS, observerPattern, umlClassDiagram);
     }
 
-    public void compareTemplateMethod(PatternInstance pi){
+    public void compareTemplateMethod(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         TemplateMethodPattern templateMethodPattern = new TemplateMethodPattern(pi, umlClassDiagram);
         SPS strictTemplateMethodSPS = new SPS("resources/sps/templateMethodPatternSPS_strict.txt");
         IPS strictTemplateMethodIPS = null;// new IPS("resources/sps/templateMethodPatternIPS_strict.txt", strictTemplateMethodSPS);
-        verifyConformance(strictTemplateMethodSPS, strictTemplateMethodIPS, templateMethodPattern);
+        verifyConformance(strictTemplateMethodSPS, strictTemplateMethodIPS, templateMethodPattern, umlClassDiagram);
     }
 
-    public void compareSingleton(PatternInstance pi){
+    public void compareSingleton(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         SingletonPattern singletonPattern = new SingletonPattern(pi, umlClassDiagram);
         SPS strictSingletonSPS = new SPS("resources/sps/singletonPatternSPS_strict.txt");
         IPS strictSingletonIPS = null;// new IPS("resources/sps/templateMethodPatternIPS_strict.txt", strictTemplateMethodSPS);
-        verifyConformance(strictSingletonSPS, strictSingletonIPS, singletonPattern);
+        verifyConformance(strictSingletonSPS, strictSingletonIPS, singletonPattern, umlClassDiagram);
     }
 
     /***
@@ -156,7 +123,7 @@ public class Comparatizer {
      * @param sps
      * @param patternMapper
      */
-    public void verifyConformance(SPS sps, IPS ips, PatternMapper patternMapper){
+    public void verifyConformance(SPS sps, IPS ips, PatternMapper patternMapper, UMLClassDiagram umlClassDiagram){
         Conformance conformance = new Conformance(sps, ips, patternMapper, umlClassDiagram);
         List<RBMLMapping> rbmlStructureMappings = conformance.mapStructure();
         //TODO  - uncomment and fix behavior mappings once I move onto beahvior.
@@ -214,49 +181,6 @@ public class Comparatizer {
                 System.out.println("Role " + role.getName() + " is violated.");
             }
         }
-    }
-
-    private void printWithRelationships(List<UMLClassifier> relevantClassifiers, int expanse){
-        StringBuilder output = new StringBuilder();
-        StringBuilder relationshipOutput = new StringBuilder();
-        List<UMLClassifier> expanded = new ArrayList<>();
-        expanded.addAll(relevantClassifiers);
-        output.append("@startuml\n");
-        for (int i = 0; i < expanse; i++){
-            for (UMLClassifier node : umlClassDiagram.getClassDiagram().nodes()){
-                List<UMLClassifier> tempClassifiers = new ArrayList<>();
-                tempClassifiers.addAll(expanded);
-                for (UMLClassifier relevant : expanded) {
-                    if (umlClassDiagram.getClassDiagram().hasEdgeConnecting(node, relevant)){
-                        if (!expanded.contains(node)){
-                            tempClassifiers.add(node);
-                            relationshipOutput.append(node.getName() + " ");
-                            relationshipOutput.append(umlClassDiagram.getClassDiagram().edgeValue(node, relevant).get().plantUMLTransform() + " ");
-                            relationshipOutput.append(relevant.getName() + "\n");
-                        }
-                    }else if (umlClassDiagram.getClassDiagram().hasEdgeConnecting(relevant, node)){
-                        //need both directions because graph is directed.
-                        if (!expanded.contains(node)){
-                            tempClassifiers.add(node);
-                            relationshipOutput.append(relevant.getName() + " ");
-                            relationshipOutput.append(umlClassDiagram.getClassDiagram().edgeValue(relevant, node).get().plantUMLTransform() + " ");
-                            relationshipOutput.append(node.getName() + "\n");
-                        }
-                    }
-                }
-                for (UMLClassifier temp : tempClassifiers){
-                    if (!expanded.contains(temp)){
-                        expanded.add(temp);
-                    }
-                }
-            }
-        }
-        for (UMLClassifier expand : expanded){
-            output.append(expand.plantUMLTransform());
-        }
-        output.append(relationshipOutput);
-        output.append("@enduml\n");
-        System.out.println(output);
     }
 
 

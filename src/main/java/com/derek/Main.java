@@ -51,8 +51,8 @@ public class Main {
 
     public Main(){
 
-        //buildSeleniumConfigs();
-        buildJHotDrawConfigs();
+        buildSeleniumConfigs();
+        //buildJHotDrawConfigs();
         //buildGuavaConfigs();
 
 
@@ -65,26 +65,30 @@ public class Main {
     private void buildSeleniumConfigs(){
         projectID = "selenium";
         workingDirectory = "C://Users/Derek Reimanis/Documents/research/behavior/projects/selenium/";
-        interVersionKey = "-src/selenium-";
+        interVersionKey = "-src/";
         interProjectKey = "org/";
         projectLanguage = ".java";
         projectVersions = new ArrayList<>();
-        projectVersions.add(new SoftwareVersion(36));
-        //projectVersions.add(new SoftwareVersion(38));
+        for (int i = 1; i <= 20; i++){
+            projectVersions.add(new SoftwareVersion(i));
+        }
         runner = new HashMap<>();
+        Model m = new Model(projectVersions);
         for (SoftwareVersion version : projectVersions) {
-            ///selenium/36-src/selenium-36/org
+            ///selenium/36-src/org
             currentVersion = version.getVersionNum();
-            String pwd = workingDirectory + version.getVersionNum() + interVersionKey + version.getVersionNum() + "/" + interProjectKey + "openqa/";
+            String pwd = workingDirectory + version.getVersionNum() + interVersionKey + interProjectKey + "openqa/";
             runner.put(version, new SrcMLRunner(pwd, version.getVersionNum()));
             UMLGenerator umlGenerator = new UMLGenerator(runner.get(version).getRootBlocks());
-            Model m = new Model(projectVersions);
-            Comparatizer cpt = new Comparatizer(m, umlGenerator.getUmlClassDiagram());
-            cpt.testComparisons();
+            m.addClassDiagram(version, umlGenerator.getUmlClassDiagram());
+            //i wonder if this should just take in the model. - as in new Comparatizer(m);
         }
+        Comparatizer cpt = new Comparatizer(m);
+        cpt.runAnalysis();
     }
 
     private void buildJHotDrawConfigs(){
+        //will need to adjust project directory info here. - I made changes to selenium structure.
         projectID = "jhotDraw";
         workingDirectory = "C://Users/Derek Reimanis/Documents/research/behavior/projects/jhotdraw/";
         interVersionKey = "-src/sources";
@@ -93,15 +97,16 @@ public class Main {
         projectVersions = new ArrayList<>();
         projectVersions.add(new SoftwareVersion(52));
         runner = new HashMap<>();
+        Model m = new Model(projectVersions);
         for (SoftwareVersion version : projectVersions) {
             currentVersion = version.getVersionNum();
             String pwd = workingDirectory + version.getVersionNum() + interVersionKey + "/" + interProjectKey + "ifa/";
             runner.put(version, new SrcMLRunner(pwd, version.getVersionNum()));
             UMLGenerator umlGenerator = new UMLGenerator(runner.get(version).getRootBlocks());
-            Model m = new Model(projectVersions);
-            Comparatizer cpt = new Comparatizer(m, umlGenerator.getUmlClassDiagram());
-            cpt.testComparisons();
+            m.addClassDiagram(version, umlGenerator.getUmlClassDiagram());
         }
+        Comparatizer cpt = new Comparatizer(m);
+        cpt.runAnalysis();
     }
 
     public void buildGuavaConfigs(){

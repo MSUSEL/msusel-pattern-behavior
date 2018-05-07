@@ -60,7 +60,6 @@ public class Model {
 
     private Map<PatternType, List<PatternInstanceEvolution>> patternEvolutions;
 
-
     private final int numSharedClassesToConstitutePatternCoupling = 1;
 
     public Model(List<SoftwareVersion> versions){
@@ -489,5 +488,12 @@ public class Model {
         }
         //should never get here because we exit on the default case
         return null;
+    }
+
+    public void addClassDiagram(SoftwareVersion version, UMLClassDiagram umlClassDiagram){
+        if (classDiagramMap == null){
+            classDiagramMap = new HashMap<>();
+        }
+        classDiagramMap.put(version, umlClassDiagram);
     }
 }

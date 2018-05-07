@@ -91,8 +91,9 @@ public class UMLGenerator {
     }
 
     private void buildSequenceDiagram(){
-        System.out.println("Generating sequence diagram");
-        UMLBehaviorGenerator behaviorGenerator = new UMLBehaviorGenerator(umlClassDiagram);
+        //TODO - once I flesh out behavior I will have to uncomment this and do some debugging.
+        //System.out.println("Generating sequence diagram");
+        //UMLBehaviorGenerator behaviorGenerator = new UMLBehaviorGenerator(umlClassDiagram);
     }
 
     private void connectPackageStructure(){
