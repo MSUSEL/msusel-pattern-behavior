@@ -77,49 +77,42 @@ public class MetricSuite {
                 if (rbmlMapping.getUmlArtifact().equals(classifier.getValue())){
                     //found conforming classifier role
                     numConformingRoles++;
-                    System.out.println(classifier.getValue().getName() + " has a mapping to " + rbmlMapping.getRole().getName());
                 }
             }
             for (Pair<String, UMLOperation> operation : patternMapper.getOperationModelBlocks()){
                 if (rbmlMapping.getUmlArtifact().equals(operation.getValue())){
                     //found conforming operation role
                     numConformingRoles++;
-                    System.out.println(operation.getValue().getName() + " has a mapping to " + rbmlMapping.getRole().getName());
                 }
             }
             for (Pair<String, UMLAttribute> attribute : patternMapper.getAttributeModelBlocks()){
                 if (rbmlMapping.getUmlArtifact().equals(attribute.getValue())){
                     //found conforming attribute role
                     numConformingRoles++;
-                    System.out.println(attribute.getValue().getName() + " has a mapping to " + rbmlMapping.getRole().getName());
                 }
             }
             for (Pair<UMLClassifier, UMLClassifier> association : patternMapper.getRelationships(Relationship.ASSOCIATION)){
                 if (rbmlMapping.getUmlArtifact().equals(association)){
                     //will be a pair.
                     numConformingRoles++;
-                    System.out.println("Association pair " + association.getKey() + " to " + association.getValue() + " has a mapping to " + rbmlMapping.getUmlArtifact());
                 }
             }
             for (Pair<UMLClassifier, UMLClassifier> generalization : patternMapper.getRelationships(Relationship.GENERALIZATION)){
                 if (rbmlMapping.getUmlArtifact().equals(generalization)){
                     //will be a pair.
                     numConformingRoles++;
-                    System.out.println("Generalization pair " + generalization.getKey() + " to " + generalization.getValue() + " has a mapping to " + rbmlMapping.getUmlArtifact());
                 }
             }
             for (Pair<UMLClassifier, UMLClassifier> dependency : patternMapper.getRelationships(Relationship.DEPENDENCY)){
                 if (rbmlMapping.getUmlArtifact().equals(dependency)){
                     //will be a pair.
                     numConformingRoles++;
-                    System.out.println("Dependency pair " + dependency.getKey() + " to " + dependency.getValue() + " has a mapping to " + rbmlMapping.getUmlArtifact());
                 }
             }
             for (Pair<UMLClassifier, UMLClassifier> realization : patternMapper.getRelationships(Relationship.REALIZATION)){
                 if (rbmlMapping.getUmlArtifact().equals(realization)){
                     //will be a pair.
                     numConformingRoles++;
-                    System.out.println("Realization pair " + realization.getKey() + " to " + realization.getValue() + " has a mapping to " + rbmlMapping.getUmlArtifact());
                 }
             }
         }
@@ -199,13 +192,13 @@ public class MetricSuite {
         return false;
     }
 
-    public void printSummary(){
+    public String getSummary(){
         String separator = ", ";
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(Main.projectID + separator);
-        stringBuilder.append(Main.currentVersion + separator);
+        stringBuilder.append(patternMapper.getPi().getSoftwareVersion().getVersionNum() + separator);
         stringBuilder.append(patternMapper.getPi().getPatternType() + separator);
-        stringBuilder.append(" Pattern instance ID : TODO" + separator);
+        stringBuilder.append(patternMapper.getPi().getUniqueID() + separator);
         stringBuilder.append(this.getNumParticipatingClasses() + separator);
         stringBuilder.append(this.getNumConformingRoles() + separator);
         stringBuilder.append(this.getNumNonConformingRoles() + separator);
@@ -214,9 +207,9 @@ public class MetricSuite {
         stringBuilder.append(this.getEfferentCoupling() + separator);
         stringBuilder.append(this.getCouplingBetweenPatternClasses() + separator);
         stringBuilder.append(this.getPatternIntegrity() + separator);
-        stringBuilder.append(this.getPatternInstability() + separator);
+        stringBuilder.append(this.getPatternInstability());
         stringBuilder.append("\n");
-        System.out.println(stringBuilder.toString());
+        return stringBuilder.toString();
     }
 
 }

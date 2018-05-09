@@ -52,6 +52,11 @@ public abstract class PatternMapper {
     }
 
     private UMLOperation matchOperation(UMLClassifier umlClassifier, String operationName, String returnType, List<String> params){
+        //greedily try to find classifier - by removing package info. If this fails then just kill it.
+        if (returnType.contains(".")) {
+            String[] splitter = returnType.split("\\.");
+            return matchOperation(umlClassifier, operationName, splitter[splitter.length-1], params);
+        }
         for (UMLOperation op : umlClassifier.getOperations()){
             if (op.getName().equals(operationName)){
                 //will work for most things but we also need ot check params and return type (basically check method signature)
@@ -63,7 +68,13 @@ public abstract class PatternMapper {
                     }
                     for (int i = 0; i < params.size(); i++){
                         //param order needs to be preserved too
-                        if (!params.get(i).equals(op.getParameters().get(i).getName())){
+                        String param = params.get(i);
+                        if (param.contains("[")) {
+                            //list, need to remove brackets
+                            param = param.replace("[","");
+                            param = param.replace("]","");
+                        }
+                        if (!param.equals(op.getParameters().get(i).getName())){
                             foundDifference = true;
                             break;
                         }
@@ -75,11 +86,42 @@ public abstract class PatternMapper {
                 }
             }
         }
-        //greedily try to find classifier - by removing package info. If this fails then just kill it.
-        if (returnType.contains(".")) {
-            String[] splitter = returnType.split("\\.");
-            return matchOperation(umlClassifier, operationName, splitter[splitter.length-1], params);
+        if (umlClassifier.getIdentifier().equals("class")){
+            //need to check constructors if this is the case.
+            UMLClass umlClass = (UMLClass)umlClassifier;
+            for (UMLOperation op : umlClass.getConstructors()){
+                if (op.getName().equals(operationName)){
+                    boolean foundDifference = false;
+                    //name match, now need to check param types.
+                    for (int i = 0; i < params.size(); i++){
+                        //param order needs to be preserved too
+                        String param = params.get(i);
+                        if (param.contains("[")) {
+                            //list, need to remove brackets
+                            param = param.replace("[","");
+                            param = param.replace("]","");
+                        }
+                        if (!param.equals(op.getParameters().get(i).getName())){
+                            foundDifference = true;
+                            break;
+                        }
+                    }
+                    //same method signature!
+                    if (foundDifference == false){
+                        return op;
+                    }
+                }
+            }
         }
+        //if we get here just super greedily search. -- will happen if the return type is a generic, such as a List.
+        //this is because the detection tool does not separate generics from actual types correctly, because it uses byte-code analysis
+        //and at the bytecode level generics are treated differently.
+        for (UMLOperation op : umlClassifier.getOperations()){
+            if (op.getName().equals(operationName)){
+                return op;
+            }
+        }
+
         //should not happen - but will if we are looking at a third party return type rn.
         System.out.println("did not find a match between classifier: " + umlClassifier.getName() + " and method name: " + operationName);
         System.exit(0);

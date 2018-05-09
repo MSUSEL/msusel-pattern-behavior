@@ -28,6 +28,7 @@ import com.derek.model.PatternType;
 import com.derek.model.SoftwareVersion;
 import javafx.util.Pair;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,9 @@ import java.util.List;
 @Getter
 public class PatternInstance {
 
+    //unique id, but will be non-unique when this pattern appears in mulitple versions.
+    @Setter
+    private int uniqueID;
     //key: role
     //value: class that fulfills that role
     protected List<Pair<String, String>> listOfPatternRoles;

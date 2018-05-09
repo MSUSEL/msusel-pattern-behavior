@@ -37,7 +37,7 @@ import java.util.Map;
 
 public class Main {
 
-    public static int debug = 0;
+    public static boolean verboseLog = false;
 
     //configs
     public static String workingDirectory;
@@ -69,7 +69,7 @@ public class Main {
         interProjectKey = "org/";
         projectLanguage = ".java";
         projectVersions = new ArrayList<>();
-        for (int i = 1; i <= 20; i++){
+        for (int i = 0; i < 20; i++){
             projectVersions.add(new SoftwareVersion(i));
         }
         runner = new HashMap<>();

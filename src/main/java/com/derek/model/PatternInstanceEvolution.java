@@ -25,14 +25,13 @@
 package com.derek.model;
 
 import com.derek.model.patterns.PatternInstance;
-import com.google.common.graph.AbstractGraph;
-import com.google.common.graph.Graph;
 import javafx.util.Pair;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
+@Getter
 public class PatternInstanceEvolution {
 
     private SoftwareVersion startingPoint;
@@ -61,52 +60,26 @@ public class PatternInstanceEvolution {
         for (int i = 0; i < startingPoint.getVersionNum(); i++){
             //this signifies that a pattern did not exist at a particular time.
             //
-            patternLifetime.add(new Pair<SoftwareVersion, PatternInstance>(new SoftwareVersion(i), null));
+            patternLifetime.add(new Pair<>(new SoftwareVersion(i), null));
         }
-        patternLifetime.add(new Pair<SoftwareVersion, PatternInstance>(startingPoint, patternInstance));
+        patternLifetime.add(new Pair<>(startingPoint, patternInstance));
     }
+
 
 
     public void addPatternInstanceToEvolution(PatternInstance pi, SoftwareVersion v){
         //add pattern instance to a particular version number.
-        patternLifetime.add(new Pair<SoftwareVersion, PatternInstance>(v, pi));
+        patternLifetime.add(new Pair<>(v, pi));
     }
 
     public PatternInstance getFirstPatternInstance(){
         return patternLifetime.get(startingPoint.getVersionNum()).getValue();
     }
 
-    public SoftwareVersion getStartingPoint() {
-        return startingPoint;
-    }
-
-    public void setStartingPoint(SoftwareVersion startingPoint) {
-        this.startingPoint = startingPoint;
-    }
-
-    public SoftwareVersion getEndingPoint() {
-        return endingPoint;
-    }
-
-    public void setEndingPoint(SoftwareVersion endingPoint) {
-        this.endingPoint = endingPoint;
-    }
-
-    public PatternType getPatternType() {
-        return patternType;
-    }
-
-    public void setPatternType(PatternType patternType) {
-        this.patternType = patternType;
-    }
-
     public List<Pair<SoftwareVersion, PatternInstance>> getPatternLifetime() {
         return patternLifetime;
     }
 
-    public void setPatternLifetime(List<Pair<SoftwareVersion, PatternInstance>> patternLifetime) {
-        this.patternLifetime = patternLifetime;
-    }
 
     public String getCSVVersions(){
         String toRet = "";

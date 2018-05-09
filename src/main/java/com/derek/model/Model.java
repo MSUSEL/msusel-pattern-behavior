@@ -266,6 +266,7 @@ public class Model {
 
                         //iterate through pattern instances of each pattern type
                         for (int j = 0; j < patternInstancesNodeList.getLength(); j++) {
+                            boolean hasAnonymousClassMember = false;
                             Node patternInstanceIter = patternInstancesNodeList.item(j);
 
                             Element patternInstanceElement = (Element) patternInstanceIter;
@@ -277,13 +278,17 @@ public class Model {
 
                                 String role = roleNode.getAttributes().getNamedItem("name").getTextContent();
                                 String element = roleNode.getAttributes().getNamedItem("element").getTextContent();
+                                if (element.contains("$")){
+                                    //anonymous class member, so we throw this pattern instance out.
+                                    hasAnonymousClassMember = true;
+                                }
                                 Pair<String, String> p = new Pair<>(role, element);
                                 listOfRoles.add(p);
-
                             }
-                            //add pattern instance to list of namesake.
-
-                            patternInstances.add(buildPatternInstance(listOfRoles, patternType, version));
+                            //add pattern instance to list of namesake if it has no anonymous class members.
+                            if (!hasAnonymousClassMember) {
+                                patternInstances.add(buildPatternInstance(listOfRoles, patternType, version));
+                            }
                         }
                         //System.out.println("Placing pattern instance: " + patternInstances + " into version: " + version.getVersionNum());
                         patternSummaryTable.put(version, patternType, patternInstances);
