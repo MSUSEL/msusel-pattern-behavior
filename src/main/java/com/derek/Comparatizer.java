@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class Comparatizer {
 
@@ -30,17 +31,29 @@ public class Comparatizer {
 
     public void runAnalysis(){
         int uniqueID = 0;
-        for (PatternInstanceEvolution pie : model.getPatternEvolutions().get(PatternType.OBJECT_ADAPTER)){
-            for (Pair<SoftwareVersion, PatternInstance> pair : pie.getPatternLifetime()){
-                if (pair.getValue() != null){
-                    //will happen when a pattern instance first appears after the first version number under analysis.
-                    pair.getValue().setUniqueID(uniqueID);
-                    testComparisons(umlClassDiagrams.get(pair.getKey()), pair.getValue());
-                    //System.out.println(pair.getKey() + " and " + pair.getValue());
+        List<PatternType> typesToAnalyze = new ArrayList<>();
+        typesToAnalyze.add(PatternType.OBJECT_ADAPTER);
+        typesToAnalyze.add(PatternType.STATE);
+        typesToAnalyze.add(PatternType.TEMPLATE_METHOD);
+        typesToAnalyze.add(PatternType.OBSERVER);
+        typesToAnalyze.add(PatternType.SINGLETON);
+        for (PatternType type : typesToAnalyze) {
+            if (model.getPatternEvolutions().get(type) != null) {
+                //will be null if that pattern type does not exist in the project ever.
+                for (PatternInstanceEvolution pie : model.getPatternEvolutions().get(type)) {
+                    for (Pair<SoftwareVersion, PatternInstance> pair : pie.getPatternLifetime()) {
+                        if (pair.getValue() != null) {
+                            //will happen when a pattern instance first appears after the first version number under analysis.
+                            pair.getValue().setUniqueID(uniqueID);
+                            testComparisons(umlClassDiagrams.get(pair.getKey()), pair.getValue());
+                            //System.out.println(pair.getKey() + " and " + pair.getValue());
+                        }
+                    }
+                    uniqueID++;
                 }
             }
-            uniqueID++;
         }
+
 
 //        for (SoftwareVersion version : umlClassDiagrams.keySet()){
 //            testComparisons(version, umlClassDiagrams.get(version));

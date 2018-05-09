@@ -115,10 +115,16 @@ public class Conformance {
                     if (endpointMap != null){
                         //will be null if the role was not mapped in the first place.
                         UMLClassifier mappedRoleEndpoint = (UMLClassifier)endpointMap.getMappedPair().getValue();
-                        if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).get().equals(Relationship.ASSOCIATION)){
-                            //omg. found a relationship mapping finally.
-                            //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
-                            associationMappings.add(new RBMLMapping(associationRole, new Pair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
+                        if (umlClassDiagram.getClassDiagram().hasEdgeConnecting(modelBlockPair.getValue(), mappedRoleEndpoint)) {
+                            if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).get().equals(Relationship.ASSOCIATION)) {
+                                //omg. found a relationship mapping finally.
+                                //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
+                                associationMappings.add(new RBMLMapping(associationRole, new Pair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
+                            }
+                        }else{
+                            //I get here when a pattern class has a wildcard or generics definition AND the pattern4 tool does not properly
+                            //identify the correct data type ... idk how to properly fix this at this point in time, so I might just
+                            //consider tossing the pattern out if this is ever the case....
                         }
                     }
                 }
