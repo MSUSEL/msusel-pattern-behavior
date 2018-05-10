@@ -25,6 +25,7 @@
 package com.derek.uml;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,8 @@ import java.util.List;
 public class UMLInterface extends UMLClassifier {
 
     private List<UMLOperation> operations;
+    @Setter
+    private List<UMLAttribute> attributes;
 
     public UMLInterface(String name, List<String> residingPackage, List<List<String>> imports, List<UMLOperation> operations, List<String> extendsParents, List<String> implementsParents, String identifier) {
         super(name, residingPackage, imports, identifier);
@@ -45,7 +48,13 @@ public class UMLInterface extends UMLClassifier {
     public List<UMLAttribute> getAttributes() {
         //interfaces don't have attributes, so this will always return null. If this bugs out consider returning an empty (but initialized) list
         //it bugged - so now I'm returning an empty arraylist
-        return new ArrayList<>();
+
+        //this is not necessarily true. any attribute declared within an interface will be final static...
+        if (attributes == null) {
+            return new ArrayList<>();
+        }else{
+            return attributes;
+        }
     }
 
     public List<String> getExtendsParentsString(){
