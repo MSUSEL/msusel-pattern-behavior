@@ -41,6 +41,9 @@ public class PatternInstanceEvolution {
     //index in the list points at pattern software version
     private List<Pair<SoftwareVersion, PatternInstance>> patternLifetime;
 
+
+    private int minNumberVersions = 10;
+
     public PatternInstanceEvolution(SoftwareVersion startingPoint, SoftwareVersion endingPoint, PatternType patternType, List<Pair<SoftwareVersion, PatternInstance>> patternLifetime) {
         this.startingPoint = startingPoint;
         this.endingPoint = endingPoint;
@@ -89,5 +92,22 @@ public class PatternInstanceEvolution {
             }
         }
         return toRet;
+    }
+
+    public boolean hasMinVersions(){
+        //needs to have 10 consecutive versions or else false.
+
+        int counter = 0;
+        for (Pair<SoftwareVersion, PatternInstance> pi : patternLifetime){
+            if (counter == 10){
+                return true;
+            }
+            if (pi.getValue() == null){
+                return false;
+            }else{
+                counter++;
+            }
+        }
+        return false;
     }
 }

@@ -67,7 +67,7 @@ public class Model {
         patternEvolutions = new TreeMap<>();
         patternSummaryTable = TreeBasedTable.create();
 
-        parseDataIntoPatternDataStructure(Main.workingDirectory + "pattern_detections/");
+        parseDataIntoPatternDataStructure(Main.workingDirectory + Main.patternDetectionOutput + "/");
 
         //printPatternTable();
 

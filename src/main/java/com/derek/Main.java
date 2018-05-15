@@ -26,40 +26,82 @@ package com.derek;
 
 import com.derek.model.Model;
 import com.derek.model.SoftwareVersion;
+import com.derek.rbml.InteractionRole;
 import com.derek.uml.UMLGenerator;
 import com.derek.uml.srcML.SrcMLRunner;
 import com.derek.view.View;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.FileInputStream;
+import java.util.*;
 
 public class Main {
 
     public static boolean verboseLog = false;
 
     //configs
-    public static String workingDirectory;
     public static String projectID;
+    public static String projectLanguage;
+    public static String workingDirectory;
+    public static String versions;
+    public static String patternDetectionOutput;
     public static String interVersionKey;
     public static String interProjectKey;
-    public static String projectLanguage;
+    public static String consecutivePatterns;
+    public static String outputFileName;
+
     private static Map<SoftwareVersion, SrcMLRunner> runner;
     public static List<SoftwareVersion> projectVersions;
     public static int currentVersion;
 
     public Main(){
+        try {
+            Properties seleniumProperties = new Properties();
+            FileInputStream fileInputStream = new FileInputStream("config.properties");
+            seleniumProperties.load(fileInputStream);
 
-        buildSeleniumConfigs();
-        //buildJHotDrawConfigs();
-        //buildGuavaConfigs();
+            this.projectID = seleniumProperties.getProperty("projectID");
+            this.projectLanguage = seleniumProperties.getProperty("projectLanguage");
+            this.workingDirectory = seleniumProperties.getProperty("workingDirectory");
+            this.versions = seleniumProperties.getProperty("versions");
+            this.patternDetectionOutput = seleniumProperties.getProperty("patternDetectionOutput");
+            this.interVersionKey = seleniumProperties.getProperty("interVersionKey");
+            this.interProjectKey = seleniumProperties.getProperty("interProjectKey");
+            this.consecutivePatterns = seleniumProperties.getProperty("consecutivePatterns");
+            this.outputFileName = seleniumProperties.getProperty("outputFileName");
+
+            //buildSeleniumConfigs();
+            //buildJHotDrawConfigs();
+            //buildGuavaConfigs();
 
 
-        //not working right now.
+            //not working right now.
 
-        //new View(new Model(projectVersions));
-        //view builds the model too. This might change as this project matures.
+            //new View(new Model(projectVersions));
+            //view builds the model too. This might change as this project matures.
+
+            fileInputStream.close();
+            doAnalysis();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void doAnalysis(){
+        projectVersions = new ArrayList<>();
+        for (int i = 0; i < Integer.parseInt(versions); i++){
+            projectVersions.add(new SoftwareVersion(i));
+        }
+        runner = new HashMap<>();
+        Model m = new Model(projectVersions);
+        for (SoftwareVersion version : projectVersions){
+            currentVersion = version.getVersionNum();
+            String pwd = workingDirectory + version.getVersionNum() + interVersionKey + interProjectKey;
+            runner.put(version, new SrcMLRunner(pwd, version.getVersionNum()));
+            UMLGenerator umlGenerator = new UMLGenerator(runner.get(version).getRootBlocks());
+            m.addClassDiagram(version, umlGenerator.getUmlClassDiagram());
+        }
+        Comparatizer cpt = new Comparatizer(m);
+        cpt.runAnalysis();
     }
 
     private void buildSeleniumConfigs(){

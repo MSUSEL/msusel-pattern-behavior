@@ -22,6 +22,7 @@ public class Comparatizer {
     private Map<SoftwareVersion, UMLClassDiagram> umlClassDiagrams;
     private StringBuilder outputter;
 
+
     public Comparatizer(Model model){
         this.model = model;
         this.umlClassDiagrams = model.getClassDiagramMap();
@@ -41,15 +42,17 @@ public class Comparatizer {
             if (model.getPatternEvolutions().get(type) != null) {
                 //will be null if that pattern type does not exist in the project ever.
                 for (PatternInstanceEvolution pie : model.getPatternEvolutions().get(type)) {
-                    for (Pair<SoftwareVersion, PatternInstance> pair : pie.getPatternLifetime()) {
-                        if (pair.getValue() != null) {
-                            //will happen when a pattern instance first appears after the first version number under analysis.
-                            pair.getValue().setUniqueID(uniqueID);
-                            testComparisons(umlClassDiagrams.get(pair.getKey()), pair.getValue());
-                            //System.out.println(pair.getKey() + " and " + pair.getValue());
+                    if (pie.hasMinVersions()) {
+                        for (Pair<SoftwareVersion, PatternInstance> pair : pie.getPatternLifetime()) {
+                            if (pair.getValue() != null) {
+                                //will happen when a pattern instance first appears after the first version number under analysis.
+                                pair.getValue().setUniqueID(uniqueID);
+                                testComparisons(umlClassDiagrams.get(pair.getKey()), pair.getValue());
+                                //System.out.println(pair.getKey() + " and " + pair.getValue());
+                            }
                         }
+                        uniqueID++;
                     }
-                    uniqueID++;
                 }
             }
         }
@@ -195,7 +198,7 @@ public class Comparatizer {
 
     private void output() {
         try {
-            File f = new File("output/output.csv");
+            File f = new File(Main.outputFileName);
             BufferedWriter bf = new BufferedWriter(new FileWriter(f));
             bf.write(getOutputHeader());
             bf.write(outputter.toString());

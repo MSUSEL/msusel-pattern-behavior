@@ -179,8 +179,16 @@ public class MetricSuite {
 
     private void calcPatternInstability(){
         DecimalFormat df2 = new DecimalFormat("#.##");
-        double unformattedInstability = ((double)efferentCoupling) / (afferentCoupling + efferentCoupling);
-        patternInstability = df2.format(unformattedInstability);
+        if (afferentCoupling + efferentCoupling != 0){
+            double unformattedInstability = ((double)efferentCoupling) / (afferentCoupling + efferentCoupling);
+            patternInstability = df2.format(unformattedInstability);
+        }else{
+            //would get a divide by 0 error here
+            //this happens when a pattern-class only has dependencies on 3rd party libs, and no class depends on this class...
+            //happens a few times with Template method implementations
+            patternInstability = "0";
+        }
+
     }
 
     private boolean isClassifierInPatternInstance(UMLClassifier tester){
