@@ -56,7 +56,7 @@ public class Main {
     public Main(){
         try {
             Properties seleniumProperties = new Properties();
-            FileInputStream fileInputStream = new FileInputStream("config.properties");
+            FileInputStream fileInputStream = new FileInputStream("configs/config.properties");
             seleniumProperties.load(fileInputStream);
 
             this.projectID = seleniumProperties.getProperty("projectID");

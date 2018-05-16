@@ -174,6 +174,7 @@ public class ConformanceTest {
         return new StatePattern(pi, umlClassDiagram);
     }
 
+    @Ignore
     @Test
     public void testOneStateOneRequest(){
         strictConformance = new Conformance(stateSPSStrict, null, oneStateOneRequest, oneStateOneRequest.getUmlClassDiagram());

@@ -33,6 +33,7 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -139,7 +140,8 @@ public class SrcMLRunner {
 
                     File fout = new File("srcMLOutput\\" + directory.getName() + "\\" + p.getFileName().toString().split(".java")[0] + ".xml");
                     if (!fout.exists()) {
-                        BufferedWriter bf = new BufferedWriter(new FileWriter(fout));
+                        BufferedWriter bf = new BufferedWriter
+                                (new OutputStreamWriter(new FileOutputStream(fout), StandardCharsets.UTF_8));
                         while ((s = stdInput.readLine()) != null) {
                             srcMLOut += s;
                             bf.write(s);

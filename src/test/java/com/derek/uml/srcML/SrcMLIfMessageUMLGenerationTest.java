@@ -1,9 +1,5 @@
 package com.derek.uml.srcML;
 
-import com.derek.uml.UMLMessage;
-import com.derek.uml.UMLMessageGenerationUtils;
-import com.google.common.graph.MutableGraph;
-import org.jboss.shrinkwrap.descriptor.api.Mutable;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

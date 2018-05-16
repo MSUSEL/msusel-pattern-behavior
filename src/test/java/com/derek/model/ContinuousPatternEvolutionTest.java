@@ -31,6 +31,7 @@ import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import javafx.util.Pair;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -136,6 +137,8 @@ public class ContinuousPatternEvolutionTest {
         continuousMutableGraph.putEdge(thirdContinuous, fourthContinuous);
     }
 
+    //same comment as tests in 'skipped pattern evolution' test
+    @Ignore
     @Test
     public void testContinuousPatternEvolution() throws Exception {
         //test for a single pattern instance being updated in all versions, where the software versions are 'continuous'

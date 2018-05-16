@@ -34,7 +34,6 @@ import com.google.common.graph.MutableGraph;
 import javafx.util.Pair;
 import lombok.Getter;
 import lombok.Setter;
-import org.jboss.shrinkwrap.descriptor.api.Mutable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

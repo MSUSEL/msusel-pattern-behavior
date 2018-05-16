@@ -157,7 +157,7 @@ public class UMLGenerator {
 
     private void buildLanguageTypes(){
         //if this is the first time parsing langaugeTypes, load the file and parse it
-        languageTypes = new ExternalPartyDataTypeSignature("resources/javaTypes.txt");
+        languageTypes = new ExternalPartyDataTypeSignature("configs/javaTypes.txt");
     }
 
     private void buildClasses(){

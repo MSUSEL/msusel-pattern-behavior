@@ -91,6 +91,7 @@ public class SrcMLCallTreeLogicTest extends SrcMLTest {
         assertEquals(grandChild1.getChildren().size(), 0);
     }
 
+    @Ignore
     @Test
     public void verifyFor(){
         CallTreeNode<SrcMLNode> callTree = block3.getFors().get(0).getCallTree();
