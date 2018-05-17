@@ -99,7 +99,14 @@
                         <exclude>**/README</exclude>
                         <exclude>src/test/resources/**</exclude>
                         <exclude>src/main/resources/**</exclude>
+                        <exclude>srcMLOutput/**</exclude>
+                        <exclude>plantUmlOutput/**</exclude>
+                        <exclude>configs/**</exclude>
                     </excludes>
+                    <includes>
+                        <include>src/main/**</include>
+                        <include>src/test/**</include>
+                    </includes>
                 </configuration>
                 <executions>
                     <execution>
