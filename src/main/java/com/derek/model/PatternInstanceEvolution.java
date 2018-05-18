@@ -24,6 +24,7 @@
  */
 package com.derek.model;
 
+import com.derek.Main;
 import com.derek.model.patterns.PatternInstance;
 import javafx.util.Pair;
 import lombok.Getter;
@@ -42,7 +43,7 @@ public class PatternInstanceEvolution {
     private List<Pair<SoftwareVersion, PatternInstance>> patternLifetime;
 
 
-    private int minNumberVersions = 10;
+    private int minNumberVersions = Integer.parseInt(Main.consecutivePatterns);
 
     public PatternInstanceEvolution(SoftwareVersion startingPoint, SoftwareVersion endingPoint, PatternType patternType, List<Pair<SoftwareVersion, PatternInstance>> patternLifetime) {
         this.startingPoint = startingPoint;
@@ -99,7 +100,7 @@ public class PatternInstanceEvolution {
 
         int counter = 0;
         for (Pair<SoftwareVersion, PatternInstance> pi : patternLifetime){
-            if (counter == 10){
+            if (counter == minNumberVersions){
                 return true;
             }
             if (pi.getValue() == null){

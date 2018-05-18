@@ -277,17 +277,16 @@ public class SrcMLBlock extends SrcMLNode{
                     root.addChild(((SrcMLFor)node).getCallTree());
                     break;
                 case "block":
-                    fillCallTree(root);
+                    //it is possible to have a block inside a block, (called an initialization block).
+                    //this causes a recursive loop to infinity and beyond.
+                    SrcMLBlock blockNode = (SrcMLBlock)node;
+                    blockNode.fillCallTree(root);
                     break;
                 case "try":
                     //tries can have inits.. called a resource statement
                     root.addChild(((SrcMLTry)node).getCallTree());
                     break;
                 case "decl_stmt":
-                    Main.recursiveDebugger++;
-                    if (Main.recursiveDebugger == 100){
-                        System.out.println("bad");
-                    }
                     ((SrcMLDeclStmt)node).fillCallTree(root);
                     break;
                 case "decl":

@@ -60,6 +60,10 @@ public class SrcMLDataType extends SrcMLNode{
         }
     }
     public String getName(){
+        if (optionalAttribute.equals("prev")){
+            //declared at a previous step, so I need to delay setting (and returning) name until late.r
+            return "prevDecl";
+        }
         return name.getName();
     }
 

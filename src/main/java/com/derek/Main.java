@@ -38,7 +38,6 @@ public class Main {
 
     public static boolean verboseLog = false;
 
-    public static int recursiveDebugger = 0;
 
     //configs
     public static String projectID;
@@ -101,6 +100,7 @@ public class Main {
             runner.put(version, new SrcMLRunner(pwd, version.getVersionNum()));
             UMLGenerator umlGenerator = new UMLGenerator(runner.get(version).getRootBlocks());
             m.addClassDiagram(version, umlGenerator.getUmlClassDiagram());
+            System.out.println("Built UML for version: " + version.getVersionNum());
         }
         Comparatizer cpt = new Comparatizer(m);
         cpt.runAnalysis();

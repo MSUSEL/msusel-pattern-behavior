@@ -206,6 +206,8 @@ public abstract class SrcMLNode {
                 case "index":
                 case "break":
                 case "empty_stmt":
+                    //label is like a goto statement.... I don't think I need to worry.
+                case "label":
                     //do nothing; im leaving these in here because they are in teh srcml spec but I may want to do something with them in the future
                     break;
                 default:

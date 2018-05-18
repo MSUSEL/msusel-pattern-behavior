@@ -46,7 +46,12 @@ public class SrcMLInit extends SrcMLNode{
     }
     protected void parse(){
         declarations = parseDecls();
-        for (SrcMLDecl decl : declarations){
+        for (int i = 0; i < declarations.size(); i++){
+            SrcMLDecl decl  = declarations.get(i);
+            if (decl.getType().getName().equals("prevDecl")){
+                //comma was used to delininate, so need to set to previous type name.
+                decl.getType().setName(declarations.get(i-1).getType().getNameObj());
+            }
             decl.buildCallTree();
         }
         expressions = parseExpressions();
