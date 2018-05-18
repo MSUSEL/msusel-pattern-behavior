@@ -284,6 +284,10 @@ public class SrcMLBlock extends SrcMLNode{
                     root.addChild(((SrcMLTry)node).getCallTree());
                     break;
                 case "decl_stmt":
+                    Main.recursiveDebugger++;
+                    if (Main.recursiveDebugger == 100){
+                        System.out.println("bad");
+                    }
                     ((SrcMLDeclStmt)node).fillCallTree(root);
                     break;
                 case "decl":

@@ -38,6 +38,8 @@ public class Main {
 
     public static boolean verboseLog = false;
 
+    public static int recursiveDebugger = 0;
+
     //configs
     public static String projectID;
     public static String projectLanguage;
