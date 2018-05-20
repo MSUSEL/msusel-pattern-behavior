@@ -98,9 +98,9 @@ public class Main {
             currentVersion = version.getVersionNum();
             String pwd = workingDirectory + version.getVersionNum() + interVersionKey + interProjectKey;
             runner.put(version, new SrcMLRunner(pwd, version.getVersionNum()));
+            System.out.println("Generating UML for version: " + version.getVersionNum());
             UMLGenerator umlGenerator = new UMLGenerator(runner.get(version).getRootBlocks());
             m.addClassDiagram(version, umlGenerator.getUmlClassDiagram());
-            System.out.println("Built UML for version: " + version.getVersionNum());
         }
         Comparatizer cpt = new Comparatizer(m);
         cpt.runAnalysis();

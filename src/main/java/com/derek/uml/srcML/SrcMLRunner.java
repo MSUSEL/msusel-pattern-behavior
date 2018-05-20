@@ -139,14 +139,33 @@ public class SrcMLRunner {
                     //take out .java extension and add .xml extension
 
                     File fout = new File("srcMLOutput\\" + directory.getName() + "\\" + p.getFileName().toString().split(".java")[0] + ".xml");
+                    StringBuilder output = new StringBuilder();
+                    while ((s = stdInput.readLine()) != null) {
+                        srcMLOut += s;
+                    }
                     if (!fout.exists()) {
                         BufferedWriter bf = new BufferedWriter
                                 (new OutputStreamWriter(new FileOutputStream(fout), StandardCharsets.UTF_8));
-                        while ((s = stdInput.readLine()) != null) {
-                            srcMLOut += s;
-                            bf.write(s);
-                        }
+                        bf.write(output.toString());
                         bf.close();
+                    }else{
+                        //found an unusual bug here where if a project has two files of the same name, only one will populate here.
+                        //file exists already.. I need to check to make sure the file contents are the same as the generated string.
+                        String existingOut = "";
+                        String line = "";
+                        try(BufferedReader br = new BufferedReader(new FileReader(fout))){
+                            while ((line = br.readLine()) != null){
+                                existingOut += line;
+                            }
+                        }
+                        if (!output.equals(existingOut)){
+                            //different file content. Make a new file (with an iterator)
+                            File fout2 = new File("srcMLOutput\\" + directory.getName() + "\\" + p.getFileName().toString().split(".java")[0] + "2.xml");
+                            BufferedWriter bf = new BufferedWriter
+                                    (new OutputStreamWriter(new FileOutputStream(fout2), StandardCharsets.UTF_8));
+                            bf.write(output.toString());
+                            bf.close();
+                        }
                     }
                 }
                 proc.destroy();

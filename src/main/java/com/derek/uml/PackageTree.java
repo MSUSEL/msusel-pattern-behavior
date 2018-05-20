@@ -37,6 +37,7 @@ public class PackageTree {
     private PackageNode root;
 
     public void addEntirePackage(UMLClassifier umlClassifier){
+
         List<String> packageStructure = umlClassifier.getResidingPackage();
         PackageNode holder = root;
         for (int i = 0; i < packageStructure.size(); i++){
