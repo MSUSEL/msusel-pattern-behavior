@@ -148,8 +148,9 @@ public abstract class PatternMapper {
         }
 
         //should not happen - but will if we are looking at a third party return type rn.
-        System.out.println("did not find a match between classifier: " + umlClassifier.getName() + " and method name: " + operationName);
-        System.exit(0);
+        System.out.println("was not able to match project class: " + umlClassifier.getName() + " and method name: " + operationName);
+        System.out.println("This should not happen. The tool will likely crash because of this.");
+        System.out.println("Version: " + this.getPi().getSoftwareVersion().getVersionNum());
         return null;
     }
 
@@ -183,8 +184,9 @@ public abstract class PatternMapper {
             }
         }
         //should not happen.
-        System.out.println("did not find a match between classifier: " + umlClassifier.getName() + " and attribute: " + attributeName);
-        System.exit(0);
+        System.out.println("was not able to match project class: " + umlClassifier.getName() + " and attribute name: " + attributeName);
+        System.out.println("This should not happen. The tool will likely crash because of this.");
+        System.out.println("Version: " + this.getPi().getSoftwareVersion().getVersionNum());
         return null;
     }
 

@@ -138,34 +138,23 @@ public class SrcMLRunner {
                 if (storeSrcML) {
                     //take out .java extension and add .xml extension
 
-                    File fout = new File("srcMLOutput\\" + directory.getName() + "\\" + p.getFileName().toString().split(".java")[0] + ".xml");
-                    StringBuilder output = new StringBuilder();
-                    while ((s = stdInput.readLine()) != null) {
-                        srcMLOut += s;
-                    }
+                    String foutFileName = collapseFileNameString(p.toAbsolutePath().toString().replace("\\", "_"));
+                    String foutString = "srcMLOutput\\" + directory.getName() + "\\" + foutFileName.split(".java")[0];
+
+                    foutString += ".xml";
+                    File fout = new File(foutString);
+
                     if (!fout.exists()) {
                         BufferedWriter bf = new BufferedWriter
                                 (new OutputStreamWriter(new FileOutputStream(fout), StandardCharsets.UTF_8));
-                        bf.write(output.toString());
+                        while ((s = stdInput.readLine()) != null) {
+                            srcMLOut += s;
+                            bf.write(s);
+                        }
                         bf.close();
                     }else{
                         //found an unusual bug here where if a project has two files of the same name, only one will populate here.
                         //file exists already.. I need to check to make sure the file contents are the same as the generated string.
-                        String existingOut = "";
-                        String line = "";
-                        try(BufferedReader br = new BufferedReader(new FileReader(fout))){
-                            while ((line = br.readLine()) != null){
-                                existingOut += line;
-                            }
-                        }
-                        if (!output.equals(existingOut)){
-                            //different file content. Make a new file (with an iterator)
-                            File fout2 = new File("srcMLOutput\\" + directory.getName() + "\\" + p.getFileName().toString().split(".java")[0] + "2.xml");
-                            BufferedWriter bf = new BufferedWriter
-                                    (new OutputStreamWriter(new FileOutputStream(fout2), StandardCharsets.UTF_8));
-                            bf.write(output.toString());
-                            bf.close();
-                        }
                     }
                 }
                 proc.destroy();
@@ -175,6 +164,26 @@ public class SrcMLRunner {
         }catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    private String collapseFileNameString(String foutFileName){
+        String toRet = "";
+        String[] splitter = foutFileName.split("_");
+        boolean turnCollapserOn = false;
+        String comparerValue = Main.interProjectKey.replace("\\","");
+        for (int i = 0; i < splitter.length; i++){
+            if (splitter[i].equals(comparerValue)){
+                //cut off everything before this.
+                turnCollapserOn = true;
+            }
+            if (turnCollapserOn){
+                toRet += splitter[i];
+                if (i != splitter.length-1) {
+                    toRet += "_";
+                }
+            }
+        }
+        return toRet;
     }
 
     private String quotify(String s){

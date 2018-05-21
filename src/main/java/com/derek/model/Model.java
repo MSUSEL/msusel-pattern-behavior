@@ -277,7 +277,7 @@ public class Model {
 
                                 String role = roleNode.getAttributes().getNamedItem("name").getTextContent();
                                 String element = roleNode.getAttributes().getNamedItem("element").getTextContent();
-                                if (element.contains("$")){
+                                if (element.contains("$") || element.contains("<clinit>")){
                                     //anonymous class member, so we throw this pattern instance out.
                                     hasAnonymousClassMember = true;
                                 }
