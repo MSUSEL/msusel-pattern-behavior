@@ -78,7 +78,6 @@ public class MetricSuite {
         calculate();
     }
 
-
     private void calculate(){
         calcNumParticipatingClasses();
         calcNumConformingRoles();

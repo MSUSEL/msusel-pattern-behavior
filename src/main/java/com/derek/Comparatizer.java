@@ -33,6 +33,9 @@ import javafx.util.Pair;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +58,7 @@ public class Comparatizer {
     }
 
     public void runAnalysis(){
-        int uniqueID = 0;
+        String uniqueID = "";
         List<PatternType> typesToAnalyze = new ArrayList<>();
         typesToAnalyze.add(PatternType.OBJECT_ADAPTER);
         typesToAnalyze.add(PatternType.STATE);
@@ -66,16 +69,16 @@ public class Comparatizer {
             if (model.getPatternEvolutions().get(type) != null) {
                 //will be null if that pattern type does not exist in the project ever.
                 for (PatternInstanceEvolution pie : model.getPatternEvolutions().get(type)) {
+                    uniqueID = pie.getFirstPatternInstance().getValueOfMajorRole(pie.getFirstPatternInstance());
                     if (pie.hasMinVersions()) {
                         for (Pair<SoftwareVersion, PatternInstance> pair : pie.getPatternLifetime()) {
                             if (pair.getValue() != null) {
                                 //will happen when a pattern instance first appears after the first version number under analysis.
                                 pair.getValue().setUniqueID(uniqueID);
                                 testComparisons(umlClassDiagrams.get(pair.getKey()), pair.getValue());
-                                //System.out.println(pair.getKey() + " and " + pair.getValue());
+
                             }
                         }
-                        uniqueID++;
                     }
                 }
             }
@@ -166,41 +169,13 @@ public class Comparatizer {
 //        for (RBMLMapping rbmlMapping : rbmlStructureMappings){
 //            rbmlMapping.printSummary();
 //        }
-        if (Main.verboseLog) {
-            for (Pair<String, UMLClassifier> classifier : patternMapper.getClassifierModelBlocks()) {
-                for (RBMLMapping rbmlMapping : rbmlStructureMappings) {
-                    if (rbmlMapping.getUmlArtifact().equals(classifier.getValue())) {
-                        System.out.println(classifier.getValue().getName() + " has a mapping to " + rbmlMapping.getRole().getName());
-                    }
-                }
-            }
-            for (Pair<String, UMLOperation> operation : patternMapper.getOperationModelBlocks()) {
-                for (RBMLMapping rbmlMapping : rbmlStructureMappings) {
-                    if (rbmlMapping.getUmlArtifact().equals(operation.getValue())) {
-                        System.out.println(operation.getValue().getName() + " has a mapping to " + rbmlMapping.getRole().getName());
-                    }
-                }
-            }
-            for (Pair<String, UMLAttribute> attribute : patternMapper.getAttributeModelBlocks()) {
-                for (RBMLMapping rbmlMapping : rbmlStructureMappings) {
-                    if (rbmlMapping.getUmlArtifact().equals(attribute.getValue())) {
-                        System.out.println(attribute.getValue().getName() + " has a mapping to " + rbmlMapping.getRole().getName());
-                    }
-                }
-            }
-            for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.ASSOCIATION)) {
-                System.out.println("Association exists from: " + attribute.getKey().getName() + " to " + attribute.getValue().getName());
-            }
-            for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.GENERALIZATION)) {
-                System.out.println("Generalization exists from: " + attribute.getKey().getName() + " to " + attribute.getValue().getName());
-            }
-            printViolatedRoles(sps, rbmlStructureMappings);
-        }
+        outputRoles(sps, rbmlStructureMappings, patternMapper);
+
         MetricSuite ms = new MetricSuite(rbmlStructureMappings, patternMapper, sps);
         outputter.append(ms.getSummary());
     }
 
-    private void printViolatedRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings){
+    private void printViolatedRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, StringBuilder output){
         //print all things that don't conform.
         List<Role> conformingRoles = new ArrayList<>();
         for (Role role : sps.getAllRoles()){
@@ -213,9 +188,9 @@ public class Comparatizer {
         //sps conformance checks - but this is printing; it does not include any logic.
         for (Role role : sps.getAllRoles()){
             if (conformingRoles.contains(role)){
-                System.out.println("Role " + role.getName() + " is satisfied.");
+                output.append("Role " + role.getName() + " is satisfied.\n");
             }else{
-                System.out.println("Role " + role.getName() + " is violated.");
+                output.append("Role " + role.getName() + " is violated.\n");
             }
         }
     }
@@ -227,7 +202,80 @@ public class Comparatizer {
             bf.write(getOutputHeader());
             bf.write(outputter.toString());
             bf.close();
+
         }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void outputRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, PatternMapper patternMapper){
+        try{
+            if (Boolean.parseBoolean(Main.printIndividualRoles)){
+                //main directory
+                File mainDirectory = new File("roles\\");
+                if (!mainDirectory.exists()) {
+                    Files.createDirectory(Paths.get("roles\\"));
+                }
+
+                //sub-directories.
+                File directory = new File("roles\\" + patternMapper.getPi().getPatternType() + "\\");
+                if (!directory.exists()) {
+                    Files.createDirectory(Paths.get("roles\\" + patternMapper.getPi().getPatternType() + "\\"));
+                }
+
+                StringBuilder output = new StringBuilder();
+                output.append("Version: " + patternMapper.getPi().getSoftwareVersion().getVersionNum() + "\n");
+                for (Pair<String, UMLClassifier> classifier : patternMapper.getClassifierModelBlocks()) {
+                    for (RBMLMapping rbmlMapping : rbmlStructureMappings) {
+                        if (rbmlMapping.getUmlArtifact().equals(classifier.getValue())) {
+                            output.append("UML classifier: " + classifier.getValue().getName() + " has a mapping to " + rbmlMapping.getRole().getName() + "\n");
+                        }
+                    }
+                }
+                for (Pair<String, UMLOperation> operation : patternMapper.getOperationModelBlocks()) {
+                    for (RBMLMapping rbmlMapping : rbmlStructureMappings) {
+                        if (rbmlMapping.getUmlArtifact().equals(operation.getValue())) {
+                            output.append("UML operation: " + operation.getValue().getName() + " has a mapping to " + rbmlMapping.getRole().getName() + "\n");
+                        }
+                    }
+                }
+                for (Pair<String, UMLAttribute> attribute : patternMapper.getAttributeModelBlocks()) {
+                    for (RBMLMapping rbmlMapping : rbmlStructureMappings) {
+                        if (rbmlMapping.getUmlArtifact().equals(attribute.getValue())) {
+                            output.append("UML attribute: " + attribute.getValue().getName() + " has a mapping to " + rbmlMapping.getRole().getName() + "\n");
+                        }
+                    }
+                }
+                for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.ASSOCIATION)) {
+                    for (RBMLMapping rbmlMapping : rbmlStructureMappings){
+                        if (rbmlMapping.getUmlArtifact() instanceof  Pair){
+                            //this is a relationship
+                            Pair<UMLClassifier, UMLClassifier> pair = (Pair<UMLClassifier, UMLClassifier>)rbmlMapping.getUmlArtifact();
+                            if (pair.getKey().equals(attribute.getKey()) && pair.getValue().equals(attribute.getValue())){
+                                output.append("Association role mapped from " + pair.getKey().getName() + " to " + pair.getValue().getName() + "\n");
+                            }
+                        }
+                    }
+                }
+                for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.GENERALIZATION)) {
+                    for (RBMLMapping rbmlMapping : rbmlStructureMappings){
+                        if (rbmlMapping.getUmlArtifact() instanceof  Pair){
+                            //this is a relationship
+                            Pair<UMLClassifier, UMLClassifier> pair = (Pair<UMLClassifier, UMLClassifier>)rbmlMapping.getUmlArtifact();
+                            if (pair.getKey().equals(attribute.getKey()) && pair.getValue().equals(attribute.getValue())){
+                                output.append("Generalization role mapped from " + pair.getKey().getName() + " to " + pair.getValue().getName() + "\n");
+                            }
+                        }
+                    }
+                }
+                printViolatedRoles(sps, rbmlStructureMappings, output);
+
+                File outputFile = new File("roles\\" + patternMapper.getPi().getPatternType() + "\\" + patternMapper.getPi().getUniqueID() + ".log");
+                PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile, true)));
+                out.println(output.toString());
+                out.close();
+            }
+        }catch (Exception e){
             e.printStackTrace();
         }
     }

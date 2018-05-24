@@ -38,7 +38,7 @@ public class PatternInstance {
 
     //unique id, but will be non-unique when this pattern appears in mulitple versions.
     @Setter
-    private int uniqueID;
+    private String uniqueID;
     //key: role
     //value: class that fulfills that role
     protected List<Pair<String, String>> listOfPatternRoles;

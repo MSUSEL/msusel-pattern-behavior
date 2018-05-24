@@ -49,6 +49,7 @@ public class Main {
     public static String interProjectKey;
     public static String consecutivePatterns;
     public static String outputFileName;
+    public static String printIndividualRoles;
 
     private static Map<SoftwareVersion, SrcMLRunner> runner;
     public static List<SoftwareVersion> projectVersions;
@@ -69,6 +70,7 @@ public class Main {
             this.interProjectKey = seleniumProperties.getProperty("interProjectKey");
             this.consecutivePatterns = seleniumProperties.getProperty("consecutivePatterns");
             this.outputFileName = seleniumProperties.getProperty("outputFileName");
+            this.printIndividualRoles = seleniumProperties.getProperty("printIndividualRoles");
 
             //buildSeleniumConfigs();
             //buildJHotDrawConfigs();
