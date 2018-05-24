@@ -14,7 +14,8 @@ multiple versions of a project, it is helpful to name each xml file "pattern_det
 4) install srcML, a tool that decorates source code with xml, built by Collard and Maletic. 
 srcML can be found [here](http://www.srcml.org/). If using Windows on a 64-bit machine, the executable for 
  srcML is located in the resources/ directory. Make sure you include srcML on your system's PATH. 
-5) Set the configs and run Main.java (will eventually be packaged as a jar).
+5) Set the configs and run the command 'mvnw.cmd package', with maven installed of course. This will package the project 
+as a jar. Run the jar as 'java -jar pattern-analysis-1.0-SNAPSHOT-jar-with-dependencies.jar'
 
 
 
