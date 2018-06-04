@@ -24,7 +24,6 @@
  */
 package com.derek.uml;
 
-import com.google.common.graph.MutableValueGraph;
 import lombok.Getter;
 import lombok.Setter;
 

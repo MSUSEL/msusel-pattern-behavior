@@ -82,10 +82,6 @@ public class Comparatizer {
             }
         }
 
-
-//        for (SoftwareVersion version : umlClassDiagrams.keySet()){
-//            testComparisons(version, umlClassDiagrams.get(version));
-//        }
         output();
     }
 
