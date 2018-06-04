@@ -44,7 +44,6 @@ import java.util.regex.Pattern;
 
 public class Comparatizer {
 
-    private Map<PatternType, RBMLSpec> rbml;
     private Model model;
     private Map<SoftwareVersion, UMLClassDiagram> umlClassDiagrams;
     private StringBuilder outputter;
@@ -53,7 +52,6 @@ public class Comparatizer {
     public Comparatizer(Model model){
         this.model = model;
         this.umlClassDiagrams = model.getClassDiagramMap();
-        rbml = new HashMap<>();
         outputter = new StringBuilder();
     }
 
