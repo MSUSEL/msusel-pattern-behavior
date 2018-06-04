@@ -24,10 +24,8 @@
  */
 package com.derek.rbml;
 
-import com.derek.uml.Relationship;
 import lombok.Getter;
 
-import javax.management.relation.Relation;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;

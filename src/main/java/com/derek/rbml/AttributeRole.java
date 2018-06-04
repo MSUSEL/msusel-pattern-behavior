@@ -24,7 +24,6 @@
  */
 package com.derek.rbml;
 
-import javafx.util.Pair;
 import lombok.Getter;
 
 import java.util.regex.Matcher;
