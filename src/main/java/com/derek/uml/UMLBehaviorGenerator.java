@@ -32,24 +32,18 @@ public class UMLBehaviorGenerator {
     private UMLClassDiagram umlClassDiagram;
     private UMLClassifier scopeClassifier;
     private UMLOperation scopeOperation;
-    @Setter
-    private String defaultFunction = "figureInvalidated";
-    //"startProfile"; //used for selenium tests
-    @Setter
-    private String defaultClass = "StandardDrawing";
-            //"FirefoxBinary"; //used for selenium tests
 
     public UMLBehaviorGenerator(UMLClassDiagram umlClassDiagram){
         this.umlClassDiagram = umlClassDiagram;
-        scopeClassifier = getClassScope(defaultClass);
-        scopeOperation = matchFunction(defaultFunction);
+        //scopeClassifier = getClassScope(defaultClass);
+        //scopeOperation = matchFunction(defaultFunction);
 
         buildSequenceDiagram(scopeClassifier, scopeOperation);
     }
 
-    private void buildSequenceDiagram(UMLClassifier scope, UMLOperation function){
+    private void buildSequenceDiagram(UMLClassifier scope, UMLOperation operation){
         //function.getCallTreeString().printTree();
-        CallTreeNode<String> root = function.getCallTreeString();
+        CallTreeNode<String> root = operation.getCallTreeString();
         UMLLifeline lifeLineScope = new UMLLifeline(scope);
         lifeLineScope.addMessageToLifeline(new UMLMessage("init", null, scope));
         for (CallTreeNode<String> child : root.getChildren()){

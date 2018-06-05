@@ -85,8 +85,10 @@ public class UMLGenerator {
     }
 
     private void pass4(){
-        //
-        buildSequenceDiagram();
+        //upon further thought, I don't know if I need pass 4.
+        //pass 4 would build sequence diagrams FOR EVERY operation in the application. What I really need is sequence diagrams
+        //only for pattern behaviors.
+        //buildSequenceDiagram();
 
     }
 

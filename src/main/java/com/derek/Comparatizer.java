@@ -106,46 +106,38 @@ public class Comparatizer {
         }
     }
 
-    public void compareCommand(PatternInstance pi, UMLClassDiagram umlClassDiagram){
-        CommandPattern commandPattern = new CommandPattern(pi, umlClassDiagram);
-        commandPattern.mapToUML();
-        SPS strictCommandSPS = new SPS("configs/sps/commandPatternSPS_strict.txt");
-        IPS strictCommandIPS = new IPS("configs/sps/commandPatternIPS_strict.txt", strictCommandSPS);
-        verifyConformance(strictCommandSPS, strictCommandIPS, commandPattern, umlClassDiagram);
-    }
-
     public void compareState(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         StatePattern statePattern = new StatePattern(pi, umlClassDiagram);
         SPS strictStateSPS = new SPS("configs/sps/statePatternSPS_strict.txt");
-        IPS strictStateIPS = null;//new IPS("resources/ips/statePatternIPS_strict.txt", strictStateSPS);
+        IPS strictStateIPS = new IPS("configs/ips/statePatternIPS_strict.txt", strictStateSPS);
         verifyConformance(strictStateSPS, strictStateIPS, statePattern, umlClassDiagram);
     }
 
     public void compareObjectAdapter(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         ObjectAdapterPattern objectAdapterPattern = new ObjectAdapterPattern(pi, umlClassDiagram);
         SPS strictObjectAdapterSPS = new SPS("configs/sps/objectAdapterPatternSPS_strict.txt");
-        IPS strictObjectAdapterIPS = null;//new IPS("resources/ips/objectAdapterPatternIPS_strict.txt", strictObjectAdapterSPS);
+        IPS strictObjectAdapterIPS = new IPS("configs/ips/objectAdapterPatternIPS_strict.txt", strictObjectAdapterSPS);
         verifyConformance(strictObjectAdapterSPS, strictObjectAdapterIPS, objectAdapterPattern, umlClassDiagram);
     }
 
     public void compareObserver(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         ObserverPattern observerPattern = new ObserverPattern(pi, umlClassDiagram);
         SPS strictObserverSPS = new SPS("configs/sps/observerPatternSPS_strict.txt");
-        IPS strictObserverIPS = null;//new IPS("resources/ips/observerPatternIPS_strict.txt", strictObserverSPS);
+        IPS strictObserverIPS = new IPS("configs/ips/observerPatternIPS_strict.txt", strictObserverSPS);
         verifyConformance(strictObserverSPS, strictObserverIPS, observerPattern, umlClassDiagram);
     }
 
     public void compareTemplateMethod(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         TemplateMethodPattern templateMethodPattern = new TemplateMethodPattern(pi, umlClassDiagram);
         SPS strictTemplateMethodSPS = new SPS("configs/sps/templateMethodPatternSPS_strict.txt");
-        IPS strictTemplateMethodIPS = null;// new IPS("resources/sps/templateMethodPatternIPS_strict.txt", strictTemplateMethodSPS);
+        IPS strictTemplateMethodIPS = new IPS("configs/ips/templateMethodPatternIPS_strict.txt", strictTemplateMethodSPS);
         verifyConformance(strictTemplateMethodSPS, strictTemplateMethodIPS, templateMethodPattern, umlClassDiagram);
     }
 
     public void compareSingleton(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         SingletonPattern singletonPattern = new SingletonPattern(pi, umlClassDiagram);
         SPS strictSingletonSPS = new SPS("configs/sps/singletonPatternSPS_strict.txt");
-        IPS strictSingletonIPS = null;// new IPS("resources/sps/templateMethodPatternIPS_strict.txt", strictTemplateMethodSPS);
+        IPS strictSingletonIPS = new IPS("configs/ips/templateMethodPatternIPS_strict.txt", strictSingletonSPS);
         verifyConformance(strictSingletonSPS, strictSingletonIPS, singletonPattern, umlClassDiagram);
     }
 
@@ -158,8 +150,10 @@ public class Comparatizer {
     public void verifyConformance(SPS sps, IPS ips, PatternMapper patternMapper, UMLClassDiagram umlClassDiagram){
         Conformance conformance = new Conformance(sps, ips, patternMapper, umlClassDiagram);
         List<RBMLMapping> rbmlStructureMappings = conformance.mapStructure();
-        //TODO  - uncomment and fix behavior mappings once I move onto beahvior.
-        //List<RBMLMapping> rbmlBehaviorMappings = conformance.mapBehavior(rbmlStructureMappings);
+        List<RBMLMapping> rbmlBehaviorMappings = conformance.mapBehavior(rbmlStructureMappings);
+        for (RBMLMapping rbmlMapping : rbmlBehaviorMappings){
+            rbmlMapping.printSummary();
+        }
 //        for (RBMLMapping rbmlMapping : rbmlStructureMappings){
 //            rbmlMapping.printSummary();
 //        }

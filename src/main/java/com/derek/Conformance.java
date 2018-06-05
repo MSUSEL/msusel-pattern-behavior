@@ -335,6 +335,10 @@ public class Conformance {
                 }
             }
         }
+        for (RBMLMapping rbmlMapping : behaviorMappings){
+            rbmlMapping.printSummary();
+        }
+        System.exit(0);
         return behaviorMappings;
     }
 
