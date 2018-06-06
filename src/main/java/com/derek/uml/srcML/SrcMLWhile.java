@@ -52,5 +52,9 @@ public class SrcMLWhile extends SrcMLNode{
         block.fillCallTree(callTree);
     }
 
+    public String toString(){
+        return "{while}";
+    }
+
 
 }

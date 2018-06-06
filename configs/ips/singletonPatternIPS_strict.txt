@@ -1,1 +1,2 @@
-
+|GetInstance
+|GetInstance(){|Singleton}

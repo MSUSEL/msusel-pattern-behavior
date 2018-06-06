@@ -60,5 +60,8 @@ public class SrcMLTernary extends SrcMLNode{
             else1.fillCallTree(callTree);
         }
     }
+    public String toString(){
+        return "{ternary}";
+    }
 
 }

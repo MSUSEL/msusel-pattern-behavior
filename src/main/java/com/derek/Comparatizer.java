@@ -151,12 +151,16 @@ public class Comparatizer {
         Conformance conformance = new Conformance(sps, ips, patternMapper, umlClassDiagram);
         List<RBMLMapping> rbmlStructureMappings = conformance.mapStructure();
         List<RBMLMapping> rbmlBehaviorMappings = conformance.mapBehavior(rbmlStructureMappings);
-        for (RBMLMapping rbmlMapping : rbmlBehaviorMappings){
-            rbmlMapping.printSummary();
-        }
+
+
+//        for (RBMLMapping rbmlMapping : rbmlBehaviorMappings){
+//            rbmlMapping.printSummary();
+//        }
 //        for (RBMLMapping rbmlMapping : rbmlStructureMappings){
 //            rbmlMapping.printSummary();
 //        }
+
+
         outputRoles(sps, rbmlStructureMappings, patternMapper);
 
         MetricSuite ms = new MetricSuite(rbmlStructureMappings, patternMapper, sps);

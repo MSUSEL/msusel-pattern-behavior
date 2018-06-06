@@ -337,8 +337,15 @@ public class Conformance {
         }
         for (RBMLMapping rbmlMapping : behaviorMappings){
             rbmlMapping.printSummary();
+            if (rbmlMapping.getUmlArtifact() instanceof UMLOperation){
+                ((UMLOperation)rbmlMapping.getUmlArtifact()).getCallTreeString().printTree();
+            }
         }
-        System.exit(0);
+        if (Main.counter == 99){
+            System.exit(0);
+        }
+
+        Main.counter++;
         return behaviorMappings;
     }
 

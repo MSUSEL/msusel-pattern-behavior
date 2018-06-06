@@ -30,6 +30,7 @@ import com.derek.rbml.InteractionRole;
 import com.derek.uml.UMLGenerator;
 import com.derek.uml.srcML.SrcMLRunner;
 import com.derek.view.View;
+import lombok.Setter;
 
 import java.io.FileInputStream;
 import java.util.*;
@@ -37,6 +38,9 @@ import java.util.*;
 public class Main {
 
     public static boolean verboseLog = false;
+
+    @Setter
+    public static int counter = 0;
 
 
     //configs
