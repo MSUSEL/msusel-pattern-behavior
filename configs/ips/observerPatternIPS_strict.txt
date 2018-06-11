@@ -2,6 +2,6 @@
 |SetState(){|ConcreteSubject}
 |Notfify(){|ConcreteSubject}
 <loop>
-|Update(){|Observer[i]}
+|Update(){|Observer}
 |GetState(){|ConcreteSubject}
 </loop>

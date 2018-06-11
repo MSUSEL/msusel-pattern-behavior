@@ -46,14 +46,16 @@ public class IPS {
 
     private void matchSPSObjects(SPS sps){
         for (InteractionRole sequenceRole : interactions){
-            for (StructuralRole structuralRole : sps.getClassifierRoles()){
-                if (sequenceRole.getStructuralRoleString().equals(structuralRole.getName())){
-                    sequenceRole.setStructuralRole(structuralRole);
-                    //find operation name now
-                    for (OperationRole operationRole : structuralRole.getOperations()){
-                        if (sequenceRole.getOperationRoleString().equals(operationRole.getName())){
-                            //ffound mathcing operation name
-                            sequenceRole.setOperationRole(operationRole);
+            if (sequenceRole.getRoleType().equals(InteractionRoleType.STANDARD)) {
+                for (StructuralRole structuralRole : sps.getClassifierRoles()) {
+                    if (sequenceRole.getStructuralRoleString().equals(structuralRole.getName())) {
+                        sequenceRole.setStructuralRole(structuralRole);
+                        //find operation name now
+                        for (OperationRole operationRole : structuralRole.getOperations()) {
+                            if (sequenceRole.getOperationRoleString().equals(operationRole.getName())) {
+                                //ffound mathcing operation name
+                                sequenceRole.setOperationRole(operationRole);
+                            }
                         }
                     }
                 }

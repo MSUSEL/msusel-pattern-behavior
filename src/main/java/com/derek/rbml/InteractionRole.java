@@ -37,6 +37,8 @@ public class InteractionRole extends Role {
     //will be set to actual SPS Role objects.
     private String operationRoleString;
     private String structuralRoleString;
+    //role type will be decls, control structures, or 'standard'
+    protected InteractionRoleType roleType;
 
     @Setter
     private OperationRole operationRole;
@@ -50,6 +52,7 @@ public class InteractionRole extends Role {
     /***
      * input is of form: |Request(){|Context}, where |Context is the owning classifier name,
      * |Request is the operation role that classifier calls.
+     * input can also be control structures (will be denoted with a '<loop>').. at this point its only loops I care about.
      * @param lineDescription
      */
     @Override
@@ -61,6 +64,16 @@ public class InteractionRole extends Role {
             //remove the parens.
             operationRoleString = m.group(1).replace("()","");
             structuralRoleString = m.group(2);
+            roleType = InteractionRoleType.STANDARD;
+        }else{
+            //might be a control structure (loop)
+            if (lineDescription.equals("<loop>")){
+                this.name = "beginLoop";
+                roleType = InteractionRoleType.CONTROL_STRUCTURE;
+            }else if (lineDescription.equals("</loop>")){
+                this.name = "endLoop";
+                roleType = InteractionRoleType.CONTROL_STRUCTURE;
+            }
         }
     }
 

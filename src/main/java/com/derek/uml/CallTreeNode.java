@@ -24,7 +24,6 @@
  */
 package com.derek.uml;
 
-import com.derek.uml.srcML.SrcMLNode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class CallTreeNode<T>{
+public class CallTreeNode<T> {
     private T name;
     //list of children under this node. Note this is an ordered list
     private List<CallTreeNode<T>> children;
@@ -78,4 +77,5 @@ public class CallTreeNode<T>{
         }
         return asList;
     }
+
 }

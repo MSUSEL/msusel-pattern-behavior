@@ -137,7 +137,7 @@ public class Comparatizer {
     public void compareSingleton(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         SingletonPattern singletonPattern = new SingletonPattern(pi, umlClassDiagram);
         SPS strictSingletonSPS = new SPS("configs/sps/singletonPatternSPS_strict.txt");
-        IPS strictSingletonIPS = new IPS("configs/ips/templateMethodPatternIPS_strict.txt", strictSingletonSPS);
+        IPS strictSingletonIPS = new IPS("configs/ips/singletonPatternIPS_strict.txt", strictSingletonSPS);
         verifyConformance(strictSingletonSPS, strictSingletonIPS, singletonPattern, umlClassDiagram);
     }
 

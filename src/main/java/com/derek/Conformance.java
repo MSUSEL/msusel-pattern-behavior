@@ -258,7 +258,8 @@ public class Conformance {
             for (UMLOperation mappedOperation : umlOperations) {
                 CallTreeNode<String> callTree = mappedOperation.getCallTreeString();
                 List<CallTreeNode<String>> callTreeAsList = callTree.convertMeToOrderedList();
-                orderedListSubsetComparison(callTreeAsList, ips.getInteractions(), structureMappings);
+                BehaviorMapper behaviorMapper = new BehaviorMapper(ips, callTreeAsList, structureMappings);
+                //orderedListSubsetComparison(callTreeAsList, ips.getInteractions(), structureMappings);
             }
         }
         return behaviorMappings;
@@ -340,9 +341,6 @@ public class Conformance {
             if (rbmlMapping.getUmlArtifact() instanceof UMLOperation){
                 ((UMLOperation)rbmlMapping.getUmlArtifact()).getCallTreeString().printTree();
             }
-        }
-        if (Main.counter == 99){
-            System.exit(0);
         }
 
         Main.counter++;
