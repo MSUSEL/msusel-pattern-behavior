@@ -24,11 +24,17 @@
  */
 package com.derek;
 
-import com.derek.model.*;
+import com.derek.model.Model;
+import com.derek.model.PatternInstanceEvolution;
+import com.derek.model.PatternType;
+import com.derek.model.SoftwareVersion;
 import com.derek.model.patterns.PatternInstance;
-import com.derek.rbml.*;
+import com.derek.rbml.IPS;
+import com.derek.rbml.RBMLMapping;
+import com.derek.rbml.Role;
+import com.derek.rbml.SPS;
 import com.derek.uml.*;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -37,10 +43,8 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class Comparatizer {
 

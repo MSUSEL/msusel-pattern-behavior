@@ -24,7 +24,8 @@
  */
 package com.derek.rbml;
 
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import lombok.Getter;
 
 @Getter
@@ -53,7 +54,7 @@ public abstract class Role {
         }else{
             maximum = Integer.parseInt(stringMax);
         }
-        return new Pair<>(minimum, maximum);
+        return new ImmutablePair<>(minimum, maximum);
     }
 
     protected abstract void printSummary();

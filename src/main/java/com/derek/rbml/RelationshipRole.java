@@ -25,7 +25,8 @@
 package com.derek.rbml;
 
 import com.derek.uml.Relationship;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import lombok.Getter;
 
 import java.sql.Struct;
@@ -86,7 +87,7 @@ public class RelationshipRole extends Role {
         Pattern p = Pattern.compile("\\{(\\|[a-zA-Z]+),(\\|[a-zA-Z]+)([,\\d\\.\\.[\\d|\\*]]*)\\}");
         Matcher m = p.matcher(roleNames);
         m.find();
-        connection1String = new Pair<>(m.group(1), m.group(2));
+        connection1String = new ImmutablePair<>(m.group(1), m.group(2));
         //one single directional multiplicity
         String[] splitter = m.group(3).split(",");
         if (splitter.length > 1) {
@@ -101,7 +102,7 @@ public class RelationshipRole extends Role {
     protected void buildConnectionStructure(List<StructuralRole> structuralRoles){
         StructuralRole nodeU = matchStructuralRole(structuralRoles, connection1String.getKey());
         StructuralRole nodeV = matchStructuralRole(structuralRoles, connection1String.getValue());
-        connection1 = new Pair<>(nodeU, nodeV);
+        connection1 = new ImmutablePair<>(nodeU, nodeV);
     }
 
     private StructuralRole matchStructuralRole(List<StructuralRole> structuralRoles, String nameToMatch){

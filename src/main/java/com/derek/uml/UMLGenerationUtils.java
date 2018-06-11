@@ -25,7 +25,8 @@
 package com.derek.uml;
 
 import com.derek.uml.srcML.*;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,7 +122,7 @@ public class UMLGenerationUtils {
         for (SrcMLParameter p : parameterList.getParameters()){
             if (p.getDecl() != null){
                 //reference to comment in SrcMLParameter class
-                params.add(new Pair<>(p.getDecl().getType().getName(), p.getDecl().getName()));
+                params.add(new ImmutablePair<>(p.getDecl().getType().getName(), p.getDecl().getName()));
             }
         }
         return params;

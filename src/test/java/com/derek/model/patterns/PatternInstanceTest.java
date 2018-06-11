@@ -26,14 +26,15 @@ package com.derek.model.patterns;
 
 import com.derek.model.PatternType;
 import com.derek.model.SoftwareVersion;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class PatternInstanceTest {
 
@@ -44,15 +45,15 @@ public class PatternInstanceTest {
     @Before
     public void buildMockObjects(){
 
-        Pair<String, String> _thisP1 = new Pair<>("Creator", "com.google.common.base.CommonPattern");
-        Pair<String, String> _thisP2 = new Pair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher");
+        Pair<String, String> _thisP1 = new ImmutablePair<>("Creator", "com.google.common.base.CommonPattern");
+        Pair<String, String> _thisP2 = new ImmutablePair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher");
 
-        Pair<String, String> _other1P1 = new Pair<>("Creator", "com.google.common.base.CommonPattern");
-        Pair<String, String> _other1P2 = new Pair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher");
-        Pair<String, String> _other1P3 = new Pair<>("FactoryMethod()", "com.google.common.base.Optional::transform():com.google.common.base.Optional");
+        Pair<String, String> _other1P1 = new ImmutablePair<>("Creator", "com.google.common.base.CommonPattern");
+        Pair<String, String> _other1P2 = new ImmutablePair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher");
+        Pair<String, String> _other1P3 = new ImmutablePair<>("FactoryMethod()", "com.google.common.base.Optional::transform():com.google.common.base.Optional");
 
-        Pair<String, String> _other2P1 = new Pair<>("Creator", "com.google.common.base.PatternCompiler");
-        Pair<String, String> _other2P2 = new Pair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher");
+        Pair<String, String> _other2P1 = new ImmutablePair<>("Creator", "com.google.common.base.PatternCompiler");
+        Pair<String, String> _other2P2 = new ImmutablePair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher");
 
         //version doesn't matter
         SoftwareVersion version = new SoftwareVersion(1);

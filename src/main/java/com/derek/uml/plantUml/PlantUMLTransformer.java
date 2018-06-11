@@ -27,16 +27,11 @@ package com.derek.uml.plantUml;
 import com.derek.Main;
 import com.derek.uml.*;
 import com.google.common.graph.EndpointPair;
-import javafx.util.Pair;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Optional;
 
 public class PlantUMLTransformer {
 

@@ -25,9 +25,13 @@
 package com.derek;
 
 import com.derek.model.patterns.PatternInstance;
-import com.derek.uml.*;
-import javafx.util.Pair;
+import com.derek.uml.UMLAttribute;
+import com.derek.uml.UMLClassDiagram;
+import com.derek.uml.UMLClassifier;
+import com.derek.uml.UMLOperation;
 import lombok.Getter;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,25 +50,25 @@ public class StatePattern extends PatternMapper {
 
     @Override
     protected void mapToUML() {
-        contextClassifier = new Pair<>("Context", getOneMajorRole(pi));
-        stateClassifier = new Pair<>("State", getSecondMajorRole(pi));
+        contextClassifier = new ImmutablePair<>("Context", getOneMajorRole(pi));
+        stateClassifier = new ImmutablePair<>("State", getSecondMajorRole(pi));
         List<Pair<String, String>> minorRoles = pi.getMinorRoles();
         List<Pair<String, String>> stateAttributesString = new ArrayList<>();
         List<Pair<String, String>> requestOperationsString = new ArrayList<>();
         for (Pair<String, String> p : minorRoles){
             if (p.getKey().equals("state")){
-                stateAttributesString.add(new Pair<>("state", p.getValue()));
+                stateAttributesString.add(new ImmutablePair<>("state", p.getValue()));
             }else if (p.getKey().equals("Request()")){
-                requestOperationsString.add(new Pair<>("Request", p.getValue()));
+                requestOperationsString.add(new ImmutablePair<>("Request", p.getValue()));
             }
         }
         stateAttributes = new ArrayList<>();
         requestOperations = new ArrayList<>();
         for (Pair<String, String> s : stateAttributesString){
-            stateAttributes.add(new Pair<>(s.getKey(), getAttributeFromString(contextClassifier.getValue(), s.getValue())));
+            stateAttributes.add(new ImmutablePair<>(s.getKey(), getAttributeFromString(contextClassifier.getValue(), s.getValue())));
         }
         for (Pair<String, String> s : requestOperationsString){
-            requestOperations.add(new Pair<>(s.getKey(), getOperationFromString(contextClassifier.getValue(), s.getValue())));
+            requestOperations.add(new ImmutablePair<>(s.getKey(), getOperationFromString(contextClassifier.getValue(), s.getValue())));
         }
     }
 

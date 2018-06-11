@@ -31,7 +31,8 @@ import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import lombok.Getter;
 import lombok.Setter;
 import org.w3c.dom.Document;
@@ -113,7 +114,7 @@ public class Model {
                                             numSameClasses++;
                                             if (numSharedClasses <= numSameClasses) {
                                                 //the number of pattern-sharing classes in the project is sufficient for our pattern coupling criteria
-                                                Pair<PatternInstance, PatternInstance> coupledPatternClasses = new Pair<>(piOuter, piInner);
+                                                Pair<PatternInstance, PatternInstance> coupledPatternClasses = new ImmutablePair<>(piOuter, piInner);
                                                 if (!doesPairExistInList(coupledPatternClasses, coupledPatternsForThisVersion)) {
                                                     coupledPatternsForThisVersion.add(coupledPatternClasses);
                                                 }
@@ -281,7 +282,7 @@ public class Model {
                                     //anonymous class member, so we throw this pattern instance out.
                                     hasAnonymousClassMember = true;
                                 }
-                                Pair<String, String> p = new Pair<>(role, element);
+                                Pair<String, String> p = new ImmutablePair<>(role, element);
                                 listOfRoles.add(p);
                             }
                             //add pattern instance to list of namesake if it has no anonymous class members.

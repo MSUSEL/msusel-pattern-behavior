@@ -26,8 +26,9 @@ package com.derek;
 
 import com.derek.rbml.*;
 import com.derek.uml.*;
-import javafx.util.Pair;
 import lombok.Getter;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,7 +120,7 @@ public class Conformance {
                         if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).get().equals(Relationship.GENERALIZATION)){
                             //omg. found a relationship mapping finally.
                             //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
-                            generalizationMappings.add(new RBMLMapping(generalizationRole, new Pair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
+                            generalizationMappings.add(new RBMLMapping(generalizationRole, new ImmutablePair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
                     }
                     }
                 }
@@ -143,7 +144,7 @@ public class Conformance {
                             if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).get().equals(Relationship.ASSOCIATION)) {
                                 //omg. found a relationship mapping finally.
                                 //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
-                                associationMappings.add(new RBMLMapping(associationRole, new Pair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
+                                associationMappings.add(new RBMLMapping(associationRole, new ImmutablePair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
                             }
                         } else {
                             //I get here when a pattern class has a wildcard or generics definition AND the pattern4 tool does not properly
@@ -172,7 +173,7 @@ public class Conformance {
                         if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).get().equals(Relationship.DEPENDENCY)){
                             //omg. found a relationship mapping finally.
                             //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
-                            dependencyMappings.add(new RBMLMapping(dependencyRole, new Pair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
+                            dependencyMappings.add(new RBMLMapping(dependencyRole, new ImmutablePair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
                         }
                     }
                 }
@@ -195,7 +196,7 @@ public class Conformance {
                         if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).get().equals(Relationship.REALIZATION)){
                             //omg. found a relationship mapping finally.
                             //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
-                            realizationMappings.add(new RBMLMapping(realizationRole, new Pair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
+                            realizationMappings.add(new RBMLMapping(realizationRole, new ImmutablePair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
                         }
                     }
                 }

@@ -29,8 +29,9 @@ import com.derek.uml.UMLAttribute;
 import com.derek.uml.UMLClassDiagram;
 import com.derek.uml.UMLClassifier;
 import com.derek.uml.UMLOperation;
-import javafx.util.Pair;
 import lombok.Getter;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,18 +49,18 @@ public class ObserverPattern extends PatternMapper {
 
     @Override
     protected void mapToUML() {
-        observerClassifier = new Pair<>("Observer", getOneMajorRole(pi));
-        subjectClassifier = new Pair<>("Subject", getSecondMajorRole(pi));
+        observerClassifier = new ImmutablePair<>("Observer", getOneMajorRole(pi));
+        subjectClassifier = new ImmutablePair<>("Subject", getSecondMajorRole(pi));
         List<Pair<String, String>> minorRoles = pi.getMinorRoles();
         List<Pair<String, String>> notifyOperationsString = new ArrayList<>();
         for (Pair<String, String> p : minorRoles){
             if (p.getKey().equals("Notify()")){
-                notifyOperationsString.add(new Pair<>("Notify", p.getValue()));
+                notifyOperationsString.add(new ImmutablePair<>("Notify", p.getValue()));
             }
         }
         notifyOperations= new ArrayList<>();
         for (Pair<String, String> s : notifyOperationsString){
-            notifyOperations.add(new Pair<>(s.getKey(), getOperationFromString(subjectClassifier.getValue(), s.getValue())));
+            notifyOperations.add(new ImmutablePair<>(s.getKey(), getOperationFromString(subjectClassifier.getValue(), s.getValue())));
         }
     }
 

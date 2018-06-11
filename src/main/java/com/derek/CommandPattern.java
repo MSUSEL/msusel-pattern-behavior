@@ -27,7 +27,7 @@ package com.derek;
 import com.derek.model.patterns.PatternInstance;
 import com.derek.rbml.*;
 import com.derek.uml.*;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 import lombok.Getter;
 
 import java.util.ArrayList;

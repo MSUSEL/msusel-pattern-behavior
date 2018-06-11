@@ -24,11 +24,8 @@
  */
 package com.derek.uml;
 
-import com.google.common.graph.MutableGraph;
 import lombok.Getter;
 
-import java.util.List;
-import java.util.Map;
 
 @Getter
 public class UMLMessage {

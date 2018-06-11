@@ -26,7 +26,8 @@ package com.derek.model;
 
 import com.derek.Main;
 import com.derek.model.patterns.PatternInstance;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -64,16 +65,16 @@ public class PatternInstanceEvolution {
         for (int i = 0; i < startingPoint.getVersionNum(); i++){
             //this signifies that a pattern did not exist at a particular time.
             //
-            patternLifetime.add(new Pair<>(new SoftwareVersion(i), null));
+            patternLifetime.add(new ImmutablePair<>(new SoftwareVersion(i), null));
         }
-        patternLifetime.add(new Pair<>(startingPoint, patternInstance));
+        patternLifetime.add(new ImmutablePair<>(startingPoint, patternInstance));
     }
 
 
 
     public void addPatternInstanceToEvolution(PatternInstance pi, SoftwareVersion v){
         //add pattern instance to a particular version number.
-        patternLifetime.add(new Pair<>(v, pi));
+        patternLifetime.add(new ImmutablePair<>(v, pi));
     }
 
     public PatternInstance getFirstPatternInstance(){

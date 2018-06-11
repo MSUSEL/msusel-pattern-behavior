@@ -25,13 +25,11 @@
 package com.derek;
 
 import com.derek.model.patterns.PatternInstance;
-import com.derek.rbml.*;
 import com.derek.uml.*;
-import com.google.common.graph.EndpointPair;
-import javafx.util.Pair;
 import lombok.Getter;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
-import javax.swing.plaf.synth.SynthTextAreaUI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -251,7 +249,7 @@ public abstract class PatternMapper {
             for (UMLClassifier predecessor : umlClassDiagram.getClassDiagram().predecessors(self.getValue())){
                 if (relationship.equals(umlClassDiagram.getClassDiagram().edgeValue(predecessor, self.getValue()).get())){
                     boolean hasBeenAdded = false;
-                    Pair<UMLClassifier, UMLClassifier> potentialPair = new Pair<>(predecessor, self.getValue());
+                    Pair<UMLClassifier, UMLClassifier> potentialPair = new ImmutablePair<>(predecessor, self.getValue());
                     for (Pair<UMLClassifier, UMLClassifier> existingPair : relationships){
                         //check to see if already added
                         if (existingPair.getKey().equals(potentialPair.getKey()) && existingPair.getValue().equals(potentialPair.getValue())){
@@ -261,14 +259,14 @@ public abstract class PatternMapper {
                     }
                     if (!hasBeenAdded) {
                         //only add if unique.
-                        relationships.add(new Pair<>(predecessor, self.getValue()));
+                        relationships.add(new ImmutablePair<>(predecessor, self.getValue()));
                     }
                 }
             }
             for (UMLClassifier successor : umlClassDiagram.getClassDiagram().successors(self.getValue())){
                 if (relationship.equals(umlClassDiagram.getClassDiagram().edgeValue(self.getValue(), successor).get())){
                     boolean hasBeenAdded = false;
-                    Pair<UMLClassifier, UMLClassifier> potentialPair = new Pair<>(self.getValue(), successor);
+                    Pair<UMLClassifier, UMLClassifier> potentialPair = new ImmutablePair<>(self.getValue(), successor);
                     for (Pair<UMLClassifier, UMLClassifier> existingPair : relationships){
                         //check to see if already added
                         if (existingPair.getKey().equals(potentialPair.getKey()) && existingPair.getValue().equals(potentialPair.getValue())){
@@ -278,7 +276,7 @@ public abstract class PatternMapper {
                     }
                     if (!hasBeenAdded) {
                         //only add if unique.
-                        relationships.add(new Pair<>(self.getValue(), successor));
+                        relationships.add(new ImmutablePair<>(self.getValue(), successor));
                     }
                 }
             }

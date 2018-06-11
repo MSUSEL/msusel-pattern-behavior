@@ -25,7 +25,6 @@
 package com.derek.uml;
 
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 public class UMLBehaviorGenerator {

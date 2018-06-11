@@ -24,7 +24,7 @@
  */
 package com.derek.uml;
 
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 import lombok.Getter;
 import lombok.Setter;
 

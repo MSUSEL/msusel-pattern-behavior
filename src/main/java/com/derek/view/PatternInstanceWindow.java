@@ -27,18 +27,14 @@ package com.derek.view;
 import com.derek.model.Model;
 import com.derek.model.patterns.PatternInstance;
 import com.google.common.graph.MutableGraph;
-import javafx.util.Pair;
-import oracle.jrockit.jfr.JFR;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class PatternInstanceWindow {
     private JFrame frame;

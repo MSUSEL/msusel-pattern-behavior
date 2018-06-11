@@ -26,14 +26,15 @@ package com.derek.model.patterns;
 
 import com.derek.model.PatternType;
 import com.derek.model.SoftwareVersion;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class PatternInstanceTwoRolesTest {
 
@@ -44,25 +45,25 @@ public class PatternInstanceTwoRolesTest {
 
     @Before
     public void buildMockObjects(){
-        Pair<String, String> _thisP1 = new Pair<>("Adaptee", "com.google.common.util.concurrent.ExecutionList");
-        Pair<String, String> _thisP2 = new Pair<>("Adapter", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter");
-        Pair<String, String> _thisP3 = new Pair<>("Request()", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter::executionList:com.google.common.util.concurrent.ExecutionList");
+        Pair<String, String> _thisP1 = new ImmutablePair<>("Adaptee", "com.google.common.util.concurrent.ExecutionList");
+        Pair<String, String> _thisP2 = new ImmutablePair<>("Adapter", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter");
+        Pair<String, String> _thisP3 = new ImmutablePair<>("Request()", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter::executionList:com.google.common.util.concurrent.ExecutionList");
 
         //happy path
-        Pair<String, String> _other1P1 = new Pair<>("Adaptee", "com.google.common.util.concurrent.ExecutionList");
-        Pair<String, String> _other1P2 = new Pair<>("Adapter", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter");
-        Pair<String, String> _other1P3 = new Pair<>("Request()", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter::executionList:com.google.common.util.concurrent.ExecutionList");
-        Pair<String, String> _other1P4 = new Pair<>("Request()", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter::executionList:com.google.common.util.concurrent.ExecutionList2");
+        Pair<String, String> _other1P1 = new ImmutablePair<>("Adaptee", "com.google.common.util.concurrent.ExecutionList");
+        Pair<String, String> _other1P2 = new ImmutablePair<>("Adapter", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter");
+        Pair<String, String> _other1P3 = new ImmutablePair<>("Request()", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter::executionList:com.google.common.util.concurrent.ExecutionList");
+        Pair<String, String> _other1P4 = new ImmutablePair<>("Request()", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter::executionList:com.google.common.util.concurrent.ExecutionList2");
 
         //first major role doesn't match
-        Pair<String, String> _other2P1 = new Pair<>("Adaptee", "com.google.common.util.concurrent.ExecutionList2");
-        Pair<String, String> _other2P2 = new Pair<>("Adapter", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter");
-        Pair<String, String> _other2P3 = new Pair<>("Request()", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter::executionList:com.google.common.util.concurrent.ExecutionList");
+        Pair<String, String> _other2P1 = new ImmutablePair<>("Adaptee", "com.google.common.util.concurrent.ExecutionList2");
+        Pair<String, String> _other2P2 = new ImmutablePair<>("Adapter", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter");
+        Pair<String, String> _other2P3 = new ImmutablePair<>("Request()", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter::executionList:com.google.common.util.concurrent.ExecutionList");
 
         //second major role doesn't match
-        Pair<String, String> _other3P1 = new Pair<>("Adaptee", "com.google.common.util.concurrent.ExecutionList");
-        Pair<String, String> _other3P2 = new Pair<>("Adapter", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter2");
-        Pair<String, String> _other3P3 = new Pair<>("Request()", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter::executionList:com.google.common.util.concurrent.ExecutionList");
+        Pair<String, String> _other3P1 = new ImmutablePair<>("Adaptee", "com.google.common.util.concurrent.ExecutionList");
+        Pair<String, String> _other3P2 = new ImmutablePair<>("Adapter", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter2");
+        Pair<String, String> _other3P3 = new ImmutablePair<>("Request()", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter::executionList:com.google.common.util.concurrent.ExecutionList");
 
         //version doesn't matter
         SoftwareVersion version = new SoftwareVersion(1);

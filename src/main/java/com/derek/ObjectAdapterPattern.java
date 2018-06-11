@@ -25,8 +25,12 @@
 package com.derek;
 
 import com.derek.model.patterns.PatternInstance;
-import com.derek.uml.*;
-import javafx.util.Pair;
+import com.derek.uml.UMLAttribute;
+import com.derek.uml.UMLClassDiagram;
+import com.derek.uml.UMLClassifier;
+import com.derek.uml.UMLOperation;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,25 +48,25 @@ public class ObjectAdapterPattern extends PatternMapper {
 
     @Override
     protected void mapToUML() {
-        adapteeClassifier = new Pair<>("Adaptee", getOneMajorRole(pi));
-        adapterClassifier = new Pair<>("Adapter", getSecondMajorRole(pi));
+        adapteeClassifier = new ImmutablePair<>("Adaptee", getOneMajorRole(pi));
+        adapterClassifier = new ImmutablePair<>("Adapter", getSecondMajorRole(pi));
         List<Pair<String, String>> minorRoles = pi.getMinorRoles();
         List<Pair<String, String>> adapteeAttributesString = new ArrayList<>();
         List<Pair<String, String>> requestOperationsString = new ArrayList<>();
         for (Pair<String, String> p : minorRoles){
             if (p.getKey().equals("adaptee")){
-                adapteeAttributesString.add(new Pair<>("adaptee", p.getValue()));
+                adapteeAttributesString.add(new ImmutablePair<>("adaptee", p.getValue()));
             }else if (p.getKey().equals("Request()")){
-                requestOperationsString.add(new Pair<>("Request", p.getValue()));
+                requestOperationsString.add(new ImmutablePair<>("Request", p.getValue()));
             }
         }
         adapteeAttributes = new ArrayList<>();
         requestOperations = new ArrayList<>();
         for (Pair<String, String> s : adapteeAttributesString){
-            adapteeAttributes.add(new Pair<>(s.getKey(), getAttributeFromString(adapterClassifier.getValue(), s.getValue())));
+            adapteeAttributes.add(new ImmutablePair<>(s.getKey(), getAttributeFromString(adapterClassifier.getValue(), s.getValue())));
         }
         for (Pair<String, String> s : requestOperationsString){
-            requestOperations.add(new Pair<>(s.getKey(), getOperationFromString(adapterClassifier.getValue(), s.getValue())));
+            requestOperations.add(new ImmutablePair<>(s.getKey(), getOperationFromString(adapterClassifier.getValue(), s.getValue())));
         }
     }
 

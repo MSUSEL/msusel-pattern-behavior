@@ -24,16 +24,10 @@
  */
 package com.derek.uml;
 
-import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableValueGraph;
-import com.google.common.graph.ValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
-import javafx.util.Pair;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.management.relation.Relation;
-import java.util.List;
 
 @Getter
 public class UMLClassDiagram {

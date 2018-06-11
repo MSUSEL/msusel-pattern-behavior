@@ -29,8 +29,9 @@ import com.derek.uml.srcML.SrcMLBlock;
 import com.derek.uml.srcML.SrcMLClass;
 import com.derek.uml.srcML.SrcMLEnum;
 import com.derek.uml.srcML.SrcMLInterface;
-import javafx.util.Pair;
 import lombok.Getter;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;

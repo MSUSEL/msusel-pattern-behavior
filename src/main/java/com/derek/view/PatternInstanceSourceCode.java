@@ -27,7 +27,7 @@ package com.derek.view;
 import com.derek.Main;
 import com.derek.model.patterns.PatternInstance;
 import com.google.common.graph.MutableGraph;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.swing.*;
 import java.awt.*;

@@ -31,13 +31,11 @@ import com.derek.uml.Relationship;
 import com.derek.uml.UMLAttribute;
 import com.derek.uml.UMLClassifier;
 import com.derek.uml.UMLOperation;
-import javafx.util.Pair;
 import lombok.Getter;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.text.DecimalFormat;
 import java.util.List;
-
-import static java.lang.Math.round;
 
 @Getter
 public class MetricSuite {

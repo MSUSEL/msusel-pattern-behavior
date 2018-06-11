@@ -29,8 +29,9 @@ import com.derek.uml.UMLAttribute;
 import com.derek.uml.UMLClassDiagram;
 import com.derek.uml.UMLClassifier;
 import com.derek.uml.UMLOperation;
-import javafx.util.Pair;
 import lombok.Getter;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,17 +48,17 @@ public class TemplateMethodPattern extends PatternMapper{
 
     @Override
     protected void mapToUML() {
-        templateClassifier = new Pair<>("AbstractTemplate", getOneMajorRole(pi));
+        templateClassifier = new ImmutablePair<>("AbstractTemplate", getOneMajorRole(pi));
         List<Pair<String, String>> minorRoles = pi.getMinorRoles();
         List<Pair<String, String>> templateOperationsString = new ArrayList<>();
         for (Pair<String, String> p : minorRoles){
             if (p.getKey().equals("TemplateMethod()")){
-                templateOperationsString.add(new Pair<>("TemplateMethod", p.getValue()));
+                templateOperationsString.add(new ImmutablePair<>("TemplateMethod", p.getValue()));
             }
         }
         templateOperations= new ArrayList<>();
         for (Pair<String, String> s : templateOperationsString){
-            templateOperations.add(new Pair<>(s.getKey(), getOperationFromString(templateClassifier.getValue(), s.getValue())));
+            templateOperations.add(new ImmutablePair<>(s.getKey(), getOperationFromString(templateClassifier.getValue(), s.getValue())));
         }
     }
 

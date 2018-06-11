@@ -24,7 +24,8 @@
  */
 package com.derek.rbml;
 
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import lombok.Getter;
 
 @Getter
@@ -37,7 +38,7 @@ public class RBMLMapping<T> {
     public RBMLMapping(Role role, T umlRole) {
         this.role = role;
         this.umlArtifact = umlRole;
-        this.mappedPair = new Pair<>(role, umlRole);
+        this.mappedPair = new MutablePair<>(role, umlRole);
     }
 
     public void printSummary(){

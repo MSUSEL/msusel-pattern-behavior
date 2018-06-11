@@ -30,7 +30,8 @@ import com.derek.model.patterns.PatternInstance;
 import com.derek.rbml.RBMLMapping;
 import com.derek.rbml.SPS;
 import com.derek.uml.*;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -41,7 +42,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class ConformanceTest {
 
@@ -76,10 +77,10 @@ public class ConformanceTest {
 
     public StatePattern buildOneStateOneRequest(){
         List<Pair<String, String>> patternRoles = new ArrayList<>();
-        patternRoles.add(new Pair<>("Context", "CH.DrawApplet"));
-        patternRoles.add(new Pair<>("State", "CH.Tool"));
-        patternRoles.add(new Pair<>("state", "CH.DrawApplet::fTool:CH.Tool"));
-        patternRoles.add(new Pair<>("Request()", "CH.DrawApplet::setTool(CH.Tool, java.lang.String):void"));
+        patternRoles.add(new ImmutablePair<>("Context", "CH.DrawApplet"));
+        patternRoles.add(new ImmutablePair<>("State", "CH.Tool"));
+        patternRoles.add(new ImmutablePair<>("state", "CH.DrawApplet::fTool:CH.Tool"));
+        patternRoles.add(new ImmutablePair<>("Request()", "CH.DrawApplet::setTool(CH.Tool, java.lang.String):void"));
         PatternInstance pi = new PatternInstance(patternRoles, PatternType.STATE, new SoftwareVersion(1));
 
         UMLClassDiagram umlClassDiagram = new UMLClassDiagram();
@@ -87,8 +88,8 @@ public class ConformanceTest {
         drawAppletAttributes.add(new UMLAttribute("fTool", "Tool"));
         List<UMLOperation> drawAppletOps = new ArrayList<>();
         List<Pair<String, String>> params = new ArrayList<>();
-        params.add(new Pair<>("Tool", "a"));
-        params.add(new Pair<>("String", "b"));
+        params.add(new ImmutablePair<>("Tool", "a"));
+        params.add(new ImmutablePair<>("String", "b"));
         drawAppletOps.add(new UMLOperation("setTool", params, "void"));
         drawAppletOps.get(0).setParameters(new ArrayList<>());
         List<String> residingPackage = new ArrayList<>();
@@ -110,11 +111,11 @@ public class ConformanceTest {
 
     public StatePattern buildTwoStateOneRequest(){
         List<Pair<String, String>> patternRoles = new ArrayList<>();
-        patternRoles.add(new Pair<>("Context", "CH.LineConnection"));
-        patternRoles.add(new Pair<>("State", "CH.Connector"));
-        patternRoles.add(new Pair<>("state", "CH.LineConnection::fStart:CH.Connector"));
-        patternRoles.add(new Pair<>("state", "CH.LineConnection::fEnd:CH.Connector"));
-        patternRoles.add(new Pair<>("Request()", "CH.LineConnection::updateConnection():void"));
+        patternRoles.add(new ImmutablePair<>("Context", "CH.LineConnection"));
+        patternRoles.add(new ImmutablePair<>("State", "CH.Connector"));
+        patternRoles.add(new ImmutablePair<>("state", "CH.LineConnection::fStart:CH.Connector"));
+        patternRoles.add(new ImmutablePair<>("state", "CH.LineConnection::fEnd:CH.Connector"));
+        patternRoles.add(new ImmutablePair<>("Request()", "CH.LineConnection::updateConnection():void"));
         PatternInstance pi = new PatternInstance(patternRoles, PatternType.STATE, new SoftwareVersion(1));
 
         UMLClassDiagram umlClassDiagram = new UMLClassDiagram();
@@ -140,11 +141,11 @@ public class ConformanceTest {
 
     public StatePattern buildOneStateTwoRequest(){
         List<Pair<String, String>> patternRoles = new ArrayList<>();
-        patternRoles.add(new Pair<>("Context", "CH.ConnectionHandle"));
-        patternRoles.add(new Pair<>("State", "CH.Figure"));
-        patternRoles.add(new Pair<>("state", "CH.ConnectionHandle::fTarget:CH.Figure"));
-        patternRoles.add(new Pair<>("Request()", "CH.ConnectionHandle::invokeEnd():void"));
-        patternRoles.add(new Pair<>("Request()", "CH.ConnectionHandle::invokeStep():void"));
+        patternRoles.add(new ImmutablePair<>("Context", "CH.ConnectionHandle"));
+        patternRoles.add(new ImmutablePair<>("State", "CH.Figure"));
+        patternRoles.add(new ImmutablePair<>("state", "CH.ConnectionHandle::fTarget:CH.Figure"));
+        patternRoles.add(new ImmutablePair<>("Request()", "CH.ConnectionHandle::invokeEnd():void"));
+        patternRoles.add(new ImmutablePair<>("Request()", "CH.ConnectionHandle::invokeStep():void"));
         PatternInstance pi = new PatternInstance(patternRoles, PatternType.STATE, new SoftwareVersion(1));
 
         UMLClassDiagram umlClassDiagram = new UMLClassDiagram();
@@ -169,12 +170,12 @@ public class ConformanceTest {
 
     public StatePattern buildTwoStateTwoRequest(){
         List<Pair<String, String>> patternRoles = new ArrayList<>();
-        patternRoles.add(new Pair<>("Context", "CH.CreationTool"));
-        patternRoles.add(new Pair<>("State", "CH.Figure"));
-        patternRoles.add(new Pair<>("state", "CH.CreationTool::fPrototype:CH.Figure"));
-        patternRoles.add(new Pair<>("state", "CH.CreationTool::fCreatedFigure:CH.Figure"));
-        patternRoles.add(new Pair<>("Request()", "CH.CreationTool::createFigure():CH.Figure"));
-        patternRoles.add(new Pair<>("Request()", "CH.CreationTool::mouseDown():void"));
+        patternRoles.add(new ImmutablePair<>("Context", "CH.CreationTool"));
+        patternRoles.add(new ImmutablePair<>("State", "CH.Figure"));
+        patternRoles.add(new ImmutablePair<>("state", "CH.CreationTool::fPrototype:CH.Figure"));
+        patternRoles.add(new ImmutablePair<>("state", "CH.CreationTool::fCreatedFigure:CH.Figure"));
+        patternRoles.add(new ImmutablePair<>("Request()", "CH.CreationTool::createFigure():CH.Figure"));
+        patternRoles.add(new ImmutablePair<>("Request()", "CH.CreationTool::mouseDown():void"));
         PatternInstance pi = new PatternInstance(patternRoles, PatternType.STATE, new SoftwareVersion(1));
 
         UMLClassDiagram umlClassDiagram = new UMLClassDiagram();

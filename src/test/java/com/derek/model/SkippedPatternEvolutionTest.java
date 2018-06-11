@@ -30,7 +30,8 @@ import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
-import javafx.util.Pair;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -58,23 +59,23 @@ public class SkippedPatternEvolutionTest {
         Main.patternDetectionOutput = "";
 
         //for this test I am just giving the third pattern instance a different identity.
-        Pair<String, String> _firstR1 = new Pair<>("Creator", "com.google.common.base.CommonPattern");
-        Pair<String, String> _firstR2 = new Pair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher");
+        Pair<String, String> _firstR1 = new ImmutablePair<>("Creator", "com.google.common.base.CommonPattern");
+        Pair<String, String> _firstR2 = new ImmutablePair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher");
 
-        Pair<String, String> _secondR1 = new Pair<>("Creator", "com.google.common.base.CommonPattern");
-        Pair<String, String> _secondR2 = new Pair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher");
-        Pair<String, String> _secondR3 = new Pair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher2");
+        Pair<String, String> _secondR1 = new ImmutablePair<>("Creator", "com.google.common.base.CommonPattern");
+        Pair<String, String> _secondR2 = new ImmutablePair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher");
+        Pair<String, String> _secondR3 = new ImmutablePair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher2");
 
-        Pair<String, String> _thirdR1 = new Pair<>("Creator", "com.google.common.base.CommonPattern2");
-        Pair<String, String> _thirdR2 = new Pair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher");
-        Pair<String, String> _thirdR3 = new Pair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher2");
-        Pair<String, String> _thirdR4 = new Pair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher3");
+        Pair<String, String> _thirdR1 = new ImmutablePair<>("Creator", "com.google.common.base.CommonPattern2");
+        Pair<String, String> _thirdR2 = new ImmutablePair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher");
+        Pair<String, String> _thirdR3 = new ImmutablePair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher2");
+        Pair<String, String> _thirdR4 = new ImmutablePair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher3");
 
-        Pair<String, String> _fourthR1 = new Pair<>("Creator", "com.google.common.base.CommonPattern");
-        Pair<String, String> _fourthR2 = new Pair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher");
-        Pair<String, String> _fourthR3 = new Pair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher2");
-        Pair<String, String> _fourthR4 = new Pair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher3");
-        Pair<String, String> _fourthR5 = new Pair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher4");
+        Pair<String, String> _fourthR1 = new ImmutablePair<>("Creator", "com.google.common.base.CommonPattern");
+        Pair<String, String> _fourthR2 = new ImmutablePair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher");
+        Pair<String, String> _fourthR3 = new ImmutablePair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher2");
+        Pair<String, String> _fourthR4 = new ImmutablePair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher3");
+        Pair<String, String> _fourthR5 = new ImmutablePair<>("FactoryMethod()", "com.google.common.base.CommonPattern::matcher(java.lang.CharSequence):com.google.common.base.CommonMatcher4");
 
         List<Pair<String, String>> _firstListOfPatternRoles = new ArrayList<>();
         _firstListOfPatternRoles.add(_firstR1);

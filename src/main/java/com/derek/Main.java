@@ -26,10 +26,8 @@ package com.derek;
 
 import com.derek.model.Model;
 import com.derek.model.SoftwareVersion;
-import com.derek.rbml.InteractionRole;
 import com.derek.uml.UMLGenerator;
 import com.derek.uml.srcML.SrcMLRunner;
-import com.derek.view.View;
 import lombok.Setter;
 
 import java.io.FileInputStream;

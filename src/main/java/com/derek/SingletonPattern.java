@@ -29,8 +29,9 @@ import com.derek.uml.UMLAttribute;
 import com.derek.uml.UMLClassDiagram;
 import com.derek.uml.UMLClassifier;
 import com.derek.uml.UMLOperation;
-import javafx.util.Pair;
 import lombok.Getter;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,11 +48,11 @@ public class SingletonPattern extends PatternMapper {
 
     @Override
     protected void mapToUML() {
-        singletonClassifier = new Pair<>("Singleton", getOneMajorRole(pi));
+        singletonClassifier = new ImmutablePair<>("Singleton", getOneMajorRole(pi));
         List<Pair<String, String>> minorRoles = pi.getMinorRoles();
         //should only be 1 attribute for a singleton.
         Pair<String, String> attribute = minorRoles.get(0);
-        singletonAttribute = new Pair<>("UniqueInstance", getAttributeFromString(singletonClassifier.getValue(), attribute.getValue()));
+        singletonAttribute = new ImmutablePair<>("UniqueInstance", getAttributeFromString(singletonClassifier.getValue(), attribute.getValue()));
     }
 
     @Override
