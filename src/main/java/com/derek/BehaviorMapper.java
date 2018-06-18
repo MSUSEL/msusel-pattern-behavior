@@ -40,55 +40,38 @@ public class BehaviorMapper {
      */
     private void pass1(){
         for (MutablePair<CallTreeNode, InteractionRole> pair : presenceMap){
-            mapInteractionRole(pair);
+            //might be null, but mapInteractionRole will take care of that.
+            pair.setRight(mapInteractionRole(pair.getLeft()));
         }
         printPresenceMap();
     }
 
-    private void mapInteractionRole(MutablePair<CallTreeNode, InteractionRole> pair){
-        CallTreeNode callTreeNode = pair.getLeft();
+    private InteractionRole mapInteractionRole(CallTreeNode callTreeNode){
+        callTreeNode.printTree();
         for (InteractionRole interactionRole : ips.getInteractions()){
             switch(interactionRole.getRoleType()){
                 case STANDARD:
                     for (RBMLMapping structureMapping : structureMappings){
-                        structureMapping.printSummary();
                         if (structureMapping.getRole().equals(interactionRole.getOperationRole())){
                             //get the UMLClassifier representation of this interaction role.. because only structure
                             //has been mapped to this point.
                             UMLOperation mappedOperation = (UMLOperation)structureMapping.getUmlArtifact();
-                            UMLClassifier opReturnType = mappedOperation.getType();
-                            if (opReturnType != null){
-                                //would be null if 'void', or if we couldn't match the umlclassifier type
-                                String callTreeNameStripped = stripCallTreeName((String)callTreeNode.getName());
-                                //shouldn't this be the return type? instead of the mapped op?
-                                if (callTreeNameStripped.equals(mappedOperation.getName())){
-                                    //think i found a match.. not sure tho.
-                                    System.out.println("found a match!!!! ");
-                                    System.out.println("UML " + mappedOperation.getName() + " and returning type: " + mappedOperation.getType().getName());
-                                    System.out.println("Matched to: " + callTreeNode.getName());
-                                    System.out.println();
-                                    callTreeNode.printTree();
-                                    pair.setRight(interactionRole);
-                                }
+                            String callTreeNameStripped = stripCallTreeName((String)callTreeNode.getName());
+                            //shouldn't this be the return type? instead of the mapped op?
+                            if (callTreeNameStripped.equals(mappedOperation.getName())){
+                                return interactionRole;
                             }
-                            System.out.println("Interaction role: " + interactionRole.getRoleType() + interactionRole.getOperationRole().getName());
-                            System.out.println("UML op from interaction role: " + ((UMLOperation)structureMapping.getUmlArtifact()).getName());
-                            System.out.println("UML type from op " + ((UMLOperation)structureMapping.getUmlArtifact()).getStringReturnDataType());
-                            System.out.println(callTreeNode.getName() + " " + callTreeNode.getTagName());
-                            System.out.println();
-                            callTreeNode.printTree();
-                            System.out.println("\n\n");
                         }
                     }
                     break;
                 case CONTROL_STRUCTURE:
                     if (callTreeNode.getTagName().equals(interactionRole.getName())){
-                        pair.setRight(interactionRole);
+                        return interactionRole;
                     }
             }
 
         }
-
+        return  null;
     }
 
     private String stripCallTreeName(String originalName){
@@ -116,6 +99,5 @@ public class BehaviorMapper {
             }
         }
         System.out.println("\n");
-        System.exit(0);
     }
 }

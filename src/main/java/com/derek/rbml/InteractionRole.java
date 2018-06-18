@@ -64,6 +64,7 @@ public class InteractionRole extends Role {
             //remove the parens.
             operationRoleString = m.group(1).replace("()","");
             structuralRoleString = m.group(2);
+            this.name = operationRoleString;
             roleType = InteractionRoleType.STANDARD;
         }else{
             //might be a control structure (loop)
