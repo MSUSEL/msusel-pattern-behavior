@@ -45,7 +45,7 @@ public class SrcMLWhile extends SrcMLNode{
         condition = parseCondition();
         block = parseBlock();
 
-        callTree = new CallTreeNode<>(this, "while");
+        callTree = new CallTreeNode<>(this, "loop");
         if (condition != null){
             buildCallTree(callTree, condition.getExpression());
         }

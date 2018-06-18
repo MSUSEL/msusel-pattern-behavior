@@ -62,16 +62,19 @@ public class IPS {
             }
         }
         //done matching, every thing should have a matched role now. if not here is loop that iwll catch that.
+        //control structures (loops, ifs, etcc) will not be matched here. I will have to dig into a call tree to match control structs
         for (InteractionRole sequenceRole : interactions){
-            if (sequenceRole.getStructuralRole() == null){
-                System.out.println("null structural role for sequence " + sequenceRole.getStructuralRoleString());
-                System.out.println("consider debugging the textual representation of the rbml.");
-                System.exit(0);
-            }
-            if (sequenceRole.getOperationRole() == null){
-                System.out.println("null operation role for sequence " + sequenceRole.getOperationRoleString());
-                System.out.println("consider debugging the textual representation of the rbml.");
-                System.exit(0);
+            if (sequenceRole.getRoleType().equals(InteractionRoleType.STANDARD)) {
+                if (sequenceRole.getStructuralRole() == null) {
+                    System.out.println("null structural role for sequence " + sequenceRole.getStructuralRoleString());
+                    System.out.println("consider debugging the textual representation of the rbml.");
+                    System.exit(0);
+                }
+                if (sequenceRole.getOperationRole() == null) {
+                    System.out.println("null operation role for sequence " + sequenceRole.getOperationRoleString());
+                    System.out.println("consider debugging the textual representation of the rbml.");
+                    System.exit(0);
+                }
             }
         }
     }

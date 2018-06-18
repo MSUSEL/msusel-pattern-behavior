@@ -67,11 +67,17 @@ public class InteractionRole extends Role {
             roleType = InteractionRoleType.STANDARD;
         }else{
             //might be a control structure (loop)
-            if (lineDescription.equals("<loop>")){
-                this.name = "beginLoop";
+            if (lineDescription.equals("{loop}")){
+                this.name = "loop";
                 roleType = InteractionRoleType.CONTROL_STRUCTURE;
-            }else if (lineDescription.equals("</loop>")){
-                this.name = "endLoop";
+            }else if (lineDescription.equals("{/loop}")){
+                this.name = "loop";
+                roleType = InteractionRoleType.CONTROL_STRUCTURE;
+            }else if (lineDescription.equals("{conditional}")){
+                this.name = "conditional";
+                roleType = InteractionRoleType.CONTROL_STRUCTURE;
+            }else if (lineDescription.equals("{/conditional}")){
+                this.name = "conditional";
                 roleType = InteractionRoleType.CONTROL_STRUCTURE;
             }
         }

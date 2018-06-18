@@ -53,7 +53,7 @@ public class SrcMLIf extends SrcMLNode{
         elseIf = parseElseIf();
 
 
-        callTree = new CallTreeNode<>(this, "if");
+        callTree = new CallTreeNode<>(this, "conditional");
 
         if (condition != null) {
             //tricky situation here. So, every if has (at least one) condition statement, and the condition can be a

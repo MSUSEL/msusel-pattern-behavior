@@ -47,7 +47,7 @@ public class SrcMLTernary extends SrcMLNode{
         then = parseThen();
         else1 = parseElse();
 
-        callTree = new CallTreeNode<>(this, "ternary");
+        callTree = new CallTreeNode<>(this, "conditional");
         if (condition != null){
             buildCallTree(callTree, condition.getExpression());
         }

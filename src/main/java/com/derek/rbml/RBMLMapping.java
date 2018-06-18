@@ -42,6 +42,6 @@ public class RBMLMapping<T> {
     }
 
     public void printSummary(){
-        System.out.println("RBML mapping from RBML element: " + mappedPair.getKey() + " to " + mappedPair.getValue());
+        System.out.println("RBML mapping from RBML element: " + mappedPair.getKey().getName() + " to " + mappedPair.getValue());
     }
 }
