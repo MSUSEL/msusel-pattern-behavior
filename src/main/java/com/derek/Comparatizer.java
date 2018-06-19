@@ -78,7 +78,7 @@ public class Comparatizer {
                                 //will happen when a pattern instance first appears after the first version number under analysis.
                                 pair.getValue().setUniqueID(uniqueID);
                                 testComparisons(umlClassDiagrams.get(pair.getKey()), pair.getValue());
-
+ 
                             }
                         }
                     }
