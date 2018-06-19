@@ -4,7 +4,6 @@ import com.derek.rbml.IPS;
 import com.derek.rbml.InteractionRole;
 import com.derek.rbml.RBMLMapping;
 import com.derek.uml.CallTreeNode;
-import com.derek.uml.UMLClassifier;
 import com.derek.uml.UMLOperation;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -57,7 +56,6 @@ public class BehaviorMapper {
                             //has been mapped to this point.
                             UMLOperation mappedOperation = (UMLOperation)structureMapping.getUmlArtifact();
                             String callTreeNameStripped = stripCallTreeName((String)callTreeNode.getName());
-                            //shouldn't this be the return type? instead of the mapped op?
                             if (callTreeNameStripped.equals(mappedOperation.getName())){
                                 return interactionRole;
                             }
@@ -69,9 +67,8 @@ public class BehaviorMapper {
                         return interactionRole;
                     }
             }
-
         }
-        return  null;
+        return null;
     }
 
     private String stripCallTreeName(String originalName){

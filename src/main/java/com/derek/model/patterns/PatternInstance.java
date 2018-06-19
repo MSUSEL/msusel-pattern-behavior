@@ -174,18 +174,6 @@ public class PatternInstance {
         return minorRoles;
     }
 
-    public PatternType getPatternType() {
-        return patternType;
-    }
-
-    public SoftwareVersion getSoftwareVersion() {
-        return softwareVersion;
-    }
-
-    public void setSoftwareVersion(SoftwareVersion softwareVersion) {
-        this.softwareVersion = softwareVersion;
-    }
-
     //comments from an earlier refactoring::
     //DECORATOR:
     //after looking at this for a while, I think that the Decorator pattern has one major role...
