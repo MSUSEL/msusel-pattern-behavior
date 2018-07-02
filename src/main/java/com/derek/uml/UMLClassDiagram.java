@@ -29,6 +29,10 @@ import com.google.common.graph.ValueGraphBuilder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 @Getter
 public class UMLClassDiagram {
 
@@ -58,6 +62,28 @@ public class UMLClassDiagram {
             tree.addEntirePackage(umlClassifier);
         }
         this.setPackageTree(tree);
+    }
+
+    public List<UMLClassifier> getAllGeneralizationHierarchyChildren(UMLClassifier umlClassifier){
+        List<UMLClassifier> children = new ArrayList<>();
+        if (!classDiagram.nodes().contains(umlClassifier)){
+            //node not here, error condition
+            return children;
+        }
+        List<UMLClassifier> immediateChildren = new ArrayList<>();
+        for (UMLClassifier potentialChild : classDiagram.nodes()){
+            Optional<Relationship> isEdge = classDiagram.edgeValue(potentialChild, umlClassifier);
+            if (isEdge.isPresent() && (isEdge.get() == Relationship.GENERALIZATION || isEdge.get() == Relationship.REALIZATION)){
+                //found a generalization
+                immediateChildren.add(potentialChild);
+            }
+        }
+        children.addAll(immediateChildren);
+        for (UMLClassifier immediateChild : immediateChildren){
+            //recursively add all children
+            children.addAll(getAllGeneralizationHierarchyChildren(immediateChild));
+        }
+        return children;
     }
 
 }

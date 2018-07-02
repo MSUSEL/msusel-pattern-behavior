@@ -25,10 +25,7 @@
 package com.derek;
 
 import com.derek.model.patterns.PatternInstance;
-import com.derek.uml.UMLAttribute;
-import com.derek.uml.UMLClassDiagram;
-import com.derek.uml.UMLClassifier;
-import com.derek.uml.UMLOperation;
+import com.derek.uml.*;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -42,6 +39,9 @@ public class ObserverPattern extends PatternMapper {
     private Pair<String, UMLClassifier> observerClassifier;
     private Pair<String, UMLClassifier> subjectClassifier;
     private List<Pair<String, UMLOperation>> notifyOperations;
+
+    private List<Pair<String, UMLClassifier>> observerFamily;
+    private List<Pair<String, UMLClassifier>> subjectFamily;
 
     public ObserverPattern(PatternInstance pi, UMLClassDiagram umlClassDiagram) {
         super(pi, umlClassDiagram);
@@ -62,13 +62,63 @@ public class ObserverPattern extends PatternMapper {
         for (Pair<String, String> s : notifyOperationsString){
             notifyOperations.add(new ImmutablePair<>(s.getKey(), getOperationFromString(subjectClassifier.getValue(), s.getValue())));
         }
+        coalescePattern();
+    }
+
+    private void coalescePattern(){
+        //get families of subjects and observers
+        List<UMLClassifier> observerFamilyClassifiers = umlClassDiagram.getAllGeneralizationHierarchyChildren(observerClassifier.getRight());
+        List<UMLClassifier> subjectFamilyClassifiers = umlClassDiagram.getAllGeneralizationHierarchyChildren(subjectClassifier.getRight());
+        observerFamily = new ArrayList<>();
+        for (UMLClassifier observerFamilyClassifier : observerFamilyClassifiers){
+            if (observerFamilyClassifier.getIdentifier().equals("class")){
+                //concrete observer
+                observerFamily.add(new ImmutablePair<>("ConcreteObserver", observerFamilyClassifier));
+            }else {
+                observerFamily.add(new ImmutablePair<>("Observer", observerFamilyClassifier));
+            }
+        }
+        subjectFamily = new ArrayList<>();
+        for (UMLClassifier subjectFamilyClassifier : subjectFamilyClassifiers){
+            if (subjectFamilyClassifier.getIdentifier().equals("class")){
+                //concrete subject
+                subjectFamily.add(new ImmutablePair<>("ConcreteSubject", subjectFamilyClassifier));
+            }else {
+                subjectFamily.add(new ImmutablePair<>("Subject", subjectFamilyClassifier));
+            }
+        }
+    }
+
+    public List<Pair<String, UMLClassifier>> getClassModelBlocks(){
+        List<Pair<String, UMLClassifier>> modelBlocks = new ArrayList<>();
+        for (Pair<String, UMLClassifier> observerPair : observerFamily){
+            if (observerPair.getLeft().equals("ConcreteObserver")){
+                modelBlocks.add(observerPair);
+            }
+        }
+        for (Pair<String, UMLClassifier> subjectPair : subjectFamily){
+            if (subjectPair.getLeft().equals("ConcreteSubject")){
+                modelBlocks.add(subjectPair);
+            }
+        }
+        return modelBlocks;
     }
 
     @Override
     public List<Pair<String, UMLClassifier>> getClassifierModelBlocks() {
-        List<Pair<String, UMLClassifier>> modelBlocks= new ArrayList<>();
+        List<Pair<String, UMLClassifier>> modelBlocks = new ArrayList<>();
         modelBlocks.add(observerClassifier);
         modelBlocks.add(subjectClassifier);
+        for (Pair<String, UMLClassifier> observerPair : observerFamily){
+            if (observerPair.getLeft().equals("Observer")){
+                modelBlocks.add(observerPair);
+            }
+        }
+        for (Pair<String, UMLClassifier> subjectPair : subjectFamily){
+            if (subjectPair.getLeft().equals("Subject")){
+                modelBlocks.add(subjectPair);
+            }
+        }
         return modelBlocks;
     }
 

@@ -46,7 +46,7 @@ public class BehaviorMapper {
     }
 
     private InteractionRole mapInteractionRole(CallTreeNode callTreeNode){
-        callTreeNode.printTree();
+        //callTreeNode.printTree();
         for (InteractionRole interactionRole : ips.getInteractions()){
             switch(interactionRole.getRoleType()){
                 case STANDARD:
