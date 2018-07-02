@@ -56,6 +56,12 @@ public class SingletonPattern extends PatternMapper {
     }
 
     @Override
+    public List<Pair<String, UMLClassifier>> getClassModelBlocks(){
+        //TODO
+        return new ArrayList<>();
+    }
+
+    @Override
     public List<Pair<String, UMLClassifier>> getClassifierModelBlocks() {
         List<Pair<String, UMLClassifier>> blocks = new ArrayList<>();
         blocks.add(singletonClassifier);

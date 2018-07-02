@@ -76,6 +76,8 @@ public class RelationshipRole extends Role {
                 return Relationship.GENERALIZATION;
             case "Dependency":
                 return Relationship.DEPENDENCY;
+            case "Realization":
+                return Relationship.REALIZATION;
             default:
                 System.out.println("did not find a type for the relationship descriptor. Likely an issue with the rbml text.");
         }

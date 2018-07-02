@@ -71,6 +71,12 @@ public class ObjectAdapterPattern extends PatternMapper {
     }
 
     @Override
+    public List<Pair<String, UMLClassifier>> getClassModelBlocks(){
+        //TODO
+        return new ArrayList<>();
+    }
+
+    @Override
     public List<Pair<String, UMLClassifier>> getClassifierModelBlocks() {
         List<Pair<String, UMLClassifier>> modelBlocks= new ArrayList<>();
         modelBlocks.add(adapteeClassifier);

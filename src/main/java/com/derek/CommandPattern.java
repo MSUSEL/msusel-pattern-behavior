@@ -78,9 +78,16 @@ public class CommandPattern extends PatternMapper{
     }
 
     @Override
+    public List<Pair<String, UMLClassifier>> getClassModelBlocks(){
+        //TODO
+        return new ArrayList<>();
+    }
+
+    @Override
     public List<Pair<String, UMLClassifier>> getClassifierModelBlocks() {
         return null;
     }
+
 
     @Override
     public List<Pair<String, UMLOperation>> getOperationModelBlocks() {

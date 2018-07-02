@@ -240,8 +240,16 @@ public abstract class PatternMapper {
     }
 
     public abstract List<Pair<String, UMLClassifier>> getClassifierModelBlocks();
+    public abstract List<Pair<String, UMLClassifier>> getClassModelBlocks();
     public abstract List<Pair<String, UMLOperation>> getOperationModelBlocks();
     public abstract List<Pair<String, UMLAttribute>> getAttributeModelBlocks();
+
+    public List<Pair<String, UMLClassifier>> getAllClassifierModelBlocks(){
+        List<Pair<String, UMLClassifier>> blocks = new ArrayList<>();
+        blocks.addAll(getClassifierModelBlocks());
+        blocks.addAll(getClassModelBlocks());
+        return blocks;
+    }
 
     public List<Pair<UMLClassifier, UMLClassifier>> getRelationships(Relationship relationship){
         List<Pair<UMLClassifier, UMLClassifier>> relationships = new ArrayList<>();

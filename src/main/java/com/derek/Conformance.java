@@ -64,9 +64,9 @@ public class Conformance {
     public List<RBMLMapping> mapStructuralComponents(){
         List<RBMLMapping> structuralMappings = new ArrayList<>();
         for (StructuralRole strRole : sps.getClassifierRoles()) {
-            for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getClassifierModelBlocks()) {
+            for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getAllClassifierModelBlocks()) {
                 if (modelBlockPair.getKey().equals(strRole.compareName())) {
-                    //match found!
+                    //classifier match found
                     structuralMappings.add(new RBMLMapping(strRole, modelBlockPair.getValue()));
                 }
             }
@@ -109,7 +109,7 @@ public class Conformance {
     private List<RBMLMapping> mapGeneralizations(List<RBMLMapping> structuralMappings){
         List<RBMLMapping> generalizationMappings = new ArrayList<>();
         for (RelationshipRole generalizationRole : sps.getGeneralizationRoles()){
-            for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getClassifierModelBlocks()){
+            for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getAllClassifierModelBlocks()){
                 if (modelBlockPair.getKey().equals(generalizationRole.getConnection1().getKey().compareName())){
                     //rbml association and uml class have same single endpoint. now we check other endpoint.
                     StructuralRole nodeV = generalizationRole.getConnection1().getValue();
@@ -121,7 +121,7 @@ public class Conformance {
                             //omg. found a relationship mapping finally.
                             //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
                             generalizationMappings.add(new RBMLMapping(generalizationRole, new ImmutablePair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
-                    }
+                        }
                     }
                 }
             }
@@ -132,7 +132,7 @@ public class Conformance {
     private List<RBMLMapping> mapAssociations(List<RBMLMapping> structuralMappings){
         List<RBMLMapping> associationMappings = new ArrayList<>();
         for (RelationshipRole associationRole : sps.getAssociationRoles()){
-            for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getClassifierModelBlocks()){
+            for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getAllClassifierModelBlocks()){
                 if (modelBlockPair.getKey().equals(associationRole.getConnection1().getKey().compareName())){
                     //rbml association and uml class have same single endpoint. now we check other endpoint.
                     StructuralRole nodeV = associationRole.getConnection1().getValue();
@@ -162,7 +162,7 @@ public class Conformance {
     private List<RBMLMapping> mapDependencies(List<RBMLMapping> structuralMappings){
         List<RBMLMapping> dependencyMappings = new ArrayList<>();
         for (RelationshipRole dependencyRole : sps.getDependencyRoles()){
-            for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getClassifierModelBlocks()){
+            for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getAllClassifierModelBlocks()){
                 if (modelBlockPair.getKey().equals(dependencyRole.getConnection1().getKey().compareName())){
                     //rbml association and uml class have same single endpoint. now we check other endpoint.
                     StructuralRole nodeV = dependencyRole.getConnection1().getValue();
@@ -185,7 +185,7 @@ public class Conformance {
     private List<RBMLMapping> mapRealizations(List<RBMLMapping> structuralMappings){
         List<RBMLMapping> realizationMappings = new ArrayList<>();
         for (RelationshipRole realizationRole : sps.getImplementationRoles()){
-            for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getClassifierModelBlocks()){
+            for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getAllClassifierModelBlocks()){
                 if (modelBlockPair.getKey().equals(realizationRole.getConnection1().getKey().compareName())){
                     //rbml association and uml class have same single endpoint. now we check other endpoint.
                     StructuralRole nodeV = realizationRole.getConnection1().getValue();

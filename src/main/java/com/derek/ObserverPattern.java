@@ -89,6 +89,7 @@ public class ObserverPattern extends PatternMapper {
         }
     }
 
+    @Override
     public List<Pair<String, UMLClassifier>> getClassModelBlocks(){
         List<Pair<String, UMLClassifier>> modelBlocks = new ArrayList<>();
         for (Pair<String, UMLClassifier> observerPair : observerFamily){
