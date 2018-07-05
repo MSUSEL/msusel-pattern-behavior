@@ -264,6 +264,28 @@ public class Comparatizer {
                         }
                     }
                 }
+                for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.REALIZATION)) {
+                    for (RBMLMapping rbmlMapping : rbmlStructureMappings){
+                        if (rbmlMapping.getUmlArtifact() instanceof  Pair){
+                            //this is a relationship
+                            Pair<UMLClassifier, UMLClassifier> pair = (Pair<UMLClassifier, UMLClassifier>)rbmlMapping.getUmlArtifact();
+                            if (pair.getKey().equals(attribute.getKey()) && pair.getValue().equals(attribute.getValue())){
+                                output.append("Realization role mapped from " + pair.getKey().getName() + " to " + pair.getValue().getName() + "\n");
+                            }
+                        }
+                    }
+                }
+                for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.DEPENDENCY)) {
+                    for (RBMLMapping rbmlMapping : rbmlStructureMappings){
+                        if (rbmlMapping.getUmlArtifact() instanceof  Pair){
+                            //this is a relationship
+                            Pair<UMLClassifier, UMLClassifier> pair = (Pair<UMLClassifier, UMLClassifier>)rbmlMapping.getUmlArtifact();
+                            if (pair.getKey().equals(attribute.getKey()) && pair.getValue().equals(attribute.getValue())){
+                                output.append("Dependency role mapped from " + pair.getKey().getName() + " to " + pair.getValue().getName() + "\n");
+                            }
+                        }
+                    }
+                }
                 printViolatedRoles(sps, rbmlStructureMappings, output);
 
                 File outputFile = new File("roles\\" + patternMapper.getPi().getPatternType() + "\\" + patternMapper.getPi().getUniqueID() + ".log");

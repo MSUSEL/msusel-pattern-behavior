@@ -78,6 +78,8 @@ public class RelationshipRole extends Role {
                 return Relationship.DEPENDENCY;
             case "Realization":
                 return Relationship.REALIZATION;
+            case "Generalization||Realization":
+                return Relationship.UNSPECIFIED;
             default:
                 System.out.println("did not find a type for the relationship descriptor. Likely an issue with the rbml text.");
         }
@@ -128,7 +130,6 @@ public class RelationshipRole extends Role {
             System.out.println("connection 1 multiplicities: " + connection1Multiplicities.getKey() + " to " + connection1Multiplicities.getValue());
             System.out.println("connection 1 reverse multiplicities: " + connection2Multiplicities.getKey() + " to " + connection2Multiplicities.getValue());
         }
-
     }
 
 }

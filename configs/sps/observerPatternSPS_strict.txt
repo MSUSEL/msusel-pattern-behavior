@@ -4,5 +4,5 @@ Class |ConcreteSubject,1..*[|subjectState:*,1..*]{|GetState():*,1..*;|SetState(*
 Class |ConcreteObserver,1..*[|observerState:*,1..*]{|Update():*,1..*}
 Association |Observers{|Subject,|Observer,1..*,0..0}
 Association |SubjectState{|ConcreteObserver,|ConcreteSubject,1..*,0..0}
-Generalization |SubjectGeneralization{|ConcreteSubject,|Subject}
-Generalization |ObserverGeneralization{|ConcreteObserver,|Observer}
+Generalization||Realization |SubjectGeneralization{|ConcreteSubject,|Subject}
+Generalization||Realization |ObserverGeneralization{|ConcreteObserver,|Observer}

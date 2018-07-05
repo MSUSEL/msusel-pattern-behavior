@@ -24,6 +24,7 @@
  */
 package com.derek.rbml;
 
+import com.derek.uml.Relationship;
 import lombok.Getter;
 
 import java.io.File;
@@ -41,6 +42,7 @@ public class SPS {
     private List<RelationshipRole> generalizationRoles;
     private List<RelationshipRole> dependencyRoles;
     private List<RelationshipRole> implementationRoles;
+    private List<RelationshipRole> implementationOrGeneralizationRoles;
 
     public SPS(String descriptorFileName) {
         classifierRoles = new ArrayList<>();
@@ -48,6 +50,7 @@ public class SPS {
         generalizationRoles = new ArrayList<>();
         dependencyRoles = new ArrayList<>();
         implementationRoles = new ArrayList<>();
+        implementationOrGeneralizationRoles = new ArrayList<>();
         parseRoles(descriptorFileName);
         buildRelationships();
     }
@@ -67,6 +70,9 @@ public class SPS {
         }
         for (RelationshipRole implementation : implementationRoles){
             implementation.buildConnectionStructure(classifierRoles);
+        }
+        for (RelationshipRole implementationOrGeneralization : implementationOrGeneralizationRoles){
+            implementationOrGeneralization.buildConnectionStructure(classifierRoles);
         }
     }
 
@@ -99,10 +105,13 @@ public class SPS {
             case "Dependency":
                 dependencyRoles.add(new RelationshipRole(lineDescription));
                 break;
-                //no implementation roles yet
-            case "Implementation":
+            case "Realization":
                 implementationRoles.add(new RelationshipRole(lineDescription));
                 break;
+            case "Generalization||Realization":
+                implementationOrGeneralizationRoles.add(new RelationshipRole(lineDescription));
+                break;
+
             default:
                 System.out.println("did not fine an rbml role for the input. Debug parseRoleType. But likely the input was messed up. (sps text file)");
                 System.exit(0);
@@ -125,6 +134,9 @@ public class SPS {
         for (RelationshipRole relationshipRole : implementationRoles){
             relationshipRole.printSummary();
         }
+        for (RelationshipRole relationshipRole : implementationOrGeneralizationRoles){
+            relationshipRole.printSummary();
+        }
     }
 
     public List<Role> getAllRoles(){
@@ -138,6 +150,7 @@ public class SPS {
         roles.addAll(generalizationRoles);
         roles.addAll(dependencyRoles);
         roles.addAll(implementationRoles);
+        roles.addAll(implementationOrGeneralizationRoles);
         return roles;
     }
 

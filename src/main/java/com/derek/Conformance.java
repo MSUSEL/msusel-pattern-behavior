@@ -93,58 +93,38 @@ public class Conformance {
 
     public List<RBMLMapping> mapRelationships(List<RBMLMapping> structuralMappings){
         List<RBMLMapping> relationshipMappings = new ArrayList<>();
-        List<RBMLMapping> associationMappings = mapAssociations(structuralMappings);
-        List<RBMLMapping> generalizationMappings = mapGeneralizations(structuralMappings);
-        List<RBMLMapping> dependencyMappings = mapDependencies(structuralMappings);
-        List<RBMLMapping> realizationMappings = mapRealizations(structuralMappings);
+        List<RBMLMapping> associationMappings = mapRelationships(structuralMappings, sps.getAssociationRoles(), Relationship.ASSOCIATION);
+        List<RBMLMapping> generalizationMappings = mapRelationships(structuralMappings, sps.getGeneralizationRoles(), Relationship.GENERALIZATION);
+        List<RBMLMapping> dependencyMappings = mapRelationships(structuralMappings, sps.getDependencyRoles(), Relationship.DEPENDENCY);
+        List<RBMLMapping> realizationMappings = mapRelationships(structuralMappings, sps.getImplementationRoles(), Relationship.REALIZATION);
+        List<RBMLMapping> realizationOrGeneralizationMappings = mapRelationships(structuralMappings, sps.getImplementationOrGeneralizationRoles(), Relationship.GENERALIZATION);
+       realizationOrGeneralizationMappings.addAll(mapRelationships(structuralMappings, sps.getImplementationOrGeneralizationRoles(), Relationship.REALIZATION));
 
         relationshipMappings.addAll(associationMappings);
         relationshipMappings.addAll(generalizationMappings);
         relationshipMappings.addAll(dependencyMappings);
         relationshipMappings.addAll(realizationMappings);
+        relationshipMappings.addAll(realizationOrGeneralizationMappings);
 
         return relationshipMappings;
     }
 
-    private List<RBMLMapping> mapGeneralizations(List<RBMLMapping> structuralMappings){
-        List<RBMLMapping> generalizationMappings = new ArrayList<>();
-        for (RelationshipRole generalizationRole : sps.getGeneralizationRoles()){
-            for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getAllClassifierModelBlocks()){
-                if (modelBlockPair.getKey().equals(generalizationRole.getConnection1().getKey().compareName())){
-                    //rbml association and uml class have same single endpoint. now we check other endpoint.
-                    StructuralRole nodeV = generalizationRole.getConnection1().getValue();
-                    RBMLMapping endpointMap = getMappingIfExists(structuralMappings, nodeV);
-                    if (endpointMap != null){
-                        //will be null if the role was not mapped in the first place.
-                        UMLClassifier mappedRoleEndpoint = (UMLClassifier)endpointMap.getMappedPair().getValue();
-                        if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).get().equals(Relationship.GENERALIZATION)){
-                            //omg. found a relationship mapping finally.
-                            //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
-                            generalizationMappings.add(new RBMLMapping(generalizationRole, new ImmutablePair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
-                        }
-                    }
-                }
-            }
-        }
-        return generalizationMappings;
-    }
-
-    private List<RBMLMapping> mapAssociations(List<RBMLMapping> structuralMappings){
+    private List<RBMLMapping> mapRelationships(List<RBMLMapping> structuralMappings, List<RelationshipRole> relationshipRoles, Relationship relationship){
         List<RBMLMapping> associationMappings = new ArrayList<>();
-        for (RelationshipRole associationRole : sps.getAssociationRoles()){
+        for (RelationshipRole relationshipRole : relationshipRoles){
             for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getAllClassifierModelBlocks()){
-                if (modelBlockPair.getKey().equals(associationRole.getConnection1().getKey().compareName())){
+                if (modelBlockPair.getKey().equals(relationshipRole.getConnection1().getKey().compareName())){
                     //rbml association and uml class have same single endpoint. now we check other endpoint.
-                    StructuralRole nodeV = associationRole.getConnection1().getValue();
+                    StructuralRole nodeV = relationshipRole.getConnection1().getValue();
                     RBMLMapping endpointMap = getMappingIfExists(structuralMappings, nodeV);
                     if (endpointMap != null){
                         //will be null if the role was not mapped in the first place.
                         UMLClassifier mappedRoleEndpoint = (UMLClassifier)endpointMap.getMappedPair().getValue();
                         if (umlClassDiagram.getClassDiagram().hasEdgeConnecting(modelBlockPair.getValue(), mappedRoleEndpoint)) {
-                            if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).get().equals(Relationship.ASSOCIATION)) {
+                            if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).get().equals(relationship)) {
                                 //omg. found a relationship mapping finally.
                                 //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
-                                associationMappings.add(new RBMLMapping(associationRole, new ImmutablePair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
+                                associationMappings.add(new RBMLMapping(relationshipRole, new ImmutablePair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
                             }
                         } else {
                             //I get here when a pattern class has a wildcard or generics definition AND the pattern4 tool does not properly
@@ -157,52 +137,6 @@ public class Conformance {
             }
         }
         return associationMappings;
-    }
-
-    private List<RBMLMapping> mapDependencies(List<RBMLMapping> structuralMappings){
-        List<RBMLMapping> dependencyMappings = new ArrayList<>();
-        for (RelationshipRole dependencyRole : sps.getDependencyRoles()){
-            for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getAllClassifierModelBlocks()){
-                if (modelBlockPair.getKey().equals(dependencyRole.getConnection1().getKey().compareName())){
-                    //rbml association and uml class have same single endpoint. now we check other endpoint.
-                    StructuralRole nodeV = dependencyRole.getConnection1().getValue();
-                    RBMLMapping endpointMap = getMappingIfExists(structuralMappings, nodeV);
-                    if (endpointMap != null){
-                        //will be null if the role was not mapped in the first place.
-                        UMLClassifier mappedRoleEndpoint = (UMLClassifier)endpointMap.getMappedPair().getValue();
-                        if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).get().equals(Relationship.DEPENDENCY)){
-                            //omg. found a relationship mapping finally.
-                            //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
-                            dependencyMappings.add(new RBMLMapping(dependencyRole, new ImmutablePair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
-                        }
-                    }
-                }
-            }
-        }
-        return dependencyMappings;
-    }
-
-    private List<RBMLMapping> mapRealizations(List<RBMLMapping> structuralMappings){
-        List<RBMLMapping> realizationMappings = new ArrayList<>();
-        for (RelationshipRole realizationRole : sps.getImplementationRoles()){
-            for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getAllClassifierModelBlocks()){
-                if (modelBlockPair.getKey().equals(realizationRole.getConnection1().getKey().compareName())){
-                    //rbml association and uml class have same single endpoint. now we check other endpoint.
-                    StructuralRole nodeV = realizationRole.getConnection1().getValue();
-                    RBMLMapping endpointMap = getMappingIfExists(structuralMappings, nodeV);
-                    if (endpointMap != null){
-                        //will be null if the role was not mapped in the first place.
-                        UMLClassifier mappedRoleEndpoint = (UMLClassifier)endpointMap.getMappedPair().getValue();
-                        if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).get().equals(Relationship.REALIZATION)){
-                            //omg. found a relationship mapping finally.
-                            //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
-                            realizationMappings.add(new RBMLMapping(realizationRole, new ImmutablePair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
-                        }
-                    }
-                }
-            }
-        }
-        return realizationMappings;
     }
 
     /***
