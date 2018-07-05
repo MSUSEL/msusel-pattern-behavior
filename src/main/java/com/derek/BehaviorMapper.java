@@ -4,6 +4,7 @@ import com.derek.rbml.IPS;
 import com.derek.rbml.InteractionRole;
 import com.derek.rbml.RBMLMapping;
 import com.derek.uml.CallTreeNode;
+import com.derek.uml.UMLClassifier;
 import com.derek.uml.UMLOperation;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -46,7 +47,7 @@ public class BehaviorMapper {
     }
 
     private InteractionRole mapInteractionRole(CallTreeNode callTreeNode){
-        //callTreeNode.printTree();
+        callTreeNode.printTree();
         for (InteractionRole interactionRole : ips.getInteractions()){
             switch(interactionRole.getRoleType()){
                 case STANDARD:
@@ -66,8 +67,23 @@ public class BehaviorMapper {
                     if (callTreeNode.getTagName().equals(interactionRole.getName())){
                         return interactionRole;
                     }
+                    //this code below does nothing.
+                case DECLARATION:
+                    //points at a type, which may or may not be part of the pattern
+                    for (RBMLMapping structuralMapping : structureMappings){
+                        if (structuralMapping.getUmlArtifact() instanceof UMLClassifier){
+                            UMLClassifier mappedArtifact = (UMLClassifier) structuralMapping.getUmlArtifact();
+                            if (callTreeNode.getName().equals(mappedArtifact.getName())) {
+                                System.out.println("found a match here for call tree nodes.");
+                                System.out.println(callTreeNode.getName() + "    " + mappedArtifact.getName());
+
+                            }
+                        }
+                    }
+
             }
         }
+        System.out.println();
         return null;
     }
 
