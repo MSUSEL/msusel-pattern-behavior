@@ -24,6 +24,7 @@
  */
 package com.derek.rbml;
 
+import com.derek.uml.UMLClassifier;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import lombok.Getter;
@@ -39,6 +40,17 @@ public class RBMLMapping<T> {
         this.role = role;
         this.umlArtifact = umlRole;
         this.mappedPair = new MutablePair<>(role, umlRole);
+    }
+
+    /***
+     * gets a uml classifier as correct type if the umlArtifact var is of type.
+     * @return
+     */
+    public UMLClassifier getUMLClassifierArtifact(){
+        if (umlArtifact instanceof UMLClassifier){
+            return (UMLClassifier) umlArtifact;
+        }
+        return null;
     }
 
     public void printSummary(){

@@ -24,6 +24,7 @@
  */
 package com.derek.uml.srcML;
 
+import com.derek.uml.CallTreeNode;
 import lombok.Getter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -34,6 +35,7 @@ import java.util.List;
 public class SrcMLSwitch extends SrcMLNode{
     private SrcMLCondition condition;
     private SrcMLBlock block;
+    private CallTreeNode<SrcMLNode> callTree;
 
     public SrcMLSwitch(Element switchEle) {
         super(switchEle);
@@ -41,6 +43,23 @@ public class SrcMLSwitch extends SrcMLNode{
     protected void parse(){
         condition = parseCondition();
         block = parseBlock();
+
+        callTree = new CallTreeNode<>(this, "conditional");
+        //pulling this directly from srcmlIf.
+        if (condition != null) {
+            //tricky situation here. So, every if has (at least one) condition statement, and the condition can be a
+            //call or not. However, typically the condition is placed in the guard during sequence diagram generation.
+            //if the condition is a call, I still care about its messages because they represent dependencies.
+            //so, I think im just going to avoid the guard. In the basic case, the condition will be a simple expression
+            //(not a call) and therefore will not show up anyway.
+            buildCallTree(callTree, condition.getExpression());
+        }
+        if (block != null) {
+            block.fillCallTree(callTree);
+        }
+    }
+    public String toString(){
+        return "{switch}";
     }
 
 }

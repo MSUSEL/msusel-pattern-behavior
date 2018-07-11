@@ -270,6 +270,9 @@ public class SrcMLBlock extends SrcMLNode{
                 case "elseif":
                     root.addChild(((SrcMLIf)node).getCallTree());
                     break;
+                case "switch":
+                    root.addChild(((SrcMLSwitch)node).getCallTree());
+                    break;
                 case "expr_stmt":
                     ((SrcMLExprStmt)node).fillCallTree(root);
                     break;

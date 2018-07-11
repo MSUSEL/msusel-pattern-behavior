@@ -189,12 +189,17 @@ public class Conformance {
     public List<RBMLMapping> mapBehavior(List<RBMLMapping> structureMappings){
         List<RBMLMapping> behaviorMappings = new ArrayList<>();
         for (OperationRole operationRole : getOperationsFromMappings(structureMappings)){
+            System.out.println(operationRole.getName());
             List<UMLOperation> umlOperations = getOperationsFromMapping(operationRole, structureMappings);
             for (UMLOperation mappedOperation : umlOperations) {
                 CallTreeNode<String> callTree = mappedOperation.getCallTreeString();
-                List<CallTreeNode<String>> callTreeAsList = callTree.convertMeToOrderedList();
-                BehaviorMapper behaviorMapper = new BehaviorMapper(ips, callTreeAsList, structureMappings);
-                //orderedListSubsetComparison(callTreeAsList, ips.getInteractions(), structureMappings);
+                //check for null call tree here - null call tree will happen if the mapped op is an abstract declaration.
+                //in this case, the method won't have any behavior, so I can literally just skip over it.
+                if (callTree != null) {
+                    List<CallTreeNode<String>> callTreeAsList = callTree.convertMeToOrderedList();
+                    BehaviorMapper behaviorMapper = new BehaviorMapper(ips, callTreeAsList, structureMappings);
+                    //orderedListSubsetComparison(callTreeAsList, ips.getInteractions(), structureMappings);
+                }
             }
         }
         return behaviorMappings;

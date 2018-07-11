@@ -1,5 +1,7 @@
 package com.derek;
 
+import lombok.Getter;
+
 import com.derek.rbml.IPS;
 import com.derek.rbml.InteractionRole;
 import com.derek.rbml.RBMLMapping;
@@ -12,17 +14,20 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class BehaviorMapper {
 
     private List<MutablePair<CallTreeNode, InteractionRole>> presenceMap;
     private IPS ips;
     private List<CallTreeNode<String>> callTreeAsList;
     private List<RBMLMapping> structureMappings;
+    private List<RBMLMapping> varMappings;
 
     public BehaviorMapper(IPS ips, List<CallTreeNode<String>> callTreeAsList, List<RBMLMapping> structureMappings){
         this.ips = ips;
         this.callTreeAsList = callTreeAsList;
         this.structureMappings = structureMappings;
+        this.varMappings = new ArrayList<>();
         buildStructure();
         pass1();
     }
@@ -47,18 +52,40 @@ public class BehaviorMapper {
     }
 
     private InteractionRole mapInteractionRole(CallTreeNode callTreeNode){
-        callTreeNode.printTree();
+        //System.out.println("Evaluating call tree node: " + callTreeNode.getName());
         for (InteractionRole interactionRole : ips.getInteractions()){
             switch(interactionRole.getRoleType()){
                 case STANDARD:
-                    for (RBMLMapping structureMapping : structureMappings){
-                        if (structureMapping.getRole().equals(interactionRole.getOperationRole())){
-                            //get the UMLClassifier representation of this interaction role.. because only structure
-                            //has been mapped to this point.
-                            UMLOperation mappedOperation = (UMLOperation)structureMapping.getUmlArtifact();
-                            String callTreeNameStripped = stripCallTreeName((String)callTreeNode.getName());
-                            if (callTreeNameStripped.equals(mappedOperation.getName())){
-                                return interactionRole;
+                    //I need to see if the call tree has a declaration.
+                    //two options - call as callTreeTag or decl
+                    if (callTreeNode.getTagName().equals("call") || callTreeNode.getTagName().equals("function")) {
+                        for (RBMLMapping structureMapping : structureMappings) {
+                            if (structureMapping.getRole().equals(interactionRole.getOperationRole())) {
+                                //get the UMLClassifier representation of this interaction role.. because only structure
+                                //has been mapped to this point.
+                                UMLOperation mappedOperation = (UMLOperation) structureMapping.getUmlArtifact();
+                                String callTreeNameStripped = stripCallTreeName((String) callTreeNode.getName());
+                                if (callTreeNameStripped.equals(mappedOperation.getName())) {
+                                    return interactionRole;
+                                }
+                            }
+                        }
+                    } else if (callTreeNode.getTagName().contains("decl{")){
+                        //call tree node has a decl
+                        String declType = callTreeNode.parseDeclTagName();
+                        for (RBMLMapping structureMapping : structureMappings){
+                            UMLClassifier toMatch = structureMapping.getUMLClassifierArtifact();
+                            if (toMatch != null) {
+                                if (toMatch.getName().equals(declType)) {
+                                    //found a match, from structural umlClassifier to call tree node decl.
+                                    //note this is just the call tree node decl, not any usages of it. I need to track the var name from teh
+                                    //call tree node to see if it is used again, and then match on calls coming from the var.
+                                    //e.g.: callTreeNode: <obs decl{WeatherObservr}>; next callTreeNode: <obs.update call>;
+                                    RBMLMapping varMapping = new RBMLMapping(structureMapping.getRole(), declType);
+                                    varMappings.add(varMapping);
+                                    //technically varMapping things are structural mappings, becuase they are variable declaration mappings.
+                                    //however, I ultimately need to check their calls, which would be behavioral mappings
+                                }
                             }
                         }
                     }
@@ -67,7 +94,8 @@ public class BehaviorMapper {
                     if (callTreeNode.getTagName().equals(interactionRole.getName())){
                         return interactionRole;
                     }
-                    //this code below does nothing.
+                    break;
+                    //this code below does nothing. (no declarations in ips)
                 case DECLARATION:
                     //points at a type, which may or may not be part of the pattern
                     for (RBMLMapping structuralMapping : structureMappings){
@@ -80,7 +108,6 @@ public class BehaviorMapper {
                             }
                         }
                     }
-
             }
         }
         System.out.println();

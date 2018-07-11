@@ -29,6 +29,8 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Getter
 public class CallTreeNode<T> {
@@ -76,6 +78,20 @@ public class CallTreeNode<T> {
             asList.addAll(child.convertMeToOrderedList());
         }
         return asList;
+    }
+
+    /***
+     * parses the type from a decl tag. Returns empty string if tag is not a decl
+     * @return
+     */
+    public String parseDeclTagName(){
+        if (this.tagName.contains("decl{")){
+            Pattern pattern = Pattern.compile("decl\\{(.+?)\\}");
+            Matcher matcher = pattern.matcher(this.tagName);
+            matcher.find();
+            return matcher.group(1);
+        }
+        return "";
     }
 
 }

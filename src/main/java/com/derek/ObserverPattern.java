@@ -36,10 +36,13 @@ import java.util.List;
 @Getter
 public class ObserverPattern extends PatternMapper {
 
+    //the 3 below are extracted from the pattern4 tool
     private Pair<String, UMLClassifier> observerClassifier;
     private Pair<String, UMLClassifier> subjectClassifier;
     private List<Pair<String, UMLOperation>> notifyOperations;
 
+    //these data structs are coalesced.
+    private List<Pair<String, UMLOperation>> updateOperations;
     private List<Pair<String, UMLClassifier>> observerFamily;
     private List<Pair<String, UMLClassifier>> subjectFamily;
 
@@ -67,8 +70,12 @@ public class ObserverPattern extends PatternMapper {
 
     private void coalescePattern(){
         //get families of subjects and observers
+        coalesceObservers();
+        coalesceSubjects();
+    }
+
+    private void coalesceObservers(){
         List<UMLClassifier> observerFamilyClassifiers = umlClassDiagram.getAllGeneralizationHierarchyChildren(observerClassifier.getRight());
-        List<UMLClassifier> subjectFamilyClassifiers = umlClassDiagram.getAllGeneralizationHierarchyChildren(subjectClassifier.getRight());
         observerFamily = new ArrayList<>();
         for (UMLClassifier observerFamilyClassifier : observerFamilyClassifiers){
             if (observerFamilyClassifier.getIdentifier().equals("class")){
@@ -78,6 +85,41 @@ public class ObserverPattern extends PatternMapper {
                 observerFamily.add(new ImmutablePair<>("Observer", observerFamilyClassifier));
             }
         }
+        coalesceUpdateOperation();
+    }
+
+    /***
+     * attempts to find and assign the update operation for all observers, if it exists.
+     */
+    private void coalesceUpdateOperation(){
+        updateOperations = new ArrayList<>();
+        //first use a string search to look for 'update' in observers.
+        for (Pair<String, UMLClassifier> observerPair : this.getAllObservers()) {
+            coalescenceStringSearch("Update", observerPair.getRight(), updateOperations);
+        }
+    }
+
+    /***
+     * basic and 'hit or miss' method of coalescing pattern operations. Performs a basic string search . Operations only!
+     * This method runs through an owning classifier and checks to see if the search string is a method name that exists.
+     * Does not check params or return vals.
+     *
+     * @param searchString search string
+     * @param owningClassifier owning classifier
+     * @param dataStruct pass by ref return value
+     */
+    private void coalescenceStringSearch(String searchString, UMLClassifier owningClassifier, List<Pair<String, UMLOperation>> dataStruct){
+        for (UMLOperation umlOperation : owningClassifier.getOperations()){
+            if (umlOperation.getName().equalsIgnoreCase(searchString)){
+                //match!
+                dataStruct.add(new ImmutablePair<>(searchString, umlOperation));
+            }
+        }
+    }
+
+
+    private void coalesceSubjects(){
+        List<UMLClassifier> subjectFamilyClassifiers = umlClassDiagram.getAllGeneralizationHierarchyChildren(subjectClassifier.getRight());
         subjectFamily = new ArrayList<>();
         for (UMLClassifier subjectFamilyClassifier : subjectFamilyClassifiers){
             if (subjectFamilyClassifier.getIdentifier().equals("class")){
@@ -87,6 +129,9 @@ public class ObserverPattern extends PatternMapper {
                 subjectFamily.add(new ImmutablePair<>("Subject", subjectFamilyClassifier));
             }
         }
+
+        //coalesceSetStateOperation();
+        //coalesceGetStateOperation();
     }
 
     @Override
@@ -125,12 +170,22 @@ public class ObserverPattern extends PatternMapper {
 
     @Override
     public List<Pair<String, UMLOperation>> getOperationModelBlocks() {
-        return notifyOperations;
+        List<Pair<String, UMLOperation>> toRet = new ArrayList<>();
+        toRet.addAll(notifyOperations);
+        toRet.addAll(updateOperations);
+        return toRet;
     }
 
     @Override
     public List<Pair<String, UMLAttribute>> getAttributeModelBlocks() {
         return new ArrayList<>();
+    }
+
+    public List<Pair<String, UMLClassifier>> getAllObservers(){
+        List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
+        toRet.add(observerClassifier);
+        toRet.addAll(observerFamily);
+        return toRet;
     }
 
     @Override
