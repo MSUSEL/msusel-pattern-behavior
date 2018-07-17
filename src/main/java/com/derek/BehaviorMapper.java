@@ -52,7 +52,6 @@ public class BehaviorMapper {
     }
 
     private InteractionRole mapInteractionRole(CallTreeNode callTreeNode){
-        //System.out.println("Evaluating call tree node: " + callTreeNode.getName());
         for (InteractionRole interactionRole : ips.getInteractions()){
             switch(interactionRole.getRoleType()){
                 case STANDARD:

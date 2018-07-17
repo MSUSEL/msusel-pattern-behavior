@@ -89,7 +89,7 @@ public class MetricSuite {
     }
 
     private void calcNumParticipatingClasses(){
-        numParticipatingClasses = patternMapper.getClassifierModelBlocks().size();
+        numParticipatingClasses = patternMapper.getAllParticipatingClasses().size();
     }
 
     private void calcNumConformingRoles(){

@@ -43,6 +43,8 @@ public class ObserverPattern extends PatternMapper {
 
     //these data structs are coalesced.
     private List<Pair<String, UMLOperation>> updateOperations;
+    private List<Pair<String, UMLOperation>> getStateOperations;
+    private List<Pair<String, UMLOperation>> setStateOperations;
     private List<Pair<String, UMLClassifier>> observerFamily;
     private List<Pair<String, UMLClassifier>> subjectFamily;
 
@@ -130,8 +132,26 @@ public class ObserverPattern extends PatternMapper {
             }
         }
 
-        //coalesceSetStateOperation();
-        //coalesceGetStateOperation();
+        coalesceGetStateOperation();
+        coalesceSetStateOperation();
+        System.out.println("getstate: " + getStateOperations.size());
+        System.out.println("setstate: " + setStateOperations.size());
+    }
+
+    private void coalesceGetStateOperation(){
+        getStateOperations = new ArrayList<>();
+        //first use a string search to look for 'update' in observers.
+        for (Pair<String, UMLClassifier> subjectPair : this.getAllSubjects()) {
+            coalescenceStringSearch("GetState", subjectPair.getRight(), getStateOperations);
+        }
+    }
+
+    private void coalesceSetStateOperation(){
+        setStateOperations = new ArrayList<>();
+        //first use a string search to look for 'update' in observers.
+        for (Pair<String, UMLClassifier> subjectPair : this.getAllSubjects()) {
+            coalescenceStringSearch("SetState", subjectPair.getRight(), setStateOperations);
+        }
     }
 
     @Override
@@ -150,6 +170,14 @@ public class ObserverPattern extends PatternMapper {
         return modelBlocks;
     }
 
+    /***
+     * get classifier model blocks only returns the pattern classes that match to a classifier role. (not a class role).
+     * I might need to chagne this in the future because class roles are technically children of classifier roles..
+     * Meaning my implementation makes sense from an RBML perspective of how I have implemented spses and ipses,
+     * but not from a uml meta-model perspective
+     *
+     * @return
+     */
     @Override
     public List<Pair<String, UMLClassifier>> getClassifierModelBlocks() {
         List<Pair<String, UMLClassifier>> modelBlocks = new ArrayList<>();
@@ -173,6 +201,8 @@ public class ObserverPattern extends PatternMapper {
         List<Pair<String, UMLOperation>> toRet = new ArrayList<>();
         toRet.addAll(notifyOperations);
         toRet.addAll(updateOperations);
+        toRet.addAll(getStateOperations);
+        toRet.addAll(setStateOperations);
         return toRet;
     }
 
@@ -188,6 +218,13 @@ public class ObserverPattern extends PatternMapper {
         return toRet;
     }
 
+    public List<Pair<String, UMLClassifier>> getAllSubjects(){
+        List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
+        toRet.add(subjectClassifier);
+        toRet.addAll(subjectFamily);
+        return toRet;
+    }
+
     @Override
     public void printSummary() {
         System.out.println("Subject role: " + subjectClassifier.getValue().getName());
@@ -195,5 +232,12 @@ public class ObserverPattern extends PatternMapper {
         for (Pair<String, UMLOperation> op : notifyOperations){
             System.out.println("Notify() role (operation): " + op.getValue().getName());
         }
+    }
+
+    public List<Pair<String, UMLClassifier>> getAllParticipatingClasses(){
+        List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
+        toRet.addAll(getAllObservers());
+        toRet.addAll(getAllSubjects());
+        return toRet;
     }
 }

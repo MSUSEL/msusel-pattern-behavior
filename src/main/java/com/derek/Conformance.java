@@ -191,7 +191,6 @@ public class Conformance {
     public List<RBMLMapping> mapBehavior(List<RBMLMapping> structureMappings){
         List<RBMLMapping> behaviorMappings = new ArrayList<>();
         for (OperationRole operationRole : getOperationsFromMappings(structureMappings)){
-            System.out.println(operationRole.getName());
             List<UMLOperation> umlOperations = getOperationsFromMapping(operationRole, structureMappings);
             for (UMLOperation mappedOperation : umlOperations) {
                 CallTreeNode<String> callTree = mappedOperation.getCallTreeString();

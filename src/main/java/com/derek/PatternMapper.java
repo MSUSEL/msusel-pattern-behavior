@@ -239,10 +239,15 @@ public abstract class PatternMapper {
         return nameRemoved;
     }
 
+    /***
+     * gets only classifier conforming classes (usualyl abstract, not concrete)
+     * @return
+     */
     public abstract List<Pair<String, UMLClassifier>> getClassifierModelBlocks();
     public abstract List<Pair<String, UMLClassifier>> getClassModelBlocks();
     public abstract List<Pair<String, UMLOperation>> getOperationModelBlocks();
     public abstract List<Pair<String, UMLAttribute>> getAttributeModelBlocks();
+    public abstract List<Pair<String, UMLClassifier>> getAllParticipatingClasses();
 
     public List<Pair<String, UMLClassifier>> getAllClassifierModelBlocks(){
         List<Pair<String, UMLClassifier>> blocks = new ArrayList<>();
