@@ -68,22 +68,24 @@ public class Conformance {
                 if (modelBlockPair.getKey().equals(strRole.compareName())) {
                     //classifier match found
                     structuralMappings.add(new RBMLMapping(strRole, modelBlockPair.getValue()));
-                }
-            }
-            for (AttributeRole attributeRole : strRole.getAttributes()) {
-                for (Pair<String, UMLAttribute> attributePairBlock : patternInstance.getAttributeModelBlocks()) {
-                    if (attributePairBlock.getKey().equals(attributeRole.compareName())) {
-                        //attribute match found!
-                        structuralMappings.add(new RBMLMapping(attributeRole, attributePairBlock.getValue()));
+                    //attempt to match attributes
+                    for (AttributeRole attributeRole : strRole.getAttributes()){
+                        for (Pair<String, UMLAttribute> attributeModelBlockPair : patternInstance.getAttributeModelBlocks()){
+                            if (modelBlockPair.getValue().getAttributes().contains(attributeModelBlockPair.getValue())) {
+                                if (attributeModelBlockPair.getKey().equals(attributeRole.compareName())) {
+                                    structuralMappings.add(new RBMLMapping(attributeRole, attributeModelBlockPair.getValue()));
+                                }
+                            }
+                        }
                     }
-                }
-            }
-            for (OperationRole operationRole : strRole.getOperations()){
-                for (Pair<String, UMLOperation> operationPairBlock : patternInstance.getOperationModelBlocks()) {
-                    if (operationPairBlock.getKey().equals(operationRole.compareName())) {
-                        //operation match found!
-                        RBMLMapping mapping = new RBMLMapping(operationRole, operationPairBlock.getValue());
-                        structuralMappings.add(mapping);
+                    for (OperationRole operationRole : strRole.getOperations()){
+                        for (Pair<String, UMLOperation> operationModelBlockPair : patternInstance.getOperationModelBlocks()){
+                            if (modelBlockPair.getValue().getOperations().contains(operationModelBlockPair.getValue())) {
+                                if (operationModelBlockPair.getKey().equals(operationRole.compareName())) {
+                                    structuralMappings.add(new RBMLMapping(operationRole, operationModelBlockPair.getValue()));
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -98,7 +100,7 @@ public class Conformance {
         List<RBMLMapping> dependencyMappings = mapRelationships(structuralMappings, sps.getDependencyRoles(), Relationship.DEPENDENCY);
         List<RBMLMapping> realizationMappings = mapRelationships(structuralMappings, sps.getImplementationRoles(), Relationship.REALIZATION);
         List<RBMLMapping> realizationOrGeneralizationMappings = mapRelationships(structuralMappings, sps.getImplementationOrGeneralizationRoles(), Relationship.GENERALIZATION);
-       realizationOrGeneralizationMappings.addAll(mapRelationships(structuralMappings, sps.getImplementationOrGeneralizationRoles(), Relationship.REALIZATION));
+        realizationOrGeneralizationMappings.addAll(mapRelationships(structuralMappings, sps.getImplementationOrGeneralizationRoles(), Relationship.REALIZATION));
 
         relationshipMappings.addAll(associationMappings);
         relationshipMappings.addAll(generalizationMappings);

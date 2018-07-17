@@ -110,7 +110,6 @@ public class BehaviorMapper {
                     }
             }
         }
-        System.out.println();
         return null;
     }
 
