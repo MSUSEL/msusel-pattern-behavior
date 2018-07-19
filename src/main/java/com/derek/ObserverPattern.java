@@ -74,6 +74,11 @@ public class ObserverPattern extends PatternMapper {
         //get families of subjects and observers
         coalesceObservers();
         coalesceSubjects();
+        //I need to coalesce the methods AFTER I do the classes. This is because the process of coalescing methods involves
+        //iterating through all the classes.
+        coalesceUpdateOperation();
+        coalesceGetStateOperation();
+        coalesceSetStateOperation();
     }
 
     private void coalesceObservers(){
@@ -87,7 +92,6 @@ public class ObserverPattern extends PatternMapper {
                 observerFamily.add(new ImmutablePair<>("Observer", observerFamilyClassifier));
             }
         }
-        coalesceUpdateOperation();
     }
 
     /***
@@ -99,26 +103,20 @@ public class ObserverPattern extends PatternMapper {
         for (Pair<String, UMLClassifier> observerPair : this.getAllObservers()) {
             coalescenceStringSearch("Update", observerPair.getRight(), updateOperations);
         }
-    }
+        //second pass for update coalescence will be looking for (1) declarations of variables within a subject
+        //that make calls to any observers. There is a chance this could be grime, and also a chance it is the correct update operation.
+        //though I am doing grime checks later.. so I don't think it matters at this point.
+        for (Pair<String, UMLClassifier> subject : this.getAllSubjects()){
+            for (Pair<String, UMLClassifier> observer : this.getAllObservers()) {
+                List<UMLAttribute> classAtts = coalescerUtility.getInterPatternAttributes(subject.getRight(), observer.getRight());
+                //classAtts at this point are all class level associations from subject -> observer
+                for (UMLOperation operation : subject.getRight().getOperations()){
+                    List<String> methodVars = coalescerUtility.getInterMethodPatternAttriubtes(operation.getCallTreeString().convertMeToOrderedList(), observer.getRight());
 
-    /***
-     * basic and 'hit or miss' method of coalescing pattern operations. Performs a basic string search . Operations only!
-     * This method runs through an owning classifier and checks to see if the search string is a method name that exists.
-     * Does not check params or return vals.
-     *
-     * @param searchString search string
-     * @param owningClassifier owning classifier
-     * @param dataStruct pass by ref return value
-     */
-    private void coalescenceStringSearch(String searchString, UMLClassifier owningClassifier, List<Pair<String, UMLOperation>> dataStruct){
-        for (UMLOperation umlOperation : owningClassifier.getOperations()){
-            if (umlOperation.getName().equalsIgnoreCase(searchString)){
-                //match!
-                dataStruct.add(new ImmutablePair<>(searchString, umlOperation));
+                }
             }
         }
     }
-
 
     private void coalesceSubjects(){
         List<UMLClassifier> subjectFamilyClassifiers = umlClassDiagram.getAllGeneralizationHierarchyChildren(subjectClassifier.getRight());
@@ -132,10 +130,6 @@ public class ObserverPattern extends PatternMapper {
             }
         }
 
-        coalesceGetStateOperation();
-        coalesceSetStateOperation();
-        System.out.println("getstate: " + getStateOperations.size());
-        System.out.println("setstate: " + setStateOperations.size());
     }
 
     private void coalesceGetStateOperation(){

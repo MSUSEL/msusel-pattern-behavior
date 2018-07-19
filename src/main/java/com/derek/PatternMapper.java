@@ -38,10 +38,12 @@ public abstract class PatternMapper {
 
     protected PatternInstance pi;
     protected UMLClassDiagram umlClassDiagram;
+    protected CoalescerUtility coalescerUtility;
 
     public PatternMapper(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         this.pi = pi;
         this.umlClassDiagram = umlClassDiagram;
+        coalescerUtility = new CoalescerUtility();
         this.mapToUML();
     }
 
@@ -309,4 +311,21 @@ public abstract class PatternMapper {
         return tagName.replace("decl{", "").replace("}","");
     }
 
+    /***
+     * basic and 'hit or miss' method of coalescing pattern operations. Performs a basic string search . Operations only!
+     * This method runs through an owning classifier and checks to see if the search string is a method name that exists.
+     * Does not check params or return vals.
+     *
+     * @param searchString search string
+     * @param owningClassifier owning classifier
+     * @param dataStruct pass by ref return value
+     */
+    protected void coalescenceStringSearch(String searchString, UMLClassifier owningClassifier, List<Pair<String, UMLOperation>> dataStruct){
+        for (UMLOperation umlOperation : owningClassifier.getOperations()){
+            if (umlOperation.getName().equalsIgnoreCase(searchString)){
+                //match!
+                dataStruct.add(new ImmutablePair<>(searchString, umlOperation));
+            }
+        }
+    }
 }
