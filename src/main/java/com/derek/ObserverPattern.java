@@ -121,22 +121,23 @@ public class ObserverPattern extends PatternMapper {
                             if (node.isCall()){
                                 if (s.equals(node.parseVarNameFromCall())){
                                     //found a match. this call tree node is an update op, or at least is a relationship from subj -> obs
-                                    System.out.println("ADding update op");
                                     //need to find correct operation from observers.
                                     UMLOperation correctOp = connectOperation(node.parseCallNameFromCall(), observerFamily);
-                                    updateOperations.add(new ImmutablePair<>("Update", correctOp));
+                                    if (correctOp != null){
+                                        //might be null if we find a relationship between roles that isn't the one we are looking for.
+                                        updateOperations.add(new ImmutablePair<>("Update", correctOp));
+                                    }
                                 }
                             }
                         }
                         for (UMLAttribute umlAttribute : classAtts){
                             if (node.isCall()){
                                 if (umlAttribute.getName().equals(node.parseVarNameFromCall())){
-                                    System.out.println("trying to match " + umlAttribute.getName() + " to " + node.parseVarNameFromCall());
                                     UMLOperation correctOp = connectOperation(node.parseCallNameFromCall(), observerFamily);
                                     if (correctOp != null){
-                                        //might be null if
+                                        //might be null if we find a relationship between roles that isn't the one we are looking for.
+                                        updateOperations.add(new ImmutablePair<>("Update", correctOp));
                                     }
-                                    updateOperations.add(new ImmutablePair<>("Update", correctOp));
                                 }
                             }
                         }

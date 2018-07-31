@@ -78,12 +78,14 @@ public class Conformance {
                             }
                         }
                     }
-                    for (OperationRole operationRole : strRole.getOperations()){
-                        for (Pair<String, UMLOperation> operationModelBlockPair : patternInstance.getOperationModelBlocks()){
-                            if (modelBlockPair.getValue().getOperations().contains(operationModelBlockPair.getValue())) {
-                                if (operationModelBlockPair.getKey().equals(operationRole.compareName())) {
-                                    structuralMappings.add(new RBMLMapping(operationRole, operationModelBlockPair.getValue()));
-                                }
+                }
+                //moving operation mappings out of classifier check because operations can be mapped to more than 1 classifier
+                //especially in inheritance hierarchy situations.
+                for (OperationRole operationRole : strRole.getOperations()){
+                    for (Pair<String, UMLOperation> operationModelBlockPair : patternInstance.getOperationModelBlocks()){
+                        if (modelBlockPair.getValue().getOperations().contains(operationModelBlockPair.getValue())) {
+                            if (operationModelBlockPair.getKey().equals(operationRole.compareName())) {
+                                structuralMappings.add(new RBMLMapping(operationRole, operationModelBlockPair.getValue()));
                             }
                         }
                     }

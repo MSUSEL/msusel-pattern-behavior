@@ -343,9 +343,7 @@ public abstract class PatternMapper {
                 }
             }
         }
-        System.out.println("Could not match umloperation to string input: " + operationCallName + " , in connectOperation");
-        System.out.println("Exiting");
-        System.exit(0);
+
         return null;
     }
 }

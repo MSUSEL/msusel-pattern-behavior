@@ -1,5 +1,5 @@
 Classifier |Subject,1..*[]{|Attach(|Observer):*,1..1;|Detach(|Observer):*,1..1;|Notify():*,1..1;|GetState():*,1..*;|SetState(*):*,1..*}
-Classifier |Observer,1..*[]{|Update():*,1..1}
+Classifier |Observer,1..*[]{|Update():*,1..*}
 Class |ConcreteSubject,1..*[|subjectState:*,1..*]{}
 Class |ConcreteObserver,1..*[|observerState:*,1..*]{|Update():*,1..*}
 Association |Observers{|Subject,|Observer,1..*,0..0}
