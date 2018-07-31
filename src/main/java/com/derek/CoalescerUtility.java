@@ -38,7 +38,7 @@ public class CoalescerUtility {
             if (node.getTagName().contains("decl{")){
                 String declType = node.parseDeclTagName();
                 if (declType.equals(secondRole.getName())){
-                    types.add(declType);
+                    types.add(node.getName());
                 }
             }
         }

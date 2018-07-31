@@ -328,4 +328,24 @@ public abstract class PatternMapper {
             }
         }
     }
+
+    /***
+     * this method iterates through the candidate classes and returns the UMLOperation version of the operationCallName.
+     * @param operationCallName
+     * @param candidateClasses
+     * @return
+     */
+    protected UMLOperation connectOperation(String operationCallName, List<Pair<String, UMLClassifier>> candidateClasses){
+        for (Pair<String, UMLClassifier> candidateClass : candidateClasses){
+            for (UMLOperation umlOperation : candidateClass.getRight().getOperations()){
+                if (umlOperation.getName().equals(operationCallName)){
+                    return umlOperation;
+                }
+            }
+        }
+        System.out.println("Could not match umloperation to string input: " + operationCallName + " , in connectOperation");
+        System.out.println("Exiting");
+        System.exit(0);
+        return null;
+    }
 }

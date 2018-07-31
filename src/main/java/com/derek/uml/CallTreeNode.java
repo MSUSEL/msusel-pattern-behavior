@@ -94,4 +94,23 @@ public class CallTreeNode<T> {
         return "";
     }
 
+    public boolean isCall(){
+        if (this.getTagName().equals("call")){
+            return true;
+        }
+        return false;
+    }
+
+    public String parseVarNameFromCall(){
+        String nameConverter = name.toString();
+        String[] splitter = nameConverter.split("\\.");
+        return splitter[0];
+    }
+
+    public String parseCallNameFromCall(){
+        String nameConverter = name.toString();
+        String[] splitter = nameConverter.split("\\.");
+        return splitter[1];
+    }
+
 }

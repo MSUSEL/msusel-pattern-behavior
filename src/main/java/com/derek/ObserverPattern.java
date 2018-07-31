@@ -100,9 +100,9 @@ public class ObserverPattern extends PatternMapper {
     private void coalesceUpdateOperation(){
         updateOperations = new ArrayList<>();
         //first use a string search to look for 'update' in observers.
-        for (Pair<String, UMLClassifier> observerPair : this.getAllObservers()) {
-            coalescenceStringSearch("Update", observerPair.getRight(), updateOperations);
-        }
+//        for (Pair<String, UMLClassifier> observerPair : this.getAllObservers()) {
+//            coalescenceStringSearch("Update", observerPair.getRight(), updateOperations);
+//        }
         //second pass for update coalescence will be looking for (1) declarations of variables within a subject
         //that make calls to any observers. There is a chance this could be grime, and also a chance it is the correct update operation.
         //though I am doing grime checks later.. so I don't think it matters at this point.
@@ -111,8 +111,36 @@ public class ObserverPattern extends PatternMapper {
                 List<UMLAttribute> classAtts = coalescerUtility.getInterPatternAttributes(subject.getRight(), observer.getRight());
                 //classAtts at this point are all class level associations from subject -> observer
                 for (UMLOperation operation : subject.getRight().getOperations()){
-                    List<String> methodVars = coalescerUtility.getInterMethodPatternAttriubtes(operation.getCallTreeString().convertMeToOrderedList(), observer.getRight());
-
+                    List<String> tempVars = coalescerUtility.getInterMethodPatternAttriubtes(operation.getCallTreeString().convertMeToOrderedList(), observer.getRight());
+                    //at this point I have all class lvl variables (classAtts), and all temporary or method lvl vars (tempVars).
+                    //I need to iterate through the call tree of operation and see if the vars are ever used (ie., call tag in call tree)
+                    //if it is ever used, I need to assign presence. (or update op)
+                    for (CallTreeNode<String> node : operation.getCallTreeString().convertMeToOrderedList()){
+                        //need to look through temp vars first
+                        for (String s : tempVars){
+                            if (node.isCall()){
+                                if (s.equals(node.parseVarNameFromCall())){
+                                    //found a match. this call tree node is an update op, or at least is a relationship from subj -> obs
+                                    System.out.println("ADding update op");
+                                    //need to find correct operation from observers.
+                                    UMLOperation correctOp = connectOperation(node.parseCallNameFromCall(), observerFamily);
+                                    updateOperations.add(new ImmutablePair<>("Update", correctOp));
+                                }
+                            }
+                        }
+                        for (UMLAttribute umlAttribute : classAtts){
+                            if (node.isCall()){
+                                if (umlAttribute.getName().equals(node.parseVarNameFromCall())){
+                                    System.out.println("trying to match " + umlAttribute.getName() + " to " + node.parseVarNameFromCall());
+                                    UMLOperation correctOp = connectOperation(node.parseCallNameFromCall(), observerFamily);
+                                    if (correctOp != null){
+                                        //might be null if
+                                    }
+                                    updateOperations.add(new ImmutablePair<>("Update", correctOp));
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
