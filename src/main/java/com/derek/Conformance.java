@@ -86,8 +86,6 @@ public class Conformance {
                     for (Pair<String, UMLOperation> operationModelBlockPair : patternInstance.getOperationModelBlocks()){
                         if (modelBlockPair.getValue().getOperations().contains(operationModelBlockPair.getValue())) {
                             if (operationModelBlockPair.getKey().equals(operationRole.compareName())) {
-                                System.out.println(operationModelBlockPair.getRight() + "  is operation");
-                                System.out.println(operationRole.getName() + "  is role");
                                 structuralMappings.add(new RBMLMapping(operationRole, operationModelBlockPair.getValue()));
                             }
                         }
@@ -119,7 +117,7 @@ public class Conformance {
     private List<RBMLMapping> mapRelationships(List<RBMLMapping> structuralMappings, List<RelationshipRole> relationshipRoles, Relationship relationship){
         List<RBMLMapping> associationMappings = new ArrayList<>();
         for (RelationshipRole relationshipRole : relationshipRoles){
-            for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getAllClassifierModelBlocks()){
+            for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getAllParticipatingClasses()){
                 if (modelBlockPair.getKey().equals(relationshipRole.getConnection1().getKey().compareName())){
                     //rbml association and uml class have same single endpoint. now we check other endpoint.
                     StructuralRole nodeV = relationshipRole.getConnection1().getValue();

@@ -100,9 +100,9 @@ public class ObserverPattern extends PatternMapper {
     private void coalesceUpdateOperation(){
         updateOperations = new ArrayList<>();
         //first use a string search to look for 'update' in observers.
-//        for (Pair<String, UMLClassifier> observerPair : this.getAllObservers()) {
-//            coalescenceStringSearch("Update", observerPair.getRight(), updateOperations);
-//        }
+        for (Pair<String, UMLClassifier> observerPair : this.getAllObservers()) {
+            coalescenceStringSearch("Update", observerPair.getRight(), updateOperations);
+        }
         //second pass for update coalescence will be looking for (1) declarations of variables within a subject
         //that make calls to any observers. There is a chance this could be grime, and also a chance it is the correct update operation.
         //though I am doing grime checks later.. so I don't think it matters at this point.

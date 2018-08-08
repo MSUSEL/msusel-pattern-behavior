@@ -1,0 +1,4 @@
+SPS assumptions
+
+
+Main role classes (Observer, Subject, etc) should at least have an abstract form. If not they are NOT extendable. Even if in the future they are extended via creating a new concrete class and extending the current class, that still means the class being extended needs to be extended and certain design assumptions did not hold true for that class being extended. Design patterns are about maintainability and extendability, NOT functional performance, though functional performance is assumed.
