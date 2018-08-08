@@ -99,10 +99,11 @@ public class ObserverPattern extends PatternMapper {
      */
     private void coalesceUpdateOperation(){
         updateOperations = new ArrayList<>();
-        //first use a string search to look for 'update' in observers.
-        for (Pair<String, UMLClassifier> observerPair : this.getAllObservers()) {
-            coalescenceStringSearch("Update", observerPair.getRight(), updateOperations);
-        }
+        //first use a string search to look for 'update' in observers. addAll to first one, will add others as they appear.
+        updateOperations.addAll(stringSearchCoalesce());
+
+        //consider refactoring this below to a separate method.
+
         //second pass for update coalescence will be looking for (1) declarations of variables within a subject
         //that make calls to any observers. There is a chance this could be grime, and also a chance it is the correct update operation.
         //though I am doing grime checks later.. so I don't think it matters at this point.
@@ -145,6 +146,18 @@ public class ObserverPattern extends PatternMapper {
                 }
             }
         }
+    }
+
+    /***
+     * tries to find update operations based on string search. plain and simple. Actually, the string search is based on 'equals', not 'contains'.
+     * @return
+     */
+    private List<Pair<String, UMLOperation>> stringSearchCoalesce(){
+        List<Pair<String, UMLOperation>> stringSearchUpdates = new ArrayList<>();
+        for (Pair<String, UMLClassifier> observerPair : this.getAllObservers()) {
+            coalescenceStringSearch("Update", observerPair.getRight(), stringSearchUpdates);
+        }
+        return stringSearchUpdates;
     }
 
     private void coalesceSubjects(){
