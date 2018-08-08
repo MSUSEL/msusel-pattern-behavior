@@ -64,7 +64,7 @@ public class Conformance {
     public List<RBMLMapping> mapStructuralComponents(){
         List<RBMLMapping> structuralMappings = new ArrayList<>();
         for (StructuralRole strRole : sps.getClassifierRoles()) {
-            for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getAllClassifierModelBlocks()) {
+            for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getAllParticipatingClasses()) {
                 if (modelBlockPair.getKey().equals(strRole.compareName())) {
                     //classifier match found
                     structuralMappings.add(new RBMLMapping(strRole, modelBlockPair.getValue()));
@@ -81,10 +81,13 @@ public class Conformance {
                 }
                 //moving operation mappings out of classifier check because operations can be mapped to more than 1 classifier
                 //especially in inheritance hierarchy situations.
+                //there is still a bug here tho.. only 1 operation object is getting mapped.
                 for (OperationRole operationRole : strRole.getOperations()){
                     for (Pair<String, UMLOperation> operationModelBlockPair : patternInstance.getOperationModelBlocks()){
                         if (modelBlockPair.getValue().getOperations().contains(operationModelBlockPair.getValue())) {
                             if (operationModelBlockPair.getKey().equals(operationRole.compareName())) {
+                                System.out.println(operationModelBlockPair.getRight() + "  is operation");
+                                System.out.println(operationRole.getName() + "  is role");
                                 structuralMappings.add(new RBMLMapping(operationRole, operationModelBlockPair.getValue()));
                             }
                         }
