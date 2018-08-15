@@ -102,8 +102,13 @@ public class ObserverPattern extends PatternMapper {
         //first use a string search to look for 'update' in observers. addAll to first one, will add others as they appear.
         updateOperations.addAll(stringSearchCoalesce());
 
-        //consider refactoring this below to a separate method.
+        //this coalescence method is still buggy, so I'm relying on string search. Also, the coalescence method below is
+        //ambiguous and requires several assumptions.
+        //updateOperations.addAll(coalesceUpdateFromVariables());
+    }
 
+    private List<Pair<String, UMLOperation>> coalesceUpdateFromVariables(){
+        List<Pair<String, UMLOperation>> updateOps = new ArrayList<>();
         //second pass for update coalescence will be looking for (1) declarations of variables within a subject
         //that make calls to any observers. There is a chance this could be grime, and also a chance it is the correct update operation.
         //though I am doing grime checks later.. so I don't think it matters at this point.
@@ -126,7 +131,7 @@ public class ObserverPattern extends PatternMapper {
                                     UMLOperation correctOp = connectOperation(node.parseCallNameFromCall(), observerFamily);
                                     if (correctOp != null){
                                         //might be null if we find a relationship between roles that isn't the one we are looking for.
-                                        updateOperations.add(new ImmutablePair<>("Update", correctOp));
+                                        updateOps.add(new ImmutablePair<>("Update", correctOp));
                                     }
                                 }
                             }
@@ -137,7 +142,7 @@ public class ObserverPattern extends PatternMapper {
                                     UMLOperation correctOp = connectOperation(node.parseCallNameFromCall(), observerFamily);
                                     if (correctOp != null){
                                         //might be null if we find a relationship between roles that isn't the one we are looking for.
-                                        updateOperations.add(new ImmutablePair<>("Update", correctOp));
+                                        updateOps.add(new ImmutablePair<>("Update", correctOp));
                                     }
                                 }
                             }
@@ -146,6 +151,7 @@ public class ObserverPattern extends PatternMapper {
                 }
             }
         }
+        return updateOps;
     }
 
     /***

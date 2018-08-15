@@ -27,6 +27,7 @@ package com.derek;
 import com.derek.model.patterns.PatternInstance;
 import com.derek.uml.*;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -322,7 +323,7 @@ public abstract class PatternMapper {
      */
     protected void coalescenceStringSearch(String searchString, UMLClassifier owningClassifier, List<Pair<String, UMLOperation>> dataStruct){
         for (UMLOperation umlOperation : owningClassifier.getOperations()){
-            if (umlOperation.getName().equalsIgnoreCase(searchString)){
+            if (StringUtils.containsIgnoreCase(umlOperation.getName(), searchString)){
                 //match!
                 dataStruct.add(new ImmutablePair<>(searchString, umlOperation));
             }

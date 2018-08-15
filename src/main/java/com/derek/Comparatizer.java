@@ -160,9 +160,9 @@ public class Comparatizer {
 //        for (RBMLMapping rbmlMapping : rbmlBehaviorMappings){
 //            rbmlMapping.printSummary();
 //        }
-        for (RBMLMapping rbmlMapping : rbmlStructureMappings){
-            rbmlMapping.printSummary();
-        }
+//        for (RBMLMapping rbmlMapping : rbmlStructureMappings){
+//            rbmlMapping.printSummary();
+//        }
 
 
         outputRoles(sps, rbmlStructureMappings, patternMapper);
