@@ -31,8 +31,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.*;
 
 @Getter
 public abstract class PatternMapper {
@@ -41,10 +42,13 @@ public abstract class PatternMapper {
     protected UMLClassDiagram umlClassDiagram;
     protected CoalescerUtility coalescerUtility;
 
+    protected Map<String, List<String>> patternCommonNames;
+
     public PatternMapper(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         this.pi = pi;
         this.umlClassDiagram = umlClassDiagram;
         coalescerUtility = new CoalescerUtility();
+        this.parsePatternCommonNames();
         this.mapToUML();
     }
 
@@ -259,6 +263,26 @@ public abstract class PatternMapper {
         return blocks;
     }
 
+    protected void parsePatternCommonNames(){
+        patternCommonNames = new HashMap<>();
+        try{
+            File f = new File(Main.patternCommonNames + this.getPatternCommonNamesFileName());
+            Scanner in = new Scanner(f);
+            while(in.hasNext()){
+                String line = in.nextLine();
+                String key = line.split(":")[0];
+                String[] values = (line.split(":")[1]).split(",");
+                patternCommonNames.put(key, Arrays.asList(values));
+            }
+        }catch(FileNotFoundException e){
+            System.out.println("Unable to parse common names file. Exiting");
+            e.printStackTrace();
+            System.exit(0);
+        }
+    }
+
+    protected abstract String getPatternCommonNamesFileName();
+
     public List<Pair<UMLClassifier, UMLClassifier>> getRelationships(Relationship relationship){
         List<Pair<UMLClassifier, UMLClassifier>> relationships = new ArrayList<>();
         for (Pair<String, UMLClassifier> self : getClassifierModelBlocks()) {
@@ -299,6 +323,8 @@ public abstract class PatternMapper {
         }
         return relationships;
     }
+
+
 
 
     public abstract void printSummary();

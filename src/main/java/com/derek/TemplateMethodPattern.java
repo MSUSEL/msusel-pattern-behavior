@@ -99,4 +99,9 @@ public class TemplateMethodPattern extends PatternMapper{
             System.out.println("Template() role (operation): " + op.getValue().getName());
         }
     }
+
+    @Override
+    protected String getPatternCommonNamesFileName() {
+        return "templateMethod.txt";
+    }
 }

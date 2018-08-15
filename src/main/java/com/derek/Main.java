@@ -52,6 +52,7 @@ public class Main {
     public static String consecutivePatterns;
     public static String outputFileName;
     public static String printIndividualRoles;
+    public static String patternCommonNames;
 
     private static Map<SoftwareVersion, SrcMLRunner> runner;
     public static List<SoftwareVersion> projectVersions;
@@ -73,6 +74,7 @@ public class Main {
             this.consecutivePatterns = seleniumProperties.getProperty("consecutivePatterns");
             this.outputFileName = seleniumProperties.getProperty("outputFileName");
             this.printIndividualRoles = seleniumProperties.getProperty("printIndividualRoles");
+            this.patternCommonNames = seleniumProperties.getProperty("patternCommonNames");
 
 
             //new View(new Model(projectVersions));

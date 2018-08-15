@@ -113,5 +113,9 @@ public class StatePattern extends PatternMapper {
             System.out.println("Request() role (operation): " + op.getValue().getName());
         }
     }
+    @Override
+    protected String getPatternCommonNamesFileName() {
+        return "state.txt";
+    }
 
 }

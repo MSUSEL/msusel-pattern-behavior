@@ -42,6 +42,8 @@ public class ObserverPattern extends PatternMapper {
     private List<Pair<String, UMLOperation>> notifyOperations;
 
     //these data structs are coalesced.
+    private List<Pair<String, UMLOperation>> attachOperations;
+    private List<Pair<String, UMLOperation>> detachOperations;
     private List<Pair<String, UMLOperation>> updateOperations;
     private List<Pair<String, UMLOperation>> getStateOperations;
     private List<Pair<String, UMLOperation>> setStateOperations;
@@ -76,10 +78,13 @@ public class ObserverPattern extends PatternMapper {
         coalesceSubjects();
         //I need to coalesce the methods AFTER I do the classes. This is because the process of coalescing methods involves
         //iterating through all the classes.
-        coalesceUpdateOperation();
-        coalesceGetStateOperation();
-        coalesceSetStateOperation();
+        attachOperations = coalesceOperations(this.getAllSubjects(), "Attach");
+        detachOperations = coalesceOperations(this.getAllSubjects(), "Detach");
+        updateOperations = coalesceOperations(this.getAllObservers(), "Update");
+        getStateOperations = coalesceOperations(this.getAllSubjects(), "GetState");
+        setStateOperations = coalesceOperations(this.getAllSubjects(), "SetState");
     }
+
 
     private void coalesceObservers(){
         List<UMLClassifier> observerFamilyClassifiers = umlClassDiagram.getAllGeneralizationHierarchyChildren(observerClassifier.getRight());
@@ -92,78 +97,6 @@ public class ObserverPattern extends PatternMapper {
                 observerFamily.add(new ImmutablePair<>("Observer", observerFamilyClassifier));
             }
         }
-    }
-
-    /***
-     * attempts to find and assign the update operation for all observers, if it exists.
-     */
-    private void coalesceUpdateOperation(){
-        updateOperations = new ArrayList<>();
-        //first use a string search to look for 'update' in observers. addAll to first one, will add others as they appear.
-        updateOperations.addAll(stringSearchCoalesce());
-
-        //this coalescence method is still buggy, so I'm relying on string search. Also, the coalescence method below is
-        //ambiguous and requires several assumptions.
-        //updateOperations.addAll(coalesceUpdateFromVariables());
-    }
-
-    private List<Pair<String, UMLOperation>> coalesceUpdateFromVariables(){
-        List<Pair<String, UMLOperation>> updateOps = new ArrayList<>();
-        //second pass for update coalescence will be looking for (1) declarations of variables within a subject
-        //that make calls to any observers. There is a chance this could be grime, and also a chance it is the correct update operation.
-        //though I am doing grime checks later.. so I don't think it matters at this point.
-        for (Pair<String, UMLClassifier> subject : this.getAllSubjects()){
-            for (Pair<String, UMLClassifier> observer : this.getAllObservers()) {
-                List<UMLAttribute> classAtts = coalescerUtility.getInterPatternAttributes(subject.getRight(), observer.getRight());
-                //classAtts at this point are all class level associations from subject -> observer
-                for (UMLOperation operation : subject.getRight().getOperations()){
-                    List<String> tempVars = coalescerUtility.getInterMethodPatternAttriubtes(operation.getCallTreeString().convertMeToOrderedList(), observer.getRight());
-                    //at this point I have all class lvl variables (classAtts), and all temporary or method lvl vars (tempVars).
-                    //I need to iterate through the call tree of operation and see if the vars are ever used (ie., call tag in call tree)
-                    //if it is ever used, I need to assign presence. (or update op)
-                    for (CallTreeNode<String> node : operation.getCallTreeString().convertMeToOrderedList()){
-                        //need to look through temp vars first
-                        for (String s : tempVars){
-                            if (node.isCall()){
-                                if (s.equals(node.parseVarNameFromCall())){
-                                    //found a match. this call tree node is an update op, or at least is a relationship from subj -> obs
-                                    //need to find correct operation from observers.
-                                    UMLOperation correctOp = connectOperation(node.parseCallNameFromCall(), observerFamily);
-                                    if (correctOp != null){
-                                        //might be null if we find a relationship between roles that isn't the one we are looking for.
-                                        updateOps.add(new ImmutablePair<>("Update", correctOp));
-                                    }
-                                }
-                            }
-                        }
-                        for (UMLAttribute umlAttribute : classAtts){
-                            if (node.isCall()){
-                                if (umlAttribute.getName().equals(node.parseVarNameFromCall())){
-                                    UMLOperation correctOp = connectOperation(node.parseCallNameFromCall(), observerFamily);
-                                    if (correctOp != null){
-                                        //might be null if we find a relationship between roles that isn't the one we are looking for.
-                                        updateOps.add(new ImmutablePair<>("Update", correctOp));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return updateOps;
-    }
-
-    /***
-     * tries to find update operations based on string search. plain and simple. Actually, the string search is based on 'equals', not 'contains'.
-     * @return
-     */
-    private List<Pair<String, UMLOperation>> stringSearchCoalesce(){
-        List<Pair<String, UMLOperation>> stringSearchUpdates = new ArrayList<>();
-        for (Pair<String, UMLClassifier> observerPair : this.getAllObservers()) {
-            coalescenceStringSearch("Update", observerPair.getRight(), stringSearchUpdates);
-        }
-        return stringSearchUpdates;
     }
 
     private void coalesceSubjects(){
@@ -180,20 +113,18 @@ public class ObserverPattern extends PatternMapper {
 
     }
 
-    private void coalesceGetStateOperation(){
-        getStateOperations = new ArrayList<>();
-        //first use a string search to look for 'update' in observers.
-        for (Pair<String, UMLClassifier> subjectPair : this.getAllSubjects()) {
-            coalescenceStringSearch("GetState", subjectPair.getRight(), getStateOperations);
+    private List<Pair<String, UMLOperation>> coalesceOperations(List<Pair<String, UMLClassifier>> owningClassifier, String operationName){
+        List<Pair<String, UMLOperation>> operationsDataStruct = new ArrayList<>();
+        for (Pair<String, UMLClassifier> classifierPair : owningClassifier){
+            for (String commonNameValue : patternCommonNames.get(operationName)){
+                List<Pair<String, UMLOperation>> tempOperations = new ArrayList<>();
+                coalescenceStringSearch(commonNameValue, classifierPair.getRight(), tempOperations);
+                for (Pair<String, UMLOperation> op : tempOperations){
+                    operationsDataStruct.add(new ImmutablePair<>(operationName, op.getRight()));
+                }
+            }
         }
-    }
-
-    private void coalesceSetStateOperation(){
-        setStateOperations = new ArrayList<>();
-        //first use a string search to look for 'update' in observers.
-        for (Pair<String, UMLClassifier> subjectPair : this.getAllSubjects()) {
-            coalescenceStringSearch("SetState", subjectPair.getRight(), setStateOperations);
-        }
+        return operationsDataStruct;
     }
 
     @Override
@@ -241,6 +172,8 @@ public class ObserverPattern extends PatternMapper {
     @Override
     public List<Pair<String, UMLOperation>> getOperationModelBlocks() {
         List<Pair<String, UMLOperation>> toRet = new ArrayList<>();
+        toRet.addAll(attachOperations);
+        toRet.addAll(detachOperations);
         toRet.addAll(notifyOperations);
         toRet.addAll(updateOperations);
         toRet.addAll(getStateOperations);
@@ -281,5 +214,10 @@ public class ObserverPattern extends PatternMapper {
         toRet.addAll(getAllObservers());
         toRet.addAll(getAllSubjects());
         return toRet;
+    }
+
+    @Override
+    protected String getPatternCommonNamesFileName() {
+        return "observer.txt";
     }
 }

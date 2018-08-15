@@ -163,6 +163,11 @@ public class CommandPattern extends PatternMapper{
         System.out.println("execute() role (operation): " + executeOperation.getName());
     }
 
+    @Override
+    protected String getPatternCommonNamesFileName() {
+        return "command.txt";
+    }
+
 
 
 

@@ -30,6 +30,7 @@ public class BehaviorMapper {
         this.varMappings = new ArrayList<>();
         buildStructure();
         pass1();
+        pass2();
     }
 
     private void buildStructure(){
@@ -49,6 +50,14 @@ public class BehaviorMapper {
             pair.setRight(mapInteractionRole(pair.getLeft()));
         }
         printPresenceMap();
+    }
+
+    /***
+     * pass 2 is concerned with identifying order of calls.
+     */
+    private void pass2(){
+
+
     }
 
     private InteractionRole mapInteractionRole(CallTreeNode callTreeNode){

@@ -92,4 +92,9 @@ public class SingletonPattern extends PatternMapper {
         System.out.println("Singleton role: " + singletonClassifier.getValue().getName());
         System.out.println("Singleton attribute role (attribute): " + singletonAttribute.getValue().getName());
     }
+
+    @Override
+    protected String getPatternCommonNamesFileName() {
+        return "singleton.txt";
+    }
 }

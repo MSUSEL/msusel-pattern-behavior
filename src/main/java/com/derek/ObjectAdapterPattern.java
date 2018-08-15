@@ -120,4 +120,9 @@ public class ObjectAdapterPattern extends PatternMapper {
 
         return umlClassifiers;
     }
+
+    @Override
+    protected String getPatternCommonNamesFileName() {
+        return "objectAdapter.txt";
+    }
 }
