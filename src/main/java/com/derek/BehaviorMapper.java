@@ -31,6 +31,7 @@ public class BehaviorMapper {
         buildStructure();
         pass1();
         pass2();
+        pass3();
     }
 
     private void buildStructure(){
@@ -57,6 +58,13 @@ public class BehaviorMapper {
      */
     private void pass2(){
 
+
+    }
+
+    /***
+     * pass 3 is concerned with repetition of calls. Here I just need to look for multiple mappings within 1 behavioral scope.
+     */
+    private void pass3(){
 
     }
 
