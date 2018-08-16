@@ -18,6 +18,7 @@ import java.util.List;
 public class BehaviorMapper {
 
     private List<MutablePair<CallTreeNode, InteractionRole>> presenceMap;
+    private List<Pair<CallTreeNode, InteractionRole>> roleMap;
     private IPS ips;
     private List<CallTreeNode<String>> callTreeAsList;
     private List<RBMLMapping> structureMappings;
@@ -30,6 +31,7 @@ public class BehaviorMapper {
         this.varMappings = new ArrayList<>();
         buildStructure();
         pass1();
+        collapsePresenceMap();
         pass2();
         pass3();
     }
@@ -50,15 +52,28 @@ public class BehaviorMapper {
             //might be null, but mapInteractionRole will take care of that.
             pair.setRight(mapInteractionRole(pair.getLeft()));
         }
-        printPresenceMap();
     }
 
     /***
      * pass 2 is concerned with identifying order of calls.
      */
     private void pass2(){
+        printPresenceMap(roleMap);
+        //mapped iterator tracks the
+        int previousPointer = 0;
+        for (int i = 0; i < roleMap.size(); i++){
+            for (int j = 0; j < ips.getInteractions().size(); j++){
+                if (roleMap.get(i).getRight().equals(ips.getInteractions().get(j))){
+                    //found a match between mapped role and interaction role.
+                    if (previousPointer > j){
+                        //order violated
+                    }else {
+                        previousPointer = j;
+                    }
+                }
+            }
 
-
+        }
     }
 
     /***
@@ -137,15 +152,28 @@ public class BehaviorMapper {
         return originalName;
     }
 
+    /***
+     * method to collapse the presence map into the role map. This is really just an efficiency gain, to remove non-role calls.
+     */
+    private void collapsePresenceMap(){
+        roleMap = new ArrayList<>();
+        for (MutablePair<CallTreeNode, InteractionRole> presence : presenceMap){
+            if (presence.getRight() != null){
+                //mapping
+                roleMap.add(presence);
+            }
+        }
+    }
 
-    public void printPresenceMap(){
+
+    public void printPresenceMap(List<Pair<CallTreeNode, InteractionRole>> map){
         System.out.print("| ");
-        for (Pair<CallTreeNode, InteractionRole> pair : presenceMap){
+        for (Pair<CallTreeNode, InteractionRole> pair : map){
             System.out.print(pair.getLeft().getName() + " | ");
         }
         System.out.println();
         System.out.print("| ");
-        for (Pair<CallTreeNode, InteractionRole> pair : presenceMap){
+        for (Pair<CallTreeNode, InteractionRole> pair : map){
             if (pair.getRight() == null){
                 //null if not mapped.
                 System.out.print("no role mapping | ");
