@@ -191,8 +191,8 @@ public class Conformance {
         return count;
     }
 
-    public List<RBMLMapping> mapBehavior(List<RBMLMapping> structureMappings){
-        List<RBMLMapping> behaviorMappings = new ArrayList<>();
+    public List<Pair<UMLOperation, BehaviorMapper>> mapBehavior(List<RBMLMapping> structureMappings){
+        List<Pair<UMLOperation, BehaviorMapper>> behaviorMappings = new ArrayList<>();
         for (OperationRole operationRole : getOperationsFromMappings(structureMappings)){
             List<UMLOperation> umlOperations = getOperationsFromMapping(operationRole, structureMappings);
             for (UMLOperation mappedOperation : umlOperations) {
@@ -202,7 +202,7 @@ public class Conformance {
                 if (callTree != null) {
                     List<CallTreeNode<String>> callTreeAsList = callTree.convertMeToOrderedList();
                     BehaviorMapper behaviorMapper = new BehaviorMapper(ips, callTreeAsList, structureMappings);
-                    //orderedListSubsetComparison(callTreeAsList, ips.getInteractions(), structureMappings);
+                    behaviorMappings.add(new ImmutablePair<>(mappedOperation, behaviorMapper));
                 }
             }
         }
@@ -243,52 +243,6 @@ public class Conformance {
         System.out.println("Exiting.. ");
         System.exit(0);
         return null;
-    }
-
-    /***
-     * method to perform the ordered list subset comparison. Initially takes in a list representation of the call tree and a list of interaction roles.
-     * Will iteratively traverse interactions and also call tree nodes, matching the two if they map.
-     *
-     * Note that this will not focus on variable semantics (names), but rather focus on types that are called from teh callTree.
-     *
-     * @param callTreeAsList
-     * @param interactionRoles
-     */
-    private List<RBMLMapping> orderedListSubsetComparison(List<CallTreeNode<String>> callTreeAsList, List<InteractionRole> interactionRoles, List<RBMLMapping> structuralMappings){
-        List<RBMLMapping> behaviorMappings = new ArrayList<>();
-        //go to size -1 because im doing look-ahead checking.
-        for (int i = 0; i < interactionRoles.size()-1; i++){
-            InteractionRole interactionRole = interactionRoles.get(i);
-            //sequentially the next interaction
-            InteractionRole nextInteractionRole = interactionRoles.get(i+1);
-            for (int j = 0; j < callTreeAsList.size(); j++){
-                CallTreeNode<String> callTreeNode = callTreeAsList.get(j);
-                if (i == 0 && j == 0){
-                    //'base case', in a sense. By definition we start here as we enter a method.
-                    UMLOperation baseCase = getUMLOperationObjFromName(structuralMappings, callTreeNode.getName());
-                    behaviorMappings.add(new RBMLMapping(interactionRole, baseCase));
-                    System.out.println("Added ips mapping from: " + interactionRole.getOperationRole().getName() + " " + baseCase.getName());
-                    //tricky because technically we can map the same role to more than one callTree node.
-                }else{
-                    if (callTreeNode.getTagName().contains("decl{")){
-                        //declaration, indicates a use dependency (declaration) and potentially a behavioral mapping
-                        //TODO - behavior mappings
-                        //String typeOfDecl = getTypeFromCallTreeTagDecl(callTreeNode.getTagName());
-                        //UMLClassifier nextClassifierName = getClassifierFromMappingValue();
-
-                    }
-                }
-            }
-        }
-        for (RBMLMapping rbmlMapping : behaviorMappings){
-            rbmlMapping.printSummary();
-            if (rbmlMapping.getUmlArtifact() instanceof UMLOperation){
-                ((UMLOperation)rbmlMapping.getUmlArtifact()).getCallTreeString().printTree();
-            }
-        }
-
-        Main.counter++;
-        return behaviorMappings;
     }
 
     private UMLOperation getUMLOperationObjFromName(List<RBMLMapping> structionalMappings, String opName){

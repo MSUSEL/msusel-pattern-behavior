@@ -154,18 +154,20 @@ public class Comparatizer {
     public void verifyConformance(SPS sps, IPS ips, PatternMapper patternMapper, UMLClassDiagram umlClassDiagram){
         Conformance conformance = new Conformance(sps, ips, patternMapper, umlClassDiagram);
         List<RBMLMapping> rbmlStructureMappings = conformance.mapStructure();
-        List<RBMLMapping> rbmlBehaviorMappings = conformance.mapBehavior(rbmlStructureMappings);
+        List<Pair<UMLOperation, BehaviorMapper>> rbmlBehaviorMappings = conformance.mapBehavior(rbmlStructureMappings);
 
-
-//        for (RBMLMapping rbmlMapping : rbmlBehaviorMappings){
-//            rbmlMapping.printSummary();
+//        for (Pair<UMLOperation, BehaviorMapper> behaviorMapping : rbmlBehaviorMappings){
+//            for (BehavioralViolation behavioralViolation : behaviorMapping.getRight().getBehavioralViolations()){
+//                System.out.println(behaviorMapping.getLeft().getName());
+//                System.out.println("Violation: " + behavioralViolation.printViolation());
+//            }
 //        }
 //        for (RBMLMapping rbmlMapping : rbmlStructureMappings){
 //            rbmlMapping.printSummary();
 //        }
 
 
-        outputRoles(sps, rbmlStructureMappings, patternMapper);
+        outputRoles(sps, rbmlStructureMappings, ips, rbmlBehaviorMappings, patternMapper);
 
         MetricSuite ms = new MetricSuite(rbmlStructureMappings, patternMapper, sps);
         outputter.append(ms.getSummary());
@@ -204,7 +206,7 @@ public class Comparatizer {
         }
     }
 
-    private void outputRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, PatternMapper patternMapper){
+    private void outputRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, IPS ips, List<Pair<UMLOperation, BehaviorMapper>> rbmlBehavioralMappings, PatternMapper patternMapper){
         try{
             if (Boolean.parseBoolean(Main.printIndividualRoles)){
                 //main directory
@@ -221,6 +223,9 @@ public class Comparatizer {
 
                 StringBuilder output = new StringBuilder();
                 output.append("Version: " + patternMapper.getPi().getSoftwareVersion().getVersionNum() + "\n");
+                output.append("***************************************\n");
+                output.append("**************Structure****************\n");
+                output.append("***************************************\n");
                 for (Pair<String, UMLClassifier> classifier : patternMapper.getClassifierModelBlocks()) {
                     for (RBMLMapping rbmlMapping : rbmlStructureMappings) {
                         if (rbmlMapping.getUmlArtifact().equals(classifier.getValue())) {
@@ -286,6 +291,13 @@ public class Comparatizer {
                         }
                     }
                 }
+                output.append("***************************************\n");
+                output.append("***************Behavior****************\n");
+                output.append("***************************************\n");
+                for (Pair<UMLOperation, BehaviorMapper> rbmlMapping : rbmlBehavioralMappings){
+                    System.out.println(rbmlMapping.getLeft().getName() + " is mapped to " + rbmlMapping.getRight().getSignatureMapping().getName());
+                }
+
                 printViolatedRoles(sps, rbmlStructureMappings, output);
 
                 File outputFile = new File("roles\\" + patternMapper.getPi().getPatternType() + "\\" + patternMapper.getPi().getUniqueID() + ".log");

@@ -18,17 +18,24 @@ import java.util.List;
 public class BehaviorMapper {
 
     private List<MutablePair<CallTreeNode, InteractionRole>> presenceMap;
+    //role map is basically the same as the presence map, but with all non-pattern behaviors removed. Its a collapsed presence map.
     private List<Pair<CallTreeNode, InteractionRole>> roleMap;
     private IPS ips;
     private List<CallTreeNode<String>> callTreeAsList;
     private List<RBMLMapping> structureMappings;
     private List<RBMLMapping> varMappings;
 
+    private InteractionRole signatureMapping;
+
+    //want something like this to track behavioral violations.
+    private List<BehavioralViolation> behavioralViolations;
+
     public BehaviorMapper(IPS ips, List<CallTreeNode<String>> callTreeAsList, List<RBMLMapping> structureMappings){
         this.ips = ips;
         this.callTreeAsList = callTreeAsList;
         this.structureMappings = structureMappings;
         this.varMappings = new ArrayList<>();
+        behavioralViolations = new ArrayList<>();
         buildStructure();
         pass1();
         collapsePresenceMap();
@@ -58,7 +65,6 @@ public class BehaviorMapper {
      * pass 2 is concerned with identifying order of calls.
      */
     private void pass2(){
-        printPresenceMap(roleMap);
         //mapped iterator tracks the
         int previousPointer = 0;
         for (int i = 0; i < roleMap.size(); i++){
@@ -67,12 +73,12 @@ public class BehaviorMapper {
                     //found a match between mapped role and interaction role.
                     if (previousPointer > j){
                         //order violated
+                        behavioralViolations.add(new BehavioralViolation(roleMap.get(i).getLeft(), roleMap.get(i).getRight(), BehavioralGrimeType.IMPROPER_ORDER));
                     }else {
                         previousPointer = j;
                     }
                 }
             }
-
         }
     }
 
@@ -80,6 +86,20 @@ public class BehaviorMapper {
      * pass 3 is concerned with repetition of calls. Here I just need to look for multiple mappings within 1 behavioral scope.
      */
     private void pass3(){
+        List<InteractionRole> seenInteractionRoles = new ArrayList<>();
+        for (int i = 0; i < roleMap.size(); i++){
+            for (int j = 0; j < ips.getInteractions().size(); j++){
+                if (roleMap.get(i).getRight().equals(ips.getInteractions().get(j))){
+                    //found a match between mapped role and interaction role.
+                    if (seenInteractionRoles.contains(roleMap.get(i).getRight())){
+                        //already seen this
+                        behavioralViolations.add(new BehavioralViolation(roleMap.get(i).getLeft(), roleMap.get(i).getRight(), BehavioralGrimeType.INTRA_REPETITION));
+                    }else {
+                        seenInteractionRoles.add(roleMap.get(i).getRight());
+                    }
+                }
+            }
+        }
 
     }
 
@@ -97,6 +117,11 @@ public class BehaviorMapper {
                                 UMLOperation mappedOperation = (UMLOperation) structureMapping.getUmlArtifact();
                                 String callTreeNameStripped = stripCallTreeName((String) callTreeNode.getName());
                                 if (callTreeNameStripped.equals(mappedOperation.getName())) {
+                                    if (callTreeNode.getTagName().equals("function")){
+                                        //this particular call tree node is the start of the call tree list, so set header
+                                        //really this information is stored elsewhere, but putting it in this variable helps
+                                        signatureMapping = interactionRole;
+                                    }
                                     return interactionRole;
                                 }
                             }
@@ -126,19 +151,6 @@ public class BehaviorMapper {
                         return interactionRole;
                     }
                     break;
-                    //this code below does nothing. (no declarations in ips)
-                case DECLARATION:
-                    //points at a type, which may or may not be part of the pattern
-                    for (RBMLMapping structuralMapping : structureMappings){
-                        if (structuralMapping.getUmlArtifact() instanceof UMLClassifier){
-                            UMLClassifier mappedArtifact = (UMLClassifier) structuralMapping.getUmlArtifact();
-                            if (callTreeNode.getName().equals(mappedArtifact.getName())) {
-                                System.out.println("found a match here for call tree nodes.");
-                                System.out.println(callTreeNode.getName() + "    " + mappedArtifact.getName());
-
-                            }
-                        }
-                    }
             }
         }
         return null;
@@ -164,7 +176,6 @@ public class BehaviorMapper {
             }
         }
     }
-
 
     public void printPresenceMap(List<Pair<CallTreeNode, InteractionRole>> map){
         System.out.print("| ");
