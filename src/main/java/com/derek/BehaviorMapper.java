@@ -25,7 +25,7 @@ public class BehaviorMapper {
     private List<RBMLMapping> structureMappings;
     private List<RBMLMapping> varMappings;
 
-    private InteractionRole signatureMapping;
+    private InteractionRole functionHeaderMapping;
 
     //want something like this to track behavioral violations.
     private List<BehavioralViolation> behavioralViolations;
@@ -104,9 +104,6 @@ public class BehaviorMapper {
 
     private InteractionRole mapInteractionRole(CallTreeNode callTreeNode){
         for (InteractionRole interactionRole : ips.getInteractions()){
-            if (callTreeNode.getName().equals("addObserver")){
-                System.out.println("dfd");
-            }
             switch(interactionRole.getRoleType()){
                 case STANDARD:
                     //I need to see if the call tree has a declaration.
@@ -122,7 +119,7 @@ public class BehaviorMapper {
                                     if (callTreeNode.getTagName().equals("function")){
                                         //this particular call tree node is the start of the call tree list, so set header
                                         //really this information is stored elsewhere, but putting it in this variable helps
-                                        signatureMapping = interactionRole;
+                                        functionHeaderMapping = interactionRole;
                                     }
                                     return interactionRole;
                                 }

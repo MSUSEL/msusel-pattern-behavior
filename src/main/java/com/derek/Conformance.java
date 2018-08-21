@@ -202,7 +202,10 @@ public class Conformance {
                 if (callTree != null) {
                     List<CallTreeNode<String>> callTreeAsList = callTree.convertMeToOrderedList();
                     BehaviorMapper behaviorMapper = new BehaviorMapper(ips, callTreeAsList, structureMappings);
-                    behaviorMappings.add(new ImmutablePair<>(mappedOperation, behaviorMapper));
+                    if (behaviorMapper.getFunctionHeaderMapping() != null){
+                        //will be null if the IPS does not include this mapping.. and in this case we should ignore it.
+                        behaviorMappings.add(new ImmutablePair<>(mappedOperation, behaviorMapper));
+                    }
                 }
             }
         }

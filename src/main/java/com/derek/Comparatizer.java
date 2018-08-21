@@ -29,10 +29,7 @@ import com.derek.model.PatternInstanceEvolution;
 import com.derek.model.PatternType;
 import com.derek.model.SoftwareVersion;
 import com.derek.model.patterns.PatternInstance;
-import com.derek.rbml.IPS;
-import com.derek.rbml.RBMLMapping;
-import com.derek.rbml.Role;
-import com.derek.rbml.SPS;
+import com.derek.rbml.*;
 import com.derek.uml.*;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -174,6 +171,10 @@ public class Comparatizer {
     }
 
     private void printViolatedRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, StringBuilder output){
+
+        output.append("***************************************\n");
+        output.append("**********Role Satisfactions***********\n");
+        output.append("***************************************\n");
         //print all things that don't conform.
         List<Role> conformingRoles = new ArrayList<>();
         for (Role role : sps.getAllRoles()){
@@ -295,7 +296,10 @@ public class Comparatizer {
                 output.append("***************Behavior****************\n");
                 output.append("***************************************\n");
                 for (Pair<UMLOperation, BehaviorMapper> rbmlMapping : rbmlBehavioralMappings){
-                    System.out.println(rbmlMapping.getLeft().getName() + " is mapped to " + rbmlMapping.getRight().getSignatureMapping().getName());
+                    output.append(rbmlMapping.getLeft().getName() + " is mapped to " + rbmlMapping.getRight().getFunctionHeaderMapping().getName() + "\n");
+                    for (Pair<CallTreeNode, InteractionRole> behaviorMapping : rbmlMapping.getRight().getRoleMap()){
+                        output.append("\tMapped Lifeline: " + behaviorMapping.getLeft().getName() + " has a mapping to " + behaviorMapping.getRight().getName() + "\n");
+                    }
                 }
 
                 printViolatedRoles(sps, rbmlStructureMappings, output);
