@@ -28,7 +28,10 @@ public class BehaviorMapper {
     private InteractionRole functionHeaderMapping;
 
     //want something like this to track behavioral violations.
-    private List<BehavioralViolation> behavioralViolations;
+    private List<BehavioralConformance> behavioralViolations;
+
+    //tracks behavioral satisfactions
+    private List<BehavioralConformance> behavioralSatisfactions;
 
     public BehaviorMapper(IPS ips, List<CallTreeNode<String>> callTreeAsList, List<RBMLMapping> structureMappings){
         this.ips = ips;
@@ -36,6 +39,7 @@ public class BehaviorMapper {
         this.structureMappings = structureMappings;
         this.varMappings = new ArrayList<>();
         behavioralViolations = new ArrayList<>();
+        behavioralSatisfactions = new ArrayList<>();
         buildStructure();
         pass1();
         collapsePresenceMap();
@@ -73,8 +77,9 @@ public class BehaviorMapper {
                     //found a match between mapped role and interaction role.
                     if (previousPointer > j){
                         //order violated
-                        behavioralViolations.add(new BehavioralViolation(roleMap.get(i).getLeft(), roleMap.get(i).getRight(), BehavioralGrimeType.IMPROPER_ORDER));
+                        behavioralViolations.add(new BehavioralConformance(roleMap.get(i).getLeft(), roleMap.get(i).getRight(), BehavioralGrimeType.IMPROPER_ORDER));
                     }else {
+                        behavioralSatisfactions.add(new BehavioralConformance(roleMap.get(i).getLeft(), roleMap.get(i).getRight()));
                         previousPointer = j;
                     }
                 }
@@ -93,8 +98,9 @@ public class BehaviorMapper {
                     //found a match between mapped role and interaction role.
                     if (seenInteractionRoles.contains(roleMap.get(i).getRight())){
                         //already seen this
-                        behavioralViolations.add(new BehavioralViolation(roleMap.get(i).getLeft(), roleMap.get(i).getRight(), BehavioralGrimeType.INTRA_REPETITION));
+                        behavioralViolations.add(new BehavioralConformance(roleMap.get(i).getLeft(), roleMap.get(i).getRight(), BehavioralGrimeType.INTRA_REPETITION));
                     }else {
+                        behavioralSatisfactions.add(new BehavioralConformance(roleMap.get(i).getLeft(), roleMap.get(i).getRight()));
                         seenInteractionRoles.add(roleMap.get(i).getRight());
                     }
                 }

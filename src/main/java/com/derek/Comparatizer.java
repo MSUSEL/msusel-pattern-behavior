@@ -154,7 +154,7 @@ public class Comparatizer {
         List<Pair<UMLOperation, BehaviorMapper>> rbmlBehaviorMappings = conformance.mapBehavior(rbmlStructureMappings);
 
 //        for (Pair<UMLOperation, BehaviorMapper> behaviorMapping : rbmlBehaviorMappings){
-//            for (BehavioralViolation behavioralViolation : behaviorMapping.getRight().getBehavioralViolations()){
+//            for (BehavioralConformance behavioralViolation : behaviorMapping.getRight().getBehavioralViolations()){
 //                System.out.println(behaviorMapping.getLeft().getName());
 //                System.out.println("Violation: " + behavioralViolation.printViolation());
 //            }
@@ -170,10 +170,10 @@ public class Comparatizer {
         outputter.append(ms.getSummary());
     }
 
-    private void printViolatedRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, StringBuilder output){
+    private void printViolatedRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, List<Pair<UMLOperation, BehaviorMapper>> rbmlBehavioralMappings, StringBuilder output){
 
         output.append("***************************************\n");
-        output.append("**********Role Satisfactions***********\n");
+        output.append("************Role Conformance***********\n");
         output.append("***************************************\n");
         //print all things that don't conform.
         List<Role> conformingRoles = new ArrayList<>();
@@ -191,6 +191,17 @@ public class Comparatizer {
             }else{
                 output.append("Role " + role.getName() + " is violated.\n");
             }
+        }
+
+        for (Pair<UMLOperation, BehaviorMapper> rbmlMapping : rbmlBehavioralMappings){
+            output.append("Operation: " + rbmlMapping.getLeft().getName() + "\n");
+            for (BehavioralConformance behavioralConformance : rbmlMapping.getRight().getBehavioralSatisfactions()){
+                output.append("\t" + behavioralConformance.printMe() + "\n");
+            }
+            for (BehavioralConformance behavioralConformance : rbmlMapping.getRight().getBehavioralViolations()){
+                output.append("\t" + behavioralConformance.printMe() + "\n");
+            }
+
         }
     }
 
@@ -302,7 +313,7 @@ public class Comparatizer {
                     }
                 }
 
-                printViolatedRoles(sps, rbmlStructureMappings, output);
+                printViolatedRoles(sps, rbmlStructureMappings, rbmlBehavioralMappings, output);
 
                 File outputFile = new File("roles\\" + patternMapper.getPi().getPatternType() + "\\" + patternMapper.getPi().getUniqueID() + ".log");
                 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile, true)));
