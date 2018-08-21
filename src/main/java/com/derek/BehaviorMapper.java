@@ -100,11 +100,13 @@ public class BehaviorMapper {
                 }
             }
         }
-
     }
 
     private InteractionRole mapInteractionRole(CallTreeNode callTreeNode){
         for (InteractionRole interactionRole : ips.getInteractions()){
+            if (callTreeNode.getName().equals("addObserver")){
+                System.out.println("dfd");
+            }
             switch(interactionRole.getRoleType()){
                 case STANDARD:
                     //I need to see if the call tree has a declaration.
