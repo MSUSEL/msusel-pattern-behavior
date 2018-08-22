@@ -191,8 +191,8 @@ public class Conformance {
         return count;
     }
 
-    public List<Pair<UMLOperation, BehaviorMapper>> mapBehavior(List<RBMLMapping> structureMappings){
-        List<Pair<UMLOperation, BehaviorMapper>> behaviorMappings = new ArrayList<>();
+    public List<Pair<UMLOperation, BehaviorConformance>> mapBehavior(List<RBMLMapping> structureMappings){
+        List<Pair<UMLOperation, BehaviorConformance>> behaviorMappings = new ArrayList<>();
         for (OperationRole operationRole : getOperationsFromMappings(structureMappings)){
             List<UMLOperation> umlOperations = getOperationsFromMapping(operationRole, structureMappings);
             for (UMLOperation mappedOperation : umlOperations) {
@@ -201,10 +201,10 @@ public class Conformance {
                 //in this case, the method won't have any behavior, so I can literally just skip over it.
                 if (callTree != null) {
                     List<CallTreeNode<String>> callTreeAsList = callTree.convertMeToOrderedList();
-                    BehaviorMapper behaviorMapper = new BehaviorMapper(ips, callTreeAsList, structureMappings);
-                    if (behaviorMapper.getFunctionHeaderMapping() != null){
+                    BehaviorConformance behaviorConformance = new BehaviorConformance(ips, callTreeAsList, structureMappings);
+                    if (behaviorConformance.getFunctionHeaderMapping() != null){
                         //will be null if the IPS does not include this mapping.. and in this case we should ignore it.
-                        behaviorMappings.add(new ImmutablePair<>(mappedOperation, behaviorMapper));
+                        behaviorMappings.add(new ImmutablePair<>(mappedOperation, behaviorConformance));
                     }
                 }
             }

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class BehaviorMapper {
+public class BehaviorConformance {
 
     private List<MutablePair<CallTreeNode, InteractionRole>> presenceMap;
     //role map is basically the same as the presence map, but with all non-pattern behaviors removed. Its a collapsed presence map.
@@ -28,12 +28,12 @@ public class BehaviorMapper {
     private InteractionRole functionHeaderMapping;
 
     //want something like this to track behavioral violations.
-    private List<BehavioralConformance> behavioralViolations;
+    private List<BehavioralMapping> behavioralViolations;
 
     //tracks behavioral satisfactions
-    private List<BehavioralConformance> behavioralSatisfactions;
+    private List<BehavioralMapping> behavioralSatisfactions;
 
-    public BehaviorMapper(IPS ips, List<CallTreeNode<String>> callTreeAsList, List<RBMLMapping> structureMappings){
+    public BehaviorConformance(IPS ips, List<CallTreeNode<String>> callTreeAsList, List<RBMLMapping> structureMappings){
         this.ips = ips;
         this.callTreeAsList = callTreeAsList;
         this.structureMappings = structureMappings;
@@ -45,6 +45,7 @@ public class BehaviorMapper {
         collapsePresenceMap();
         pass2();
         pass3();
+        pass4();
     }
 
     private void buildStructure(){
@@ -69,7 +70,7 @@ public class BehaviorMapper {
      * pass 2 is concerned with identifying order of calls.
      */
     private void pass2(){
-        //mapped iterator tracks the
+        //mapped iterator tracks the iterated order we encounter ips roles.
         int previousPointer = 0;
         for (int i = 0; i < roleMap.size(); i++){
             for (int j = 0; j < ips.getInteractions().size(); j++){
@@ -77,9 +78,9 @@ public class BehaviorMapper {
                     //found a match between mapped role and interaction role.
                     if (previousPointer > j){
                         //order violated
-                        behavioralViolations.add(new BehavioralConformance(roleMap.get(i).getLeft(), roleMap.get(i).getRight(), BehavioralGrimeType.IMPROPER_ORDER));
+                        behavioralViolations.add(new BehavioralMapping(roleMap.get(i).getLeft(), roleMap.get(i).getRight(), BehavioralGrimeType.IMPROPER_ORDER));
                     }else {
-                        behavioralSatisfactions.add(new BehavioralConformance(roleMap.get(i).getLeft(), roleMap.get(i).getRight()));
+                        behavioralSatisfactions.add(new BehavioralMapping(roleMap.get(i).getLeft(), roleMap.get(i).getRight()));
                         previousPointer = j;
                     }
                 }
@@ -98,9 +99,9 @@ public class BehaviorMapper {
                     //found a match between mapped role and interaction role.
                     if (seenInteractionRoles.contains(roleMap.get(i).getRight())){
                         //already seen this
-                        behavioralViolations.add(new BehavioralConformance(roleMap.get(i).getLeft(), roleMap.get(i).getRight(), BehavioralGrimeType.INTRA_REPETITION));
+                        behavioralViolations.add(new BehavioralMapping(roleMap.get(i).getLeft(), roleMap.get(i).getRight(), BehavioralGrimeType.INTRA_REPETITION));
                     }else {
-                        behavioralSatisfactions.add(new BehavioralConformance(roleMap.get(i).getLeft(), roleMap.get(i).getRight()));
+                        behavioralSatisfactions.add(new BehavioralMapping(roleMap.get(i).getLeft(), roleMap.get(i).getRight()));
                         seenInteractionRoles.add(roleMap.get(i).getRight());
                     }
                 }
@@ -108,6 +109,20 @@ public class BehaviorMapper {
         }
     }
 
+    /***
+     * pass 4 is concerned with identifying unnecessary actions.... really not sure how I am going to do this part yet.
+     */
+    private void pass4(){
+
+    }
+
+    /***
+     * method in charge of mapping a given call tree node to an interaction role. The interaction role must be contained within the IPS
+     * This method is called for every call tree node in a given operaiton.
+     *
+     * @param callTreeNode
+     * @return
+     */
     private InteractionRole mapInteractionRole(CallTreeNode callTreeNode){
         for (InteractionRole interactionRole : ips.getInteractions()){
             switch(interactionRole.getRoleType()){

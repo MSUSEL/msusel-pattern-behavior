@@ -5,7 +5,7 @@ import com.derek.uml.CallTreeNode;
 import lombok.Getter;
 
 @Getter
-public class BehavioralConformance {
+public class BehavioralMapping {
 
     private BehavioralGrimeType behavioralGrimeType;
     private CallTreeNode perpetrator;
@@ -17,14 +17,14 @@ public class BehavioralConformance {
      * @param interactionRole
      * @param behavioralGrimeType
      */
-    public BehavioralConformance(CallTreeNode perpetrator, InteractionRole interactionRole, BehavioralGrimeType behavioralGrimeType){
+    public BehavioralMapping(CallTreeNode perpetrator, InteractionRole interactionRole, BehavioralGrimeType behavioralGrimeType){
         this.perpetrator = perpetrator;
         this.interactionRole = interactionRole;
         this.behavioralGrimeType = behavioralGrimeType;
     }
 
     //constructor for when a call tree node satisfies a role.
-    public BehavioralConformance(CallTreeNode perpetrator, InteractionRole interactionRole){
+    public BehavioralMapping(CallTreeNode perpetrator, InteractionRole interactionRole){
         this.perpetrator = perpetrator;
         this.interactionRole = interactionRole;
         this.behavioralGrimeType = BehavioralGrimeType.NONE;

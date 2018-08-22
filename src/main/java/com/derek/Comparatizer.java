@@ -151,10 +151,10 @@ public class Comparatizer {
     public void verifyConformance(SPS sps, IPS ips, PatternMapper patternMapper, UMLClassDiagram umlClassDiagram){
         Conformance conformance = new Conformance(sps, ips, patternMapper, umlClassDiagram);
         List<RBMLMapping> rbmlStructureMappings = conformance.mapStructure();
-        List<Pair<UMLOperation, BehaviorMapper>> rbmlBehaviorMappings = conformance.mapBehavior(rbmlStructureMappings);
+        List<Pair<UMLOperation, BehaviorConformance>> rbmlBehaviorMappings = conformance.mapBehavior(rbmlStructureMappings);
 
-//        for (Pair<UMLOperation, BehaviorMapper> behaviorMapping : rbmlBehaviorMappings){
-//            for (BehavioralConformance behavioralViolation : behaviorMapping.getRight().getBehavioralViolations()){
+//        for (Pair<UMLOperation, BehaviorConformance> behaviorMapping : rbmlBehaviorMappings){
+//            for (BehavioralMapping behavioralViolation : behaviorMapping.getRight().getBehavioralViolations()){
 //                System.out.println(behaviorMapping.getLeft().getName());
 //                System.out.println("Violation: " + behavioralViolation.printViolation());
 //            }
@@ -163,15 +163,13 @@ public class Comparatizer {
 //            rbmlMapping.printSummary();
 //        }
 
-
         outputRoles(sps, rbmlStructureMappings, ips, rbmlBehaviorMappings, patternMapper);
 
-        MetricSuite ms = new MetricSuite(rbmlStructureMappings, patternMapper, sps);
+        MetricSuite ms = new MetricSuite(rbmlStructureMappings, patternMapper, sps, rbmlBehaviorMappings, ips);
         outputter.append(ms.getSummary());
     }
 
-    private void printViolatedRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, List<Pair<UMLOperation, BehaviorMapper>> rbmlBehavioralMappings, StringBuilder output){
-
+    private void printViolatedRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings, StringBuilder output){
         output.append("***************************************\n");
         output.append("************Role Conformance***********\n");
         output.append("***************************************\n");
@@ -193,15 +191,14 @@ public class Comparatizer {
             }
         }
 
-        for (Pair<UMLOperation, BehaviorMapper> rbmlMapping : rbmlBehavioralMappings){
+        for (Pair<UMLOperation, BehaviorConformance> rbmlMapping : rbmlBehavioralMappings){
             output.append("Operation: " + rbmlMapping.getLeft().getName() + "\n");
-            for (BehavioralConformance behavioralConformance : rbmlMapping.getRight().getBehavioralSatisfactions()){
-                output.append("\t" + behavioralConformance.printMe() + "\n");
+            for (BehavioralMapping behavioralMapping : rbmlMapping.getRight().getBehavioralSatisfactions()){
+                output.append("\t" + behavioralMapping.printMe() + "\n");
             }
-            for (BehavioralConformance behavioralConformance : rbmlMapping.getRight().getBehavioralViolations()){
-                output.append("\t" + behavioralConformance.printMe() + "\n");
+            for (BehavioralMapping behavioralMapping : rbmlMapping.getRight().getBehavioralViolations()){
+                output.append("\t" + behavioralMapping.printMe() + "\n");
             }
-
         }
     }
 
@@ -218,7 +215,7 @@ public class Comparatizer {
         }
     }
 
-    private void outputRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, IPS ips, List<Pair<UMLOperation, BehaviorMapper>> rbmlBehavioralMappings, PatternMapper patternMapper){
+    private void outputRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, IPS ips, List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings, PatternMapper patternMapper){
         try{
             if (Boolean.parseBoolean(Main.printIndividualRoles)){
                 //main directory
@@ -306,7 +303,7 @@ public class Comparatizer {
                 output.append("***************************************\n");
                 output.append("***************Behavior****************\n");
                 output.append("***************************************\n");
-                for (Pair<UMLOperation, BehaviorMapper> rbmlMapping : rbmlBehavioralMappings){
+                for (Pair<UMLOperation, BehaviorConformance> rbmlMapping : rbmlBehavioralMappings){
                     output.append(rbmlMapping.getLeft().getName() + " is mapped to " + rbmlMapping.getRight().getFunctionHeaderMapping().getName() + "\n");
                     for (Pair<CallTreeNode, InteractionRole> behaviorMapping : rbmlMapping.getRight().getRoleMap()){
                         output.append("\tMapped Lifeline: " + behaviorMapping.getLeft().getName() + " has a mapping to " + behaviorMapping.getRight().getName() + "\n");
