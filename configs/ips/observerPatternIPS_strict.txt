@@ -4,4 +4,3 @@
 {loop}
 |Update(){|Observer}
 |GetState(){|Subject}
-{/loop}

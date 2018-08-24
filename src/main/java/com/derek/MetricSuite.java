@@ -172,7 +172,7 @@ public class MetricSuite {
 
     private void calcNumNonBehavioralConformingRoles(){
         for (Pair<UMLOperation, BehaviorConformance> nonConforming : rbmlBehavioralMappings){
-            numBehavioralNonConformingRoles += nonConforming.getRight().getBehavioralViolations().size();
+            numBehavioralNonConformingRoles += nonConforming.getRight().getBehavioralGrime().size();
         }
     }
 

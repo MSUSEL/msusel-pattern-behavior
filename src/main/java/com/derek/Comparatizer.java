@@ -154,7 +154,7 @@ public class Comparatizer {
         List<Pair<UMLOperation, BehaviorConformance>> rbmlBehaviorMappings = conformance.mapBehavior(rbmlStructureMappings);
 
 //        for (Pair<UMLOperation, BehaviorConformance> behaviorMapping : rbmlBehaviorMappings){
-//            for (BehavioralMapping behavioralViolation : behaviorMapping.getRight().getBehavioralViolations()){
+//            for (BehavioralMapping behavioralViolation : behaviorMapping.getRight().getBehavioralGrime()){
 //                System.out.println(behaviorMapping.getLeft().getName());
 //                System.out.println("Violation: " + behavioralViolation.printViolation());
 //            }
@@ -196,8 +196,12 @@ public class Comparatizer {
             for (BehavioralMapping behavioralMapping : rbmlMapping.getRight().getBehavioralSatisfactions()){
                 output.append("\t" + behavioralMapping.printMe() + "\n");
             }
-            for (BehavioralMapping behavioralMapping : rbmlMapping.getRight().getBehavioralViolations()){
+            for (BehavioralMapping behavioralMapping : rbmlMapping.getRight().getBehavioralGrime()){
                 output.append("\t" + behavioralMapping.printMe() + "\n");
+            }
+            //print violations
+            for (InteractionRole interactionRole : rbmlMapping.getRight().getBehavioralViolations()){
+                output.append("\t" + interactionRole.getName() + " is violated.\n");
             }
         }
     }
