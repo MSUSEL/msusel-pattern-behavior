@@ -39,12 +39,11 @@ Implementing SPS design pattern specifications in UML ~ 100% for now (State, Obj
 
 Implementing IPS design pattern specifications in UML ~ 100% for now (State, Object Adapter, Template Method, Singleton, Observer)
 
-conformance checking algos (Structural ~ 100%) (Behavioral ~ 50%)
+conformance checking algos (Structural ~ 100%) (Behavioral ~ 90%) (behavioral is only including observer pattern right now, 
+but I think its set up for anything.)
 
 Linking visualizer to UML segments ~ 0% (deciding against visualizer until I get results)
 
 Metric suite ~ 100% for now, including:
 
-Num_Participating_Classes, Num_Conforming_Roles, Num_NonConforming_Roles, SSize2, Afferent_Coupling, Efferent_Coupling, Coupling_Between_Pattern_Classes, Pattern_Integrity, Pattern_Instability
-
-</br>
+Project_ID, Software_Version, Pattern_Type, Pattern_ID, Num_Participating_Classes, Num_Conforming_Structural_Roles, Num_NonConforming_Structural_Roles, Num_Conforming_Behavioral_Roles, Num_NonConforming_Behavioral_Roles, Num_Conforming_Roles_Total, Num_NonConforming_Roles_Total, SSize2, Afferent_Coupling, Efferent_Coupling, Coupling_Between_Pattern_Classes, Pattern_Structural_Integrity, Pattern_Behavioral_Integrity, Pattern_Integrity, Pattern_Instability</br>
