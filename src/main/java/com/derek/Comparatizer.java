@@ -327,19 +327,25 @@ public class Comparatizer {
     }
 
     private String getOutputHeader(){
-        String separator = ", ";
+        String separator = "\t";
         StringBuilder header = new StringBuilder();
         header.append("Project_ID" + separator);
         header.append("Software_Version" + separator);
         header.append("Pattern_Type" + separator);
         header.append("Pattern_ID" + separator);
         header.append("Num_Participating_Classes" + separator);
-        header.append("Num_Conforming_Roles" + separator);
-        header.append("Num_NonConforming_Roles" + separator);
+        header.append("Num_Conforming_Structural_Roles" + separator);
+        header.append("Num_NonConforming_Structural_Roles" + separator);
+        header.append("Num_Conforming_Behavioral_Roles" + separator);
+        header.append("Num_NonConforming_Behavioral_Roles" + separator);
+        header.append("Num_Conforming_Roles_Total" + separator);
+        header.append("Num_NonConforming_Roles_Total" + separator);
         header.append("SSize2" + separator);
         header.append("Afferent_Coupling" + separator);
         header.append("Efferent_Coupling" + separator);
         header.append("Coupling_Between_Pattern_Classes" + separator);
+        header.append("Pattern_Structural_Integrity" + separator);
+        header.append("Pattern_Behavioral_Integrity" + separator);
         header.append("Pattern_Integrity" + separator);
         header.append("Pattern_Instability");
         header.append("\n");

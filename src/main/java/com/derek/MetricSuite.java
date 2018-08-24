@@ -24,18 +24,13 @@
  */
 package com.derek;
 
-import com.derek.rbml.IPS;
-import com.derek.rbml.RBMLMapping;
-import com.derek.rbml.Role;
-import com.derek.rbml.SPS;
-import com.derek.uml.Relationship;
-import com.derek.uml.UMLAttribute;
-import com.derek.uml.UMLClassifier;
-import com.derek.uml.UMLOperation;
+import com.derek.rbml.*;
+import com.derek.uml.*;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -51,12 +46,15 @@ public class MetricSuite {
     private int numParticipatingClasses = 0;
 
     //number of conforming structural roles, and nonconforming structural roles, respectively
-    private int numStructuralConformingRoles = 0;
-    private int numStructuralNonConformingRoles = 0;
+    private int numConformingStructuralRoles = 0;
+    private int numNonConformingStructuralRoles = 0;
 
     //number of conforming and nonconforming behavioral roles.
-    private int numBehavioralConformingRoles = 0;
-    private int numBehavioralNonConformingRoles = 0;
+    private int numConformingBehavioralRoles = 0;
+    private int numNonConformingBehavioralRoles = 0;
+
+    private int numConformingRolesTotal = 0;
+    private int numNonConformingRolesTotal = 0;
 
     //ssize2 metric for pattern instance (sum of fields and methods for all classes in a pattern)
     private int ssize2 = 0;
@@ -70,7 +68,9 @@ public class MetricSuite {
     //coupling between pattern objects.
     private int couplingBetweenPatternClasses = 0;
 
-    //pattern integrity, defined as (numStructuralConformingRoles)/(numStructuralConformingRoles + numStructuralNonConformingRoles)
+    //pattern integrity, defined as (numConformingStructuralRoles)/(numConformingStructuralRoles + numNonConformingStructuralRoles)
+    private String patternStructuralIntegrity = "";
+    private String patternBehavioralIntegrity = "";
     private String patternIntegrity = "";
 
     //pattern instability, defined as (efferentCoupling) / (afferentCoupling + efferentCoupling)
@@ -87,14 +87,18 @@ public class MetricSuite {
 
     private void calculate(){
         calcNumParticipatingClasses();
-        calcNumStructuralConformingRoles();
-        calcNumNonStructuralConformingRoles();
-        calcNumBehavioralConformingRoles();
-        calcNumNonBehavioralConformingRoles();
+        calcNumConformingStructuralRoles();
+        calcNumNonConformingStructuralRoles();
+        calcNumConformingBehavioralRoles();
+        calcNumNonConformingBehavioralRoles();
+        calcNumConformingRolesTotal();
+        calcNumNonConformingRolesTotal();
         calcSSize2();
         calcAfferentCoupling();
         calcEfferentCoupling();
         calcCouplingPatternClasses();
+        calcPatternStructuralIntegrity();
+        calcPatternBehavioralIntegrity();
         calcPatternIntegrity();
         calcPatternInstability();
     }
@@ -103,54 +107,54 @@ public class MetricSuite {
         numParticipatingClasses = patternMapper.getAllParticipatingClasses().size();
     }
 
-    private void calcNumStructuralConformingRoles(){
+    private void calcNumConformingStructuralRoles(){
         for (RBMLMapping rbmlMapping : rbmlStructuralMappings){
             for (Pair<String, UMLClassifier> classifier : patternMapper.getClassifierModelBlocks()){
                 if (rbmlMapping.getUmlArtifact().equals(classifier.getValue())){
                     //found conforming classifier role
-                    numStructuralConformingRoles++;
+                    numConformingStructuralRoles++;
                 }
             }
             for (Pair<String, UMLOperation> operation : patternMapper.getOperationModelBlocks()){
                 if (rbmlMapping.getUmlArtifact().equals(operation.getValue())){
                     //found conforming operation role
-                    numStructuralConformingRoles++;
+                    numConformingStructuralRoles++;
                 }
             }
             for (Pair<String, UMLAttribute> attribute : patternMapper.getAttributeModelBlocks()){
                 if (rbmlMapping.getUmlArtifact().equals(attribute.getValue())){
                     //found conforming attribute role
-                    numStructuralConformingRoles++;
+                    numConformingStructuralRoles++;
                 }
             }
             for (Pair<UMLClassifier, UMLClassifier> association : patternMapper.getRelationships(Relationship.ASSOCIATION)){
                 if (rbmlMapping.getUmlArtifact().equals(association)){
                     //will be a pair.
-                    numStructuralConformingRoles++;
+                    numConformingStructuralRoles++;
                 }
             }
             for (Pair<UMLClassifier, UMLClassifier> generalization : patternMapper.getRelationships(Relationship.GENERALIZATION)){
                 if (rbmlMapping.getUmlArtifact().equals(generalization)){
                     //will be a pair.
-                    numStructuralConformingRoles++;
+                    numConformingStructuralRoles++;
                 }
             }
             for (Pair<UMLClassifier, UMLClassifier> dependency : patternMapper.getRelationships(Relationship.DEPENDENCY)){
                 if (rbmlMapping.getUmlArtifact().equals(dependency)){
                     //will be a pair.
-                    numStructuralConformingRoles++;
+                    numConformingStructuralRoles++;
                 }
             }
             for (Pair<UMLClassifier, UMLClassifier> realization : patternMapper.getRelationships(Relationship.REALIZATION)){
                 if (rbmlMapping.getUmlArtifact().equals(realization)){
                     //will be a pair.
-                    numStructuralConformingRoles++;
+                    numConformingStructuralRoles++;
                 }
             }
         }
     }
 
-    private void calcNumNonStructuralConformingRoles(){
+    private void calcNumNonConformingStructuralRoles(){
         for (Role role : sps.getAllRoles()){
             boolean roleHasBeenMapped = false;
             for (RBMLMapping rbmlMapping : rbmlStructuralMappings){
@@ -159,32 +163,49 @@ public class MetricSuite {
                 }
             }
             if (!roleHasBeenMapped){
-                numStructuralNonConformingRoles++;
+                numNonConformingStructuralRoles++;
             }
         }
     }
 
-    private void calcNumBehavioralConformingRoles(){
-        for (Pair<UMLOperation, BehaviorConformance> conforming : rbmlBehavioralMappings){
-            numBehavioralConformingRoles += conforming.getRight().getBehavioralSatisfactions().size();
+    private void calcNumConformingBehavioralRoles(){
+        List<InteractionRole> seenAlready = new ArrayList<>();
+        for (Pair<UMLOperation, BehaviorConformance> mapping : rbmlBehavioralMappings){
+            for (Pair<CallTreeNode, InteractionRole> pair : mapping.getRight().getRoleMap()){
+                if (!seenAlready.contains(pair.getRight())){
+                    seenAlready.add(pair.getRight());
+                }
+            }
         }
+        numConformingBehavioralRoles = seenAlready.size();
     }
 
-    private void calcNumNonBehavioralConformingRoles(){
-        for (Pair<UMLOperation, BehaviorConformance> nonConforming : rbmlBehavioralMappings){
-            numBehavioralNonConformingRoles += nonConforming.getRight().getBehavioralGrime().size();
+    private void calcNumNonConformingBehavioralRoles(){
+        List<InteractionRole> seenAlready = new ArrayList<>();
+        for (Pair<UMLOperation, BehaviorConformance> mapping : rbmlBehavioralMappings){
+            for (InteractionRole interactionRole : mapping.getRight().getBehavioralViolations()){
+                if (!seenAlready.contains(interactionRole)){
+                    seenAlready.add(interactionRole);
+                }
+            }
         }
+        numNonConformingBehavioralRoles = seenAlready.size();
+    }
+    
+    private void calcNumConformingRolesTotal(){
+        numConformingRolesTotal = numConformingBehavioralRoles + numConformingStructuralRoles;
+
+    }
+
+    private void calcNumNonConformingRolesTotal(){
+        numNonConformingRolesTotal = numNonConformingBehavioralRoles + numNonConformingStructuralRoles;
     }
 
     private void calcSSize2(){
         for (Pair<String, UMLClassifier> umlClassifierPair : patternMapper.getClassifierModelBlocks()){
             UMLClassifier umlClassifier = umlClassifierPair.getValue();
-            for (UMLAttribute attribute : umlClassifier.getAttributes()){
-                ssize2++;
-            }
-            for (UMLOperation operation : umlClassifier.getOperations()){
-                ssize2++;
-            }
+            ssize2 += umlClassifier.getAttributes().size();
+            ssize2 += umlClassifier.getOperations().size();
         }
     }
 
@@ -215,11 +236,26 @@ public class MetricSuite {
     }
 
     //defined as percentage of conforming pattern roles out of whole.
+    private void calcPatternStructuralIntegrity(){
+        DecimalFormat df2 = new DecimalFormat("#.##");
+        double unformattedIntegrity = ((double) numConformingStructuralRoles) / (numConformingStructuralRoles + numNonConformingStructuralRoles);
+        patternStructuralIntegrity = df2.format(unformattedIntegrity);
+    }
+
+    //defined as percentage of conforming pattern roles out of whole.
+    private void calcPatternBehavioralIntegrity(){
+        DecimalFormat df2 = new DecimalFormat("#.##");
+        double unformattedIntegrity = ((double) numConformingBehavioralRoles) / (numConformingBehavioralRoles + numNonConformingBehavioralRoles);
+        patternBehavioralIntegrity = df2.format(unformattedIntegrity);
+    }
+
+    //defined as percentage of conforming pattern roles out of whole.
     private void calcPatternIntegrity(){
         DecimalFormat df2 = new DecimalFormat("#.##");
-        double unformattedIntegrity = ((double) numStructuralConformingRoles) / (numStructuralConformingRoles + numStructuralNonConformingRoles);
+        double unformattedIntegrity = ((double) numConformingStructuralRoles + (double) numConformingBehavioralRoles) / (numConformingStructuralRoles + numNonConformingStructuralRoles + numConformingBehavioralRoles + numNonConformingBehavioralRoles);
         patternIntegrity = df2.format(unformattedIntegrity);
     }
+
 
     private void calcPatternInstability(){
         DecimalFormat df2 = new DecimalFormat("#.##");
@@ -246,21 +282,25 @@ public class MetricSuite {
 
 
     public String getSummary(){
-        String separator = ", ";
+        String separator = "\t";
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(Main.projectID + separator);
         stringBuilder.append(patternMapper.getPi().getSoftwareVersion().getVersionNum() + separator);
         stringBuilder.append(patternMapper.getPi().getPatternType() + separator);
         stringBuilder.append(patternMapper.getPi().getUniqueID() + separator);
         stringBuilder.append(this.getNumParticipatingClasses() + separator);
-        stringBuilder.append(this.getNumStructuralConformingRoles() + separator);
-        stringBuilder.append(this.getNumStructuralNonConformingRoles() + separator);
-        stringBuilder.append(this.getNumBehavioralConformingRoles() + separator);
-        stringBuilder.append(this.getNumBehavioralNonConformingRoles() + separator);
+        stringBuilder.append(this.getNumConformingStructuralRoles() + separator);
+        stringBuilder.append(this.getNumNonConformingStructuralRoles() + separator);
+        stringBuilder.append(this.getNumConformingBehavioralRoles() + separator);
+        stringBuilder.append(this.getNumNonConformingBehavioralRoles() + separator);
+        stringBuilder.append(this.getNumConformingRolesTotal() + separator);
+        stringBuilder.append(this.getNumNonConformingRolesTotal() + separator);
         stringBuilder.append(this.getSsize2() + separator);
         stringBuilder.append(this.getAfferentCoupling() + separator);
         stringBuilder.append(this.getEfferentCoupling() + separator);
         stringBuilder.append(this.getCouplingBetweenPatternClasses() + separator);
+        stringBuilder.append(this.getPatternStructuralIntegrity() + separator);
+        stringBuilder.append(this.getPatternBehavioralIntegrity() + separator);
         stringBuilder.append(this.getPatternIntegrity() + separator);
         stringBuilder.append(this.getPatternInstability());
         stringBuilder.append("\n");

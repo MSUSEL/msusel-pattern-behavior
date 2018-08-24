@@ -20,6 +20,7 @@ public class BehaviorConformance {
     private List<MutablePair<CallTreeNode, InteractionRole>> presenceMap;
     //role map is basically the same as the presence map, but with all non-pattern behaviors removed. Its a collapsed presence map.
     private List<Pair<CallTreeNode, InteractionRole>> roleMap;
+
     private IPS ips;
     private List<CallTreeNode<String>> callTreeAsList;
     private List<RBMLMapping> structureMappings;
