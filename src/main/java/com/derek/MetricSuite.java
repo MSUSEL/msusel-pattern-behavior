@@ -76,12 +76,17 @@ public class MetricSuite {
     //pattern instability, defined as (efferentCoupling) / (afferentCoupling + efferentCoupling)
     private String patternInstability = "";
 
+
+    private GrimeSuite grimeSuite;
+
+
     public MetricSuite(List<RBMLMapping> rbmlStructuralMappings, PatternMapper patternMapper, SPS sps, List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings, IPS ips){
         this.patternMapper = patternMapper;
         this.rbmlStructuralMappings = rbmlStructuralMappings;
         this.sps = sps;
         this.rbmlBehavioralMappings = rbmlBehavioralMappings;
         this.ips = ips;
+        grimeSuite = new GrimeSuite(patternMapper, rbmlStructuralMappings, sps, rbmlBehavioralMappings, ips);
         calculate();
     }
 
