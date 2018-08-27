@@ -53,6 +53,13 @@ public class RBMLMapping<T> {
         return null;
     }
 
+    public Pair<UMLClassifier, UMLClassifier> getRelationshipArtifact(){
+        if (umlArtifact instanceof Pair){
+            return (Pair<UMLClassifier, UMLClassifier>) umlArtifact;
+        }
+        return null;
+    }
+
     public void printSummary(){
         System.out.println("RBML mapping from RBML element: " + mappedPair.getKey().getName() + " to " + mappedPair.getValue());
     }

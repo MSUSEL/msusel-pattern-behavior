@@ -283,6 +283,11 @@ public abstract class PatternMapper {
 
     protected abstract String getPatternCommonNamesFileName();
 
+    /***
+     * i don't know what this method does.
+     * @param relationship
+     * @return
+     */
     public List<Pair<UMLClassifier, UMLClassifier>> getRelationships(Relationship relationship){
         List<Pair<UMLClassifier, UMLClassifier>> relationships = new ArrayList<>();
         for (Pair<String, UMLClassifier> self : getClassifierModelBlocks()) {
@@ -373,4 +378,23 @@ public abstract class PatternMapper {
 
         return null;
     }
+
+    protected boolean areRelationshipsEqual(Pair<UMLClassifier, UMLClassifier> one, Pair<UMLClassifier, UMLClassifier> two){
+        boolean toRet = false;
+        if (one.getLeft().equals(two.getLeft())){
+            if (one.getRight().equals(two.getRight())){
+                toRet = true;
+            }
+        }
+        return toRet;
+    }
+
+    protected List<UMLClassifier> getAllParticipatingClassifiersOnlyUMLClassifiers(){
+        List<UMLClassifier> classifiers = new ArrayList<>();
+        for (Pair<String, UMLClassifier> classifierPair : this.getAllClassifierModelBlocks()){
+            classifiers.add(classifierPair.getRight());
+        }
+        return classifiers;
+    }
+
 }
