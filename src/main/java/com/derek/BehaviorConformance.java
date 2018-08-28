@@ -167,6 +167,12 @@ public class BehaviorConformance {
                                     varMappings.add(varMapping);
                                     //technically varMapping things are structural mappings, becuase they are variable declaration mappings.
                                     //however, I ultimately need to check their calls, which would be behavioral mappings
+
+                                    //can't I add the varMapping as a use dependency here?
+                                    //no, because I am iterating through all the rbml. any use dependencies would only be rbml-conforming ones.
+                                    //Rationale: I am going through the call tree nodes (which only exist for the scope of a function,
+                                    //or constructor. If I have a decl here, it means it is a use dependency between the function taht owns
+                                    //this call tree, and the decl type.
                                 }
                             }
                         }

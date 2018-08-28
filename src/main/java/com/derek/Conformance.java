@@ -206,6 +206,9 @@ public class Conformance {
                         //will be null if the IPS does not include this mapping.. and in this case we should ignore it.
                         behaviorMappings.add(new ImmutablePair<>(mappedOperation, behaviorConformance));
                     }
+                    //no, to the comment below.
+                    //here is where I should add the use dependency, based on behaviorConforamnce.varMapping.getUMLArtifact.
+
                 }
             }
         }

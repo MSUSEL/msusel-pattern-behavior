@@ -106,8 +106,6 @@ public class Main {
         cpt.runAnalysis();
     }
 
-
-
     public static void main(String[] args) {
         new Main();
     }

@@ -38,15 +38,16 @@ public class GrimeSuite {
     private int iepgGrimeCount = 0;
     private int iesgGrimeCount = 0;
 
-    //structural modular grime instances. When I want to calculate I will just call this.size();
+    //structural modular grime instances (persistent grime). When I want to calculate I will just call this.size();
     private List<Pair<UMLClassifier, UMLClassifier>> piGrimeInstances;
     private List<Pair<UMLClassifier, UMLClassifier>> peaGrimeInstances;
     private List<Pair<UMLClassifier, UMLClassifier>> peeGrimeInstances;
 
-    //temporyar - TODO
-    private int tiGrimeCount = 0;
-    private int teaGrimeCount = 0;
-    private int teeGrimeCount = 0;
+    //structural modular grime instances (temporary grime). When I want to calculate I will just call this.size();
+    private List<Pair<UMLClassifier, UMLClassifier>> tiGrimeInstances;
+    private List<Pair<UMLClassifier, UMLClassifier>> teaGrimeInstances;
+    private List<Pair<UMLClassifier, UMLClassifier>> teeGrimeInstances;
+
 
     public GrimeSuite(PatternMapper patternMapper, List<RBMLMapping> rbmlStructuralMappings, SPS sps, List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings, IPS ips) {
         this.patternMapper = patternMapper;
@@ -58,19 +59,18 @@ public class GrimeSuite {
     }
 
     private void calculateModularGrime(){
-        findPersistentGrime();
-    }
-
-
-    private void findPersistentGrime(){ //-- unwanted association relationships to pattern classes.
-        //just use structure for this.
-        //strategty: loop through all mapped relationships, if a relationship exists in a pattern that isn't in the mapping, its grime.
-
         //class variable initializations
         piGrimeInstances = new ArrayList<>();
         peaGrimeInstances = new ArrayList<>();
         peeGrimeInstances = new ArrayList<>();
+        tiGrimeInstances = new ArrayList<>();
+        teaGrimeInstances = new ArrayList<>();
+        teeGrimeInstances = new ArrayList<>();
+        findModularGrime(piGrimeInstances, peaGrimeInstances, peeGrimeInstances, Relationship.ASSOCIATION);
+        findModularGrime(tiGrimeInstances, teaGrimeInstances, teeGrimeInstances, Relationship.DEPENDENCY);
+    }
 
+    private void findModularGrime(List<Pair<UMLClassifier, UMLClassifier>> internal, List<Pair<UMLClassifier, UMLClassifier>> afferent, List<Pair<UMLClassifier, UMLClassifier>> efferent, Relationship relationshipType){
         List<Pair<UMLClassifier, UMLClassifier>> validRBMLMappings = new ArrayList<>();
 
         for (RBMLMapping structuralMapping : rbmlStructuralMappings){
@@ -81,7 +81,7 @@ public class GrimeSuite {
             }
         }
 
-        for (Pair<UMLClassifier, UMLClassifier> patternRelationship : patternMapper.getRelationships(Relationship.ASSOCIATION)){
+        for (Pair<UMLClassifier, UMLClassifier> patternRelationship : patternMapper.getRelationships(relationshipType)){
             //3 cases - relationship is between pattern classes (could be internal grime) (could be external and efferent) (could be external and afferent)
             //pi first
             boolean relationshipExistsInRBML = false;
@@ -95,21 +95,19 @@ public class GrimeSuite {
                 if (patternMapper.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(patternRelationship.getLeft())){
                     if (patternMapper.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(patternRelationship.getRight())){
                         //pi.
-                        piGrimeInstances.add(patternRelationship);
+                        internal.add(patternRelationship);
+                        System.out.println("Added internal grime: " + patternRelationship.getLeft().getName() + " to " + patternRelationship.getRight().getName() + " as " + relationshipType);
                     } else {
                         //relationship points from pattern member -> non-pattern member. (efferent)
-                        peeGrimeInstances.add(patternRelationship);
+                        efferent.add(patternRelationship);
+                        System.out.println("Added efferent grime: " + patternRelationship.getLeft().getName() + "  to " + patternRelationship.getRight().getName() + " as " + relationshipType);
                     }
                 } else {
                     //relationship points from non-pattern member -> pattern member (afferent)
-                    peaGrimeInstances.add(patternRelationship);
+                    afferent.add(patternRelationship);
+                    System.out.println("Added afferent grime: " + patternRelationship.getLeft().getName() + "  to " + patternRelationship.getRight().getName() + " as " + relationshipType);
                 }
             }
         }
     }
-
-
-
-
-
 }

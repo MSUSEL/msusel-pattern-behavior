@@ -29,6 +29,7 @@ import com.derek.uml.srcML.SrcMLBlock;
 import com.derek.uml.srcML.SrcMLClass;
 import com.derek.uml.srcML.SrcMLEnum;
 import com.derek.uml.srcML.SrcMLInterface;
+import com.sun.org.apache.regexp.internal.RE;
 import lombok.Getter;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -60,9 +61,6 @@ public class UMLGenerator {
         //apss 3 is building relationship types.
         pass3();
 
-        //pass 4 is building sequence diagram stuff
-        pass4();
-
         PlantUMLTransformer pltTransformer = new PlantUMLTransformer(umlClassDiagram, umlSequenceDiagram);
         //used to print plantuml
         pltTransformer.generateClassDiagram();
@@ -85,18 +83,6 @@ public class UMLGenerator {
         placeRelationships();
     }
 
-    private void pass4(){
-        //upon further thought, I don't know if I need pass 4.
-        //pass 4 would build sequence diagrams FOR EVERY operation in the application. What I really need is sequence diagrams
-        //only for pattern behaviors.
-        //buildSequenceDiagram();
-
-    }
-
-    private void buildSequenceDiagram(){
-        System.out.println("Generating sequence diagram");
-        UMLBehaviorGenerator behaviorGenerator = new UMLBehaviorGenerator(umlClassDiagram);
-    }
 
     private void connectPackageStructure(){
         umlClassDiagram.buildPackageTree();
@@ -199,7 +185,6 @@ public class UMLGenerator {
                 }
             }
             for (UMLOperation operation : umlClassifier.getOperations()){
-
                 //standard operation relationships
                 if (operation.getType() != null) {
                     if (umlClassDiagram.getClassDiagram().nodes().contains(operation.getType())){
@@ -215,6 +200,7 @@ public class UMLGenerator {
                         }
                     }
                 }
+                assignUseDependencies(umlClassifier, operation);
             }
             for (UMLClassifier parent : umlClassifier.getExtendsParents()){
                 if (umlClassDiagram.getClassDiagram().nodes().contains(parent)){
@@ -224,6 +210,22 @@ public class UMLGenerator {
             for (UMLClassifier parent : umlClassifier.getImplementsParents()){
                 if (umlClassDiagram.getClassDiagram().nodes().contains(parent)){
                     umlClassDiagram.addRelationshipToDiagram(umlClassifier, parent, Relationship.REALIZATION);
+                }
+            }
+        }
+    }
+
+    private void assignUseDependencies(UMLClassifier owningClassifier, UMLOperation operation){
+        if (operation.getCallTreeString() != null) {
+            for (CallTreeNode callTreeNode : operation.getCallTreeString().convertMeToOrderedList()) {
+                if (callTreeNode.getTagName().contains("decl{")) {
+                    String declType = callTreeNode.parseDeclTagName();
+                    UMLClassifier connector = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, owningClassifier, declType);
+                    if (umlClassDiagram.getClassDiagram().nodes().contains(connector)) {
+                        //make sure it already exists in our classes.. third party classes don't count.
+                        umlClassDiagram.addRelationshipToDiagram(owningClassifier, connector, Relationship.DEPENDENCY);
+                        //problem is that I can't seem to make hypergraphs... It seems that I need to pick ONE relationship between any two nodes.
+                    }
                 }
             }
         }

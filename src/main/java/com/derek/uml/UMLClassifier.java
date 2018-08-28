@@ -65,4 +65,8 @@ public abstract class UMLClassifier {
 
     public abstract List<UMLClassifier> getExtendsParents();
     public abstract List<UMLClassifier> getImplementsParents();
+
+    public String toString(){
+        return name + " as a " + identifier;
+    }
 }
