@@ -24,6 +24,7 @@
  */
 package com.derek.uml;
 
+import com.google.common.graph.MutableNetwork;
 import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.ValueGraphBuilder;
 import lombok.Getter;
@@ -40,6 +41,7 @@ public class UMLClassDiagram {
     //while it is true that UML can do ternary relationships, which would be represented as e = <v1,v2,v3>,
     //I assume this wont happen, and if it does I will improvise, adapt, overcome
     private MutableValueGraph<UMLClassifier, Relationship> classDiagram;
+
     @Setter
     private PackageTree packageTree;
 

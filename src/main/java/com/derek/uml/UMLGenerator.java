@@ -223,6 +223,10 @@ public class UMLGenerator {
                     UMLClassifier connector = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, owningClassifier, declType);
                     if (umlClassDiagram.getClassDiagram().nodes().contains(connector)) {
                         //make sure it already exists in our classes.. third party classes don't count.
+                        if (umlClassDiagram.getClassDiagram().hasEdgeConnecting(owningClassifier, connector)){
+                            //already a relationship here -- look at adding something else. idk man. hard problem.
+                            //umlClassDiagram.getClassDiagram().putEdgeValue(owningClassifier, connector, Relationship.DEPENDENCY);
+                        }
                         umlClassDiagram.addRelationshipToDiagram(owningClassifier, connector, Relationship.DEPENDENCY);
                         //problem is that I can't seem to make hypergraphs... It seems that I need to pick ONE relationship between any two nodes.
                     }
