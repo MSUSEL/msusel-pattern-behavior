@@ -98,12 +98,12 @@ public class Conformance {
 
     public List<RBMLMapping> mapRelationships(List<RBMLMapping> structuralMappings){
         List<RBMLMapping> relationshipMappings = new ArrayList<>();
-        List<RBMLMapping> associationMappings = mapRelationships(structuralMappings, sps.getAssociationRoles(), Relationship.ASSOCIATION);
-        List<RBMLMapping> generalizationMappings = mapRelationships(structuralMappings, sps.getGeneralizationRoles(), Relationship.GENERALIZATION);
-        List<RBMLMapping> dependencyMappings = mapRelationships(structuralMappings, sps.getDependencyRoles(), Relationship.DEPENDENCY);
-        List<RBMLMapping> realizationMappings = mapRelationships(structuralMappings, sps.getImplementationRoles(), Relationship.REALIZATION);
-        List<RBMLMapping> realizationOrGeneralizationMappings = mapRelationships(structuralMappings, sps.getImplementationOrGeneralizationRoles(), Relationship.GENERALIZATION);
-        realizationOrGeneralizationMappings.addAll(mapRelationships(structuralMappings, sps.getImplementationOrGeneralizationRoles(), Relationship.REALIZATION));
+        List<RBMLMapping> associationMappings = mapRelationships(structuralMappings, sps.getAssociationRoles(), RelationshipType.ASSOCIATION);
+        List<RBMLMapping> generalizationMappings = mapRelationships(structuralMappings, sps.getGeneralizationRoles(), RelationshipType.GENERALIZATION);
+        List<RBMLMapping> dependencyMappings = mapRelationships(structuralMappings, sps.getDependencyRoles(), RelationshipType.DEPENDENCY);
+        List<RBMLMapping> realizationMappings = mapRelationships(structuralMappings, sps.getImplementationRoles(), RelationshipType.REALIZATION);
+        List<RBMLMapping> realizationOrGeneralizationMappings = mapRelationships(structuralMappings, sps.getImplementationOrGeneralizationRoles(), RelationshipType.GENERALIZATION);
+        realizationOrGeneralizationMappings.addAll(mapRelationships(structuralMappings, sps.getImplementationOrGeneralizationRoles(), RelationshipType.REALIZATION));
 
         relationshipMappings.addAll(associationMappings);
         relationshipMappings.addAll(generalizationMappings);
@@ -114,7 +114,7 @@ public class Conformance {
         return relationshipMappings;
     }
 
-    private List<RBMLMapping> mapRelationships(List<RBMLMapping> structuralMappings, List<RelationshipRole> relationshipRoles, Relationship relationship){
+    private List<RBMLMapping> mapRelationships(List<RBMLMapping> structuralMappings, List<RelationshipRole> relationshipRoles, RelationshipType relationshipType){
         List<RBMLMapping> associationMappings = new ArrayList<>();
         for (RelationshipRole relationshipRole : relationshipRoles){
             for (Pair<String, UMLClassifier> modelBlockPair : patternInstance.getAllParticipatingClasses()){
@@ -126,15 +126,16 @@ public class Conformance {
                         //will be null if the role was not mapped in the first place.
                         UMLClassifier mappedRoleEndpoint = (UMLClassifier)endpointMap.getMappedPair().getValue();
                         if (umlClassDiagram.getClassDiagram().hasEdgeConnecting(modelBlockPair.getValue(), mappedRoleEndpoint)) {
-                            if (umlClassDiagram.getClassDiagram().edgeConnecting(modelBlockPair.getValue(), mappedRoleEndpoint).get().equals(relationship)) {
-                                //omg. found a relationship mapping finally.
-                                //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
-                                associationMappings.add(new RBMLMapping(relationshipRole, new ImmutablePair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));
+                            for (Relationship r : umlClassDiagram.getClassDiagram().edgesConnecting(modelBlockPair.getValue(), mappedRoleEndpoint)){
+                                if (r.getRelationshipType() == relationshipType){
+                                    //omg. found a relationship mapping finally.
+                                    associationMappings.add(new RBMLMapping(relationshipRole, umlClassDiagram.getRelationshipFromClassDiagram(modelBlockPair.getValue(), mappedRoleEndpoint, relationshipType)));
+                                }else{
+                                    //I get here when a pattern class has a wildcard or generics definition AND the pattern4 tool does not properly
+                                    //identify the correct data type ... idk how to properly fix this at this point in time, so I might just
+                                    //consider tossing the pattern out if this is ever the case....
+                                }
                             }
-                        } else {
-                            //I get here when a pattern class has a wildcard or generics definition AND the pattern4 tool does not properly
-                            //identify the correct data type ... idk how to properly fix this at this point in time, so I might just
-                            //consider tossing the pattern out if this is ever the case....
                         }
 
                     }
@@ -274,4 +275,5 @@ public class Conformance {
         //might happen if structural role was not mapped in the first place.
         return null;
     }
+
 }

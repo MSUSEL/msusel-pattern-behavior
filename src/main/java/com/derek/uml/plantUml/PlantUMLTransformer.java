@@ -81,7 +81,7 @@ public class PlantUMLTransformer {
             for (UMLClassifier adjacent : umlClassDiagram.getClassDiagram().adjacentNodes(umlClassifier)){
                 for (Relationship r : umlClassDiagram.getClassDiagram().edgesConnecting(umlClassifier, adjacent)){
                     output.append(umlClassifier.getName() + " ");
-                    output.append(r.plantUMLTransform() + " ");
+                    output.append(r.getRelationshipType().plantUMLTransform() + " ");
                     output.append(adjacent.getName() + "\n");
                 }
             }

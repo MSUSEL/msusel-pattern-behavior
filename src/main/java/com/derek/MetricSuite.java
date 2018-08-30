@@ -132,25 +132,25 @@ public class MetricSuite {
                     numConformingStructuralRoles++;
                 }
             }
-            for (Pair<UMLClassifier, UMLClassifier> association : patternMapper.getRelationships(Relationship.ASSOCIATION)){
+            for (Relationship association : patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.ASSOCIATION)){
                 if (rbmlMapping.getUmlArtifact().equals(association)){
                     //will be a pair.
                     numConformingStructuralRoles++;
                 }
             }
-            for (Pair<UMLClassifier, UMLClassifier> generalization : patternMapper.getRelationships(Relationship.GENERALIZATION)){
+            for (Relationship generalization : patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.GENERALIZATION)){
                 if (rbmlMapping.getUmlArtifact().equals(generalization)){
                     //will be a pair.
                     numConformingStructuralRoles++;
                 }
             }
-            for (Pair<UMLClassifier, UMLClassifier> dependency : patternMapper.getRelationships(Relationship.DEPENDENCY)){
+            for (Relationship dependency : patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.DEPENDENCY)){
                 if (rbmlMapping.getUmlArtifact().equals(dependency)){
                     //will be a pair.
                     numConformingStructuralRoles++;
                 }
             }
-            for (Pair<UMLClassifier, UMLClassifier> realization : patternMapper.getRelationships(Relationship.REALIZATION)){
+            for (Relationship realization : patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.REALIZATION)){
                 if (rbmlMapping.getUmlArtifact().equals(realization)){
                     //will be a pair.
                     numConformingStructuralRoles++;
@@ -216,8 +216,8 @@ public class MetricSuite {
 
     private void calcAfferentCoupling(){
         //afferent means the value of the pair is a pattern class. (nonpattern_class -> pattern_class)
-        for (Pair<UMLClassifier, UMLClassifier> classifierPair : patternMapper.getRelationships(Relationship.ASSOCIATION)){
-            if (!isClassifierInPatternInstance(classifierPair.getKey())){
+        for (Relationship classifierPair : patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.ASSOCIATION)){
+            if (!isClassifierInPatternInstance(classifierPair.getFrom())){
                 afferentCoupling++;
             }
         }
@@ -225,16 +225,16 @@ public class MetricSuite {
 
     private void calcEfferentCoupling(){
         //efferent means the key of the pair is a pattern class. (pattern_class -> nonpattern_class)
-        for (Pair<UMLClassifier, UMLClassifier> classifierPair : patternMapper.getRelationships(Relationship.ASSOCIATION)){
-            if (!isClassifierInPatternInstance(classifierPair.getValue())){
+        for (Relationship classifierPair : patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.ASSOCIATION)){
+            if (!isClassifierInPatternInstance(classifierPair.getTo())){
                 efferentCoupling++;
             }
         }
     }
 
     private void calcCouplingPatternClasses(){
-        for (Pair<UMLClassifier, UMLClassifier> classifierPair : patternMapper.getRelationships(Relationship.ASSOCIATION)){
-            if (isClassifierInPatternInstance(classifierPair.getKey()) && isClassifierInPatternInstance(classifierPair.getValue())){
+        for (Relationship classifierPair : patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.ASSOCIATION)){
+            if (isClassifierInPatternInstance(classifierPair.getFrom()) && isClassifierInPatternInstance(classifierPair.getTo())){
                 couplingBetweenPatternClasses++;
             }
         }

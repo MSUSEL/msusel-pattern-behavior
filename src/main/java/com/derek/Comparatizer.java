@@ -260,46 +260,46 @@ public class Comparatizer {
                         }
                     }
                 }
-                for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.ASSOCIATION)) {
+                for (Relationship attribute : patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.ASSOCIATION)) {
                     for (RBMLMapping rbmlMapping : rbmlStructureMappings){
-                        if (rbmlMapping.getUmlArtifact() instanceof  Pair){
+                        Relationship relationship = rbmlMapping.getRelationshipArtifact();
+                        if (relationship != null){
                             //this is a relationship
-                            Pair<UMLClassifier, UMLClassifier> pair = (Pair<UMLClassifier, UMLClassifier>)rbmlMapping.getUmlArtifact();
-                            if (pair.getKey().equals(attribute.getKey()) && pair.getValue().equals(attribute.getValue())){
-                                output.append("Association role mapped from " + pair.getKey().getName() + " to " + pair.getValue().getName() + "\n");
+                            if (relationship.equals(attribute)){
+                                output.append("Association role mapped from " + relationship.toString());
                             }
                         }
                     }
                 }
-                for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.GENERALIZATION)) {
+                for (Relationship attribute : patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.GENERALIZATION)) {
                     for (RBMLMapping rbmlMapping : rbmlStructureMappings){
-                        if (rbmlMapping.getUmlArtifact() instanceof  Pair){
+                        Relationship relationship = rbmlMapping.getRelationshipArtifact();
+                        if (relationship != null){
                             //this is a relationship
-                            Pair<UMLClassifier, UMLClassifier> pair = (Pair<UMLClassifier, UMLClassifier>)rbmlMapping.getUmlArtifact();
-                            if (pair.getKey().equals(attribute.getKey()) && pair.getValue().equals(attribute.getValue())){
-                                output.append("Generalization role mapped from " + pair.getKey().getName() + " to " + pair.getValue().getName() + "\n");
+                            if (relationship.equals(attribute)){
+                                output.append("Generalization role mapped from " + relationship.toString());
                             }
                         }
                     }
                 }
-                for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.REALIZATION)) {
+                for (Relationship attribute : patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.REALIZATION)) {
                     for (RBMLMapping rbmlMapping : rbmlStructureMappings){
-                        if (rbmlMapping.getUmlArtifact() instanceof  Pair){
+                        Relationship relationship = rbmlMapping.getRelationshipArtifact();
+                        if (relationship != null){
                             //this is a relationship
-                            Pair<UMLClassifier, UMLClassifier> pair = (Pair<UMLClassifier, UMLClassifier>)rbmlMapping.getUmlArtifact();
-                            if (pair.getKey().equals(attribute.getKey()) && pair.getValue().equals(attribute.getValue())){
-                                output.append("Realization role mapped from " + pair.getKey().getName() + " to " + pair.getValue().getName() + "\n");
+                            if (relationship.equals(attribute)){
+                                output.append("Realization role mapped from " + relationship.toString());
                             }
                         }
                     }
                 }
-                for (Pair<UMLClassifier, UMLClassifier> attribute : patternMapper.getRelationships(Relationship.DEPENDENCY)) {
+                for (Relationship attribute : patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.DEPENDENCY)) {
                     for (RBMLMapping rbmlMapping : rbmlStructureMappings){
-                        if (rbmlMapping.getUmlArtifact() instanceof  Pair){
+                        Relationship relationship = rbmlMapping.getRelationshipArtifact();
+                        if (relationship != null){
                             //this is a relationship
-                            Pair<UMLClassifier, UMLClassifier> pair = (Pair<UMLClassifier, UMLClassifier>)rbmlMapping.getUmlArtifact();
-                            if (pair.getKey().equals(attribute.getKey()) && pair.getValue().equals(attribute.getValue())){
-                                output.append("Dependency role mapped from " + pair.getKey().getName() + " to " + pair.getValue().getName() + "\n");
+                            if (relationship.equals(attribute)){
+                                output.append("Dependency role mapped from " + relationship.toString());
                             }
                         }
                     }

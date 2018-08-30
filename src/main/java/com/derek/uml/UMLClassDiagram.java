@@ -25,15 +25,12 @@
 package com.derek.uml;
 
 import com.google.common.graph.MutableNetwork;
-import com.google.common.graph.MutableValueGraph;
 import com.google.common.graph.NetworkBuilder;
-import com.google.common.graph.ValueGraphBuilder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Getter
 public class UMLClassDiagram {
@@ -51,8 +48,9 @@ public class UMLClassDiagram {
                 //ValueGraphBuilder.directed().allowsSelfLoops(true).build();
     }
 
-    public void addRelationshipToDiagram(UMLClassifier from, UMLClassifier to, Relationship relationship){
-        classDiagram.addEdge(from, to, relationship);
+    public void addRelationshipToDiagram(UMLClassifier from, UMLClassifier to, RelationshipType relationshipType){
+        Relationship newRelationship = new Relationship(from, to, relationshipType);
+        classDiagram.addEdge(from, to, newRelationship);
     }
 
     //add class without edges; should be used for testing primarily.
@@ -76,10 +74,10 @@ public class UMLClassDiagram {
         }
         List<UMLClassifier> immediateChildren = new ArrayList<>();
         for (UMLClassifier potentialChild : classDiagram.nodes()){
-            Optional<Relationship> isEdge = classDiagram.edgeConnecting(potentialChild, umlClassifier);
-            if (isEdge.isPresent() && (isEdge.get() == Relationship.GENERALIZATION || isEdge.get() == Relationship.REALIZATION)){
-                //found a generalization
-                immediateChildren.add(potentialChild);
+            for (Relationship possibleEdge : classDiagram.edgesConnecting(potentialChild, umlClassifier)){
+                if (possibleEdge.getRelationshipType() == RelationshipType.GENERALIZATION || possibleEdge.getRelationshipType() == RelationshipType.REALIZATION){
+                    immediateChildren.add(potentialChild);
+                }
             }
         }
         children.addAll(immediateChildren);
@@ -88,6 +86,20 @@ public class UMLClassDiagram {
             children.addAll(getAllGeneralizationHierarchyChildren(immediateChild));
         }
         return children;
+    }
+
+    public Relationship getRelationshipFromClassDiagram(UMLClassifier from, UMLClassifier to, RelationshipType relationshipType){
+        for (Relationship r : classDiagram.edgesConnecting(from, to)){
+            if (r.getRelationshipType() == relationshipType){
+                return r;
+            }
+        }
+        //should not get here.
+
+        System.out.println("was not able to find relationship, when this relationship should already exist.");
+        System.out.println("Exiting");
+        System.exit(0);
+        return null;
     }
 
 }

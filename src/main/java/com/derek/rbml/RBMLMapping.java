@@ -24,6 +24,7 @@
  */
 package com.derek.rbml;
 
+import com.derek.uml.Relationship;
 import com.derek.uml.UMLClassifier;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -53,9 +54,9 @@ public class RBMLMapping<T> {
         return null;
     }
 
-    public Pair<UMLClassifier, UMLClassifier> getRelationshipArtifact(){
-        if (umlArtifact instanceof Pair){
-            return (Pair<UMLClassifier, UMLClassifier>) umlArtifact;
+    public Relationship getRelationshipArtifact(){
+        if (umlArtifact instanceof Relationship){
+            return (Relationship) umlArtifact;
         }
         return null;
     }

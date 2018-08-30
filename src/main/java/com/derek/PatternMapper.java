@@ -284,44 +284,55 @@ public abstract class PatternMapper {
     protected abstract String getPatternCommonNamesFileName();
 
     /***
-     * i don't know what this method does.
-     * @param relationship
+     * this method returns a list of unique relationship pais (of the type specified in the parameter)
+     * for all classifiers associated around (pointing to and away from, via uml class diagram) the pattern classifiers.
+     *
+     * @param relationshipType
      * @return
      */
-    public List<Pair<UMLClassifier, UMLClassifier>> getRelationships(Relationship relationship){
-        List<Pair<UMLClassifier, UMLClassifier>> relationships = new ArrayList<>();
+    public List<Relationship> getUniqueRelationshipsFromPatternClassifiers(RelationshipType relationshipType){
+        List<Relationship> relationships = new ArrayList<>();
         for (Pair<String, UMLClassifier> self : getClassifierModelBlocks()) {
+            //for all classifiers in teh pattern
             for (UMLClassifier predecessor : umlClassDiagram.getClassDiagram().predecessors(self.getValue())){
-                if (relationship.equals(umlClassDiagram.getClassDiagram().edgeConnecting(predecessor, self.getValue()).get())){
-                    boolean hasBeenAdded = false;
-                    Pair<UMLClassifier, UMLClassifier> potentialPair = new ImmutablePair<>(predecessor, self.getValue());
-                    for (Pair<UMLClassifier, UMLClassifier> existingPair : relationships){
-                        //check to see if already added
-                        if (existingPair.getKey().equals(potentialPair.getKey()) && existingPair.getValue().equals(potentialPair.getValue())){
-                            //already here.
-                            hasBeenAdded = true;
+                //for all predecessors of all classifiers in the pattern
+                for (Relationship r : umlClassDiagram.getClassDiagram().edgesConnecting(predecessor, self.getValue())){
+                    //for all relationships between the two (pred -> self)
+                    if (r.getRelationshipType() == relationshipType) {
+                        //same relationship type
+                        boolean hasBeenAdded = false;
+                        for (Relationship existingRelationship : relationships) {
+                            //check to see if already added
+                            if (existingRelationship.equals(r)) {
+                                //already here.
+                                hasBeenAdded = true;
+                            }
                         }
-                    }
-                    if (!hasBeenAdded) {
-                        //only add if unique.
-                        relationships.add(new ImmutablePair<>(predecessor, self.getValue()));
+                        if (!hasBeenAdded) {
+                            //only add if unique.
+                            relationships.add(r);
+                        }
                     }
                 }
             }
             for (UMLClassifier successor : umlClassDiagram.getClassDiagram().successors(self.getValue())){
-                if (relationship.equals(umlClassDiagram.getClassDiagram().edgeConnecting(self.getValue(), successor).get())){
-                    boolean hasBeenAdded = false;
-                    Pair<UMLClassifier, UMLClassifier> potentialPair = new ImmutablePair<>(self.getValue(), successor);
-                    for (Pair<UMLClassifier, UMLClassifier> existingPair : relationships){
-                        //check to see if already added
-                        if (existingPair.getKey().equals(potentialPair.getKey()) && existingPair.getValue().equals(potentialPair.getValue())){
-                            //already here.
-                            hasBeenAdded = true;
+                //for all predecessors of all classifiers in the pattern
+                for (Relationship r : umlClassDiagram.getClassDiagram().edgesConnecting(self.getValue(), successor)){
+                    //for all relationships between the two (pred -> self)
+                    if (r.getRelationshipType() == relationshipType) {
+                        //same relationship type
+                        boolean hasBeenAdded = false;
+                        for (Relationship existingRelationship : relationships) {
+                            //check to see if already added
+                            if (existingRelationship.equals(r)) {
+                                //already here.
+                                hasBeenAdded = true;
+                            }
                         }
-                    }
-                    if (!hasBeenAdded) {
-                        //only add if unique.
-                        relationships.add(new ImmutablePair<>(self.getValue(), successor));
+                        if (!hasBeenAdded) {
+                            //only add if unique.
+                            relationships.add(r);
+                        }
                     }
                 }
             }
@@ -379,15 +390,6 @@ public abstract class PatternMapper {
         return null;
     }
 
-    protected boolean areRelationshipsEqual(Pair<UMLClassifier, UMLClassifier> one, Pair<UMLClassifier, UMLClassifier> two){
-        boolean toRet = false;
-        if (one.getLeft().equals(two.getLeft())){
-            if (one.getRight().equals(two.getRight())){
-                toRet = true;
-            }
-        }
-        return toRet;
-    }
 
     protected List<UMLClassifier> getAllParticipatingClassifiersOnlyUMLClassifiers(){
         List<UMLClassifier> classifiers = new ArrayList<>();

@@ -24,12 +24,11 @@
  */
 package com.derek.rbml;
 
-import com.derek.uml.Relationship;
+import com.derek.uml.RelationshipType;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import lombok.Getter;
 
-import java.sql.Struct;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,7 +36,7 @@ import java.util.regex.Pattern;
 @Getter
 public class RelationshipRole extends Role {
 
-    private Relationship type;
+    private RelationshipType type;
     private Pair<String, String> connection1String;
     private Pair<StructuralRole, StructuralRole> connection1;
     private Pair<Integer, Integer> connection1Multiplicities;
@@ -68,23 +67,23 @@ public class RelationshipRole extends Role {
         parseRelationshipRoleNames(m.group(3));
     }
 
-    private Relationship getTypeFromString(String tempType){
+    private RelationshipType getTypeFromString(String tempType){
         switch (tempType){
             case "Association":
-                return Relationship.ASSOCIATION;
+                return RelationshipType.ASSOCIATION;
             case "Generalization":
-                return Relationship.GENERALIZATION;
+                return RelationshipType.GENERALIZATION;
             case "Dependency":
-                return Relationship.DEPENDENCY;
+                return RelationshipType.DEPENDENCY;
             case "Realization":
-                return Relationship.REALIZATION;
+                return RelationshipType.REALIZATION;
             case "Generalization||Realization":
-                return Relationship.UNSPECIFIED;
+                return RelationshipType.UNSPECIFIED;
             default:
                 System.out.println("did not find a type for the relationship descriptor. Likely an issue with the rbml text.");
         }
         System.exit(0);
-        return Relationship.UNSPECIFIED;
+        return RelationshipType.UNSPECIFIED;
     }
 
     private void parseRelationshipRoleNames(String roleNames){

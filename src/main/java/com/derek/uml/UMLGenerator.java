@@ -25,11 +25,7 @@
 package com.derek.uml;
 
 import com.derek.uml.plantUml.PlantUMLTransformer;
-import com.derek.uml.srcML.SrcMLBlock;
-import com.derek.uml.srcML.SrcMLClass;
-import com.derek.uml.srcML.SrcMLEnum;
-import com.derek.uml.srcML.SrcMLInterface;
-import com.sun.org.apache.regexp.internal.RE;
+import com.derek.uml.srcML.*;
 import lombok.Getter;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -180,7 +176,7 @@ public class UMLGenerator {
 
                 if (umlAttribute.getType() != null){
                     if (umlClassDiagram.getClassDiagram().nodes().contains(umlAttribute.getType())) {
-                        umlClassDiagram.addRelationshipToDiagram(umlClassifier, umlAttribute.getType(), Relationship.ASSOCIATION);
+                        umlClassDiagram.addRelationshipToDiagram(umlClassifier, umlAttribute.getType(), RelationshipType.ASSOCIATION);
                     }
                 }
             }
@@ -188,7 +184,7 @@ public class UMLGenerator {
                 //standard operation relationships
                 if (operation.getType() != null) {
                     if (umlClassDiagram.getClassDiagram().nodes().contains(operation.getType())){
-                        umlClassDiagram.addRelationshipToDiagram(umlClassifier, operation.getType(), Relationship.ASSOCIATION);
+                        umlClassDiagram.addRelationshipToDiagram(umlClassifier, operation.getType(), RelationshipType.ASSOCIATION);
                     }
                 }
                 //set params
@@ -196,7 +192,7 @@ public class UMLGenerator {
                 for (UMLClassifier param : operation.getParameters()){
                     if (param != null) {
                         if (umlClassDiagram.getClassDiagram().nodes().contains(param)){
-                            umlClassDiagram.addRelationshipToDiagram(umlClassifier, param, Relationship.ASSOCIATION);
+                            umlClassDiagram.addRelationshipToDiagram(umlClassifier, param, RelationshipType.ASSOCIATION);
                         }
                     }
                 }
@@ -204,12 +200,12 @@ public class UMLGenerator {
             }
             for (UMLClassifier parent : umlClassifier.getExtendsParents()){
                 if (umlClassDiagram.getClassDiagram().nodes().contains(parent)){
-                    umlClassDiagram.addRelationshipToDiagram(umlClassifier, parent, Relationship.GENERALIZATION);
+                    umlClassDiagram.addRelationshipToDiagram(umlClassifier, parent, RelationshipType.GENERALIZATION);
                 }
             }
             for (UMLClassifier parent : umlClassifier.getImplementsParents()){
                 if (umlClassDiagram.getClassDiagram().nodes().contains(parent)){
-                    umlClassDiagram.addRelationshipToDiagram(umlClassifier, parent, Relationship.REALIZATION);
+                    umlClassDiagram.addRelationshipToDiagram(umlClassifier, parent, RelationshipType.REALIZATION);
                 }
             }
         }
@@ -223,12 +219,7 @@ public class UMLGenerator {
                     UMLClassifier connector = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, owningClassifier, declType);
                     if (umlClassDiagram.getClassDiagram().nodes().contains(connector)) {
                         //make sure it already exists in our classes.. third party classes don't count.
-                        if (umlClassDiagram.getClassDiagram().hasEdgeConnecting(owningClassifier, connector)){
-                            //already a relationship here -- look at adding something else. idk man. hard problem.
-                            //umlClassDiagram.getClassDiagram().putEdgeValue(owningClassifier, connector, Relationship.DEPENDENCY);
-                        }
-                        umlClassDiagram.addRelationshipToDiagram(owningClassifier, connector, Relationship.DEPENDENCY);
-                        //problem is that I can't seem to make hypergraphs... It seems that I need to pick ONE relationship between any two nodes.
+                        umlClassDiagram.addRelationshipToDiagram(owningClassifier, connector, RelationshipType.DEPENDENCY);
                     }
                 }
             }

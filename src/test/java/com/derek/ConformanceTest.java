@@ -100,7 +100,7 @@ public class ConformanceTest {
                 new ArrayList<>(), false, new ArrayList<>(), new ArrayList<>(), "class");
         umlClassDiagram.addClassToDiagram(drawApplet);
         umlClassDiagram.addClassToDiagram(tool);
-        umlClassDiagram.addRelationshipToDiagram(drawApplet, tool, Relationship.ASSOCIATION);
+        umlClassDiagram.addRelationshipToDiagram(drawApplet, tool, RelationshipType.ASSOCIATION);
         PackageTree packageTree = new PackageTree();
         PackageTree.PackageNode root = packageTree.new PackageNode("CH", drawApplet);
         root.addClassifierAtThisLevel(tool);
@@ -133,7 +133,7 @@ public class ConformanceTest {
                 new ArrayList<>(), false, new ArrayList<>(), new ArrayList<>(), "class");
         umlClassDiagram.addClassToDiagram(lineConnection);
         umlClassDiagram.addClassToDiagram(connector);
-        umlClassDiagram.addRelationshipToDiagram(lineConnection, connector, Relationship.ASSOCIATION);
+        umlClassDiagram.addRelationshipToDiagram(lineConnection, connector, RelationshipType.ASSOCIATION);
         umlClassDiagram.buildPackageTree();
         return new StatePattern(pi, umlClassDiagram);
     }
@@ -163,7 +163,7 @@ public class ConformanceTest {
                 new ArrayList<>(), false, new ArrayList<>(), new ArrayList<>(), "class");
         umlClassDiagram.addClassToDiagram(connectionHandle);
         umlClassDiagram.addClassToDiagram(figure);
-        umlClassDiagram.addRelationshipToDiagram(connectionHandle, figure, Relationship.ASSOCIATION);
+        umlClassDiagram.addRelationshipToDiagram(connectionHandle, figure, RelationshipType.ASSOCIATION);
         umlClassDiagram.buildPackageTree();
         return new StatePattern(pi, umlClassDiagram);
     }
@@ -194,7 +194,7 @@ public class ConformanceTest {
                 new ArrayList<>(), false, new ArrayList<>(), new ArrayList<>(), "class");
         umlClassDiagram.addClassToDiagram(creationTool);
         umlClassDiagram.addClassToDiagram(figure);
-        umlClassDiagram.addRelationshipToDiagram(creationTool, figure, Relationship.ASSOCIATION);
+        umlClassDiagram.addRelationshipToDiagram(creationTool, figure, RelationshipType.ASSOCIATION);
         umlClassDiagram.buildPackageTree();
         return new StatePattern(pi, umlClassDiagram);
     }

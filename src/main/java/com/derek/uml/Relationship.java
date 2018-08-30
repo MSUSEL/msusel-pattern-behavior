@@ -23,36 +23,38 @@
  * SOFTWARE.
  */
 package com.derek.uml;
+import lombok.Getter;
 
-public enum Relationship{
-    REALIZATION,
-    GENERALIZATION,
-    ASSOCIATION,
-    //I likely won't implement aggregation and composition as they are very tough to properly implement
-    AGGREGATION,
-    COMPOSITION,
-    DEPENDENCY,
-    OWNERSHIP,
-    //not sure what you would use unspecified for, but im putting it in just in case
-    UNSPECIFIED;
+@Getter
+public class Relationship{
+    private UMLClassifier from;
+    private UMLClassifier to;
+    private RelationshipType relationshipType;
 
-    public String plantUMLTransform(){
-        switch(this){
-            case REALIZATION:
-                return "..|>";
-            case GENERALIZATION:
-                return "--|>";
-            case ASSOCIATION:
-                return "-->";
-            case AGGREGATION:
-                return "o--";
-            case COMPOSITION:
-                return "*--";
-            case DEPENDENCY:
-                return "..>";
-            case OWNERSHIP:
-                return "+--";
-        }
-        return "--";
+    public Relationship(UMLClassifier from, UMLClassifier to, RelationshipType relationshipType){
+        this.from = from;
+        this.to = to;
+        this.relationshipType = relationshipType;
     }
+
+    public boolean equals(Object o){
+        if (o instanceof Relationship){
+            Relationship other = (Relationship)o;
+            if (this.getFrom().equals(other.getFrom())){
+                if (this.getTo().equals(other.getTo())){
+                    if (this.getRelationshipType().equals(other.getRelationshipType())){
+                        return true;
+                    }
+                }
+            }
+        }else{
+            return false;
+        }
+        return false;
+    }
+
+    public String toString(){
+        return this.getFrom().getName() + " to " + this.getTo().getName() + "\n";
+    }
+
 }
