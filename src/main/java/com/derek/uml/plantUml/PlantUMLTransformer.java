@@ -77,11 +77,14 @@ public class PlantUMLTransformer {
     }
 
     public void generateRelationships(StringBuilder output){
-        for (EndpointPair<UMLClassifier> endpointPair : umlClassDiagram.getClassDiagram().edges()) {
-            Relationship r = umlClassDiagram.getClassDiagram().edgeValue(endpointPair.source(), endpointPair.target()).get();
-            output.append(endpointPair.nodeU().getName() + " ");
-            output.append(r.plantUMLTransform() + " ");
-            output.append(endpointPair.nodeV().getName() + "\n");
+        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
+            for (UMLClassifier adjacent : umlClassDiagram.getClassDiagram().adjacentNodes(umlClassifier)){
+                for (Relationship r : umlClassDiagram.getClassDiagram().edgesConnecting(umlClassifier, adjacent)){
+                    output.append(umlClassifier.getName() + " ");
+                    output.append(r.plantUMLTransform() + " ");
+                    output.append(adjacent.getName() + "\n");
+                }
+            }
         }
     }
     private void printStructureToFile(StringBuilder structureOutput){

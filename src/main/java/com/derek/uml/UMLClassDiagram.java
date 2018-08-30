@@ -26,6 +26,7 @@ package com.derek.uml;
 
 import com.google.common.graph.MutableNetwork;
 import com.google.common.graph.MutableValueGraph;
+import com.google.common.graph.NetworkBuilder;
 import com.google.common.graph.ValueGraphBuilder;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,17 +41,18 @@ public class UMLClassDiagram {
     //I am assuming the graph for the uml will be standard, as in g = <<V>,<E>> and e = <v1, v2>
     //while it is true that UML can do ternary relationships, which would be represented as e = <v1,v2,v3>,
     //I assume this wont happen, and if it does I will improvise, adapt, overcome
-    private MutableValueGraph<UMLClassifier, Relationship> classDiagram;
+    private MutableNetwork<UMLClassifier, Relationship> classDiagram;
 
     @Setter
     private PackageTree packageTree;
 
     public UMLClassDiagram(){
-        classDiagram = ValueGraphBuilder.directed().allowsSelfLoops(true).build();
+        classDiagram = NetworkBuilder.directed().allowsParallelEdges(true).allowsSelfLoops(true).build();
+                //ValueGraphBuilder.directed().allowsSelfLoops(true).build();
     }
 
     public void addRelationshipToDiagram(UMLClassifier from, UMLClassifier to, Relationship relationship){
-        classDiagram.putEdgeValue(from, to, relationship);
+        classDiagram.addEdge(from, to, relationship);
     }
 
     //add class without edges; should be used for testing primarily.
@@ -74,7 +76,7 @@ public class UMLClassDiagram {
         }
         List<UMLClassifier> immediateChildren = new ArrayList<>();
         for (UMLClassifier potentialChild : classDiagram.nodes()){
-            Optional<Relationship> isEdge = classDiagram.edgeValue(potentialChild, umlClassifier);
+            Optional<Relationship> isEdge = classDiagram.edgeConnecting(potentialChild, umlClassifier);
             if (isEdge.isPresent() && (isEdge.get() == Relationship.GENERALIZATION || isEdge.get() == Relationship.REALIZATION)){
                 //found a generalization
                 immediateChildren.add(potentialChild);

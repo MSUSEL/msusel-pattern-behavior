@@ -292,7 +292,7 @@ public abstract class PatternMapper {
         List<Pair<UMLClassifier, UMLClassifier>> relationships = new ArrayList<>();
         for (Pair<String, UMLClassifier> self : getClassifierModelBlocks()) {
             for (UMLClassifier predecessor : umlClassDiagram.getClassDiagram().predecessors(self.getValue())){
-                if (relationship.equals(umlClassDiagram.getClassDiagram().edgeValue(predecessor, self.getValue()).get())){
+                if (relationship.equals(umlClassDiagram.getClassDiagram().edgeConnecting(predecessor, self.getValue()).get())){
                     boolean hasBeenAdded = false;
                     Pair<UMLClassifier, UMLClassifier> potentialPair = new ImmutablePair<>(predecessor, self.getValue());
                     for (Pair<UMLClassifier, UMLClassifier> existingPair : relationships){
@@ -309,7 +309,7 @@ public abstract class PatternMapper {
                 }
             }
             for (UMLClassifier successor : umlClassDiagram.getClassDiagram().successors(self.getValue())){
-                if (relationship.equals(umlClassDiagram.getClassDiagram().edgeValue(self.getValue(), successor).get())){
+                if (relationship.equals(umlClassDiagram.getClassDiagram().edgeConnecting(self.getValue(), successor).get())){
                     boolean hasBeenAdded = false;
                     Pair<UMLClassifier, UMLClassifier> potentialPair = new ImmutablePair<>(self.getValue(), successor);
                     for (Pair<UMLClassifier, UMLClassifier> existingPair : relationships){

@@ -126,7 +126,7 @@ public class Conformance {
                         //will be null if the role was not mapped in the first place.
                         UMLClassifier mappedRoleEndpoint = (UMLClassifier)endpointMap.getMappedPair().getValue();
                         if (umlClassDiagram.getClassDiagram().hasEdgeConnecting(modelBlockPair.getValue(), mappedRoleEndpoint)) {
-                            if (umlClassDiagram.getClassDiagram().edgeValue(modelBlockPair.getValue(), mappedRoleEndpoint).get().equals(relationship)) {
+                            if (umlClassDiagram.getClassDiagram().edgeConnecting(modelBlockPair.getValue(), mappedRoleEndpoint).get().equals(relationship)) {
                                 //omg. found a relationship mapping finally.
                                 //need to enter a pair because Relationship as an enum was a dumb design choice 6 months ago.
                                 associationMappings.add(new RBMLMapping(relationshipRole, new ImmutablePair<>(modelBlockPair.getValue(), mappedRoleEndpoint)));

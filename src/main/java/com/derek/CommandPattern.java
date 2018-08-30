@@ -143,7 +143,7 @@ public class CommandPattern extends PatternMapper{
             }
             switch(relationshipRole.getName()){
                 case "|Stores":
-                    Optional<Relationship> isEdge = umlClassDiagram.getClassDiagram().edgeValue(receiverClassifier, concreteCommand);
+                    Optional<Relationship> isEdge = umlClassDiagram.getClassDiagram().edgeConnecting(receiverClassifier, concreteCommand);
                     if (isEdge.isPresent()){
                         //TODO - i would love a better rbml spec for the command pattern.
                         //mapStructure exists here.
