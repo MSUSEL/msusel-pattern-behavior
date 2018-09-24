@@ -48,6 +48,7 @@ public class GrimeSuite {
     private List<Relationship> tiGrimeInstances;
     private List<Relationship> teaGrimeInstances;
     private List<Relationship> teeGrimeInstances;
+    
 
 
     public GrimeSuite(PatternMapper patternMapper, List<RBMLMapping> rbmlStructuralMappings, SPS sps, List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings, IPS ips) {
@@ -57,6 +58,7 @@ public class GrimeSuite {
         this.rbmlBehavioralMappings = rbmlBehavioralMappings;
         this.ips = ips;
         calculateModularGrime();
+        calculateClassGrime();
     }
 
     private void calculateModularGrime(){
@@ -110,5 +112,9 @@ public class GrimeSuite {
                 }
             }
         }
+    }
+
+    private void calculateClassGrime(){
+
     }
 }

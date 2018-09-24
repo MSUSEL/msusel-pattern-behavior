@@ -37,6 +37,7 @@ public class Relationship{
         this.relationshipType = relationshipType;
     }
 
+    @Override
     public boolean equals(Object o){
         if (o instanceof Relationship){
             Relationship other = (Relationship)o;
