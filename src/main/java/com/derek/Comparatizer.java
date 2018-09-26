@@ -31,6 +31,8 @@ import com.derek.model.SoftwareVersion;
 import com.derek.model.patterns.PatternInstance;
 import com.derek.rbml.*;
 import com.derek.uml.*;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.BufferedWriter;
@@ -40,6 +42,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,11 +52,16 @@ public class Comparatizer {
     private Map<SoftwareVersion, UMLClassDiagram> umlClassDiagrams;
     private StringBuilder outputter;
 
+    //this guava table holds grime info. The table keys are SoftwareVersion, refering to the version this grime appears in, and
+    // String, refering to the unique id of the pattern, referenced from PatternInstance.getUniqueID().
+    // each entry will have a grimeSuite object, refering to all types of grime that exist for that pattern instance at that version.
+    private Table<SoftwareVersion, String, GrimeSuite> grimeTable;
 
     public Comparatizer(Model model){
         this.model = model;
         this.umlClassDiagrams = model.getClassDiagramMap();
         outputter = new StringBuilder();
+        grimeTable = HashBasedTable.create();
     }
 
     public void runAnalysis(){
@@ -76,6 +84,7 @@ public class Comparatizer {
                                 pair.getValue().setUniqueID(uniqueID);
                                 testComparisons(umlClassDiagrams.get(pair.getKey()), pair.getValue());
 
+                                //do grime checks here i think..  Not in the output logic area.
                             }
                         }
                     }
@@ -163,10 +172,15 @@ public class Comparatizer {
 //            rbmlMapping.printSummary();
 //        }
 
+        //grime checks here I think.
+        GrimeSuite grimeSuite = new GrimeSuite(patternMapper, rbmlStructureMappings, rbmlBehaviorMappings);
+        grimeTable.put(patternMapper.getPi().getSoftwareVersion(), patternMapper.getPi().getUniqueID(), grimeSuite);
+
         outputRoles(sps, rbmlStructureMappings, ips, rbmlBehaviorMappings, patternMapper);
 
         MetricSuite ms = new MetricSuite(rbmlStructureMappings, patternMapper, sps, rbmlBehaviorMappings, ips);
         outputter.append(ms.getSummary());
+        System.out.println(grimeTable);
     }
 
     private void printViolatedRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings, StringBuilder output){

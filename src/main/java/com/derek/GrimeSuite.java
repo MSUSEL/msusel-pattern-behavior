@@ -1,8 +1,6 @@
 package com.derek;
 
-import com.derek.rbml.IPS;
 import com.derek.rbml.RBMLMapping;
-import com.derek.rbml.SPS;
 import com.derek.uml.Relationship;
 import com.derek.uml.RelationshipType;
 import com.derek.uml.UMLClassifier;
@@ -16,9 +14,7 @@ public class GrimeSuite {
 
     private PatternMapper patternMapper;
     private List<RBMLMapping> rbmlStructuralMappings;
-    private SPS sps;
     private List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings;
-    private IPS ips;
 
     //count of behavioral repetition grime
     private int repetitionGrimeCount = 0;
@@ -48,15 +44,12 @@ public class GrimeSuite {
     private List<Relationship> tiGrimeInstances;
     private List<Relationship> teaGrimeInstances;
     private List<Relationship> teeGrimeInstances;
-    
 
 
-    public GrimeSuite(PatternMapper patternMapper, List<RBMLMapping> rbmlStructuralMappings, SPS sps, List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings, IPS ips) {
+    public GrimeSuite(PatternMapper patternMapper, List<RBMLMapping> rbmlStructuralMappings, List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings) {
         this.patternMapper = patternMapper;
         this.rbmlStructuralMappings = rbmlStructuralMappings;
-        this.sps = sps;
         this.rbmlBehavioralMappings = rbmlBehavioralMappings;
-        this.ips = ips;
         calculateModularGrime();
         calculateClassGrime();
     }
@@ -99,22 +92,28 @@ public class GrimeSuite {
                     if (patternMapper.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(patternRelationship.getTo())){
                         //pi.
                         internal.add(patternRelationship);
-                        System.out.println("Added internal grime: " + patternRelationship.getFrom().getName() + " to " + patternRelationship.getTo().getName() + " as " + relationshipType);
+                        //System.out.println("Added internal grime: " + patternRelationship.getFrom().getName() + " to " + patternRelationship.getTo().getName() + " as " + relationshipType);
                     } else {
                         //relationship points from pattern member -> non-pattern member. (efferent)
                         efferent.add(patternRelationship);
-                        System.out.println("Added efferent grime: " + patternRelationship.getFrom().getName() + "  to " + patternRelationship.getTo().getName() + " as " + relationshipType);
+                        //System.out.println("Added efferent grime: " + patternRelationship.getFrom().getName() + "  to " + patternRelationship.getTo().getName() + " as " + relationshipType);
                     }
                 } else {
                     //relationship points from non-pattern member -> pattern member (afferent)
                     afferent.add(patternRelationship);
-                    System.out.println("Added afferent grime: " + patternRelationship.getFrom().getName() + "  to " + patternRelationship.getTo().getName() + " as " + relationshipType);
+                    //System.out.println("Added afferent grime: " + patternRelationship.getFrom().getName() + "  to " + patternRelationship.getTo().getName() + " as " + relationshipType);
                 }
             }
         }
     }
 
+    //for a pattern realization every class is subject to class grime.. I need to maintain a mapping from class to grime categoreis (strength, scope, and context)
     private void calculateClassGrime(){
+        calculateRCI();
+
+    }
+
+    private void calculateRCI(){
 
     }
 }

@@ -77,8 +77,6 @@ public class MetricSuite {
     private String patternInstability = "";
 
 
-    private GrimeSuite grimeSuite;
-
 
     public MetricSuite(List<RBMLMapping> rbmlStructuralMappings, PatternMapper patternMapper, SPS sps, List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings, IPS ips){
         this.patternMapper = patternMapper;
@@ -86,7 +84,6 @@ public class MetricSuite {
         this.sps = sps;
         this.rbmlBehavioralMappings = rbmlBehavioralMappings;
         this.ips = ips;
-        grimeSuite = new GrimeSuite(patternMapper, rbmlStructuralMappings, sps, rbmlBehavioralMappings, ips);
         calculate();
     }
 
