@@ -8,7 +8,9 @@ import com.derek.uml.UMLOperation;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GrimeSuite {
 
@@ -25,15 +27,8 @@ public class GrimeSuite {
     //total behavioral grime.
     private int totalBehavioralGrimeCount = 0;
 
-    //structural class grime counts
-    private int dipgGrimeCount = 0;
-    private int disgGrimeCount = 0;
-    private int depgGrimeCount = 0;
-    private int desgGrimeCount = 0;
-    private int iipgGrimeCount = 0;
-    private int iisgGrimeCount = 0;
-    private int iepgGrimeCount = 0;
-    private int iesgGrimeCount = 0;
+    private Map<UMLClassifier, ClassGrime> classGrimeList;
+
 
     //structural modular grime instances (persistent grime). When I want to calculate I will just call this.size();
     private List<Relationship> piGrimeInstances;
@@ -50,6 +45,7 @@ public class GrimeSuite {
         this.patternMapper = patternMapper;
         this.rbmlStructuralMappings = rbmlStructuralMappings;
         this.rbmlBehavioralMappings = rbmlBehavioralMappings;
+        classGrimeList = new HashMap<>();
         calculateModularGrime();
         calculateClassGrime();
     }
@@ -109,11 +105,10 @@ public class GrimeSuite {
 
     //for a pattern realization every class is subject to class grime.. I need to maintain a mapping from class to grime categoreis (strength, scope, and context)
     private void calculateClassGrime(){
-        calculateRCI();
-
-    }
-
-    private void calculateRCI(){
-
+        for (UMLClassifier umlClassifier : patternMapper.getAllParticipatingClassifiersOnlyUMLClassifiers()){
+            ClassGrime grime = new ClassGrime(umlClassifier);
+            grime.findClassGrime();
+            classGrimeList.put(umlClassifier, grime);
+        }
     }
 }
