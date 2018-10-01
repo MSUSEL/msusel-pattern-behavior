@@ -28,6 +28,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -54,6 +55,12 @@ public class UMLOperation {
     //type will be set after the first passthrough.
     @Setter
     private UMLClassifier type;
+
+    //names of the variables that are used in this method.
+    private List<String> variableUsages;
+
+    //names of the variables thar are declared in this method.
+    private List<String> variableDeclarations;
 
     public UMLOperation(String name, List<Pair<String, String>> stringParameters, String stringReturnDataType, Visibility visibility) {
         this.name = name;
@@ -93,5 +100,45 @@ public class UMLOperation {
             }
         }
         return s.toString();
+    }
+
+    private void findVariableUsages(){
+        variableUsages = new ArrayList<>();
+        for (CallTreeNode<String> callTreeNode : this.getCallTreeString().convertMeToOrderedList()){
+            if (callTreeNode.isCall()){
+                variableUsages.add(callTreeNode.parseVarNameFromCall());
+                if (this.getName().equals("update")){
+                    this.callTreeString.printTree();
+                }
+            }
+        }
+    }
+
+    /***
+     * method that finds all variable declarations (as strings, not UMLClassifiers) from the entire call tree under this method.
+     */
+    private void findVariableDeclarations(){
+        variableDeclarations = new ArrayList<>();
+        for (CallTreeNode<String> callTreeNode : this.getCallTreeString().convertMeToOrderedList()){
+            if (callTreeNode.isDecl()){
+                variableDeclarations.add(callTreeNode.parseVarNameFromCall());
+            }
+        }
+    }
+
+    public List<String> getVariableDeclarations(){
+        if (variableDeclarations == null){
+            variableDeclarations = new ArrayList<>();
+            findVariableDeclarations();
+        }
+        return variableDeclarations;
+    }
+
+    public List<String> getVariableUsages(){
+        if (variableUsages == null){
+            variableUsages = new ArrayList<>();
+            findVariableUsages();
+        }
+        return variableUsages;
     }
 }

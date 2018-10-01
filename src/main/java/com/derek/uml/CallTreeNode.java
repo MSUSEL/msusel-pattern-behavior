@@ -101,16 +101,35 @@ public class CallTreeNode<T> {
         return false;
     }
 
+    public boolean isDecl(){
+        if (this.getTagName().contains("decl{")){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isFunction(){
+        if (this.getTagName().contains("function")){
+            return true;
+        }
+        return false;
+    }
+
     public String parseVarNameFromCall(){
         String nameConverter = name.toString();
         String[] splitter = nameConverter.split("\\.");
         return splitter[0];
     }
 
-    public String parseCallNameFromCall(){
+    public String parseCallNameFromCall(int callDepth){
         String nameConverter = name.toString();
         String[] splitter = nameConverter.split("\\.");
-        return splitter[1];
+        if (callDepth > splitter.length){
+            //error
+            System.out.println("Call does not go that far, debug in CallTreeNode class");
+            System.exit(0);
+        }
+        return splitter[callDepth];
     }
 
 }

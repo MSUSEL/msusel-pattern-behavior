@@ -135,7 +135,7 @@ public class BehaviorConformance {
                 case STANDARD:
                     //I need to see if the call tree has a declaration.
                     //two options - call as callTreeTag or decl
-                    if (callTreeNode.getTagName().equals("call") || callTreeNode.getTagName().equals("function")) {
+                    if (callTreeNode.isCall() || callTreeNode.isFunction()) {
                         for (RBMLMapping structureMapping : structureMappings) {
                             if (structureMapping.getRole().equals(interactionRole.getOperationRole())) {
                                 //get the UMLClassifier representation of this interaction role.. because only structure
@@ -143,7 +143,7 @@ public class BehaviorConformance {
                                 UMLOperation mappedOperation = (UMLOperation) structureMapping.getUmlArtifact();
                                 String callTreeNameStripped = stripCallTreeName((String) callTreeNode.getName());
                                 if (callTreeNameStripped.equals(mappedOperation.getName())) {
-                                    if (callTreeNode.getTagName().equals("function")){
+                                    if (callTreeNode.isFunction()){
                                         //this particular call tree node is the start of the call tree list, so set header
                                         //really this information is stored elsewhere, but putting it in this variable helps
                                         functionHeaderMapping = interactionRole;
@@ -152,7 +152,7 @@ public class BehaviorConformance {
                                 }
                             }
                         }
-                    } else if (callTreeNode.getTagName().contains("decl{")){
+                    } else if (callTreeNode.isDecl()){
                         //call tree node has a decl
                         String declType = callTreeNode.parseDeclTagName();
                         for (RBMLMapping structureMapping : structureMappings){

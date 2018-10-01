@@ -28,7 +28,11 @@ public class ClassGrime {
         for (UMLAttribute att : umlClassifier.getAttributes()){
             int usages = 0;
             for (UMLOperation op : umlClassifier.getOperations()){
-                if (false){//if(op.getVarUsages().contains(att)){
+                for (String x : op.getVariableUsages()){
+                    System.out.println("Comparing att " + att.getName() + " and " + x + " in class " + umlClassifier.getName());
+                }
+                if (op.getVariableUsages().contains(att.getName())){
+                    //we use this varaible.
                     usages++;
                 }
             }
@@ -39,11 +43,17 @@ public class ClassGrime {
 
         //TCC(C) from cohesion and reuse in OO systems paper
         TCC = ndc/npc;
-
     }
 
     private void calculateRCI(){
-
+        //how to get variable decls (names of variable decls):
+        for (UMLOperation op : umlClassifier.getOperations()){
+            if (umlClassifier.getIdentifier().equals("class")) {
+                for (String decl : op.getVariableDeclarations()) {
+                    //System.out.println("class " + umlClassifier.getName() + " has operation " + op.getName() + " which declares  variable: " + decl);
+                }
+            }
+        }
     }
 
     public void findClassGrime(){
