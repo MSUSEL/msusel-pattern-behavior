@@ -70,6 +70,7 @@ public class UMLOperation {
         this.stringParameters = stringParameters;
         this.stringReturnDataType = stringReturnDataType;
         this.visibility = visibility;
+        localAttributes = new ArrayList<>();
     }
 
     /***
@@ -82,6 +83,7 @@ public class UMLOperation {
         this.name = name;
         this.stringParameters = stringParameters;
         this.stringReturnDataType = stringReturnDataType;
+        localAttributes = new ArrayList<>();
     }
 
     public String buildParamsForPlantUMLDiagram(){
