@@ -56,6 +56,9 @@ public class UMLOperation {
     @Setter
     private UMLClassifier type;
 
+    @Setter
+    private List<UMLAttribute> localAttributes;
+
     //names of the variables that are used in this method.
     private List<String> variableUsages;
 
@@ -107,9 +110,6 @@ public class UMLOperation {
         for (CallTreeNode<String> callTreeNode : this.getCallTreeString().convertMeToOrderedList()){
             if (callTreeNode.isCall()){
                 variableUsages.add(callTreeNode.parseVarNameFromCall());
-                if (this.getName().equals("update")){
-                    this.callTreeString.printTree();
-                }
             }
         }
     }

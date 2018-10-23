@@ -30,6 +30,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class UMLGenerationUtils {
     //utility class for common uml things..
@@ -75,6 +76,18 @@ public class UMLGenerationUtils {
         }
         return isStatic;
     }
+
+    public static List<SrcMLDecl> getAllDeclsBelowMe(SrcMLNode node){
+        List<SrcMLDecl> decls = new ArrayList<>();
+        for (SrcMLNode child : node.getChildNodeOrder()){
+            if (child instanceof SrcMLDecl){
+                decls.add((SrcMLDecl) child);
+            }
+            decls.addAll(getAllDeclsBelowMe(child));
+        }
+        return decls;
+    }
+
     public static List<UMLAttribute> getUMLAttributes(SrcMLBlock block){
         List<UMLAttribute> attributes = new ArrayList<>();
         //first conditional happens in special cases (enums with both decls and decl_stmts)
@@ -132,8 +145,24 @@ public class UMLGenerationUtils {
         List<Pair<String, String>> params = UMLGenerationUtils.getParameters(srcMLFunction.getParameterList());
         String name = srcMLFunction.getName();
         String returnType = srcMLFunction.getType().getName();
-        //I need to include use dependencies in here eventually. -- though this might be better done after a behavioral runthrough
-        return new UMLOperation(name, params, returnType);
+
+        //create toreturn object.. Though I need to see if there are any local attributes before returning it.
+        UMLOperation toRet = new UMLOperation(name, params, returnType);
+
+        if (srcMLFunction.getBlock() != null) {
+            //happens when this is an interface or abstract declaration. Of course such a type will not have any attributes, so skip it.
+
+            List<SrcMLDecl> decls = getAllDeclsBelowMe(srcMLFunction.getBlock());
+            List<UMLAttribute> localAtts = new ArrayList<>();
+
+            for (SrcMLDecl decl : decls){
+                System.out.println("Added var: " + decl.getName() + " and of type: " + decl.getType().getName() + " to method: " + srcMLFunction.getName());
+                localAtts.add(new UMLAttribute(decl.getName(), decl.getType().getName()));
+            }
+            toRet.setLocalAttributes(localAtts);
+        }
+
+        return toRet;
     }
 
     public static UMLOperation getUMLConstructor(SrcMLConstructor srcMLConstructor){
