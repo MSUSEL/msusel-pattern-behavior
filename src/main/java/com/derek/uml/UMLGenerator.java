@@ -103,6 +103,12 @@ public class UMLGenerator {
                     umlOperation.setType(potentialMatch);
                     umlOperation.setParameters(getParamsFromString(umlClassifier, umlOperation));
                 }
+
+                //set the local variable type (as uml classifier). Local meaning any vars declared within the context of a method.
+                for (UMLAttribute localAtt : umlOperation.getLocalAttributes()){
+                    UMLClassifier localVariablePotentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, localAtt.getStringDataType());
+                    localAtt.setType(localVariablePotentialMatch);
+                }
             }
         }
     }
@@ -212,18 +218,14 @@ public class UMLGenerator {
     }
 
     private void assignUseDependencies(UMLClassifier owningClassifier, UMLOperation operation){
-        if (operation.getCallTreeString() != null) {
-            for (CallTreeNode callTreeNode : operation.getCallTreeString().convertMeToOrderedList()) {
-                if (callTreeNode.getTagName().contains("decl{")) {
-                    String declType = callTreeNode.parseDeclTagName();
-                    UMLClassifier connector = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, owningClassifier, declType);
-                    if (umlClassDiagram.getClassDiagram().nodes().contains(connector)) {
-                        //make sure it already exists in our classes.. third party classes don't count.
-                        umlClassDiagram.addRelationshipToDiagram(owningClassifier, connector, RelationshipType.DEPENDENCY);
-                    }
+        for (UMLAttribute localAtt : operation.getLocalAttributes()){
+            if (localAtt.getType() != null){
+                if (umlClassDiagram.getClassDiagram().nodes().contains(localAtt.getType())) {
+                    umlClassDiagram.addRelationshipToDiagram(owningClassifier, localAtt.getType(), RelationshipType.DEPENDENCY);
                 }
             }
         }
+
     }
 
 }
