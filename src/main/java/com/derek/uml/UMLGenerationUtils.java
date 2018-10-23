@@ -96,11 +96,6 @@ public class UMLGenerationUtils {
             List<SrcMLDecl> decls = block.getDecls();
             for (SrcMLDecl decl : decls) {
                 //in this case the type is the same as the name... I think.. lol
-                if (decl.getInit() != null) {
-                    //init statement
-                    //initMessage = UMLMessageGenerationUtils.getUMLMessage(decl.getInit().getExpressions());
-
-                }
                 attributes.add(new UMLAttribute(decl.getName(), decl.getName()));
             }
         }
@@ -113,10 +108,6 @@ public class UMLGenerationUtils {
                 for (SrcMLDecl decl : declStmt.getDecls()) {
                     //multiple decl would happen with something like: int a,b,c;
                     //otherwise each decl has 1 name/type/etc..
-                    if (decl.getInit() != null) {
-                        //init statement
-                        //initMessage = UMLMessageGenerationUtils.getUMLMessage(decl.getInit().getExpressions());
-                    }
                     attributes.add(new UMLAttribute(decl.getName(), decl.getType().getName()));
                 }
             }
@@ -141,6 +132,16 @@ public class UMLGenerationUtils {
         return params;
     }
 
+    public static List<UMLAttribute> getLocalUMLAttributes(SrcMLBlock srcMLBlock){
+        List<UMLAttribute> localAtts = new ArrayList<>();
+        List<SrcMLDecl> decls = getAllDeclsBelowMe(srcMLBlock);
+
+        for (SrcMLDecl decl : decls){
+            localAtts.add(new UMLAttribute(decl.getName(), decl.getType().getName()));
+        }
+        return localAtts;
+    }
+
     public static UMLOperation getUMLOperation(SrcMLFunction srcMLFunction){
         List<Pair<String, String>> params = UMLGenerationUtils.getParameters(srcMLFunction.getParameterList());
         String name = srcMLFunction.getName();
@@ -151,14 +152,7 @@ public class UMLGenerationUtils {
 
         if (srcMLFunction.getBlock() != null) {
             //happens when this is an interface or abstract declaration. Of course such a type will not have any attributes, so skip it.
-
-            List<SrcMLDecl> decls = getAllDeclsBelowMe(srcMLFunction.getBlock());
-            List<UMLAttribute> localAtts = new ArrayList<>();
-
-            for (SrcMLDecl decl : decls){
-                System.out.println("Added var: " + decl.getName() + " and of type: " + decl.getType().getName() + " to method: " + srcMLFunction.getName());
-                localAtts.add(new UMLAttribute(decl.getName(), decl.getType().getName()));
-            }
+            List<UMLAttribute> localAtts = getLocalUMLAttributes(srcMLFunction.getBlock());
             toRet.setLocalAttributes(localAtts);
         }
 
@@ -171,7 +165,15 @@ public class UMLGenerationUtils {
         //constructors don't have return types
         String returnType = "null";
         //I need to include use dependencies in here eventually. -- see comment above for umloperation
-        return new UMLOperation(name, params, returnType);
+        UMLOperation toRet = new UMLOperation(name, params, returnType);
+
+        if (srcMLConstructor.getBlock() != null) {
+            //happens when this is an interface or abstract declaration. Of course such a type will not have any attributes, so skip it.
+            List<UMLAttribute> localAtts = getLocalUMLAttributes(srcMLConstructor.getBlock());
+            toRet.setLocalAttributes(localAtts);
+        }
+
+        return toRet;
     }
 
     /**
