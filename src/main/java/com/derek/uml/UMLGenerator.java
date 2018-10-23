@@ -110,6 +110,16 @@ public class UMLGenerator {
                     localAtt.setType(localVariablePotentialMatch);
                 }
             }
+            if (umlClassifier.getIdentifier().equals("class")){
+                //in the case of classes, need to do constructors.
+                for (UMLOperation constructor : ((UMLClass)umlClassifier).getConstructors()){
+                    for (UMLAttribute localAtt : constructor.getLocalAttributes()){
+                        UMLClassifier localVariablePotentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, localAtt.getStringDataType());
+                        localAtt.setType(localVariablePotentialMatch);
+                    }
+                }
+
+            }
         }
     }
 
@@ -203,6 +213,12 @@ public class UMLGenerator {
                     }
                 }
                 assignUseDependencies(umlClassifier, operation);
+            }
+            if (umlClassifier.getIdentifier().equals("class")){
+                //use dependencies for stuff inside constructors
+                for (UMLOperation constructor : ((UMLClass)umlClassifier).getConstructors()){
+                    assignUseDependencies(umlClassifier, constructor);
+                }
             }
             for (UMLClassifier parent : umlClassifier.getExtendsParents()){
                 if (umlClassDiagram.getClassDiagram().nodes().contains(parent)){
