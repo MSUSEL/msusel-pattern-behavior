@@ -103,7 +103,7 @@ public class Main {
             m.addClassDiagram(version, umlGenerator.getUmlClassDiagram());
         }
         Comparatizer cpt = new Comparatizer(m);
-        cpt.runAnalysis();
+        //cpt.runAnalysis();
     }
 
     public static void main(String[] args) {
