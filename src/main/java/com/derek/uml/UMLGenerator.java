@@ -105,7 +105,7 @@ public class UMLGenerator {
                 }
 
                 //set the local variable type (as uml classifier). Local meaning any vars declared within the context of a method.
-                for (UMLAttribute localAtt : umlOperation.getLocalAttributes()){
+                for (UMLAttribute localAtt : umlOperation.getLocalAttributeDecls()){
                     UMLClassifier localVariablePotentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, localAtt.getStringDataType());
                     localAtt.setType(localVariablePotentialMatch);
                 }
@@ -113,7 +113,7 @@ public class UMLGenerator {
             if (umlClassifier.getIdentifier().equals("class")){
                 //in the case of classes, need to do constructors.
                 for (UMLOperation constructor : ((UMLClass)umlClassifier).getConstructors()){
-                    for (UMLAttribute localAtt : constructor.getLocalAttributes()){
+                    for (UMLAttribute localAtt : constructor.getLocalAttributeDecls()){
                         UMLClassifier localVariablePotentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, localAtt.getStringDataType());
                         localAtt.setType(localVariablePotentialMatch);
                     }
@@ -234,7 +234,7 @@ public class UMLGenerator {
     }
 
     private void assignUseDependencies(UMLClassifier owningClassifier, UMLOperation operation){
-        for (UMLAttribute localAtt : operation.getLocalAttributes()){
+        for (UMLAttribute localAtt : operation.getLocalAttributeDecls()){
             if (localAtt.getType() != null){
                 if (umlClassDiagram.getClassDiagram().nodes().contains(localAtt.getType())) {
                     umlClassDiagram.addRelationshipToDiagram(owningClassifier, localAtt.getType(), RelationshipType.DEPENDENCY);

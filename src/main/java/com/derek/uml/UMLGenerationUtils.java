@@ -30,7 +30,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class UMLGenerationUtils {
     //utility class for common uml things..
@@ -153,7 +152,7 @@ public class UMLGenerationUtils {
         if (srcMLFunction.getBlock() != null) {
             //happens when this is an interface or abstract declaration. Of course such a type will not have any attributes, so skip it.
             List<UMLAttribute> localAtts = getLocalUMLAttributes(srcMLFunction.getBlock());
-            toRet.setLocalAttributes(localAtts);
+            toRet.setLocalAttributeDecls(localAtts);
         }
 
         return toRet;
@@ -170,7 +169,7 @@ public class UMLGenerationUtils {
         if (srcMLConstructor.getBlock() != null) {
             //happens when this is an interface or abstract declaration. Of course such a type will not have any attributes, so skip it.
             List<UMLAttribute> localAtts = getLocalUMLAttributes(srcMLConstructor.getBlock());
-            toRet.setLocalAttributes(localAtts);
+            toRet.setLocalAttributeDecls(localAtts);
         }
 
         return toRet;

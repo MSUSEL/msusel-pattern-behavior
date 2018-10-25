@@ -57,7 +57,7 @@ public class UMLOperation {
     private UMLClassifier type;
 
     @Setter
-    private List<UMLAttribute> localAttributes;
+    private List<UMLAttribute> localAttributeDecls;
 
     //names of the variables that are used in this method.
     private List<String> variableUsages;
@@ -70,7 +70,7 @@ public class UMLOperation {
         this.stringParameters = stringParameters;
         this.stringReturnDataType = stringReturnDataType;
         this.visibility = visibility;
-        localAttributes = new ArrayList<>();
+        localAttributeDecls = new ArrayList<>();
     }
 
     /***
@@ -83,7 +83,7 @@ public class UMLOperation {
         this.name = name;
         this.stringParameters = stringParameters;
         this.stringReturnDataType = stringReturnDataType;
-        localAttributes = new ArrayList<>();
+        localAttributeDecls = new ArrayList<>();
     }
 
     public String buildParamsForPlantUMLDiagram(){
@@ -110,30 +110,12 @@ public class UMLOperation {
     private void findVariableUsages(){
         variableUsages = new ArrayList<>();
         for (CallTreeNode<String> callTreeNode : this.getCallTreeString().convertMeToOrderedList()){
+            //a call is definitely a usage.. But I can have non-call usages as well (such as primitive types, 'int i = x + 2', x is used but not a 'call'
+            //though in reference to the comment above, the most commonly used usage is a call. The primitive type usages are more rare I have found.
             if (callTreeNode.isCall()){
                 variableUsages.add(callTreeNode.parseVarNameFromCall());
             }
         }
-    }
-
-    /***
-     * method that finds all variable declarations (as strings, not UMLClassifiers) from the entire call tree under this method.
-     */
-    private void findVariableDeclarations(){
-        variableDeclarations = new ArrayList<>();
-        for (CallTreeNode<String> callTreeNode : this.getCallTreeString().convertMeToOrderedList()){
-            if (callTreeNode.isDecl()){
-                variableDeclarations.add(callTreeNode.parseVarNameFromCall());
-            }
-        }
-    }
-
-    public List<String> getVariableDeclarations(){
-        if (variableDeclarations == null){
-            variableDeclarations = new ArrayList<>();
-            findVariableDeclarations();
-        }
-        return variableDeclarations;
     }
 
     public List<String> getVariableUsages(){
@@ -143,4 +125,5 @@ public class UMLOperation {
         }
         return variableUsages;
     }
+
 }

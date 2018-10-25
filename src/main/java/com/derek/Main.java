@@ -85,7 +85,7 @@ public class Main {
         }catch (Exception e){
             e.printStackTrace();
         }
-    } 
+    }
 
     private void doAnalysis(){
         projectVersions = new ArrayList<>();
