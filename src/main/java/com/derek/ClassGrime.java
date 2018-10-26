@@ -1,9 +1,12 @@
 package com.derek;
 
-import com.derek.uml.UMLAttribute;
-import com.derek.uml.UMLClassifier;
-import com.derek.uml.UMLOperation;
+import com.derek.uml.*;
 import lombok.Getter;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 public class ClassGrime {
@@ -44,13 +47,26 @@ public class ClassGrime {
     }
 
     private void calculateRCI(){
-        //how to get variable decls (names of variable decls):
-        for (UMLOperation op : umlClassifier.getOperations()){
-            if (umlClassifier.getIdentifier().equals("class")) {
-                for (UMLAttribute localDecl : op.getLocalAttributeDecls()) {
-                    System.out.println("class " + umlClassifier.getName() + " has operation " + op.getName() + " which declares  variable: " + localDecl.getName());
+        List<Pair<UMLAttribute, UMLClassifier>> ddInterations = new ArrayList();
+        List<Pair<UMLAttribute, UMLOperation>> dmInteractions = new ArrayList<>();
+        List<Pair<UMLAttribute, UMLOperation>> maxDmInteractions = new ArrayList<>();
+        if (umlClassifier.getIdentifier().equals("class")) {
+            for (UMLAttribute att : umlClassifier.getAttributes()){
+                if (att.getVisibility() == Visibility.PUBLIC){
+                    //dd interactions only act on public vars
+                    ddInterations.add(new ImmutablePair<>(att, att.getType()));
                 }
             }
+            //once dd interactions are found, I can find dm interactions
+            for (UMLOperation op : umlClassifier.getOperations()){
+                //need to do constructors too, I think... though its not specified in the definition.
+                for (UMLClassifier param : op.getParameters()){
+                    //params are dm Interactions
+
+                }
+
+            }
+
         }
     }
 
