@@ -106,11 +106,11 @@ public class GrimeSuite {
     //for a pattern realization every class is subject to class grime.. I need to maintain a mapping from class to grime categoreis (strength, scope, and context)
     private void calculateClassGrime(){
         for (UMLClassifier umlClassifier : patternMapper.getAllParticipatingClassesOnlyUMLClassifiers()){
-            ClassGrime grime = new ClassGrime(umlClassifier);
+            ClassGrime grime = new ClassGrime(umlClassifier, rbmlStructuralMappings);
             grime.findClassGrime();
             classGrimeList.put(umlClassifier, grime);
-            System.out.println("Class " + umlClassifier.getName() + " has TCC: " + classGrimeList.get(umlClassifier).getTCC());
-            System.out.println("Class " + umlClassifier.getName() + " has RCI: " + classGrimeList.get(umlClassifier).getRCI());
+//            System.out.println("Class " + umlClassifier.getName() + " has TCC: " + classGrimeList.get(umlClassifier).getTCC());
+//            System.out.println("Class " + umlClassifier.getName() + " has RCI: " + classGrimeList.get(umlClassifier).getRCI());
         }
     }
 }

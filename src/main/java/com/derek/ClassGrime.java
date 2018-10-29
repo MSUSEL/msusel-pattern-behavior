@@ -1,5 +1,6 @@
 package com.derek;
 
+import com.derek.rbml.RBMLMapping;
 import com.derek.uml.*;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -7,17 +8,22 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Getter
 public class ClassGrime {
 
     private double TCC;
     private double RCI;
+    private List<UMLOperation> externalMethods;
+    private List<UMLOperation> internalMethods;
     private UMLClassifier umlClassifier;
+    private List<RBMLMapping> rbmlStructuralMappings;
 
 
-    public ClassGrime(UMLClassifier umlClassifier){
+    public ClassGrime(UMLClassifier umlClassifier, List<RBMLMapping> rbmlStructuralMappings){
         this.umlClassifier = umlClassifier;
+        this.rbmlStructuralMappings = rbmlStructuralMappings;
     }
 
 
@@ -111,9 +117,53 @@ public class ClassGrime {
         RCI = ((double) ddInterations.size())/(double)maxDmInteractions.size();
     }
 
+    private void findScope(){
+        internalMethods = new ArrayList<>();
+        externalMethods = new ArrayList<>();
+        for (UMLOperation op : umlClassifier.getOperations()){
+            boolean potentiallyInternal = false;
+            boolean potentiallyExternal = false;
+            for (RBMLMapping structureMapping : rbmlStructuralMappings){
+                if (structureMapping.getUMLOperationArtifact() instanceof UMLOperation){
+                    if (umlClassifier.getOperations().contains(structureMapping.getUMLOperationArtifact())){
+                        potentiallyInternal = true;
+                    }else{
+                        potentiallyExternal = true;
+                    }
+                }
+            }
+            if (potentiallyInternal || potentiallyExternal){
+                utilityAddScopeBasedOnUsage(op, internalMethods);
+            }
+            if (potentiallyExternal && !potentiallyInternal){
+                utilityAddScopeBasedOnUsage(op, externalMethods);
+            }
+        }
+    }
+
+    private void utilityAddScopeBasedOnUsage(UMLOperation op, List<UMLOperation> scope){
+        for (String s : op.getVariableUsages()){
+            for (UMLAttribute umlAttribute : umlClassifier.getAttributes()){
+                if (s.equals(umlAttribute.getName())){
+                    //same name, likely the same attribute. Though if a variables of the same name in methods and classes might conflict here.
+                    scope.add(op);
+                    return;
+                }
+            }
+        }
+
+    }
+
     public void findClassGrime(){
         calculateTCC();
         calculateRCI();
-
+        findScope();
+        System.out.println("Class: " + umlClassifier.getName());
+        for (UMLOperation op : internalMethods){
+            System.out.println(op.getName() + " is internal.");
+        }
+        for (UMLOperation op : externalMethods){
+            System.out.println(op.getName() + " is external.");
+        }
     }
 }

@@ -110,11 +110,13 @@ public class UMLOperation {
 
     private void findLocalVariableTypeUsagesString(){
         variableUsages = new ArrayList<>();
-        for (CallTreeNode<String> callTreeNode : this.getCallTreeString().convertMeToOrderedList()){
-            //a call is definitely a usage.. But I can have non-call usages as well (such as primitive types, 'int i = x + 2', x is used but not a 'call'
-            //though in reference to the comment above, the most commonly used usage is a call. The primitive type usages are more rare I have found.
-            if (callTreeNode.isCall()){
-                variableUsages.add(callTreeNode.parseVarNameFromCall());
+        if (this.getCallTreeString() != null) {
+            for (CallTreeNode<String> callTreeNode : this.getCallTreeString().convertMeToOrderedList()) {
+                //a call is definitely a usage.. But I can have non-call usages as well (such as primitive types, 'int i = x + 2', x is used but not a 'call'
+                //though in reference to the comment above, the most commonly used usage is a call. The primitive type usages are more rare I have found.
+                if (callTreeNode.isCall()) {
+                    variableUsages.add(callTreeNode.parseVarNameFromCall());
+                }
             }
         }
     }
