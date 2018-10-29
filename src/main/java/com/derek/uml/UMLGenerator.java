@@ -109,16 +109,31 @@ public class UMLGenerator {
                     UMLClassifier localVariablePotentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, localAtt.getStringDataType());
                     localAtt.setType(localVariablePotentialMatch);
                 }
+
+                //find local variable usages (if exist)
+                if (umlOperation.getCallTreeString() != null) {
+                    for (String s : umlOperation.getVariableUsages()) {
+                        UMLClassifier localVariableUsageType = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, s);
+                        umlOperation.addLocalVariableTypeUsage(localVariableUsageType);
+                    }
+                }
             }
             if (umlClassifier.getIdentifier().equals("class")){
                 //in the case of classes, need to do constructors.
                 for (UMLOperation constructor : ((UMLClass)umlClassifier).getConstructors()){
+                    constructor.setParameters(getParamsFromString(umlClassifier, constructor));
                     for (UMLAttribute localAtt : constructor.getLocalAttributeDecls()){
                         UMLClassifier localVariablePotentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, localAtt.getStringDataType());
                         localAtt.setType(localVariablePotentialMatch);
                     }
+                    //add local variable usages
+                    if (constructor.getCallTreeString() != null) {
+                        for (String s : constructor.getVariableUsages()) {
+                            UMLClassifier localVariableUsageType = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, s);
+                            constructor.addLocalVariableTypeUsage(localVariableUsageType);
+                        }
+                    }
                 }
-
             }
         }
     }

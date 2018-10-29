@@ -59,11 +59,12 @@ public class UMLOperation {
     @Setter
     private List<UMLAttribute> localAttributeDecls;
 
+    @Setter
+    private List<UMLClassifier> localVariableTypeUsages;
+
     //names of the variables that are used in this method.
     private List<String> variableUsages;
 
-    //names of the variables thar are declared in this method.
-    private List<String> variableDeclarations;
 
     public UMLOperation(String name, List<Pair<String, String>> stringParameters, String stringReturnDataType, Visibility visibility) {
         this.name = name;
@@ -107,7 +108,7 @@ public class UMLOperation {
         return s.toString();
     }
 
-    private void findVariableUsages(){
+    private void findLocalVariableTypeUsagesString(){
         variableUsages = new ArrayList<>();
         for (CallTreeNode<String> callTreeNode : this.getCallTreeString().convertMeToOrderedList()){
             //a call is definitely a usage.. But I can have non-call usages as well (such as primitive types, 'int i = x + 2', x is used but not a 'call'
@@ -118,11 +119,18 @@ public class UMLOperation {
         }
     }
 
+    public void addLocalVariableTypeUsage(UMLClassifier umlClassifier){
+        if (localVariableTypeUsages == null){
+            localVariableTypeUsages = new ArrayList<>();
+        }
+        localVariableTypeUsages.add(umlClassifier);
+    }
+
     public List<String> getVariableUsages(){
         if (variableUsages == null){
             variableUsages = new ArrayList<>();
-            findVariableUsages();
         }
+        findLocalVariableTypeUsagesString();
         return variableUsages;
     }
 

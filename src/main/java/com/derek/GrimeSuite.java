@@ -110,6 +110,7 @@ public class GrimeSuite {
             grime.findClassGrime();
             classGrimeList.put(umlClassifier, grime);
             System.out.println("Class " + umlClassifier.getName() + " has TCC: " + classGrimeList.get(umlClassifier).getTCC());
+            System.out.println("Class " + umlClassifier.getName() + " has RCI: " + classGrimeList.get(umlClassifier).getRCI());
         }
     }
 }
