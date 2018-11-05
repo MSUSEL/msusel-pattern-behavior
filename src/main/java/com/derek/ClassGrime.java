@@ -113,7 +113,7 @@ public class ClassGrime {
 //        }
 //        for (Pair<UMLClassifier, UMLClassifier> dmMax : maxDmInteractions){
 //            System.out.println(dmMax.getLeft().getName() + " dm interacts with: " + dmMax.getRight().getName());
-//        }
+//        } 
         //System.out.println("Finished calculating RCI... ddInteractions: " + ddInterations.size() + "     dmInteractions: " + maxDmInteractions.size());
         RCI = ((double) ddInterations.size())/(double)maxDmInteractions.size();
     }
