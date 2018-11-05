@@ -113,7 +113,7 @@ public class ClassGrime {
 //        }
 //        for (Pair<UMLClassifier, UMLClassifier> dmMax : maxDmInteractions){
 //            System.out.println(dmMax.getLeft().getName() + " dm interacts with: " + dmMax.getRight().getName());
-//        } 
+//        }
         //System.out.println("Finished calculating RCI... ddInteractions: " + ddInterations.size() + "     dmInteractions: " + maxDmInteractions.size());
         RCI = ((double) ddInterations.size())/(double)maxDmInteractions.size();
     }
@@ -202,18 +202,5 @@ public class ClassGrime {
         calculateRCI();
         findScope();
         findStrength();
-        System.out.println("Class: " + umlClassifier.getName());
-        for (UMLOperation op : internalMethods){
-            System.out.println(op.getName() + " is internal.");
-        }
-        for (UMLOperation op : externalMethods){
-            System.out.println(op.getName() + " is external.");
-        }
-        for (UMLOperation op : directAccess){
-            System.out.println(op.getName() + " has direct access");
-        }
-        for (UMLOperation op : indirectAccess){
-            System.out.println(op.getName() + " has indirect access");
-        }
     }
 }

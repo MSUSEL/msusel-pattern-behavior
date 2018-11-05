@@ -181,11 +181,13 @@ public class Comparatizer {
         //(such as TCC, RCI, TEAG, PEAG, etc.)
         //or another strategy is to send this struct to the metricSuite and have metricSuite take care if it.
 
+        GrimeFinder grimeFinder = new GrimeFinder(grimeTable);
+        grimeFinder.findModularGrime();
+
         outputRoles(sps, rbmlStructureMappings, ips, rbmlBehaviorMappings, patternMapper);
 
         MetricSuite ms = new MetricSuite(rbmlStructureMappings, patternMapper, sps, rbmlBehaviorMappings, ips);
         outputter.append(ms.getSummary());
-        System.out.println(grimeTable);
     }
 
     private void printViolatedRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings, StringBuilder output){

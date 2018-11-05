@@ -6,12 +6,14 @@ import com.derek.uml.RelationshipType;
 import com.derek.uml.UMLClassifier;
 import com.derek.uml.UMLOperation;
 import org.apache.commons.lang3.tuple.Pair;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Getter
 public class GrimeSuite {
 
     private PatternMapper patternMapper;
@@ -109,8 +111,6 @@ public class GrimeSuite {
             ClassGrime grime = new ClassGrime(umlClassifier, rbmlStructuralMappings);
             grime.findClassGrime();
             classGrimeList.put(umlClassifier, grime);
-//            System.out.println("Class " + umlClassifier.getName() + " has TCC: " + classGrimeList.get(umlClassifier).getTCC());
-//            System.out.println("Class " + umlClassifier.getName() + " has RCI: " + classGrimeList.get(umlClassifier).getRCI());
         }
     }
 }
