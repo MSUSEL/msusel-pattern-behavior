@@ -60,10 +60,16 @@ public class UMLOperation {
     private List<UMLAttribute> localAttributeDecls;
 
     @Setter
+    private List<String> localVariableUsageNames;
+
+    @Setter
     private List<UMLClassifier> localVariableTypeUsages;
 
     //names of the variables that are used in this method.
-    private List<String> variableUsages;
+    private List<String> variableTypeUsagesFromCall;
+
+    //not call.
+    private List<String> variableTypeUSagesFromOperator;
 
 
     public UMLOperation(String name, List<Pair<String, String>> stringParameters, String stringReturnDataType, Visibility visibility) {
@@ -108,14 +114,28 @@ public class UMLOperation {
         return s.toString();
     }
 
-    private void findLocalVariableTypeUsagesString(){
-        variableUsages = new ArrayList<>();
+    private void findLocalVariableTypeUsagesStringFromOperator(){
+        if (this.getLocalVariableUsageNames() != null){
+            for (String s : this.getLocalVariableUsageNames()){
+                if (!variableTypeUSagesFromOperator.contains(s)){
+                    //ensure variable usages are unique.
+                    variableTypeUSagesFromOperator.add(s);
+                }
+            }
+        }
+    }
+
+    private void findLocalVariableTypeUsagesStringFromCall(){
         if (this.getCallTreeString() != null) {
             for (CallTreeNode<String> callTreeNode : this.getCallTreeString().convertMeToOrderedList()) {
                 //a call is definitely a usage.. But I can have non-call usages as well (such as primitive types, 'int i = x + 2', x is used but not a 'call'
                 //though in reference to the comment above, the most commonly used usage is a call. The primitive type usages are more rare I have found.
                 if (callTreeNode.isCall()) {
-                    variableUsages.add(callTreeNode.parseVarNameFromCall());
+                    String parsedVarNameFromCall = callTreeNode.parseVarNameFromCall();
+                    if (!variableTypeUsagesFromCall.contains(parsedVarNameFromCall)){
+                        //make sure variable usages that are added are unique.
+                        variableTypeUsagesFromCall.add(parsedVarNameFromCall);
+                    }
                 }
             }
         }
@@ -128,12 +148,20 @@ public class UMLOperation {
         localVariableTypeUsages.add(umlClassifier);
     }
 
-    public List<String> getVariableUsages(){
-        if (variableUsages == null){
-            variableUsages = new ArrayList<>();
+    public List<String> getVariableTypeUsagesFromCall(){
+        if (variableTypeUsagesFromCall == null){
+            variableTypeUsagesFromCall = new ArrayList<>();
         }
-        findLocalVariableTypeUsagesString();
-        return variableUsages;
+        findLocalVariableTypeUsagesStringFromCall();
+        return variableTypeUsagesFromCall;
+    }
+
+    public List<String> getVariableTypeUsagesFromOperator(){
+        if (variableTypeUSagesFromOperator == null){
+            variableTypeUSagesFromOperator = new ArrayList<>();
+        }
+        findLocalVariableTypeUsagesStringFromOperator();
+        return variableTypeUSagesFromOperator;
     }
 
 }

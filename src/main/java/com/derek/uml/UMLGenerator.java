@@ -112,7 +112,7 @@ public class UMLGenerator {
 
                 //find local variable usages (if exist)
                 if (umlOperation.getCallTreeString() != null) {
-                    for (String s : umlOperation.getVariableUsages()) {
+                    for (String s : umlOperation.getVariableTypeUsagesFromCall()) {
                         UMLClassifier localVariableUsageType = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, s);
                         umlOperation.addLocalVariableTypeUsage(localVariableUsageType);
                     }
@@ -128,7 +128,7 @@ public class UMLGenerator {
                     }
                     //add local variable usages
                     if (constructor.getCallTreeString() != null) {
-                        for (String s : constructor.getVariableUsages()) {
+                        for (String s : constructor.getVariableTypeUsagesFromCall()) {
                             UMLClassifier localVariableUsageType = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, s);
                             constructor.addLocalVariableTypeUsage(localVariableUsageType);
                         }

@@ -87,6 +87,19 @@ public class UMLGenerationUtils {
         return decls;
     }
 
+
+    public static List<SrcMLName> getLocalVariableUsages(SrcMLNode node){
+        List<SrcMLName> usages = new ArrayList<>();
+        for (SrcMLNode child : node.getChildNodeOrder()){
+            if (child instanceof SrcMLExpression){
+                //add names... right?
+                usages.addAll(((SrcMLExpression)child).getNames());
+            }
+            usages.addAll(getLocalVariableUsages(child));
+        }
+        return usages;
+    }
+
     public static List<UMLAttribute> getUMLAttributes(SrcMLBlock block){
         List<UMLAttribute> attributes = new ArrayList<>();
         //first conditional happens in special cases (enums with both decls and decl_stmts)
@@ -131,7 +144,7 @@ public class UMLGenerationUtils {
         return params;
     }
 
-    public static List<UMLAttribute> getLocalUMLAttributes(SrcMLBlock srcMLBlock){
+    public static List<UMLAttribute> getLocalUMLAttributeDecls(SrcMLBlock srcMLBlock){
         List<UMLAttribute> localAtts = new ArrayList<>();
         List<SrcMLDecl> decls = getAllDeclsBelowMe(srcMLBlock);
 
@@ -141,6 +154,32 @@ public class UMLGenerationUtils {
         return localAtts;
     }
 
+    /***
+     * method to gather ALL the variable usages (unsages includes definitions, or declarations, too)
+     * returns a list of strings referring to variable names, taken from teh srcmlName obj.
+     * @param srcMLBlock
+     * @return
+     */
+    public static List<String> getVariableUsages(SrcMLBlock srcMLBlock){
+        List<String> localVariableUsages = new ArrayList<>();
+        List<SrcMLName> namesOfLocalVars = getLocalVariableUsages(srcMLBlock);
+
+        for (SrcMLName name : namesOfLocalVars){
+            localVariableUsages.add(name.getName());
+        }
+        return localVariableUsages;
+    }
+
+    public static void setUMLOperationLocalVariableUsagesAndDecls(UMLOperation umlOperation, SrcMLBlock srcMLBlock){
+        if (srcMLBlock != null) {
+            //happens when this is an interface or abstract declaration. Of course such a type will not have any attributes, so skip it.
+            List<UMLAttribute> localAttDecls = getLocalUMLAttributeDecls(srcMLBlock);
+            umlOperation.setLocalAttributeDecls(localAttDecls);
+            List<String> localVarUsages = getVariableUsages(srcMLBlock);
+            umlOperation.setLocalVariableUsageNames(localVarUsages);
+        }
+    }
+
     public static UMLOperation getUMLOperation(SrcMLFunction srcMLFunction){
         List<Pair<String, String>> params = UMLGenerationUtils.getParameters(srcMLFunction.getParameterList());
         String name = srcMLFunction.getName();
@@ -148,13 +187,7 @@ public class UMLGenerationUtils {
 
         //create toreturn object.. Though I need to see if there are any local attributes before returning it.
         UMLOperation toRet = new UMLOperation(name, params, returnType);
-
-        if (srcMLFunction.getBlock() != null) {
-            //happens when this is an interface or abstract declaration. Of course such a type will not have any attributes, so skip it.
-            List<UMLAttribute> localAtts = getLocalUMLAttributes(srcMLFunction.getBlock());
-            toRet.setLocalAttributeDecls(localAtts);
-        }
-
+        setUMLOperationLocalVariableUsagesAndDecls(toRet, srcMLFunction.getBlock());
         return toRet;
     }
 
@@ -165,13 +198,7 @@ public class UMLGenerationUtils {
         String returnType = "null";
         //I need to include use dependencies in here eventually. -- see comment above for umloperation
         UMLOperation toRet = new UMLOperation(name, params, returnType);
-
-        if (srcMLConstructor.getBlock() != null) {
-            //happens when this is an interface or abstract declaration. Of course such a type will not have any attributes, so skip it.
-            List<UMLAttribute> localAtts = getLocalUMLAttributes(srcMLConstructor.getBlock());
-            toRet.setLocalAttributeDecls(localAtts);
-        }
-
+        setUMLOperationLocalVariableUsagesAndDecls(toRet, srcMLConstructor.getBlock());
         return toRet;
     }
 

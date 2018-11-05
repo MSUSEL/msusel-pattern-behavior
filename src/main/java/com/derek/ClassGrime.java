@@ -39,7 +39,7 @@ public class ClassGrime {
         for (UMLAttribute att : umlClassifier.getAttributes()){
             int usages = 0;
             for (UMLOperation op : umlClassifier.getOperations()){
-                if (op.getVariableUsages().contains(att.getName())){
+                if (op.getVariableTypeUsagesFromCall().contains(att.getName())){
                     //we use this varaible.
                     usages++;
                 }
@@ -133,7 +133,7 @@ public class ClassGrime {
                     }
                 }
             }
-            boolean operationUsesClassAttribute = operationUsesClassAttribute(op);
+            boolean operationUsesClassAttribute = operationUsesClassAttributeOnCall(op);
             if (potentiallyInternal || potentiallyExternal){
                 if (operationUsesClassAttribute) {
                     internalMethods.add(op);
@@ -152,8 +152,8 @@ public class ClassGrime {
      * @param op
      * @return
      */
-    private boolean operationUsesClassAttribute(UMLOperation op){
-        for (String s : op.getVariableUsages()){
+    private boolean operationUsesClassAttributeOnCall(UMLOperation op){
+        for (String s : op.getVariableTypeUsagesFromCall()){
             for (UMLAttribute umlAttribute : umlClassifier.getAttributes()){
                 if (s.equals(umlAttribute.getName())){
                     //same name, likely the same attribute. Though if a variables of the same name in methods and classes might conflict here.
@@ -165,22 +165,36 @@ public class ClassGrime {
 
     }
 
+    private boolean operationUsesClassAttributeOnOperator(UMLOperation op){
+        for(String s : op.getVariableTypeUsagesFromOperator()){
+            for (UMLAttribute umlAttribute : umlClassifier.getAttributes()){
+                if (s.equals(umlAttribute.getName())){
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public void findStrength(){
         directAccess = new ArrayList<>();
         indirectAccess = new ArrayList<>();
         for (UMLOperation op : umlClassifier.getOperations()){
-            if (operationUsesClassAttribute(op)){
+            if (operationUsesClassAttributeOnCall(op)){
                 //because of how this method finds attributes (based on callTree.isCall()), this operation is sufficient for accessor (indirect) method sets..
                 //while its probably amazingly difficult to get EVERY accessor method access, (things like foo.bar.foo.set(x)), it will cover the most popular
                 //accessor uses.
                 indirectAccess.add(op);
-            }else {//if{
+            }
+            if(operationUsesClassAttributeOnOperator(op)){
                 //need to find when non-accessor uses are used.. things like int x = y, where x is a class attribute..
                 //this might require refactoring of the srml expression nodes.... again..
-
+                directAccess.add(op);
             }
 
         }
+
     }
 
     public void findClassGrime(){
@@ -194,6 +208,12 @@ public class ClassGrime {
         }
         for (UMLOperation op : externalMethods){
             System.out.println(op.getName() + " is external.");
+        }
+        for (UMLOperation op : directAccess){
+            System.out.println(op.getName() + " has direct access");
+        }
+        for (UMLOperation op : indirectAccess){
+            System.out.println(op.getName() + " has indirect access");
         }
     }
 }
