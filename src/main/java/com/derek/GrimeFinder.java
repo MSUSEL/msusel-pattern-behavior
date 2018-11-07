@@ -2,62 +2,61 @@ package com.derek;
 
 import com.derek.model.SoftwareVersion;
 import com.derek.uml.Relationship;
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
-import com.sun.org.apache.xpath.internal.operations.Mod;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
+import lombok.Getter;
 
 import java.util.*;
 
+@Getter
 public class GrimeFinder {
 
     private Table<SoftwareVersion, String, GrimeSuite> grimeTable;
 
-//    private List<> modularGrimeInstances;
-//    private List<> classGrimeInstances;
-//    private List<> improperOrderGrimeInstances;
-//    private List<> repetitionGrimeInstances;
+    private Table<SoftwareVersion, String, ModularGrimeCollections> peaGrime;
+    private Table<SoftwareVersion, String, ModularGrimeCollections> peeGrime;
+    private Table<SoftwareVersion, String, ModularGrimeCollections> piGrime;
+    private Table<SoftwareVersion, String, ModularGrimeCollections> teeGrime;
+    private Table<SoftwareVersion, String, ModularGrimeCollections> teaGrime;
+    private Table<SoftwareVersion, String, ModularGrimeCollections> tiGrime;
 
     public GrimeFinder(Table<SoftwareVersion, String, GrimeSuite> grimeTable) {
         this.grimeTable = grimeTable;
     }
 
     public void findModularGrime(){
-        List<Pair<SoftwareVersion, ModularGrimeCollections>> peaGrime = new ArrayList<>();
-        List<Pair<SoftwareVersion, ModularGrimeCollections>> peeGrime = new ArrayList<>();
-        List<Pair<SoftwareVersion, ModularGrimeCollections>> piGrime = new ArrayList<>();
-        List<Pair<SoftwareVersion, ModularGrimeCollections>> teeGrime = new ArrayList<>();
-        List<Pair<SoftwareVersion, ModularGrimeCollections>> teaGrime = new ArrayList<>();
-        List<Pair<SoftwareVersion, ModularGrimeCollections>> tiGrime = new ArrayList<>();
+        peaGrime =  HashBasedTable.create();
+        peeGrime = HashBasedTable.create();
+        piGrime = HashBasedTable.create();
+        teeGrime = HashBasedTable.create();
+        teaGrime = HashBasedTable.create();
+        tiGrime = HashBasedTable.create();
 
         for (String patternID : grimeTable.columnKeySet()) {
             Iterator<SoftwareVersion> iter = grimeTable.rowKeySet().iterator();
             List<SoftwareVersion> listIter = Lists.newArrayList(iter);
             for (int i = 0; i < listIter.size(); i++){
-                GrimeSuite previousGrimeSuite = null;
-                if (i != 0){
-                    previousGrimeSuite = grimeTable.get(listIter.get(i-1), patternID);
-                }
                 SoftwareVersion version = listIter.get(i);
-                if (previousGrimeSuite != null) {
-                    GrimeSuite currentGrimeSuite = grimeTable.get(version, patternID);
-                    System.out.println("Tee Grime counts, version: " + version + " and cardinality: " + currentGrimeSuite.getTeeGrimeInstances().size());
-                    peaGrime.add(new ImmutablePair<>(version, new ModularGrimeCollections(previousGrimeSuite.getPeaGrimeInstances(), currentGrimeSuite.getPeaGrimeInstances(), version)));
-                    peeGrime.add(new ImmutablePair<>(version, new ModularGrimeCollections(previousGrimeSuite.getPeeGrimeInstances(), currentGrimeSuite.getPeeGrimeInstances(), version)));
-                    piGrime.add(new ImmutablePair<>(version, new ModularGrimeCollections(previousGrimeSuite.getPiGrimeInstances(), currentGrimeSuite.getPiGrimeInstances(), version)));
-                    teaGrime.add(new ImmutablePair<>(version, new ModularGrimeCollections(previousGrimeSuite.getTeaGrimeInstances(), currentGrimeSuite.getTeaGrimeInstances(), version)));
-                    teeGrime.add(new ImmutablePair<>(version, new ModularGrimeCollections(previousGrimeSuite.getTeeGrimeInstances(), currentGrimeSuite.getTeeGrimeInstances(), version)));
-                    tiGrime.add(new ImmutablePair<>(version, new ModularGrimeCollections(previousGrimeSuite.getTiGrimeInstances(), currentGrimeSuite.getTiGrimeInstances(), version)));
+                GrimeSuite currentGrimeSuite = grimeTable.get(version, patternID);
+                if (i != 0){
+                    GrimeSuite previousGrimeSuite = grimeTable.get(listIter.get(i-1), patternID);
+                    peaGrime.put(version, patternID, new ModularGrimeCollections(previousGrimeSuite.getPeaGrimeInstances(), currentGrimeSuite.getPeaGrimeInstances()));
+                    peeGrime.put(version, patternID, new ModularGrimeCollections(previousGrimeSuite.getPeeGrimeInstances(), currentGrimeSuite.getPeeGrimeInstances()));
+                    piGrime.put(version, patternID, new ModularGrimeCollections(previousGrimeSuite.getPiGrimeInstances(), currentGrimeSuite.getPiGrimeInstances()));
+                    teaGrime.put(version, patternID, new ModularGrimeCollections(previousGrimeSuite.getTeaGrimeInstances(), currentGrimeSuite.getTeaGrimeInstances()));
+                    teeGrime.put(version, patternID, new ModularGrimeCollections(previousGrimeSuite.getTeeGrimeInstances(), currentGrimeSuite.getTeeGrimeInstances()));
+                    tiGrime.put(version, patternID, new ModularGrimeCollections(previousGrimeSuite.getTiGrimeInstances(), currentGrimeSuite.getTiGrimeInstances()));
+                }else{
+                    peaGrime.put(version, patternID, new ModularGrimeCollections(new ArrayList<>(), currentGrimeSuite.getPeaGrimeInstances()));
+                    peeGrime.put(version, patternID, new ModularGrimeCollections(new ArrayList<>(), currentGrimeSuite.getPeeGrimeInstances()));
+                    piGrime.put(version, patternID, new ModularGrimeCollections(new ArrayList<>(), currentGrimeSuite.getPiGrimeInstances()));
+                    teaGrime.put(version, patternID, new ModularGrimeCollections(new ArrayList<>(), currentGrimeSuite.getTeaGrimeInstances()));
+                    teeGrime.put(version, patternID, new ModularGrimeCollections(new ArrayList<>(), currentGrimeSuite.getTeeGrimeInstances()));
+                    tiGrime.put(version, patternID, new ModularGrimeCollections(new ArrayList<>(), currentGrimeSuite.getTiGrimeInstances()));
                 }
             }
         }
-
-        System.out.println("TEE GRIME in pair number: " + teeGrime.size());
-        for (Pair<SoftwareVersion, ModularGrimeCollections> pair : teeGrime){
-            pair.getRight().printSummary();
-        }
     }
-
 
 }

@@ -76,14 +76,12 @@ public class MetricSuite {
     //pattern instability, defined as (efferentCoupling) / (afferentCoupling + efferentCoupling)
     private String patternInstability = "";
 
-
-
-    public MetricSuite(List<RBMLMapping> rbmlStructuralMappings, PatternMapper patternMapper, SPS sps, List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings, IPS ips){
-        this.patternMapper = patternMapper;
-        this.rbmlStructuralMappings = rbmlStructuralMappings;
-        this.sps = sps;
-        this.rbmlBehavioralMappings = rbmlBehavioralMappings;
-        this.ips = ips;
+    public MetricSuite(ConformanceResults conformanceResults){
+        this.patternMapper = conformanceResults.getPatternMapper();
+        this.sps = conformanceResults.getSps();
+        this.rbmlStructuralMappings = conformanceResults.getRbmlStructureMappings();
+        this.ips = conformanceResults.getIps();
+        this.rbmlBehavioralMappings = conformanceResults.getRbmlBehaviorMappings();
         calculate();
     }
 
@@ -284,28 +282,27 @@ public class MetricSuite {
 
 
     public String getSummary(){
-        String separator = "\t";
+        String delim = "\t";
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(Main.projectID + separator);
-        stringBuilder.append(patternMapper.getPi().getSoftwareVersion().getVersionNum() + separator);
-        stringBuilder.append(patternMapper.getPi().getPatternType() + separator);
-        stringBuilder.append(patternMapper.getPi().getUniqueID() + separator);
-        stringBuilder.append(this.getNumParticipatingClasses() + separator);
-        stringBuilder.append(this.getNumConformingStructuralRoles() + separator);
-        stringBuilder.append(this.getNumNonConformingStructuralRoles() + separator);
-        stringBuilder.append(this.getNumConformingBehavioralRoles() + separator);
-        stringBuilder.append(this.getNumNonConformingBehavioralRoles() + separator);
-        stringBuilder.append(this.getNumConformingRolesTotal() + separator);
-        stringBuilder.append(this.getNumNonConformingRolesTotal() + separator);
-        stringBuilder.append(this.getSsize2() + separator);
-        stringBuilder.append(this.getAfferentCoupling() + separator);
-        stringBuilder.append(this.getEfferentCoupling() + separator);
-        stringBuilder.append(this.getCouplingBetweenPatternClasses() + separator);
-        stringBuilder.append(this.getPatternStructuralIntegrity() + separator);
-        stringBuilder.append(this.getPatternBehavioralIntegrity() + separator);
-        stringBuilder.append(this.getPatternIntegrity() + separator);
-        stringBuilder.append(this.getPatternInstability());
-        stringBuilder.append("\n");
+        stringBuilder.append(Main.projectID + delim);
+        stringBuilder.append(patternMapper.getPi().getSoftwareVersion().getVersionNum() + delim);
+        stringBuilder.append(patternMapper.getPi().getPatternType() + delim);
+        stringBuilder.append(patternMapper.getPi().getUniqueID() + delim);
+        stringBuilder.append(this.getNumParticipatingClasses() + delim);
+        stringBuilder.append(this.getNumConformingStructuralRoles() + delim);
+        stringBuilder.append(this.getNumNonConformingStructuralRoles() + delim);
+        stringBuilder.append(this.getNumConformingBehavioralRoles() + delim);
+        stringBuilder.append(this.getNumNonConformingBehavioralRoles() + delim);
+        stringBuilder.append(this.getNumConformingRolesTotal() + delim);
+        stringBuilder.append(this.getNumNonConformingRolesTotal() + delim);
+        stringBuilder.append(this.getSsize2() + delim);
+        stringBuilder.append(this.getAfferentCoupling() + delim);
+        stringBuilder.append(this.getEfferentCoupling() + delim);
+        stringBuilder.append(this.getCouplingBetweenPatternClasses() + delim);
+        stringBuilder.append(this.getPatternStructuralIntegrity() + delim);
+        stringBuilder.append(this.getPatternBehavioralIntegrity() + delim);
+        stringBuilder.append(this.getPatternIntegrity() + delim);
+        stringBuilder.append(this.getPatternInstability() + delim);
         return stringBuilder.toString();
     }
 

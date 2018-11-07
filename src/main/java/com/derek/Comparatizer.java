@@ -32,6 +32,7 @@ import com.derek.model.patterns.PatternInstance;
 import com.derek.rbml.*;
 import com.derek.uml.*;
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -41,10 +42,7 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Comparatizer {
 
@@ -57,11 +55,16 @@ public class Comparatizer {
     // each entry will have a grimeSuite object, refering to all types of grime that exist for that pattern instance at that version.
     private Table<SoftwareVersion, String, GrimeSuite> grimeTable;
 
+    //in addition to tracking a grime table, I think its important to track a metric table so that I can output all at the end.
+    private Table<SoftwareVersion, String, MetricSuite> metricTable;
+
+
     public Comparatizer(Model model){
         this.model = model;
         this.umlClassDiagrams = model.getClassDiagramMap();
         outputter = new StringBuilder();
         grimeTable = HashBasedTable.create();
+        metricTable = HashBasedTable.create();
     }
 
     public void runAnalysis(){
@@ -82,9 +85,16 @@ public class Comparatizer {
                             if (pair.getValue() != null) {
                                 //will happen when a pattern instance first appears after the first version number under analysis.
                                 pair.getValue().setUniqueID(uniqueID);
-                                testComparisons(umlClassDiagrams.get(pair.getKey()), pair.getValue());
+                                SoftwareVersion version = pair.getLeft();
+                                PatternInstance patternInstance = pair.getRight();
+                                ConformanceResults conformanceResults = testComparisons(umlClassDiagrams.get(version), patternInstance);
 
-                                //do grime checks here i think..  Not in the output logic area.
+                                //after we have gathered conformance, build metrics.
+                                MetricSuite ms = new MetricSuite(conformanceResults);
+                                metricTable.put(version, patternInstance.getUniqueID(), ms);
+
+                                //after metrics, build grime table.
+                                grimeTable.put(version, patternInstance.getUniqueID(), conformanceResults.getGrimeSuite());
                             }
                         }
                     }
@@ -98,63 +108,95 @@ public class Comparatizer {
         GrimeFinder grimeFinder = new GrimeFinder(grimeTable);
         grimeFinder.findModularGrime();
 
+        for (String patternID : metricTable.columnKeySet()){
+            for (SoftwareVersion version : metricTable.rowKeySet()){
+                outputter.append(metricTable.get(version, patternID).getSummary());
+                outputter.append(grimeFinder.getPeaGrime().get(version, patternID).getTabDelimSummary());
+                outputter.append(grimeFinder.getPeeGrime().get(version, patternID).getTabDelimSummary());
+                outputter.append(grimeFinder.getPiGrime().get(version, patternID).getTabDelimSummary());
+                outputter.append(grimeFinder.getTeaGrime().get(version, patternID).getTabDelimSummary());
+                outputter.append(grimeFinder.getTeeGrime().get(version, patternID).getTabDelimSummary());
+                outputter.append(grimeFinder.getTiGrime().get(version, patternID).getTabDelimSummary());
+                outputter.append("\n");
+            }
+        }
+
+        for (String patternID : metricTable.columnKeySet()){
+            for (SoftwareVersion v : metricTable.rowKeySet()){
+                System.out.println(grimeFinder.getPeaGrime().get(v, patternID).getTabDelimSummary());
+                //grimeFinder.getPeaGrime().get(v, patternID).printSummary();
+//                System.out.println("Grime count of pattern: " + patternID + " in version: " + v.getVersionNum() + " = " + grimeFinder.getPeaGrime().get(v, patternID).getGrimeInstancesInThisVersion());
+//                System.out.println("Grime additions of pattern: " + patternID + " in version: " + v.getVersionNum() + " = " + grimeFinder.getPeaGrime().get(v, patternID).getAdditionsFromLastVersion());
+//                System.out.println("Grime removals of pattern: " + patternID + " in version: " + v.getVersionNum() + " = " + grimeFinder.getPeaGrime().get(v, patternID).getRemovalsFromLastVersion());
+            }
+        }
+
         output();
     }
 
-    public void testComparisons(UMLClassDiagram umlClassDiagram, PatternInstance pi){
-
+    public ConformanceResults testComparisons(UMLClassDiagram umlClassDiagram, PatternInstance pi){
+        ConformanceResults toRet = null;
         switch(pi.getPatternType()){
             case OBJECT_ADAPTER:
-                compareObjectAdapter(pi, umlClassDiagram);
+                toRet = compareObjectAdapter(pi, umlClassDiagram);
                 break;
             case STATE:
-                compareState(pi, umlClassDiagram);
+                toRet = compareState(pi, umlClassDiagram);
                 break;
             case OBSERVER:
-                compareObserver(pi, umlClassDiagram);
+                toRet = compareObserver(pi, umlClassDiagram);
                 break;
             case TEMPLATE_METHOD:
-                compareTemplateMethod(pi, umlClassDiagram);
+                toRet = compareTemplateMethod(pi, umlClassDiagram);
                 break;
             case SINGLETON:
-                compareSingleton(pi, umlClassDiagram);
+                toRet = compareSingleton(pi, umlClassDiagram);
+                break;
+          default:
+                toRet = null;
                 break;
         }
+        return toRet;
     }
 
-    public void compareState(PatternInstance pi, UMLClassDiagram umlClassDiagram){
+    public ConformanceResults compareState(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         StatePattern statePattern = new StatePattern(pi, umlClassDiagram);
         SPS strictStateSPS = new SPS("configs/sps/statePatternSPS_strict.txt");
         IPS strictStateIPS = new IPS("configs/ips/statePatternIPS_strict.txt", strictStateSPS);
-        verifyConformance(strictStateSPS, strictStateIPS, statePattern, umlClassDiagram);
+        ConformanceResults stateConformances = verifyConformance(strictStateSPS, strictStateIPS, statePattern, umlClassDiagram);
+        return stateConformances;
     }
 
-    public void compareObjectAdapter(PatternInstance pi, UMLClassDiagram umlClassDiagram){
+    public ConformanceResults compareObjectAdapter(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         ObjectAdapterPattern objectAdapterPattern = new ObjectAdapterPattern(pi, umlClassDiagram);
         SPS strictObjectAdapterSPS = new SPS("configs/sps/objectAdapterPatternSPS_strict.txt");
         IPS strictObjectAdapterIPS = new IPS("configs/ips/objectAdapterPatternIPS_strict.txt", strictObjectAdapterSPS);
-        verifyConformance(strictObjectAdapterSPS, strictObjectAdapterIPS, objectAdapterPattern, umlClassDiagram);
+        ConformanceResults objectAdapterConformances = verifyConformance(strictObjectAdapterSPS, strictObjectAdapterIPS, objectAdapterPattern, umlClassDiagram);
+        return objectAdapterConformances;
     }
 
-    public void compareObserver(PatternInstance pi, UMLClassDiagram umlClassDiagram){
+    public ConformanceResults compareObserver(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         ObserverPattern observerPattern = new ObserverPattern(pi, umlClassDiagram);
         SPS strictObserverSPS = new SPS("configs/sps/observerPatternSPS_strict.txt");
         IPS strictObserverIPS = new IPS("configs/ips/observerPatternIPS_strict.txt", strictObserverSPS);
-        verifyConformance(strictObserverSPS, strictObserverIPS, observerPattern, umlClassDiagram);
+        ConformanceResults observerConformances = verifyConformance(strictObserverSPS, strictObserverIPS, observerPattern, umlClassDiagram);
+        return observerConformances;
     }
 
-    public void compareTemplateMethod(PatternInstance pi, UMLClassDiagram umlClassDiagram){
+    public ConformanceResults compareTemplateMethod(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         TemplateMethodPattern templateMethodPattern = new TemplateMethodPattern(pi, umlClassDiagram);
         SPS strictTemplateMethodSPS = new SPS("configs/sps/templateMethodPatternSPS_strict.txt");
         IPS strictTemplateMethodIPS = new IPS("configs/ips/templateMethodPatternIPS_strict.txt", strictTemplateMethodSPS);
-        verifyConformance(strictTemplateMethodSPS, strictTemplateMethodIPS, templateMethodPattern, umlClassDiagram);
+        ConformanceResults templateMethodConformances = verifyConformance(strictTemplateMethodSPS, strictTemplateMethodIPS, templateMethodPattern, umlClassDiagram);
+        return templateMethodConformances;
     }
 
-    public void compareSingleton(PatternInstance pi, UMLClassDiagram umlClassDiagram){
+    public ConformanceResults compareSingleton(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         SingletonPattern singletonPattern = new SingletonPattern(pi, umlClassDiagram);
         SPS strictSingletonSPS = new SPS("configs/sps/singletonPatternSPS_strict.txt");
         IPS strictSingletonIPS = new IPS("configs/ips/singletonPatternIPS_strict.txt", strictSingletonSPS);
-        verifyConformance(strictSingletonSPS, strictSingletonIPS, singletonPattern, umlClassDiagram);
+        ConformanceResults singletonConformances = verifyConformance(strictSingletonSPS, strictSingletonIPS, singletonPattern, umlClassDiagram);
+        return singletonConformances;
     }
 
     /***
@@ -163,29 +205,18 @@ public class Comparatizer {
      * @param sps
      * @param patternMapper
      */
-    public void verifyConformance(SPS sps, IPS ips, PatternMapper patternMapper, UMLClassDiagram umlClassDiagram){
+    public ConformanceResults verifyConformance(SPS sps, IPS ips, PatternMapper patternMapper, UMLClassDiagram umlClassDiagram){
         Conformance conformance = new Conformance(sps, ips, patternMapper, umlClassDiagram);
         List<RBMLMapping> rbmlStructureMappings = conformance.mapStructure();
         List<Pair<UMLOperation, BehaviorConformance>> rbmlBehaviorMappings = conformance.mapBehavior(rbmlStructureMappings);
 
-//        for (Pair<UMLOperation, BehaviorConformance> behaviorMapping : rbmlBehaviorMappings){
-//            for (BehavioralMapping behavioralViolation : behaviorMapping.getRight().getBehavioralGrime()){
-//                System.out.println(behaviorMapping.getLeft().getName());
-//                System.out.println("Violation: " + behavioralViolation.printViolation());
-//            }
-//        }
-//        for (RBMLMapping rbmlMapping : rbmlStructureMappings){
-//            rbmlMapping.printSummary();
-//        }
-
         //grime checks here I think.
         GrimeSuite grimeSuite = new GrimeSuite(patternMapper, rbmlStructureMappings, rbmlBehaviorMappings);
-        grimeTable.put(patternMapper.getPi().getSoftwareVersion(), patternMapper.getPi().getUniqueID(), grimeSuite);
 
         outputRoles(sps, rbmlStructureMappings, ips, rbmlBehaviorMappings, patternMapper);
 
-        MetricSuite ms = new MetricSuite(rbmlStructureMappings, patternMapper, sps, rbmlBehaviorMappings, ips);
-        outputter.append(ms.getSummary());
+        ConformanceResults conformanceResults = new ConformanceResults(patternMapper, sps, rbmlStructureMappings, ips, rbmlBehaviorMappings, grimeSuite);
+        return conformanceResults;
     }
 
     private void printViolatedRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings, StringBuilder output){
@@ -346,28 +377,43 @@ public class Comparatizer {
     }
 
     private String getOutputHeader(){
-        String separator = "\t";
+        String delim = "\t";
         StringBuilder header = new StringBuilder();
-        header.append("Project_ID" + separator);
-        header.append("Software_Version" + separator);
-        header.append("Pattern_Type" + separator);
-        header.append("Pattern_ID" + separator);
-        header.append("Num_Participating_Classes" + separator);
-        header.append("Num_Conforming_Structural_Roles" + separator);
-        header.append("Num_NonConforming_Structural_Roles" + separator);
-        header.append("Num_Conforming_Behavioral_Roles" + separator);
-        header.append("Num_NonConforming_Behavioral_Roles" + separator);
-        header.append("Num_Conforming_Roles_Total" + separator);
-        header.append("Num_NonConforming_Roles_Total" + separator);
-        header.append("SSize2" + separator);
-        header.append("Afferent_Coupling" + separator);
-        header.append("Efferent_Coupling" + separator);
-        header.append("Coupling_Between_Pattern_Classes" + separator);
-        header.append("Pattern_Structural_Integrity" + separator);
-        header.append("Pattern_Behavioral_Integrity" + separator);
-        header.append("Pattern_Integrity" + separator);
-        header.append("Pattern_Instability");
+        header.append("Project_ID" + delim);
+        header.append("Software_Version" + delim);
+        header.append("Pattern_Type" + delim);
+        header.append("Pattern_ID" + delim);
+        header.append("Num_Participating_Classes" + delim);
+        header.append("Num_Conforming_Structural_Roles" + delim);
+        header.append("Num_NonConforming_Structural_Roles" + delim);
+        header.append("Num_Conforming_Behavioral_Roles" + delim);
+        header.append("Num_NonConforming_Behavioral_Roles" + delim);
+        header.append("Num_Conforming_Roles_Total" + delim);
+        header.append("Num_NonConforming_Roles_Total" + delim);
+        header.append("SSize2" + delim);
+        header.append("Afferent_Coupling" + delim);
+        header.append("Efferent_Coupling" + delim);
+        header.append("Coupling_Between_Pattern_Classes" + delim);
+        header.append("Pattern_Structural_Integrity" + delim);
+        header.append("Pattern_Behavioral_Integrity" + delim);
+        header.append("Pattern_Integrity" + delim);
+        header.append("Pattern_Instability" + delim);
+        header.append(this.getModularGrimeOutputHeader("PEA") + delim);
+        header.append(this.getModularGrimeOutputHeader("PEE") + delim);
+        header.append(this.getModularGrimeOutputHeader("PI") + delim);
+        header.append(this.getModularGrimeOutputHeader("TEA") + delim);
+        header.append(this.getModularGrimeOutputHeader("TEA") + delim);
+        header.append(this.getModularGrimeOutputHeader("TI") + delim);
         header.append("\n");
+        return header.toString();
+    }
+
+    private String getModularGrimeOutputHeader(String typeOfModularGrime){
+        String delim = "\t";
+        StringBuilder header = new StringBuilder();
+        header.append(typeOfModularGrime + " grime count" + delim);
+        header.append(typeOfModularGrime + " grime additions" + delim);
+        header.append(typeOfModularGrime + " grime removals");
         return header.toString();
     }
 

@@ -1,6 +1,5 @@
 package com.derek;
 
-import com.derek.model.SoftwareVersion;
 import com.derek.uml.Relationship;
 import lombok.Getter;
 
@@ -10,13 +9,11 @@ import java.util.List;
 @Getter
 public class ModularGrimeCollections {
 
-    private SoftwareVersion version;
     private List<Relationship> grimeInstancesInThisVersion;
     private List<Relationship> additionsFromLastVersion;
     private List<Relationship> removalsFromLastVersion;
 
-    public ModularGrimeCollections(List<Relationship> grimeInstancesInPreviousVersion, List<Relationship> grimeInstancesInThisVersion, SoftwareVersion version){
-        this.version = version;
+    public ModularGrimeCollections(List<Relationship> grimeInstancesInPreviousVersion, List<Relationship> grimeInstancesInThisVersion){
         this.grimeInstancesInThisVersion = grimeInstancesInThisVersion;
         differentiate(grimeInstancesInPreviousVersion, grimeInstancesInThisVersion);
     }
@@ -59,11 +56,19 @@ public class ModularGrimeCollections {
 
     public void printSummary(){
         System.out.println("Modular Grime Collection: ");
-        System.out.println("Version: " + version.getVersionNum());
         System.out.println("Cardinality: " + getCardinality());
         System.out.println("Number grime additions: " + this.getAdditionsFromLastVersion().size());
         System.out.println("Number grime removals: " + this.getRemovalsFromLastVersion().size());
         System.out.println("");
+    }
+
+    public String getTabDelimSummary(){
+        String delim = "\t";
+        StringBuilder toRet = new StringBuilder();
+        toRet.append(this.getCardinality() + delim);
+        toRet.append(this.getAdditionsFromLastVersion().size() + delim);
+        toRet.append(this.getRemovalsFromLastVersion().size() + delim);
+        return toRet.toString();
     }
 
 }
