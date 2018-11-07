@@ -107,14 +107,6 @@ public class ClassGrime {
                 }
             }
         }
-//        System.out.println("Class: " + umlClassifier.getName());
-//        for (Pair<UMLClassifier, UMLClassifier> ddInter : ddInterations){
-//            System.out.println(ddInter.getLeft().getName() + " dd interacts with: " + ddInter.getRight().getName());
-//        }
-//        for (Pair<UMLClassifier, UMLClassifier> dmMax : maxDmInteractions){
-//            System.out.println(dmMax.getLeft().getName() + " dm interacts with: " + dmMax.getRight().getName());
-//        }
-        //System.out.println("Finished calculating RCI... ddInteractions: " + ddInterations.size() + "     dmInteractions: " + maxDmInteractions.size());
         RCI = ((double) ddInterations.size())/(double)maxDmInteractions.size();
     }
 
@@ -177,7 +169,7 @@ public class ClassGrime {
         return false;
     }
 
-    public void findStrength(){
+    private void findStrength(){
         directAccess = new ArrayList<>();
         indirectAccess = new ArrayList<>();
         for (UMLOperation op : umlClassifier.getOperations()){
@@ -203,4 +195,5 @@ public class ClassGrime {
         findScope();
         findStrength();
     }
+
 }

@@ -107,6 +107,7 @@ public class Comparatizer {
 
         GrimeFinder grimeFinder = new GrimeFinder(grimeTable);
         grimeFinder.findModularGrime();
+        grimeFinder.findClassGrime();
 
         for (String patternID : metricTable.columnKeySet()){
             for (SoftwareVersion version : metricTable.rowKeySet()){
@@ -121,21 +122,11 @@ public class Comparatizer {
             }
         }
 
-        for (String patternID : metricTable.columnKeySet()){
-            for (SoftwareVersion v : metricTable.rowKeySet()){
-                System.out.println(grimeFinder.getPeaGrime().get(v, patternID).getTabDelimSummary());
-                //grimeFinder.getPeaGrime().get(v, patternID).printSummary();
-//                System.out.println("Grime count of pattern: " + patternID + " in version: " + v.getVersionNum() + " = " + grimeFinder.getPeaGrime().get(v, patternID).getGrimeInstancesInThisVersion());
-//                System.out.println("Grime additions of pattern: " + patternID + " in version: " + v.getVersionNum() + " = " + grimeFinder.getPeaGrime().get(v, patternID).getAdditionsFromLastVersion());
-//                System.out.println("Grime removals of pattern: " + patternID + " in version: " + v.getVersionNum() + " = " + grimeFinder.getPeaGrime().get(v, patternID).getRemovalsFromLastVersion());
-            }
-        }
-
         output();
     }
 
     public ConformanceResults testComparisons(UMLClassDiagram umlClassDiagram, PatternInstance pi){
-        ConformanceResults toRet = null;
+        ConformanceResults toRet;
         switch(pi.getPatternType()){
             case OBJECT_ADAPTER:
                 toRet = compareObjectAdapter(pi, umlClassDiagram);
