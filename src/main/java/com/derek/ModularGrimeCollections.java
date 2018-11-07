@@ -15,7 +15,7 @@ public class ModularGrimeCollections {
     private List<Relationship> additionsFromLastVersion;
     private List<Relationship> removalsFromLastVersion;
 
-    public ModularGrimeCollections(SoftwareVersion version, List<Relationship> grimeInstancesInPreviousVersion, List<Relationship> grimeInstancesInThisVersion){
+    public ModularGrimeCollections(List<Relationship> grimeInstancesInPreviousVersion, List<Relationship> grimeInstancesInThisVersion, SoftwareVersion version){
         this.version = version;
         this.grimeInstancesInThisVersion = grimeInstancesInThisVersion;
         differentiate(grimeInstancesInPreviousVersion, grimeInstancesInThisVersion);
@@ -31,7 +31,7 @@ public class ModularGrimeCollections {
         for (Relationship previousGrime : previous) {
             boolean hasFound = false;
             for (Relationship currentGrime : current) {
-                if (previousGrime.equals(currentGrime)) {
+                if (previousGrime.equalsFromClassifierName(currentGrime)) {
                     hasFound = true;
                 }
             }
@@ -46,7 +46,7 @@ public class ModularGrimeCollections {
         for (Relationship currentGrime : current){
             boolean hasFound = false;
             for (Relationship previousGrime : previous){
-                if (currentGrime.equals(previousGrime)){
+                if (currentGrime.equalsFromClassifierName(previousGrime)){
                     hasFound = true;
                 }
             }

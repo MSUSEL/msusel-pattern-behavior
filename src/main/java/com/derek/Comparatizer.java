@@ -91,6 +91,12 @@ public class Comparatizer {
                 }
             }
         }
+        //here I will have to do the actual checks for grime, looking at each form of grime across versions and finding changes.
+        //this is because the grimesuite obj is just a 'snapshot' of pattern grime analysis, and contains measurements of the grime-related metrics
+        //(such as TCC, RCI, TEAG, PEAG, etc.)
+
+        GrimeFinder grimeFinder = new GrimeFinder(grimeTable);
+        grimeFinder.findModularGrime();
 
         output();
     }
@@ -175,14 +181,6 @@ public class Comparatizer {
         //grime checks here I think.
         GrimeSuite grimeSuite = new GrimeSuite(patternMapper, rbmlStructureMappings, rbmlBehaviorMappings);
         grimeTable.put(patternMapper.getPi().getSoftwareVersion(), patternMapper.getPi().getUniqueID(), grimeSuite);
-
-        //here I will have to do the actual checks for grime, looking at each form of grime across versions and finding changes.
-        //this is because the grimesuite obj is just a 'snapshot' of pattern grime analysis, and contains measurements of the grime-related metrics
-        //(such as TCC, RCI, TEAG, PEAG, etc.)
-        //or another strategy is to send this struct to the metricSuite and have metricSuite take care if it.
-
-        GrimeFinder grimeFinder = new GrimeFinder(grimeTable);
-        grimeFinder.findModularGrime();
 
         outputRoles(sps, rbmlStructureMappings, ips, rbmlBehaviorMappings, patternMapper);
 

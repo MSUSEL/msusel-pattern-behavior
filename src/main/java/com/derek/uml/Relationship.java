@@ -48,8 +48,26 @@ public class Relationship{
                     }
                 }
             }
-        }else{
-            return false;
+        }
+        return false;
+    }
+
+    /***
+     * slightly different equals() override, meant to check if two relationships are equal even if they are different classifier obj ids.
+     * This is used to track classifiers across versions.
+     * @param o
+     * @return
+     */
+    public boolean equalsFromClassifierName(Object o){
+        if (o instanceof Relationship){
+            Relationship other = (Relationship)o;
+            if (this.getFrom().getName().equals(other.getFrom().getName())){
+                if (this.getTo().getName().equals(other.getTo().getName())){
+                    if (this.getRelationshipType().equals(other.getRelationshipType())){
+                        return true;
+                    }
+                }
+            }
         }
         return false;
     }
