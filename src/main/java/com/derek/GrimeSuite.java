@@ -29,7 +29,8 @@ public class GrimeSuite {
     //total behavioral grime.
     private int totalBehavioralGrimeCount = 0;
 
-    private Map<UMLClassifier, ClassGrime> classGrimeList;
+    //list of class grime instances for a single pattern (pattern mapper obj)
+    private Map<UMLClassifier, ClassGrimeMeasurements> classGrimeMeasurementList;
 
 
     //structural modular grime instances (persistent grime). When I want to calculate I will just call this.size();
@@ -47,7 +48,7 @@ public class GrimeSuite {
         this.patternMapper = patternMapper;
         this.rbmlStructuralMappings = rbmlStructuralMappings;
         this.rbmlBehavioralMappings = rbmlBehavioralMappings;
-        classGrimeList = new HashMap<>();
+        classGrimeMeasurementList = new HashMap<>();
         calculateModularGrime();
         calculateClassGrime();
     }
@@ -108,9 +109,9 @@ public class GrimeSuite {
     //for a pattern realization every class is subject to class grime.. I need to maintain a mapping from class to grime categoreis (strength, scope, and context)
     private void calculateClassGrime(){
         for (UMLClassifier umlClassifier : patternMapper.getAllParticipatingClassesOnlyUMLClassifiers()){
-            ClassGrime grime = new ClassGrime(umlClassifier, rbmlStructuralMappings);
-            grime.findClassGrime();
-            classGrimeList.put(umlClassifier, grime);
+            ClassGrimeMeasurements grime = new ClassGrimeMeasurements(umlClassifier, rbmlStructuralMappings);
+            grime.calculateClassGrimeMeasurements();
+            classGrimeMeasurementList.put(umlClassifier, grime);
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.derek;
 
 import com.derek.model.SoftwareVersion;
-import com.derek.uml.Relationship;
 import com.derek.uml.UMLClassifier;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
@@ -22,14 +21,14 @@ public class GrimeFinder {
     private Table<SoftwareVersion, String, ModularGrimeCollections> teaGrime;
     private Table<SoftwareVersion, String, ModularGrimeCollections> tiGrime;
 
-    private Table<SoftwareVersion, String, ClassGrime> dipGrime;
-    private Table<SoftwareVersion, String, ClassGrime> disGrime;
-    private Table<SoftwareVersion, String, ClassGrime> depGrime;
-    private Table<SoftwareVersion, String, ClassGrime> desGrime;
-    private Table<SoftwareVersion, String, ClassGrime> iipGrime;
-    private Table<SoftwareVersion, String, ClassGrime> iisGrime;
-    private Table<SoftwareVersion, String, ClassGrime> iepGrime;
-    private Table<SoftwareVersion, String, ClassGrime> iesGrime;
+    private Table<SoftwareVersion, String, ClassGrimeCollections> dipGrime;
+    private Table<SoftwareVersion, String, ClassGrimeCollections> disGrime;
+    private Table<SoftwareVersion, String, ClassGrimeCollections> depGrime;
+    private Table<SoftwareVersion, String, ClassGrimeCollections> desGrime;
+    private Table<SoftwareVersion, String, ClassGrimeCollections> iipGrime;
+    private Table<SoftwareVersion, String, ClassGrimeCollections> iisGrime;
+    private Table<SoftwareVersion, String, ClassGrimeCollections> iepGrime;
+    private Table<SoftwareVersion, String, ClassGrimeCollections> iesGrime;
 
     public GrimeFinder(Table<SoftwareVersion, String, GrimeSuite> grimeTable) {
         this.grimeTable = grimeTable;
@@ -87,67 +86,20 @@ public class GrimeFinder {
             for (int i = 0; i < listIter.size(); i++) {
                 SoftwareVersion version = listIter.get(i);
                 GrimeSuite currentGrimeSuite = grimeTable.get(version, patternID);
-                if (i != 0){
-                    GrimeSuite previousGrimeSuite = grimeTable.get(listIter.get(i-1), patternID);
-                    for (UMLClassifier previousClass : previousGrimeSuite.getClassGrimeList().keySet()){
-                        for (UMLClassifier currentClass : currentGrimeSuite.getClassGrimeList().keySet()){
-                            if (previousClass.getName().equals(currentClass.getName())){
-                                //same class
-                                ClassGrime previousGrime = previousGrimeSuite.getClassGrimeList().get(previousClass);
-                                ClassGrime currentGrime = currentGrimeSuite.getClassGrimeList().get(currentClass);
-                                if (currentGrime.getRCI() < previousGrime.getRCI()){
-                                    //rci decrease
-                                    if (currentGrime.getInternalMethods().size() > 0){
-                                        //we have internal methods existing... I do not think I need to assert this is different from previous methods.
-                                        if (currentGrime.getDirectAccess().size() > 0){
-                                            //see above.
-                                            //if all this holds true, I am pretty sure this is an instance of disGrime.
-                                            disGrime.put(version, patternID, currentGrime);
-                                        }
-                                        if (currentGrime.getIndirectAccess().size() > 0){
-                                            iisGrime.put(version, patternID, currentGrime);
-                                        }
-                                    }
-                                    if (currentGrime.getExternalMethods().size() > 0){
-                                        if (currentGrime.getDirectAccess().size() > 0){
-                                            //see above.
-                                            desGrime.put(version, patternID, currentGrime);
-                                        }
-                                        if (currentGrime.getIndirectAccess().size() > 0){
-                                            iesGrime.put(version, patternID, currentGrime);
-                                        }
-                                    }
-                                }
-                                if (currentGrime.getTCC() < previousGrime.getTCC()){
-                                    //tcc decrease
-                                    if (currentGrime.getInternalMethods().size() > 0){
-                                        //we have internal methods existing... I do not think I need to assert this is different from previous methods.
-                                        if (currentGrime.getDirectAccess().size() > 0){
-                                            //see above.
-                                            //if all this holds true, I am pretty sure this is an instance of disGrime.
-                                            dipGrime.put(version, patternID, currentGrime);
-                                        }
-                                        if (currentGrime.getIndirectAccess().size() > 0){
-                                            iipGrime.put(version, patternID, currentGrime);
-                                        }
-                                    }
-                                    if (currentGrime.getExternalMethods().size() > 0){
-                                        if (currentGrime.getDirectAccess().size() > 0){
-                                            //see above.
-                                            depGrime.put(version, patternID, currentGrime);
-                                        }
-                                        if (currentGrime.getIndirectAccess().size() > 0){
-                                            iepGrime.put(version, patternID, currentGrime);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                GrimeSuite previousGrimeSuite = currentGrimeSuite;
+                if (i != 0) {
+                    previousGrimeSuite = grimeTable.get(listIter.get(i - 1), patternID);
                 }
+                dipGrime.put(version, patternID, new ClassGrimeCollections(previousGrimeSuite, currentGrimeSuite, ClassGrimeType.DIPGRIME));
+                disGrime.put(version, patternID, new ClassGrimeCollections(previousGrimeSuite, currentGrimeSuite, ClassGrimeType.DISGRIME));
+                depGrime.put(version, patternID, new ClassGrimeCollections(previousGrimeSuite, currentGrimeSuite, ClassGrimeType.DEPGRIME));
+                desGrime.put(version, patternID, new ClassGrimeCollections(previousGrimeSuite, currentGrimeSuite, ClassGrimeType.DESGRIME));
+                iipGrime.put(version, patternID, new ClassGrimeCollections(previousGrimeSuite, currentGrimeSuite, ClassGrimeType.IIPGRIME));
+                iisGrime.put(version, patternID, new ClassGrimeCollections(previousGrimeSuite, currentGrimeSuite, ClassGrimeType.IISGRIME));
+                iepGrime.put(version, patternID, new ClassGrimeCollections(previousGrimeSuite, currentGrimeSuite, ClassGrimeType.IEPGRIME));
+                iesGrime.put(version, patternID, new ClassGrimeCollections(previousGrimeSuite, currentGrimeSuite, ClassGrimeType.IESGRIME));
             }
         }
-
     }
 
 

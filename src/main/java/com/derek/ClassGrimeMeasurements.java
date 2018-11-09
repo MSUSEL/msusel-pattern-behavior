@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class ClassGrime {
+public class ClassGrimeMeasurements {
 
     private double TCC;
     private double RCI;
@@ -22,7 +22,7 @@ public class ClassGrime {
     private List<RBMLMapping> rbmlStructuralMappings;
 
 
-    public ClassGrime(UMLClassifier umlClassifier, List<RBMLMapping> rbmlStructuralMappings){
+    public ClassGrimeMeasurements(UMLClassifier umlClassifier, List<RBMLMapping> rbmlStructuralMappings){
         this.umlClassifier = umlClassifier;
         this.rbmlStructuralMappings = rbmlStructuralMappings;
     }
@@ -189,7 +189,7 @@ public class ClassGrime {
 
     }
 
-    public void findClassGrime(){
+    public void calculateClassGrimeMeasurements(){
         calculateTCC();
         calculateRCI();
         findScope();
