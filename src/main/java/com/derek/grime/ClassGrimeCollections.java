@@ -1,6 +1,5 @@
-package com.derek;
+package com.derek.grime;
 
-import com.derek.uml.Relationship;
 import com.derek.uml.UMLClassifier;
 
 import java.util.ArrayList;

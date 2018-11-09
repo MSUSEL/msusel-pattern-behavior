@@ -1,7 +1,6 @@
-package com.derek;
+package com.derek.grime;
 
 import com.derek.model.SoftwareVersion;
-import com.derek.uml.UMLClassifier;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;

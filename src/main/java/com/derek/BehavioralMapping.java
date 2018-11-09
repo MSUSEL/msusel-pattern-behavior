@@ -1,5 +1,6 @@
 package com.derek;
 
+import com.derek.grime.BehavioralGrimeType;
 import com.derek.rbml.InteractionRole;
 import com.derek.uml.CallTreeNode;
 import lombok.Getter;

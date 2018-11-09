@@ -1,5 +1,6 @@
 package com.derek;
 
+import com.derek.grime.BehavioralGrimeType;
 import lombok.Getter;
 
 import com.derek.rbml.IPS;

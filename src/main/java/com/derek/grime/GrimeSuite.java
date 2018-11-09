@@ -1,5 +1,7 @@
-package com.derek;
+package com.derek.grime;
 
+import com.derek.BehaviorConformance;
+import com.derek.PatternMapper;
 import com.derek.rbml.RBMLMapping;
 import com.derek.uml.Relationship;
 import com.derek.uml.RelationshipType;

@@ -1,4 +1,4 @@
-package com.derek;
+package com.derek.grime;
 
 public enum BehavioralGrimeType {
     IMPROPER_ORDER,

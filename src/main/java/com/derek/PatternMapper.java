@@ -391,7 +391,7 @@ public abstract class PatternMapper {
     }
 
     //gets only the classifier objects of the CONCRETE, ABSTRACT classes, and INTERFACES in this pattern
-    protected List<UMLClassifier> getAllParticipatingClassifiersOnlyUMLClassifiers(){
+    public List<UMLClassifier> getAllParticipatingClassifiersOnlyUMLClassifiers(){
         List<UMLClassifier> classifiers = new ArrayList<>();
         for (Pair<String, UMLClassifier> classifierPair : this.getAllClassifierModelBlocks()){
             classifiers.add(classifierPair.getRight());
@@ -400,7 +400,7 @@ public abstract class PatternMapper {
     }
 
     //gets only the classifier objects of all the CONCRETE, ABSTRACT classes in this pattern
-    protected List<UMLClassifier> getAllParticipatingClassesOnlyUMLClassifiers(){
+    public List<UMLClassifier> getAllParticipatingClassesOnlyUMLClassifiers(){
         List<UMLClassifier> classifiers = new ArrayList<>();
         for (Pair<String, UMLClassifier> classifierPair : this.getAllClassifierModelBlocks()){
             classifiers.add(classifierPair.getRight());

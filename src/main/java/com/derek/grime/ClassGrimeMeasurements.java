@@ -1,4 +1,4 @@
-package com.derek;
+package com.derek.grime;
 
 import com.derek.rbml.RBMLMapping;
 import com.derek.uml.*;

@@ -24,6 +24,8 @@
  */
 package com.derek;
 
+import com.derek.grime.GrimeFinder;
+import com.derek.grime.GrimeSuite;
 import com.derek.model.Model;
 import com.derek.model.PatternInstanceEvolution;
 import com.derek.model.PatternType;
@@ -32,7 +34,6 @@ import com.derek.model.patterns.PatternInstance;
 import com.derek.rbml.*;
 import com.derek.uml.*;
 import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 import org.apache.commons.lang3.tuple.Pair;
 
