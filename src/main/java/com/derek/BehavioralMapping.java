@@ -31,6 +31,10 @@ public class BehavioralMapping {
         this.behavioralGrimeType = BehavioralGrimeType.NONE;
     }
 
+    public BehavioralMapping(){
+
+    }
+
     public String printMe(){
         if (behavioralGrimeType == BehavioralGrimeType.NONE){
             return "Call: " + getPerpetrator().getName() + " satisfies Role: " + interactionRole.getName();

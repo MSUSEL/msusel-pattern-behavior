@@ -1,6 +1,7 @@
 package com.derek;
 
 import com.derek.grime.BehavioralGrimeType;
+import com.derek.uml.UMLAttribute;
 import lombok.Getter;
 
 import com.derek.rbml.IPS;
@@ -106,7 +107,7 @@ public class BehaviorConformance {
                     //found a match between mapped role and interaction role.
                     if (seenInteractionRoles.contains(roleMap.get(i).getRight())){
                         //already seen this
-                        behavioralGrime.add(new BehavioralMapping(roleMap.get(i).getLeft(), roleMap.get(i).getRight(), BehavioralGrimeType.INTRA_REPETITION));
+                        behavioralGrime.add(new BehavioralMapping(roleMap.get(i).getLeft(), roleMap.get(i).getRight(), BehavioralGrimeType.REPETITION));
                     }else {
                         behavioralSatisfactions.add(new BehavioralMapping(roleMap.get(i).getLeft(), roleMap.get(i).getRight()));
                         seenInteractionRoles.add(roleMap.get(i).getRight());
@@ -120,6 +121,26 @@ public class BehaviorConformance {
      * pass 4 is concerned with identifying unnecessary actions.... really not sure how I am going to do this part yet.
      */
     private void pass4(){
+        //look for cases where a variable is defined but not used
+        for (RBMLMapping rbmlMapping : structureMappings){
+            UMLOperation operation = rbmlMapping.getUMLOperationArtifact();
+            if (operation != null) {
+                for (UMLAttribute localVar : operation.getLocalAttributeDecls()) {
+                    boolean isUsed = false;
+                    for (String usage : operation.getLocalVariableUsageNames()) {
+                        if (usage.equals(localVar.getName())){
+                            //found a usage for this var's declaration
+                            isUsed = true;
+                            break;
+                        }
+                    }
+                    if (!isUsed){
+                        //unneccessary actions grime.
+                        behavioralGrime.add(new BehavioralMapping())
+                    }
+                }
+            }
+        }
 
     }
 

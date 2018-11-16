@@ -29,6 +29,11 @@ public class GrimeFinder {
     private Table<SoftwareVersion, String, ClassGrimeCollections> iepGrime;
     private Table<SoftwareVersion, String, ClassGrimeCollections> iesGrime;
 
+    private Table<SoftwareVersion, String, BehavioralGrimeCollections> improperOrderGrime;
+    private Table<SoftwareVersion, String, BehavioralGrimeCollections> repetitionGrime;
+
+
+
     public GrimeFinder(Table<SoftwareVersion, String, GrimeSuite> grimeTable) {
         this.grimeTable = grimeTable;
     }
@@ -97,6 +102,34 @@ public class GrimeFinder {
                 iisGrime.put(version, patternID, new ClassGrimeCollections(previousGrimeSuite, currentGrimeSuite, ClassGrimeType.IISGRIME));
                 iepGrime.put(version, patternID, new ClassGrimeCollections(previousGrimeSuite, currentGrimeSuite, ClassGrimeType.IEPGRIME));
                 iesGrime.put(version, patternID, new ClassGrimeCollections(previousGrimeSuite, currentGrimeSuite, ClassGrimeType.IESGRIME));
+            }
+        }
+    }
+
+    //TODO - I might need to build a separate class/data structure to track behavioral grime types. Especially tracking behavioral grime across versions.
+    public void findBehavioralGrime(){
+        for (String patternID : grimeTable.columnKeySet()) {
+            Iterator<SoftwareVersion> iter = grimeTable.rowKeySet().iterator();
+            List<SoftwareVersion> listIter = Lists.newArrayList(iter);
+            for (int i = 0; i < listIter.size(); i++){
+                SoftwareVersion version = listIter.get(i);
+                GrimeSuite currentGrimeSuite = grimeTable.get(version, patternID);
+                if (i != 0){
+                    GrimeSuite previousGrimeSuite = grimeTable.get(listIter.get(i-1), patternID);
+                    peaGrime.put(version, patternID, new ModularGrimeCollections(previousGrimeSuite.getPeaGrimeInstances(), currentGrimeSuite.getPeaGrimeInstances()));
+                    peeGrime.put(version, patternID, new ModularGrimeCollections(previousGrimeSuite.getPeeGrimeInstances(), currentGrimeSuite.getPeeGrimeInstances()));
+                    piGrime.put(version, patternID, new ModularGrimeCollections(previousGrimeSuite.getPiGrimeInstances(), currentGrimeSuite.getPiGrimeInstances()));
+                    teaGrime.put(version, patternID, new ModularGrimeCollections(previousGrimeSuite.getTeaGrimeInstances(), currentGrimeSuite.getTeaGrimeInstances()));
+                    teeGrime.put(version, patternID, new ModularGrimeCollections(previousGrimeSuite.getTeeGrimeInstances(), currentGrimeSuite.getTeeGrimeInstances()));
+                    tiGrime.put(version, patternID, new ModularGrimeCollections(previousGrimeSuite.getTiGrimeInstances(), currentGrimeSuite.getTiGrimeInstances()));
+                }else{
+                    peaGrime.put(version, patternID, new ModularGrimeCollections(new ArrayList<>(), currentGrimeSuite.getPeaGrimeInstances()));
+                    peeGrime.put(version, patternID, new ModularGrimeCollections(new ArrayList<>(), currentGrimeSuite.getPeeGrimeInstances()));
+                    piGrime.put(version, patternID, new ModularGrimeCollections(new ArrayList<>(), currentGrimeSuite.getPiGrimeInstances()));
+                    teaGrime.put(version, patternID, new ModularGrimeCollections(new ArrayList<>(), currentGrimeSuite.getTeaGrimeInstances()));
+                    teeGrime.put(version, patternID, new ModularGrimeCollections(new ArrayList<>(), currentGrimeSuite.getTeeGrimeInstances()));
+                    tiGrime.put(version, patternID, new ModularGrimeCollections(new ArrayList<>(), currentGrimeSuite.getTiGrimeInstances()));
+                }
             }
         }
     }
