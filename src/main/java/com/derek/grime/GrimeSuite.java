@@ -22,15 +22,6 @@ public class GrimeSuite {
     private List<RBMLMapping> rbmlStructuralMappings;
     private List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings;
 
-    //count of behavioral repetition grime
-    private int repetitionGrimeCount = 0;
-
-    //count of improper order of sequences grime
-    private int improperOrderGrimeCount = 0;
-
-    //total behavioral grime.
-    private int totalBehavioralGrimeCount = 0;
-
     //list of class grime instances for a single pattern (pattern mapper obj)
     private Map<UMLClassifier, ClassGrimeMeasurements> classGrimeMeasurementList;
 

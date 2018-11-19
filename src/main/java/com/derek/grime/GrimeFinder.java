@@ -1,10 +1,14 @@
 package com.derek.grime;
 
+import com.derek.BehaviorConformance;
+import com.derek.BehavioralMapping;
 import com.derek.model.SoftwareVersion;
+import com.derek.uml.UMLOperation;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 import lombok.Getter;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 
@@ -106,7 +110,6 @@ public class GrimeFinder {
         }
     }
 
-    //TODO - I might need to build a separate class/data structure to track behavioral grime types. Especially tracking behavioral grime across versions.
     public void findBehavioralGrime(){
         for (String patternID : grimeTable.columnKeySet()) {
             Iterator<SoftwareVersion> iter = grimeTable.rowKeySet().iterator();
@@ -114,21 +117,13 @@ public class GrimeFinder {
             for (int i = 0; i < listIter.size(); i++){
                 SoftwareVersion version = listIter.get(i);
                 GrimeSuite currentGrimeSuite = grimeTable.get(version, patternID);
-                if (i != 0){
-                    GrimeSuite previousGrimeSuite = grimeTable.get(listIter.get(i-1), patternID);
-                    peaGrime.put(version, patternID, new ModularGrimeCollections(previousGrimeSuite.getPeaGrimeInstances(), currentGrimeSuite.getPeaGrimeInstances()));
-                    peeGrime.put(version, patternID, new ModularGrimeCollections(previousGrimeSuite.getPeeGrimeInstances(), currentGrimeSuite.getPeeGrimeInstances()));
-                    piGrime.put(version, patternID, new ModularGrimeCollections(previousGrimeSuite.getPiGrimeInstances(), currentGrimeSuite.getPiGrimeInstances()));
-                    teaGrime.put(version, patternID, new ModularGrimeCollections(previousGrimeSuite.getTeaGrimeInstances(), currentGrimeSuite.getTeaGrimeInstances()));
-                    teeGrime.put(version, patternID, new ModularGrimeCollections(previousGrimeSuite.getTeeGrimeInstances(), currentGrimeSuite.getTeeGrimeInstances()));
-                    tiGrime.put(version, patternID, new ModularGrimeCollections(previousGrimeSuite.getTiGrimeInstances(), currentGrimeSuite.getTiGrimeInstances()));
-                }else{
-                    peaGrime.put(version, patternID, new ModularGrimeCollections(new ArrayList<>(), currentGrimeSuite.getPeaGrimeInstances()));
-                    peeGrime.put(version, patternID, new ModularGrimeCollections(new ArrayList<>(), currentGrimeSuite.getPeeGrimeInstances()));
-                    piGrime.put(version, patternID, new ModularGrimeCollections(new ArrayList<>(), currentGrimeSuite.getPiGrimeInstances()));
-                    teaGrime.put(version, patternID, new ModularGrimeCollections(new ArrayList<>(), currentGrimeSuite.getTeaGrimeInstances()));
-                    teeGrime.put(version, patternID, new ModularGrimeCollections(new ArrayList<>(), currentGrimeSuite.getTeeGrimeInstances()));
-                    tiGrime.put(version, patternID, new ModularGrimeCollections(new ArrayList<>(), currentGrimeSuite.getTiGrimeInstances()));
+                System.out.println("Pattern id: " + patternID + " and version: " + version.getVersionNum());
+                for (Pair<UMLOperation, BehaviorConformance> behaviorConformancePair : currentGrimeSuite.getRbmlBehavioralMappings()){
+                    System.out.println("UMLOperation name: " + behaviorConformancePair.getLeft().getName());
+                    List<BehavioralMapping> grimes = behaviorConformancePair.getRight().getBehavioralGrime();
+                    for (BehavioralMapping grime : grimes){
+                        System.out.println(grime.printMe());
+                    }
                 }
             }
         }

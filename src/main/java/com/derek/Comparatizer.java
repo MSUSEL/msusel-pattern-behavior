@@ -109,6 +109,7 @@ public class Comparatizer {
         GrimeFinder grimeFinder = new GrimeFinder(grimeTable);
         grimeFinder.findModularGrime();
         grimeFinder.findClassGrime();
+        grimeFinder.findBehavioralGrime();
 
         for (String patternID : metricTable.columnKeySet()){
             for (SoftwareVersion version : metricTable.rowKeySet()){

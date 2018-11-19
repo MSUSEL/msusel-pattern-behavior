@@ -134,9 +134,16 @@ public class BehaviorConformance {
                             break;
                         }
                     }
+                    for (String usageViaCall : operation.getVariableTypeUsagesFromCall()){
+                        if (usageViaCall.equals(localVar.getName())){
+                            //found a usage, but as a call (not as the right hand side of an operator)
+                            isUsed = true;
+                            break;
+                        }
+                    }
                     if (!isUsed){
                         //unneccessary actions grime.
-                        behavioralGrime.add(new BehavioralMapping())
+                        behavioralGrime.add(new BehavioralMapping(localVar, BehavioralGrimeType.UNNECESSARY_ACTIONS));
                     }
                 }
             }
