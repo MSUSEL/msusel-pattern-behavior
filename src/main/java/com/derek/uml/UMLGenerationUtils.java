@@ -311,6 +311,8 @@ public class UMLGenerationUtils {
 
         boolean isAbstract = UMLGenerationUtils.isAbstract(srcMLClass.getSpecifiers());
         UMLClass umlClass = new UMLClass(srcMLClass.getName(), residingPackage, imports, attributes, operations, constructors, isAbstract, extendsParents, implementsParents, "class");
+        assignOperationOwners(operations, umlClass);
+        assignOperationOwners(constructors, umlClass);
         return umlClass;
     }
 
@@ -330,6 +332,7 @@ public class UMLGenerationUtils {
         if (!attributes.isEmpty()){
             umlInterface.setAttributes(attributes);
         }
+        assignOperationOwners(operations, umlInterface);
         return umlInterface;
     }
     public static UMLClass getUMLEnum(SrcMLEnum srcMLEnum, List<String> residingPackage, List<List<String>> imports){
@@ -341,7 +344,21 @@ public class UMLGenerationUtils {
         //null for extends parents because enums can't have extends parents.. while then can have implements (i think), srcml doesn't support
         //that as far as I can tell.
         UMLClass umlEnum = new UMLClass(srcMLEnum.getName(), residingPackage, imports, attributes, operations, constructors, false, new ArrayList<>(), new ArrayList<>(),"enum");
+        assignOperationOwners(operations, umlEnum);
+        assignOperationOwners(constructors, umlEnum);
         return umlEnum;
+    }
+
+    /***
+     * method responsible for assigning an owning classifier to each method within itself.
+     * This is purely to help with my code later on, and is not needed in the uml metamodel. However, its a pain to track uml operations without knowledge of their owning class
+     * @param operations
+     * @param umlClassifier
+     */
+    private static void assignOperationOwners(List<UMLOperation> operations, UMLClassifier umlClassifier){
+        for (UMLOperation umlOperation : operations){
+            umlOperation.setOwningClassifier(umlClassifier);
+        }
     }
 
 

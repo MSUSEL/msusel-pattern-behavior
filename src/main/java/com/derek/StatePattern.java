@@ -39,10 +39,16 @@ import java.util.List;
 @Getter
 public class StatePattern extends PatternMapper {
 
+
+    //provided by pattern4 tool
     private Pair<String, UMLClassifier> contextClassifier;
     private Pair<String, UMLClassifier> stateClassifier;
     private List<Pair<String, UMLAttribute>> stateAttributes;
     private List<Pair<String, UMLOperation>> requestOperations;
+
+    //coalesced members
+    private List<Pair<String, UMLOperation>> handleOperations;
+    private List<Pair<String, UMLClassifier>> stateFamily;
 
     public StatePattern(PatternInstance pi, UMLClassDiagram umlClassDiagram) {
         super(pi, umlClassDiagram);
@@ -72,16 +78,32 @@ public class StatePattern extends PatternMapper {
         }
     }
 
+    public List<Pair<String, UMLClassifier>> getAllStates(){
+        //TODO
+        return null;
+    }
+
     @Override
     public List<Pair<String, UMLClassifier>> getClassModelBlocks(){
-        //TODO
-        return new ArrayList<>();
+        List<Pair<String, UMLClassifier>> modelBlocks = new ArrayList<>();
+        //add context
+        modelBlocks.add(contextClassifier);
+
+        //add states that are classes
+        for (Pair<String, UMLClassifier> statePair : stateFamily){
+            if (statePair.getLeft().equals("ConcreteState")){
+                modelBlocks.add(statePair);
+            }
+        }
+        return modelBlocks;
     }
 
     @Override
     public List<Pair<String, UMLClassifier>> getAllParticipatingClasses(){
         List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
-        //TODO
+        toRet.add(contextClassifier);
+        toRet.add(stateClassifier);
+        toRet.addAll(stateFamily);
         return toRet;
     }
 
@@ -101,6 +123,27 @@ public class StatePattern extends PatternMapper {
     @Override
     public List<Pair<String, UMLAttribute>> getAttributeModelBlocks() {
         return stateAttributes;
+    }
+
+    @Override
+    protected void coalescePattern(){
+        //get families of states. no need to get families of contexts because there should only be one context per state pattern.
+        coalesceStates();
+
+        handleOperations = coalesceOperations(this.getAllStates(), "Handle");
+    }
+
+    private void coalesceStates(){
+        List<UMLClassifier> stateFamilyClassifiers = umlClassDiagram.getAllGeneralizationHierarchyChildren(stateClassifier.getRight());
+        stateFamily = new ArrayList<>();
+        for (UMLClassifier stateFamilyClassifier : stateFamilyClassifiers){
+            if (stateFamilyClassifier.getIdentifier().equals("class")){
+                //concrete subject
+                stateFamily.add(new ImmutablePair<>("ConcreteState", stateFamilyClassifier));
+            }else {
+                stateFamily.add(new ImmutablePair<>("State", stateFamilyClassifier));
+            }
+        }
     }
 
     public void printSummary(){

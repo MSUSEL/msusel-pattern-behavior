@@ -71,6 +71,10 @@ public class UMLOperation {
     //not call.
     private List<String> variableTypeUSagesFromOperator;
 
+    //classifier that owns this method.
+    @Setter
+    private UMLClassifier owningClassifier;
+
 
     public UMLOperation(String name, List<Pair<String, String>> stringParameters, String stringReturnDataType, Visibility visibility) {
         this.name = name;

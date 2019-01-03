@@ -53,7 +53,7 @@ public class BehaviorConformance {
         findBehavioralViolations();
         pass2();
         pass3();
-        pass4();
+        //another class calls uneccesary actions.
     }
 
     private void buildStructure(){
@@ -118,34 +118,30 @@ public class BehaviorConformance {
     }
 
     /***
-     * pass 4 is concerned with identifying unnecessary actions.... really not sure how I am going to do this part yet.
+     * pass 4, or find unnecessary actions is concerned with identifying unnecessary actions.... this method needs to be called after
+     * passes 1,2,3, because it is concerned with the entire operation, not just lifeline roles and mappings.
      */
-    private void pass4(){
+    public void findUnnecessaryActions(UMLOperation operation){
         //look for cases where a variable is defined but not used
-        for (RBMLMapping rbmlMapping : structureMappings){
-            UMLOperation operation = rbmlMapping.getUMLOperationArtifact();
-            if (operation != null) {
-                for (UMLAttribute localVar : operation.getLocalAttributeDecls()) {
-                    boolean isUsed = false;
-                    for (String usage : operation.getLocalVariableUsageNames()) {
-                        if (usage.equals(localVar.getName())){
-                            //found a usage for this var's declaration
-                            isUsed = true;
-                            break;
-                        }
-                    }
-                    for (String usageViaCall : operation.getVariableTypeUsagesFromCall()){
-                        if (usageViaCall.equals(localVar.getName())){
-                            //found a usage, but as a call (not as the right hand side of an operator)
-                            isUsed = true;
-                            break;
-                        }
-                    }
-                    if (!isUsed){
-                        //unneccessary actions grime.
-                        behavioralGrime.add(new BehavioralMapping(localVar, BehavioralGrimeType.UNNECESSARY_ACTIONS));
-                    }
+        for (UMLAttribute localVar : operation.getLocalAttributeDecls()) {
+            boolean isUsed = false;
+            for (String usage : operation.getLocalVariableUsageNames()) {
+                if (usage.equals(localVar.getName())){
+                    //found a usage for this var's declaration
+                    isUsed = true;
+                    break;
                 }
+            }
+            for (String usageViaCall : operation.getVariableTypeUsagesFromCall()){
+                if (usageViaCall.equals(localVar.getName())){
+                    //found a usage, but as a call (not as the right hand side of an operator)
+                    isUsed = true;
+                    break;
+                }
+            }
+            if (!isUsed){
+                //unneccessary actions grime.
+                behavioralGrime.add(new BehavioralMapping(localVar, BehavioralGrimeType.UNNECESSARY_ACTIONS));
             }
         }
 

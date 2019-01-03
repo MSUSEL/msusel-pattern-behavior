@@ -69,10 +69,10 @@ public class ObserverPattern extends PatternMapper {
         for (Pair<String, String> s : notifyOperationsString){
             notifyOperations.add(new ImmutablePair<>(s.getKey(), getOperationFromString(subjectClassifier.getValue(), s.getValue())));
         }
-        coalescePattern();
     }
 
-    private void coalescePattern(){
+    @Override
+    protected void coalescePattern(){
         //get families of subjects and observers
         coalesceObservers();
         coalesceSubjects();
@@ -111,20 +111,6 @@ public class ObserverPattern extends PatternMapper {
             }
         }
 
-    }
-
-    private List<Pair<String, UMLOperation>> coalesceOperations(List<Pair<String, UMLClassifier>> owningClassifier, String operationName){
-        List<Pair<String, UMLOperation>> operationsDataStruct = new ArrayList<>();
-        for (Pair<String, UMLClassifier> classifierPair : owningClassifier){
-            for (String commonNameValue : patternCommonNames.get(operationName)){
-                List<Pair<String, UMLOperation>> tempOperations = new ArrayList<>();
-                coalescenceStringSearch(commonNameValue, classifierPair.getRight(), tempOperations);
-                for (Pair<String, UMLOperation> op : tempOperations){
-                    operationsDataStruct.add(new ImmutablePair<>(operationName, op.getRight()));
-                }
-            }
-        }
-        return operationsDataStruct;
     }
 
     @Override

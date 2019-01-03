@@ -50,6 +50,7 @@ public abstract class PatternMapper {
         coalescerUtility = new CoalescerUtility();
         this.parsePatternCommonNames();
         this.mapToUML();
+        this.coalescePattern();
     }
 
 
@@ -388,6 +389,29 @@ public abstract class PatternMapper {
         }
 
         return null;
+    }
+
+    protected abstract void coalescePattern();
+
+
+    /***
+     * method to coalesce a pattern's operations. Provide this method a list of the classifiers belonging to the pattern, and the name of the operation you want coalesced.
+     * @param owningClassifier
+     * @param operationName
+     * @return
+     */
+    protected List<Pair<String, UMLOperation>> coalesceOperations(List<Pair<String, UMLClassifier>> owningClassifier, String operationName){
+        List<Pair<String, UMLOperation>> operationsDataStruct = new ArrayList<>();
+        for (Pair<String, UMLClassifier> classifierPair : owningClassifier){
+            for (String commonNameValue : patternCommonNames.get(operationName)){
+                List<Pair<String, UMLOperation>> tempOperations = new ArrayList<>();
+                coalescenceStringSearch(commonNameValue, classifierPair.getRight(), tempOperations);
+                for (Pair<String, UMLOperation> op : tempOperations){
+                    operationsDataStruct.add(new ImmutablePair<>(operationName, op.getRight()));
+                }
+            }
+        }
+        return operationsDataStruct;
     }
 
     //gets only the classifier objects of the CONCRETE, ABSTRACT classes, and INTERFACES in this pattern
