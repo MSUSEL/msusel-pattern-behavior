@@ -101,6 +101,11 @@ public class TemplateMethodPattern extends PatternMapper{
     }
 
     @Override
+    protected void coalescePattern() {
+
+    }
+
+    @Override
     protected String getPatternCommonNamesFileName() {
         return "templateMethod.txt";
     }

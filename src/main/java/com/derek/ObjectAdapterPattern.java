@@ -70,6 +70,7 @@ public class ObjectAdapterPattern extends PatternMapper {
         }
     }
 
+
     @Override
     public List<Pair<String, UMLClassifier>> getClassModelBlocks(){
         //TODO
@@ -111,6 +112,11 @@ public class ObjectAdapterPattern extends PatternMapper {
         for (Pair<String, UMLOperation> op : requestOperations){
             System.out.println("Request() role (operation): " + op.getValue().getName());
         }
+    }
+
+    @Override
+    protected void coalescePattern() {
+        //TODO: utilize the sps/ips and coalesce pattern members
     }
 
     public List<UMLClassifier> getUMLClassifiers(){

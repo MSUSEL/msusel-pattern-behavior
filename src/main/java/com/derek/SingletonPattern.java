@@ -88,6 +88,11 @@ public class SingletonPattern extends PatternMapper {
     }
 
     @Override
+    protected void coalescePattern() {
+        //TODO: utilize the sps/ips and coalesce the pattern members
+    }
+
+    @Override
     public void printSummary() {
         System.out.println("Singleton role: " + singletonClassifier.getValue().getName());
         System.out.println("Singleton attribute role (attribute): " + singletonAttribute.getValue().getName());

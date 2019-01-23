@@ -42,6 +42,13 @@ public abstract class PatternMapper {
     protected UMLClassDiagram umlClassDiagram;
     protected CoalescerUtility coalescerUtility;
 
+    //afferent participants refer to other classifiers that use the pattern. Some could call these classes 'clients'
+    protected List<UMLClassifier> afferentParticipants;
+    //efferent participants refer to other classes this pattern uses.
+    protected List<UMLClassifier> efferentParticipants;
+
+    //for both afferent and efferent participants, I will find them after I coalesce the pattern.
+
     protected Map<String, List<String>> patternCommonNames;
 
     public PatternMapper(PatternInstance pi, UMLClassDiagram umlClassDiagram){
@@ -51,6 +58,7 @@ public abstract class PatternMapper {
         this.parsePatternCommonNames();
         this.mapToUML();
         this.coalescePattern();
+        this.fillParticipatingClassifiers();
     }
 
 
@@ -430,6 +438,31 @@ public abstract class PatternMapper {
             classifiers.add(classifierPair.getRight());
         }
         return classifiers;
+    }
+
+    /***
+     * method to fill afferent and efferent participating classifiers (the variables)
+     */
+    public void fillParticipatingClassifiers(){
+        this.afferentParticipants = new ArrayList<>();
+        this.efferentParticipants = new ArrayList<>();
+        for (Relationship r : umlClassDiagram.getClassDiagram().edges()){
+            if (this.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(r.getFrom())){
+                //our pattern contains a potential efferent link.
+                if (!this.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(r.getTo())){
+                    //make sure the 'to' link is not in the pattern
+                    efferentParticipants.add(r.getTo());
+                }
+            }
+            if (this.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(r.getTo())){
+                //check afferent links
+                if (!this.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(r.getFrom())){
+                    //make sure from link not in pattern
+                    afferentParticipants.add(r.getFrom());
+                }
+            }
+        }
+
     }
 
 }
