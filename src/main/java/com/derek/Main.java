@@ -58,7 +58,7 @@ public class Main {
     public static List<SoftwareVersion> projectVersions;
     public static int currentVersion;
 
-    public Main(){
+    public void buildConfigs(){
         try {
             Properties seleniumProperties = new Properties();
             FileInputStream fileInputStream = new FileInputStream("configs/config.properties");
@@ -87,7 +87,7 @@ public class Main {
         }
     }
 
-    private void doAnalysis(){
+    public void doAnalysis(){
         projectVersions = new ArrayList<>();
         for (int i = 0; i < Integer.parseInt(versions); i++){
             projectVersions.add(new SoftwareVersion(i));
@@ -107,6 +107,6 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        new Main();
+        new Main().buildConfigs();
     }
 }

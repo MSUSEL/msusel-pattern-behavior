@@ -28,13 +28,14 @@ import com.derek.model.PatternType;
 import com.derek.model.SoftwareVersion;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class PatternInstanceTest {
 
@@ -42,7 +43,7 @@ public class PatternInstanceTest {
     private PatternInstance _other1;
     private PatternInstance _other2;
 
-    @Before
+    @BeforeAll
     public void buildMockObjects(){
 
         Pair<String, String> _thisP1 = new ImmutablePair<>("Creator", "com.google.common.base.CommonPattern");

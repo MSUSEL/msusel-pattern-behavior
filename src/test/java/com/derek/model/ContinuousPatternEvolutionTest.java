@@ -29,17 +29,16 @@ import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ContinuousPatternEvolutionTest {
 
@@ -52,7 +51,7 @@ public class ContinuousPatternEvolutionTest {
     private MutableGraph<PatternInstance> continuousMutableGraph;
 
 
-    @Before
+    @BeforeAll
     public void buildContinuousMockObjects(){
 
         Pair<String, String> _firstR1 = new ImmutablePair<>("Creator", "com.google.common.base.CommonPattern");

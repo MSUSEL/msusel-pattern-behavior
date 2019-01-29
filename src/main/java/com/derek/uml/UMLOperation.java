@@ -24,6 +24,7 @@
  */
 package com.derek.uml;
 
+import lombok.NonNull;
 import org.apache.commons.lang3.tuple.Pair;
 import lombok.Getter;
 import lombok.Setter;
@@ -83,6 +84,7 @@ public class UMLOperation {
         this.visibility = visibility;
         localAttributeDecls = new ArrayList<>();
         localVariableUsageNames = new ArrayList<>();
+        localVariableTypeUsages = new ArrayList<>();
     }
 
     /***
@@ -97,6 +99,7 @@ public class UMLOperation {
         this.stringReturnDataType = stringReturnDataType;
         localAttributeDecls = new ArrayList<>();
         localVariableUsageNames = new ArrayList<>();
+        localVariableTypeUsages = new ArrayList<>();
     }
 
     public String buildParamsForPlantUMLDiagram(){

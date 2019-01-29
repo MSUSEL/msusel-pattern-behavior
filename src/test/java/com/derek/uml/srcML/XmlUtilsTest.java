@@ -24,13 +24,13 @@
  */
 package com.derek.uml.srcML;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class XmlUtilsTest extends SrcMLTest{
 

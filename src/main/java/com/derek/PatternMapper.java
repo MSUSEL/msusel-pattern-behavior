@@ -96,6 +96,9 @@ public abstract class PatternMapper {
             String[] splitter = returnType.split("\\.");
             return matchOperation(umlClassifier, operationName, splitter[splitter.length-1], params);
         }
+        if (umlClassifier == null){
+            System.out.println("");
+        }
         for (UMLOperation op : umlClassifier.getOperations()){
             if (op.getName().equals(operationName)){
                 //will work for most things but we also need ot check params and return type (basically check method signature)

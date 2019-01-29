@@ -92,10 +92,6 @@ public class SrcMLRunner {
             rootBlocks.add(parseSrcMLFile(listOfFiles[i]));
         }
     }
-    private void parseSpecificFiles(){
-        rootBlocks.add(parseSrcMLFile(new File("srcMLOutput/selenium36/Actions.xml")));
-        rootBlocks.add(parseSrcMLFile(new File("srcMLOutput/selenium36/RemoteWebDriver.xml")));
-    }
 
     public List<Path> getSourceCodeListFromProject(){
         try {

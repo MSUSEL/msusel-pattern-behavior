@@ -27,16 +27,16 @@ package com.derek;
 import com.derek.uml.PackageTree;
 import com.derek.uml.UMLClass;
 import com.derek.uml.UMLClassifier;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PackageTreeLogicTest {
 
@@ -51,7 +51,7 @@ public class PackageTreeLogicTest {
 
     }
 
-    @Before
+    @BeforeAll
     public void initialize(){
         List<String> _1Package = new ArrayList<>();
         _1Package.add("org");
@@ -113,7 +113,7 @@ public class PackageTreeLogicTest {
 
     }
 
-    @After
+    @AfterAll
     public void after(){
         System.setOut(System.out);
     }

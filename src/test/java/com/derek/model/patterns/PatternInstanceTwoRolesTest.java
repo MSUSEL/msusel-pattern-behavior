@@ -28,13 +28,13 @@ import com.derek.model.PatternType;
 import com.derek.model.SoftwareVersion;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PatternInstanceTwoRolesTest {
 
@@ -43,7 +43,7 @@ public class PatternInstanceTwoRolesTest {
     private PatternInstance _other2;
     private PatternInstance _other3;
 
-    @Before
+    @BeforeAll
     public void buildMockObjects(){
         Pair<String, String> _thisP1 = new ImmutablePair<>("Adaptee", "com.google.common.util.concurrent.ExecutionList");
         Pair<String, String> _thisP2 = new ImmutablePair<>("Adapter", "com.google.common.util.concurrent.JdkFutureAdapters$ListenableFutureAdapter");

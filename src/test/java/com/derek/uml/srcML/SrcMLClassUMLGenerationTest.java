@@ -27,11 +27,12 @@ package com.derek.uml.srcML;
 
 import com.derek.uml.UMLClass;
 import com.derek.uml.UMLGenerationUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class SrcMLClassUMLGenerationTest extends SrcMLTest{
 
     private SrcMLClass srcMLClass;
@@ -42,7 +43,7 @@ public class SrcMLClassUMLGenerationTest extends SrcMLTest{
         xmlFileLocation = "src/test/resources/SrcMLClassExample.xml";
     }
 
-    @Before
+    @BeforeAll
     public void build(){
         super.build();
         Element classEle = (Element)doc.getElementsByTagName("class").item(0);

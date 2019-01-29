@@ -30,19 +30,19 @@ import com.derek.model.patterns.PatternInstance;
 import com.derek.rbml.RBMLMapping;
 import com.derek.rbml.SPS;
 import com.derek.uml.*;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ConformanceTest {
 
@@ -65,7 +65,7 @@ public class ConformanceTest {
     private StatePattern missingStateVar;
     private StatePattern missingRequest;
 
-    @Before
+    @BeforeAll
     public void buildTest(){
         System.setOut(new PrintStream(outContent));
         oneStateOneRequest = buildOneStateOneRequest();
@@ -209,7 +209,7 @@ public class ConformanceTest {
 
     }
 
-    @After
+    @AfterAll
     public void after(){
         System.setOut(System.out);
     }

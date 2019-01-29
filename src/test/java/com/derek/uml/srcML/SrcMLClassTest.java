@@ -25,16 +25,16 @@
 package com.derek.uml.srcML;
 
 import com.derek.uml.*;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SrcMLClassTest extends SrcMLTest {
     //this test is a bit more of an integration test....
@@ -48,7 +48,7 @@ public class SrcMLClassTest extends SrcMLTest {
         xmlFileLocation = "src/test/resources/Executable.xml";
     }
 
-    @Before
+    @BeforeAll
     public void build(){
         super.build();
         Element rootEle = (Element)doc.getElementsByTagName("unit").item(0);
@@ -98,7 +98,7 @@ public class SrcMLClassTest extends SrcMLTest {
 
     }
 
-    @After
+    @AfterAll
     public void after(){
         System.setOut(System.out);
     }

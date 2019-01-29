@@ -24,16 +24,13 @@
  */
 package com.derek.uml.srcML;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SrcMLNodeOrderTest extends SrcMLTest {
     private SrcMLNode node1;
@@ -42,7 +39,7 @@ public class SrcMLNodeOrderTest extends SrcMLTest {
         xmlFileLocation = "src/test/resources/SrcMLNodeExample.xml";
     }
 
-    @Before
+    @BeforeAll
     public void build(){
         super.build();
         Element nameEle1 = (Element) doc.getElementsByTagName("decl").item(0);

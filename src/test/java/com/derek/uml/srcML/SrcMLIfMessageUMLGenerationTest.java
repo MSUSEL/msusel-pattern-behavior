@@ -24,14 +24,12 @@
  */
 package com.derek.uml.srcML;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import jdk.nashorn.internal.ir.annotations.Ignore;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SrcMLIfMessageUMLGenerationTest extends SrcMLTest {
 
@@ -43,7 +41,7 @@ public class SrcMLIfMessageUMLGenerationTest extends SrcMLTest {
         xmlFileLocation = "src/test/resources/SrcMLIfCallExample.xml";
     }
 
-    @Before
+    @BeforeAll
     public void build(){
         super.build();
         Element blockEle = (Element)doc.getElementsByTagName("block").item(0);
