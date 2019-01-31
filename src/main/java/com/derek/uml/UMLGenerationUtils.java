@@ -313,6 +313,8 @@ public class UMLGenerationUtils {
         UMLClass umlClass = new UMLClass(srcMLClass.getName(), residingPackage, imports, attributes, operations, constructors, isAbstract, extendsParents, implementsParents, "class");
         assignOperationOwners(operations, umlClass);
         assignOperationOwners(constructors, umlClass);
+        assignAttributeOwners(attributes, umlClass);
+
         return umlClass;
     }
 
@@ -346,6 +348,7 @@ public class UMLGenerationUtils {
         UMLClass umlEnum = new UMLClass(srcMLEnum.getName(), residingPackage, imports, attributes, operations, constructors, false, new ArrayList<>(), new ArrayList<>(),"enum");
         assignOperationOwners(operations, umlEnum);
         assignOperationOwners(constructors, umlEnum);
+        assignAttributeOwners(attributes, umlEnum);
         return umlEnum;
     }
 
@@ -360,6 +363,18 @@ public class UMLGenerationUtils {
             umlOperation.setOwningClassifier(umlClassifier);
         }
     }
+
+    /***
+     * Same as abocve, but for attributes.
+     * @param attributes
+     * @param umlClassifier
+     */
+    private static void assignAttributeOwners(List<UMLAttribute> attributes, UMLClassifier umlClassifier){
+        for (UMLAttribute umlAttribute : attributes){
+            umlAttribute.setOwningClassifier(umlClassifier);
+        }
+    }
+
 
 
 }

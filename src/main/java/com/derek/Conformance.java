@@ -252,20 +252,6 @@ public class Conformance {
         return null;
     }
 
-    private UMLOperation getUMLOperationObjFromName(List<RBMLMapping> structionalMappings, String opName){
-        for (RBMLMapping rbmlMapping : structionalMappings){
-            if (rbmlMapping.getUmlArtifact() instanceof UMLOperation){
-                UMLOperation mappedOperation = (UMLOperation) rbmlMapping.getUmlArtifact();
-                if (mappedOperation.getName().equals(opName)){
-                    //found a map!
-                    return mappedOperation;
-                }
-            }
-        }
-        //might return null here.. would happen if an operation is called that is not mapped structurally.
-        return null;
-    }
-
     private RBMLMapping getMappingIfExists(List<RBMLMapping> mappings, StructuralRole structuralRole){
         for (RBMLMapping rbmlMapping : mappings){
             if (rbmlMapping.getMappedPair().getKey().equals(structuralRole)){

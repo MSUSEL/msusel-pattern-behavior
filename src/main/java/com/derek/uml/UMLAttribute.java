@@ -43,6 +43,9 @@ public class UMLAttribute {
     @Setter
     private UMLClassifier type;
 
+    @Setter
+    private UMLClassifier owningClassifier;
+
     public UMLAttribute(String name, String stringDataType, Visibility visibility) {
         this.name = name;
         this.stringDataType = stringDataType;

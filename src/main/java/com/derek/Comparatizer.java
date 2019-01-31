@@ -300,14 +300,14 @@ public class Comparatizer {
                 for (Pair<String, UMLOperation> operation : patternMapper.getOperationModelBlocks()) {
                     for (RBMLMapping rbmlMapping : rbmlStructureMappings) {
                         if (rbmlMapping.getUmlArtifact().equals(operation.getValue())) {
-                            output.append("UML operation: " + operation.getValue().getName() + " has a mapping to " + rbmlMapping.getRole().getName() + "\n");
+                            output.append("UML operation: " + operation.getValue().getName() + " from classifier: " + operation.getValue().getOwningClassifier() + " has a mapping to " + rbmlMapping.getRole().getName() + "\n");
                         }
                     }
                 }
                 for (Pair<String, UMLAttribute> attribute : patternMapper.getAttributeModelBlocks()) {
                     for (RBMLMapping rbmlMapping : rbmlStructureMappings) {
                         if (rbmlMapping.getUmlArtifact().equals(attribute.getValue())) {
-                            output.append("UML attribute: " + attribute.getValue().getName() + " has a mapping to " + rbmlMapping.getRole().getName() + "\n");
+                            output.append("UML attribute: " + attribute.getValue().getName() + " from classifier: " + attribute.getValue().getOwningClassifier() + " has a mapping to " + rbmlMapping.getRole().getName() + "\n");
                         }
                     }
                 }

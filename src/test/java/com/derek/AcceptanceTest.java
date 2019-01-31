@@ -54,7 +54,7 @@ public class AcceptanceTest {
 
     private static void loadOutputFile(){
         try {
-            Reader in = new FileReader("acceptance.csv");
+            Reader in = new FileReader(main.outputFileName);
             outputRecords = CSVFormat.TDF.withFirstRecordAsHeader().parse(in);
         }catch (Exception e){
             e.printStackTrace();
@@ -64,14 +64,34 @@ public class AcceptanceTest {
     @Test
     public void testVersion0(){
         CSVRecord thisVersion = outputRecords.iterator().next();
-        assertEquals(thisVersion.get("Software_Version"), "0");
-
+        assertEquals("0", thisVersion.get("Software_Version"));
+        testModularGrimeType(thisVersion, "MG-PEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PEE", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PI", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TEE", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TI", 0, 0 , 0);
     }
 
     @Test
     public void testVertsion1(){
         CSVRecord thisVersion = outputRecords.iterator().next();
         assertEquals(thisVersion.get("Software_Version"), "1");
+    }
+
+    /***
+     * shortcut utliity method to speed up the process of testing modular grime types. supply this method with a csvrecord,
+     * grime name that corresponds with the name in the tab delimited output, and expected counts of grime.
+     * @param csvRecord
+     * @param grimeName
+     * @param grimeCount
+     * @param grimeAdditions
+     * @param grimeRemovals
+     */
+    public void testModularGrimeType(CSVRecord csvRecord, String grimeName, int grimeCount, int grimeAdditions, int grimeRemovals){
+        assertEquals( grimeCount + "", csvRecord.get(grimeName + " grime count"));
+        assertEquals(grimeAdditions + "", csvRecord.get(grimeName + " grime additions"));
+        assertEquals(grimeRemovals + "", csvRecord.get(grimeName + " grime removals"));
     }
 
 }

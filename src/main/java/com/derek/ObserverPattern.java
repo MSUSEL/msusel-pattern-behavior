@@ -49,6 +49,8 @@ public class ObserverPattern extends PatternMapper {
     private List<Pair<String, UMLOperation>> setStateOperations;
     private List<Pair<String, UMLClassifier>> observerFamily;
     private List<Pair<String, UMLClassifier>> subjectFamily;
+    private List<Pair<String, UMLAttribute>> subjectStateAttributes;
+    private List<Pair<String, UMLAttribute>> observerStateAttributes;
 
     public ObserverPattern(PatternInstance pi, UMLClassDiagram umlClassDiagram) {
         super(pi, umlClassDiagram);
@@ -83,6 +85,8 @@ public class ObserverPattern extends PatternMapper {
         updateOperations = coalesceOperations(this.getAllObservers(), "Update");
         getStateOperations = coalesceOperations(this.getAllSubjects(), "GetState");
         setStateOperations = coalesceOperations(this.getAllSubjects(), "SetState");
+        subjectStateAttributes = coalesceAttributes(this.getAllSubjects(), "SubjectState");
+        observerStateAttributes = coalesceAttributes(this.getAllObservers(), "ObserverState");
     }
 
 
@@ -169,7 +173,10 @@ public class ObserverPattern extends PatternMapper {
 
     @Override
     public List<Pair<String, UMLAttribute>> getAttributeModelBlocks() {
-        return new ArrayList<>();
+        List<Pair<String, UMLAttribute>> toRet = new ArrayList<>();
+        toRet.addAll(subjectStateAttributes);
+        toRet.addAll(observerStateAttributes);
+        return toRet;
     }
 
     public List<Pair<String, UMLClassifier>> getAllObservers(){

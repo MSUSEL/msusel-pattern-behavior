@@ -96,9 +96,6 @@ public abstract class PatternMapper {
             String[] splitter = returnType.split("\\.");
             return matchOperation(umlClassifier, operationName, splitter[splitter.length-1], params);
         }
-        if (umlClassifier == null){
-            System.out.println("");
-        }
         for (UMLOperation op : umlClassifier.getOperations()){
             if (op.getName().equals(operationName)){
                 //will work for most things but we also need ot check params and return type (basically check method signature)
@@ -375,11 +372,26 @@ public abstract class PatternMapper {
      * @param owningClassifier owning classifier
      * @param dataStruct pass by ref return value
      */
-    protected void coalescenceStringSearch(String searchString, UMLClassifier owningClassifier, List<Pair<String, UMLOperation>> dataStruct){
+    protected void coalescenceStringSearchOperations(String searchString, UMLClassifier owningClassifier, List<Pair<String, UMLOperation>> dataStruct){
         for (UMLOperation umlOperation : owningClassifier.getOperations()){
             if (StringUtils.containsIgnoreCase(umlOperation.getName(), searchString)){
                 //match!
                 dataStruct.add(new ImmutablePair<>(searchString, umlOperation));
+            }
+        }
+    }
+
+    /***
+     * equivalent as above, but for attributes not operations.
+     * @param searchString
+     * @param owningClassifier
+     * @param dataStruct
+     */
+    protected void coalescenceStringSearchAttributes(String searchString, UMLClassifier owningClassifier, List<Pair<String, UMLAttribute>> dataStruct){
+        for (UMLAttribute umlAttribute : owningClassifier.getAttributes()){
+            if (StringUtils.containsIgnoreCase(umlAttribute.getName(), searchString)){
+                //match!
+                dataStruct.add(new ImmutablePair<>(searchString, umlAttribute));
             }
         }
     }
@@ -416,13 +428,27 @@ public abstract class PatternMapper {
         for (Pair<String, UMLClassifier> classifierPair : owningClassifier){
             for (String commonNameValue : patternCommonNames.get(operationName)){
                 List<Pair<String, UMLOperation>> tempOperations = new ArrayList<>();
-                coalescenceStringSearch(commonNameValue, classifierPair.getRight(), tempOperations);
+                coalescenceStringSearchOperations(commonNameValue, classifierPair.getRight(), tempOperations);
                 for (Pair<String, UMLOperation> op : tempOperations){
                     operationsDataStruct.add(new ImmutablePair<>(operationName, op.getRight()));
                 }
             }
         }
         return operationsDataStruct;
+    }
+
+    protected List<Pair<String, UMLAttribute>> coalesceAttributes(List<Pair<String, UMLClassifier>> owningClassifier, String attributeName){
+        List<Pair<String, UMLAttribute>> attributeDataStruct = new ArrayList<>();
+        for (Pair<String, UMLClassifier> classifierPair : owningClassifier){
+            for (String commonNameValue : patternCommonNames.get(attributeName)){
+                List<Pair<String, UMLAttribute>> tempAttributes = new ArrayList<>();
+                coalescenceStringSearchAttributes(commonNameValue, classifierPair.getRight(), tempAttributes);
+                for (Pair<String, UMLAttribute> at : tempAttributes){
+                    attributeDataStruct.add(new ImmutablePair<>(attributeName, at.getRight()));
+                }
+            }
+        }
+        return attributeDataStruct;
     }
 
     //gets only the classifier objects of the CONCRETE, ABSTRACT classes, and INTERFACES in this pattern

@@ -6,3 +6,5 @@ Notify:Notify
 Update:Update
 GetState:GetState
 SetState:SetState
+SubjectState:state
+ObserverState:state
