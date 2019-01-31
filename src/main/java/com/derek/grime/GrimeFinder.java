@@ -117,14 +117,15 @@ public class GrimeFinder {
             for (int i = 0; i < listIter.size(); i++){
                 SoftwareVersion version = listIter.get(i);
                 GrimeSuite currentGrimeSuite = grimeTable.get(version, patternID);
-                System.out.println("Pattern id: " + patternID + " and version: " + version.getVersionNum());
-                for (Pair<UMLOperation, BehaviorConformance> behaviorConformancePair : currentGrimeSuite.getRbmlBehavioralMappings()){
-                    System.out.println("UMLOperation name: " + behaviorConformancePair.getLeft().getName());
-                    List<BehavioralMapping> grimes = behaviorConformancePair.getRight().getBehavioralGrime();
-                    for (BehavioralMapping grime : grimes){
-                        System.out.println(grime.printMe());
-                    }
-                }
+                //print statements I don't need right now
+//                System.out.println("Pattern id: " + patternID + " and version: " + version.getVersionNum());
+//                for (Pair<UMLOperation, BehaviorConformance> behaviorConformancePair : currentGrimeSuite.getRbmlBehavioralMappings()){
+//                    System.out.println("UMLOperation name: " + behaviorConformancePair.getLeft().getName());
+//                    List<BehavioralMapping> grimes = behaviorConformancePair.getRight().getBehavioralGrime();
+//                    for (BehavioralMapping grime : grimes){
+//                        System.out.println(grime.printMe());
+//                    }
+//                }
             }
         }
     }

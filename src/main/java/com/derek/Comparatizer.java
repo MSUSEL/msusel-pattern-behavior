@@ -211,6 +211,9 @@ public class Comparatizer {
         List<RBMLMapping> rbmlStructureMappings = conformance.mapStructure();
         List<Pair<UMLOperation, BehaviorConformance>> rbmlBehaviorMappings = conformance.mapBehavior(rbmlStructureMappings);
 
+
+
+
         //grime checks here I think.
         GrimeSuite grimeSuite = new GrimeSuite(patternMapper, rbmlStructureMappings, rbmlBehaviorMappings);
 

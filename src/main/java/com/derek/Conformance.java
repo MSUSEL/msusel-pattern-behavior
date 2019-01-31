@@ -208,12 +208,32 @@ public class Conformance {
                         behaviorConformance.findUnnecessaryActions(mappedOperation);
                         behaviorMappings.add(new ImmutablePair<>(mappedOperation, behaviorConformance));
                     }
-                    //no, to the comment below.
-                    //here is where I should add the use dependency, based on behaviorConforamnce.varMapping.getUMLArtifact.
                 }
             }
         }
+        //here I would like to check all behaivoral mappings and coalesce them. The problem is that each operation maps onyl certain elements of a
+        //pattern's behavior. For example, in an observer pattern the update() method and the setSTate() method are both required, yet there will
+        //maybe never be a single flow that satisfies both at the same time. So, because I am already statically scanning all pertinent methods to
+        //find behavior like this, now I need to 'combine them'.
+
+        collapseBehaviors(behaviorMappings);
+
+
         return behaviorMappings;
+    }
+
+    private List<RBMLMapping> collapseBehaviors(List<Pair<UMLOperation, BehaviorConformance>> behaviorMappings ){
+        List<RBMLMapping> rbmlBehavioralMappings = new ArrayList<>();
+        for (Pair<UMLOperation, BehaviorConformance> behaviorMapping : behaviorMappings){
+            for (Pair<CallTreeNode, InteractionRole> pair : behaviorMapping.getRight().getRoleMap()){
+                if (ips.getInteractions().contains(pair.getRight())){
+                    rbmlBehavioralMappings.add(new RBMLMapping(pair.getRight(), pair.getLeft()));
+                }
+                System.out.println(pair.getRight().getName() + " is mapped with " + pair.getLeft().getName());
+            }
+        }
+        System.exit(0);
+        return rbmlBehavioralMappings;
     }
 
     private List<OperationRole> getOperationsFromMappings(List<RBMLMapping> structureMappings){
