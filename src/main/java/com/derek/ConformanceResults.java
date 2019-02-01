@@ -20,10 +20,10 @@ public class ConformanceResults {
     private SPS sps;
     private List<RBMLMapping> rbmlStructureMappings;
     private IPS ips;
-    private List<Pair<UMLOperation, BehaviorConformance>> rbmlBehaviorMappings;
+    private List<RBMLMapping> rbmlBehaviorMappings;
     private GrimeSuite grimeSuite;
 
-    public ConformanceResults(PatternMapper patternMapper, SPS sps, List<RBMLMapping> rbmlStructureMappings, IPS ips, List<Pair<UMLOperation, BehaviorConformance>> rbmlBehaviorMappings, GrimeSuite grimeSuite) {
+    public ConformanceResults(PatternMapper patternMapper, SPS sps, List<RBMLMapping> rbmlStructureMappings, IPS ips, List<RBMLMapping> rbmlBehaviorMappings, GrimeSuite grimeSuite) {
         this.patternMapper = patternMapper;
         this.sps = sps;
         this.rbmlStructureMappings = rbmlStructureMappings;

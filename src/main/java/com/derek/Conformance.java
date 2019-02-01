@@ -192,7 +192,7 @@ public class Conformance {
         return count;
     }
 
-    public List<Pair<UMLOperation, BehaviorConformance>> mapBehavior(List<RBMLMapping> structureMappings){
+    public List<RBMLMapping> mapBehavior(List<RBMLMapping> structureMappings){
         List<Pair<UMLOperation, BehaviorConformance>> behaviorMappings = new ArrayList<>();
         for (OperationRole operationRole : getOperationsFromMappings(structureMappings)){
             List<UMLOperation> umlOperations = getOperationsFromMapping(operationRole, structureMappings);
@@ -216,10 +216,10 @@ public class Conformance {
         //maybe never be a single flow that satisfies both at the same time. So, because I am already statically scanning all pertinent methods to
         //find behavior like this, now I need to 'combine them'.
 
-        collapseBehaviors(behaviorMappings);
+        List<RBMLMapping> rbmlBehaviorMappings = collapseBehaviors(behaviorMappings);
 
 
-        return behaviorMappings;
+        return rbmlBehaviorMappings;
     }
 
     private List<RBMLMapping> collapseBehaviors(List<Pair<UMLOperation, BehaviorConformance>> behaviorMappings ){
@@ -227,12 +227,13 @@ public class Conformance {
         for (Pair<UMLOperation, BehaviorConformance> behaviorMapping : behaviorMappings){
             for (Pair<CallTreeNode, InteractionRole> pair : behaviorMapping.getRight().getRoleMap()){
                 if (ips.getInteractions().contains(pair.getRight())){
-                    rbmlBehavioralMappings.add(new RBMLMapping(pair.getRight(), pair.getLeft()));
+                    //these behavioral mappings contain an interaction role on the left (of the mapping), and a behaviormapping instance on the right.
+                    //this can be read as saying an interaction role maps to a behavioralconformance, which by itself has umloperation information, as well as
+                    //call tree info
+                    rbmlBehavioralMappings.add(new RBMLMapping(pair.getRight(), behaviorMapping.getRight()));
                 }
-                System.out.println(pair.getRight().getName() + " is mapped with " + pair.getLeft().getName());
             }
         }
-        System.exit(0);
         return rbmlBehavioralMappings;
     }
 

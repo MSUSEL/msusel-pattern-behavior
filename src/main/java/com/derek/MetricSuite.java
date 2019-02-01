@@ -39,7 +39,7 @@ public class MetricSuite {
     private PatternMapper patternMapper;
     private List<RBMLMapping> rbmlStructuralMappings;
     private SPS sps;
-    private List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings;
+    private List<RBMLMapping> rbmlBehavioralMappings;
     private IPS ips;
 
     //number of participating classes
@@ -170,8 +170,8 @@ public class MetricSuite {
 
     private void calcNumConformingBehavioralRoles(){
         List<InteractionRole> seenAlready = new ArrayList<>();
-        for (Pair<UMLOperation, BehaviorConformance> mapping : rbmlBehavioralMappings){
-            for (Pair<CallTreeNode, InteractionRole> pair : mapping.getRight().getRoleMap()){
+        for (RBMLMapping rbmlMapping : rbmlBehavioralMappings){
+            for (Pair<CallTreeNode, InteractionRole> pair : rbmlMapping.getBehavioralConformance().getRoleMap()){
                 if (!seenAlready.contains(pair.getRight())){
                     seenAlready.add(pair.getRight());
                 }
@@ -182,8 +182,8 @@ public class MetricSuite {
 
     private void calcNumNonConformingBehavioralRoles(){
         List<InteractionRole> seenAlready = new ArrayList<>();
-        for (Pair<UMLOperation, BehaviorConformance> mapping : rbmlBehavioralMappings){
-            for (InteractionRole interactionRole : mapping.getRight().getBehavioralViolations()){
+        for (RBMLMapping rbmlMapping : rbmlBehavioralMappings){
+            for (InteractionRole interactionRole : rbmlMapping.getBehavioralConformance().getBehavioralViolations()){
                 if (!seenAlready.contains(interactionRole)){
                     seenAlready.add(interactionRole);
                 }

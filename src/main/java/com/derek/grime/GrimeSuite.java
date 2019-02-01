@@ -20,7 +20,7 @@ public class GrimeSuite {
 
     private PatternMapper patternMapper;
     private List<RBMLMapping> rbmlStructuralMappings;
-    private List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings;
+    private List<RBMLMapping>  rbmlBehavioralMappings;
 
     //list of class grime instances for a single pattern (pattern mapper obj)
     private Map<UMLClassifier, ClassGrimeMeasurements> classGrimeMeasurementList;
@@ -37,7 +37,7 @@ public class GrimeSuite {
     private List<Relationship> teeGrimeInstances;
 
 
-    public GrimeSuite(PatternMapper patternMapper, List<RBMLMapping> rbmlStructuralMappings, List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings) {
+    public GrimeSuite(PatternMapper patternMapper, List<RBMLMapping> rbmlStructuralMappings, List<RBMLMapping> rbmlBehavioralMappings) {
         this.patternMapper = patternMapper;
         this.rbmlStructuralMappings = rbmlStructuralMappings;
         this.rbmlBehavioralMappings = rbmlBehavioralMappings;
