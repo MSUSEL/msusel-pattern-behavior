@@ -40,7 +40,6 @@ public class UMLGenerator {
     private UMLSequenceDiagram umlSequenceDiagram;
     @Getter
     protected static ExternalPartyDataTypeSignature languageTypes;
-    private List<ExternalPartyDataTypeSignature> thirdPartyTypes;
 
     public UMLGenerator(List<SrcMLBlock> rootBlocks){
 

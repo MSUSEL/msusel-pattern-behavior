@@ -91,10 +91,6 @@ public class UMLMessageGenerationUtils {
             }
         }
 
-        if (initialScope.getName().equals("AbstractFigure") && searchString.equals("FigureChangeListener")){
-            System.out.println("debug");
-        }
-
         //look through imports now
         for (List<String> singleImport : initialScope.getImports()) {
             List<String> listified = listify(singleImport.get(0));

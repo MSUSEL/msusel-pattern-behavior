@@ -89,8 +89,8 @@ public class MetricSuite {
         calcNumParticipatingClasses();
         calcNumConformingStructuralRoles();
         calcNumNonConformingStructuralRoles();
+        //behavioral roles being done in 1 method now
         calcNumConformingBehavioralRoles();
-        calcNumNonConformingBehavioralRoles();
         calcNumConformingRolesTotal();
         calcNumNonConformingRolesTotal();
         calcSSize2();
@@ -170,26 +170,17 @@ public class MetricSuite {
 
     private void calcNumConformingBehavioralRoles(){
         List<InteractionRole> seenAlready = new ArrayList<>();
-        for (RBMLMapping rbmlMapping : rbmlBehavioralMappings){
-            for (Pair<CallTreeNode, InteractionRole> pair : rbmlMapping.getBehavioralConformance().getRoleMap()){
-                if (!seenAlready.contains(pair.getRight())){
-                    seenAlready.add(pair.getRight());
+        for (InteractionRole interactionRole : ips.getInteractions()){
+            for (RBMLMapping rbmlMapping : rbmlBehavioralMappings){
+                if (interactionRole.equals(rbmlMapping.getRole())){
+                    if (!seenAlready.contains(interactionRole)){
+                        seenAlready.add(interactionRole);
+                    }
                 }
             }
         }
         numConformingBehavioralRoles = seenAlready.size();
-    }
-
-    private void calcNumNonConformingBehavioralRoles(){
-        List<InteractionRole> seenAlready = new ArrayList<>();
-        for (RBMLMapping rbmlMapping : rbmlBehavioralMappings){
-            for (InteractionRole interactionRole : rbmlMapping.getBehavioralConformance().getBehavioralViolations()){
-                if (!seenAlready.contains(interactionRole)){
-                    seenAlready.add(interactionRole);
-                }
-            }
-        }
-        numNonConformingBehavioralRoles = seenAlready.size();
+        numNonConformingBehavioralRoles = ips.getInteractions().size() - seenAlready.size();
     }
     
     private void calcNumConformingRolesTotal(){

@@ -42,6 +42,8 @@ public class AcceptanceTest {
             main.outputFileName = seleniumProperties.getProperty("outputFileName");
             main.printIndividualRoles = seleniumProperties.getProperty("printIndividualRoles");
             main.patternCommonNames = seleniumProperties.getProperty("patternCommonNames");
+            main.clientClassAllowances = Integer.parseInt(seleniumProperties.getProperty("clientClassAllowances"));
+            main.clientUsageAllowances = Integer.parseInt(seleniumProperties.getProperty("clientUsageAllowances"));
 
             fileInputStream.close();
         }catch (Exception e){

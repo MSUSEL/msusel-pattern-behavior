@@ -1,6 +1,7 @@
 package com.derek.grime;
 
 import com.derek.BehaviorConformance;
+import com.derek.Main;
 import com.derek.PatternMapper;
 import com.derek.rbml.RBMLMapping;
 import com.derek.uml.Relationship;
@@ -68,13 +69,22 @@ public class GrimeSuite {
                 validRBMLMappings.add(relationship);
             }
         }
-
+        int currentAfferentClassifierUsages = patternMapper.getAfferentParticipants().size();
+        int currentAfferentMethodUsages = 0;
         for (Relationship patternRelationship : patternMapper.getUniqueRelationshipsFromPatternClassifiers(relationshipType)){
             //3 cases - relationship is between pattern classes (could be internal grime) (could be external and efferent) (could be external and afferent)
             //pi first
             boolean relationshipExistsInRBML = false;
             for (Relationship validRBMLMapping : validRBMLMappings){
                 if (patternRelationship.equals(validRBMLMapping)){
+                    relationshipExistsInRBML = true;
+                }
+                if (patternRelationship.getFrom().isLanguageType() || patternRelationship.getTo().isLanguageType()){
+                    //ignore langauge types... this is a big assumption but if we don't ignore language types then the code would do nothing...
+                    relationshipExistsInRBML = true;
+                }
+                if (currentAfferentClassifierUsages <= Main.clientClassAllowances){
+                    //if we are under the number of client class allowances, its not grime. Yet if its over then its def grime.
                     relationshipExistsInRBML = true;
                 }
             }
@@ -84,16 +94,22 @@ public class GrimeSuite {
                     if (patternMapper.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(patternRelationship.getTo())){
                         //pi.
                         internal.add(patternRelationship);
-                        //System.out.println("Added internal grime: " + patternRelationship.getFrom().getName() + " to " + patternRelationship.getTo().getName() + " as " + relationshipType);
+                        System.out.println("Added internal grime: " + patternRelationship.getFrom().getName() + " to " + patternRelationship.getTo().getName() + " as " + relationshipType);
                     } else {
                         //relationship points from pattern member -> non-pattern member. (efferent)
                         efferent.add(patternRelationship);
-                        //System.out.println("Added efferent grime: " + patternRelationship.getFrom().getName() + "  to " + patternRelationship.getTo().getName() + " as " + relationshipType);
+                        System.out.println("Added efferent grime: " + patternRelationship.getFrom().getName() + "  to " + patternRelationship.getTo().getName() + " as " + relationshipType);
                     }
                 } else {
                     //relationship points from non-pattern member -> pattern member (afferent)
-                    afferent.add(patternRelationship);
-                    //System.out.println("Added afferent grime: " + patternRelationship.getFrom().getName() + "  to " + patternRelationship.getTo().getName() + " as " + relationshipType);
+                    if (currentAfferentMethodUsages <= Main.clientUsageAllowances){
+                        //not grime yet, because we allow a configurable number of client usages
+                        currentAfferentMethodUsages++;
+                    }else {
+                        //though if we get here it really is grime, because we have surpassed the number of allowances for usages.
+                        afferent.add(patternRelationship);
+                        System.out.println("Added afferent grime: " + patternRelationship.getFrom().getName() + "  to " + patternRelationship.getTo().getName() + " as " + relationshipType);
+                    }
                 }
             }
         }

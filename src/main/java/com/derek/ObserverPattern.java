@@ -89,7 +89,6 @@ public class ObserverPattern extends PatternMapper {
         observerStateAttributes = coalesceAttributes(this.getAllObservers(), "ObserverState");
     }
 
-
     private void coalesceObservers(){
         List<UMLClassifier> observerFamilyClassifiers = umlClassDiagram.getAllGeneralizationHierarchyChildren(observerClassifier.getRight());
         observerFamily = new ArrayList<>();

@@ -43,8 +43,9 @@ public abstract class PatternMapper {
     protected CoalescerUtility coalescerUtility;
 
     //afferent participants refer to other classifiers that use the pattern. Some could call these classes 'clients'
+    //however, sometimes these classes will be grime.
     protected List<UMLClassifier> afferentParticipants;
-    //efferent participants refer to other classes this pattern uses.
+    //efferent participants refer to other classes this pattern uses. Sometimes will be grime.
     protected List<UMLClassifier> efferentParticipants;
 
     //for both afferent and efferent participants, I will find them after I coalesce the pattern.
@@ -396,26 +397,7 @@ public abstract class PatternMapper {
         }
     }
 
-    /***
-     * this method iterates through the candidate classes and returns the UMLOperation version of the operationCallName.
-     * @param operationCallName
-     * @param candidateClasses
-     * @return
-     */
-    protected UMLOperation connectOperation(String operationCallName, List<Pair<String, UMLClassifier>> candidateClasses){
-        for (Pair<String, UMLClassifier> candidateClass : candidateClasses){
-            for (UMLOperation umlOperation : candidateClass.getRight().getOperations()){
-                if (umlOperation.getName().equals(operationCallName)){
-                    return umlOperation;
-                }
-            }
-        }
-
-        return null;
-    }
-
     protected abstract void coalescePattern();
-
 
     /***
      * method to coalesce a pattern's operations. Provide this method a list of the classifiers belonging to the pattern, and the name of the operation you want coalesced.

@@ -70,17 +70,17 @@ public class ExternalPartyDataTypeSignature {
                         switch (classifierTag){
                             case "interface":
                                 //i (might) need to implement this fully.. I might need to make use of javap to do this.
-                                dataTypes.add(new UMLInterface(line, residingPackage, null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), "interface"));
+                                dataTypes.add(new UMLInterface(line, residingPackage, null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), "language_interface"));
                                 break;
                             case "class":
                             case "exception":
                             case "error":
                                 dataTypes.add(new UMLClass(line, residingPackage, null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), false,
-                                        new ArrayList<>(), new ArrayList<>(), "class"));
+                                        new ArrayList<>(), new ArrayList<>(), "language_class"));
                                 break;
                             case "enum":
                                 dataTypes.add(new UMLClass(line, residingPackage, null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), false,
-                                        new ArrayList<>(), new ArrayList<>(), "enum"));
+                                        new ArrayList<>(), new ArrayList<>(), "language_enum"));
                                 break;
                         }
                 }
@@ -89,12 +89,6 @@ public class ExternalPartyDataTypeSignature {
         }catch(Exception e){
             e.printStackTrace();
         }
-    }
-    private List<String> getPackageFromDataTypeLine(String packageListing){
-        //todo.. for this I need to add something to teh file format I have already started with..
-        //its tricky because some types, such as Character.UnicodeBlock, are types and not packages.
-        //but the typical package structure is 'foo.bar.bar2'
-        return null;
     }
 
 

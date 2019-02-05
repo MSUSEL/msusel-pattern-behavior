@@ -4,5 +4,7 @@ Class |ConcreteSubject,1..*[]{}
 Class |ConcreteObserver,1..*[]{}
 Association |Observers{|Subject,|Observer,1..*,0..0}
 Association |Subjects{|Observer,|Subject,1..*,0..0}
+Dependency |NotifyObservers{|Subject,|Observer,0..*,0..0}
+Association |ConcreteSubjects{|ConcreteObserver,|Subject,1..*}
 Generalization||Realization |SubjectGeneralization{|ConcreteSubject,|Subject}
 Generalization||Realization |ObserverGeneralization{|ConcreteObserver,|Observer}

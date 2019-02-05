@@ -69,4 +69,11 @@ public abstract class UMLClassifier {
     public String toString(){
         return name + " as a " + identifier;
     }
+
+    public boolean isLanguageType(){
+        if (this.identifier.contains("language_")){
+            return true;
+        }
+        return  false;
+    }
 }
