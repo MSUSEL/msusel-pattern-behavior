@@ -26,6 +26,7 @@ package com.derek;
 
 import com.derek.model.patterns.PatternInstance;
 import com.derek.uml.*;
+import com.google.common.collect.ImmutableSet;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -45,8 +46,14 @@ public abstract class PatternMapper {
     //afferent participants refer to other classifiers that use the pattern. Some could call these classes 'clients'
     //however, sometimes these classes will be grime.
     protected List<UMLClassifier> afferentParticipants;
+    //same items as above, but its a set so items are unique.
+    protected Set<UMLClassifier> uniqueAfferentParticipants;
+
     //efferent participants refer to other classes this pattern uses. Sometimes will be grime.
     protected List<UMLClassifier> efferentParticipants;
+    //same items as above, but its a set so items are unique.
+    protected Set<UMLClassifier> uniqueEfferentParticipants;
+
 
     //for both afferent and efferent participants, I will find them after I coalesce the pattern.
 
@@ -456,13 +463,16 @@ public abstract class PatternMapper {
      */
     public void fillParticipatingClassifiers(){
         this.afferentParticipants = new ArrayList<>();
+        this.uniqueAfferentParticipants = new HashSet<>();
         this.efferentParticipants = new ArrayList<>();
+        this.uniqueEfferentParticipants = new HashSet<>();
         for (Relationship r : umlClassDiagram.getClassDiagram().edges()){
             if (this.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(r.getFrom())){
                 //our pattern contains a potential efferent link.
                 if (!this.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(r.getTo())){
                     //make sure the 'to' link is not in the pattern
                     efferentParticipants.add(r.getTo());
+                    uniqueEfferentParticipants.add(r.getTo());
                 }
             }
             if (this.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(r.getTo())){
@@ -470,6 +480,7 @@ public abstract class PatternMapper {
                 if (!this.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(r.getFrom())){
                     //make sure from link not in pattern
                     afferentParticipants.add(r.getFrom());
+                    uniqueAfferentParticipants.add(r.getFrom());
                 }
             }
         }

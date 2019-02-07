@@ -5,6 +5,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.Reader;
@@ -46,6 +47,11 @@ public class AcceptanceTest {
             main.clientUsageAllowances = Integer.parseInt(seleniumProperties.getProperty("clientUsageAllowances"));
 
             fileInputStream.close();
+            //clear old output file names. I should consider doing this to srcml files too.
+            File output = new File(main.outputFileName);
+            if (output.delete()){
+                System.out.println("Deleted old output file");
+            }
         }catch (Exception e){
             e.printStackTrace();
         }finally {
@@ -76,9 +82,75 @@ public class AcceptanceTest {
     }
 
     @Test
-    public void testVertsion1(){
+    public void testVersion1(){
         CSVRecord thisVersion = outputRecords.iterator().next();
-        assertEquals(thisVersion.get("Software_Version"), "1");
+        assertEquals("1", thisVersion.get("Software_Version"));
+        testModularGrimeType(thisVersion, "MG-PEA", 1, 1 , 0);
+        testModularGrimeType(thisVersion, "MG-PEE", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PI", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TEE", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TI", 0, 0 , 0);
+    }
+
+    @Test
+    public void testVersion2(){
+        CSVRecord thisVersion = outputRecords.iterator().next();
+        assertEquals("2", thisVersion.get("Software_Version"));
+        testModularGrimeType(thisVersion, "MG-PEA", 0, 0, 1);
+        testModularGrimeType(thisVersion, "MG-PEE", 1, 1, 0);
+        testModularGrimeType(thisVersion, "MG-PI", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TEE", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TI", 0, 0 , 0);
+    }
+
+    @Test
+    public void testVersion3(){
+        CSVRecord thisVersion = outputRecords.iterator().next();
+        assertEquals("3", thisVersion.get("Software_Version"));
+        testModularGrimeType(thisVersion, "MG-PEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PEE", 0, 0 , 1);
+        testModularGrimeType(thisVersion, "MG-PI", 1, 1 , 0);
+        testModularGrimeType(thisVersion, "MG-TEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TEE", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TI", 0, 0 , 0);
+    }
+
+    @Test
+    public void testVersion4(){
+        CSVRecord thisVersion = outputRecords.iterator().next();
+        assertEquals("4", thisVersion.get("Software_Version"));
+        testModularGrimeType(thisVersion, "MG-PEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PEE", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PI", 0, 0 , 1);
+        testModularGrimeType(thisVersion, "MG-TEA", 1, 1, 0);
+        testModularGrimeType(thisVersion, "MG-TEE", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TI", 0, 0 , 0);
+    }
+
+    @Test
+    public void testVersion5(){
+        CSVRecord thisVersion = outputRecords.iterator().next();
+        assertEquals("5", thisVersion.get("Software_Version"));
+        testModularGrimeType(thisVersion, "MG-PEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PEE", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PI", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TEA", 0, 0 , 1);
+        testModularGrimeType(thisVersion, "MG-TEE", 1, 1 , 0);
+        testModularGrimeType(thisVersion, "MG-TI", 0, 0 , 0);
+    }
+
+    @Test
+    public void testVersion6(){
+        CSVRecord thisVersion = outputRecords.iterator().next();
+        assertEquals("6", thisVersion.get("Software_Version"));
+        testModularGrimeType(thisVersion, "MG-PEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PEE", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PI", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TEE", 0, 0, 1);
+        testModularGrimeType(thisVersion, "MG-TI", 1, 1, 0);
     }
 
     /***
