@@ -23,7 +23,9 @@
  * SOFTWARE.
  */
 package com.derek.uml;
+import com.google.common.base.Objects;
 import lombok.Getter;
+
 
 @Getter
 public class Relationship{
@@ -50,6 +52,15 @@ public class Relationship{
             }
         }
         return false;
+    }
+
+    /***
+     * Overriding hashcode so that sets will allow for relationships.
+     * @return
+     */
+    @Override
+    public int hashCode(){
+        return Objects.hashCode(this.from, this.to, this.relationshipType);
     }
 
     /***

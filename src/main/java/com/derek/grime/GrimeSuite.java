@@ -1,20 +1,14 @@
 package com.derek.grime;
 
-import com.derek.BehaviorConformance;
 import com.derek.Main;
 import com.derek.PatternMapper;
 import com.derek.rbml.RBMLMapping;
 import com.derek.uml.Relationship;
 import com.derek.uml.RelationshipType;
 import com.derek.uml.UMLClassifier;
-import com.derek.uml.UMLOperation;
-import org.apache.commons.lang3.tuple.Pair;
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 public class GrimeSuite {
@@ -71,6 +65,15 @@ public class GrimeSuite {
             }
         }
         int currentAfferentUsages = 0;
+        Set<Relationship> old = patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.ASSOCIATION);
+        List<Relationship> newera = patternMapper.getAfferentRelationships();
+        List<Relationship> newere = patternMapper.getEfferentRelationships();
+        List<Relationship> neweri = patternMapper.getInternalRelationships();
+
+        Set<Relationship> newerau = patternMapper.getUniqueAfferentRelationships();
+        Set<Relationship> newereu = patternMapper.getUniqueEfferentRelationships();
+        Set<Relationship> neweriu = patternMapper.getUniqueInternalRelationships();
+
         for (Relationship patternAssociation : patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.ASSOCIATION)) {
             if (patternAssociation.getFrom().getName().equals("Client")){
                 System.out.println();
@@ -85,9 +88,6 @@ public class GrimeSuite {
                         peeGrimeInstances.add(patternAssociation);
                     }
                 } else {
-                    if (patternAssociation.getFrom().getName().equals("External") || patternAssociation.getFrom().getName().equals("Client")){
-                        System.out.println("hi");
-                    }
                     if (currentAfferentUsages < Main.clientClassAllowances){
                         //only a less than inequality; if its less than/equals then I am doing 1 more case.
                         currentAfferentUsages++;
@@ -130,14 +130,14 @@ public class GrimeSuite {
                 validRBMLMappings.add(relationship);
             }
         }
-        int currentAfferentClassifierUsages = patternMapper.getUniqueAfferentParticipants().size();
+        int currentAfferentClassifierUsages = patternMapper.getUniqueAfferentRelationships().size();
         int currentAfferentMethodUsages = 0;
         for (Relationship patternRelationship : patternMapper.getUniqueRelationshipsFromPatternClassifiers(relationshipType)) {
             //3 cases - relationship is between pattern classes (could be internal grime) (could be external and efferent) (could be external and afferent)
             //pi first
             if (!isCapturedInRBML(validRBMLMappings, patternRelationship)) {
                 //logic for the 3 cases starts here.
-                if (patternMapper.getUniqueAfferentParticipants().size() > Main.clientClassAllowances) {
+                if (patternMapper.getUniqueAfferentRelationships().size() > Main.clientClassAllowances) {
                     //afferent grime, this means we have too many classes referencing our pattern.
                     //afferent.add(patternRelationship);
                     //System.out.println("Afferent grime (unique): " + patternRelationship.getFrom().getName() + "  to " + patternRelationship.getTo().getName() + " as " + relationshipType);

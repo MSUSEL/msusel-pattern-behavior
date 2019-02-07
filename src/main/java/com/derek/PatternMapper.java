@@ -1,19 +1,19 @@
 /**
  * MIT License
- *
+ * <p>
  * Copyright (c) 2017 Montana State University, Gianforte School of Computing
  * Software Engineering Laboratory
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,7 +26,6 @@ package com.derek;
 
 import com.derek.model.patterns.PatternInstance;
 import com.derek.uml.*;
-import com.google.common.collect.ImmutableSet;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -45,21 +44,25 @@ public abstract class PatternMapper {
 
     //afferent participants refer to other classifiers that use the pattern. Some could call these classes 'clients'
     //however, sometimes these classes will be grime.
-    protected List<UMLClassifier> afferentParticipants;
+    protected List<Relationship> afferentRelationships;
     //same items as above, but its a set so items are unique.
-    protected Set<UMLClassifier> uniqueAfferentParticipants;
+    protected Set<Relationship> uniqueAfferentRelationships;
 
     //efferent participants refer to other classes this pattern uses. Sometimes will be grime.
-    protected List<UMLClassifier> efferentParticipants;
+    protected List<Relationship> efferentRelationships;
     //same items as above, but its a set so items are unique.
-    protected Set<UMLClassifier> uniqueEfferentParticipants;
+    protected Set<Relationship> uniqueEfferentRelationships;
+
+    protected List<Relationship> internalRelationships;
+
+    protected Set<Relationship> uniqueInternalRelationships;
 
 
     //for both afferent and efferent participants, I will find them after I coalesce the pattern.
 
     protected Map<String, List<String>> patternCommonNames;
 
-    public PatternMapper(PatternInstance pi, UMLClassDiagram umlClassDiagram){
+    public PatternMapper(PatternInstance pi, UMLClassDiagram umlClassDiagram) {
         this.pi = pi;
         this.umlClassDiagram = umlClassDiagram;
         coalescerUtility = new CoalescerUtility();
@@ -77,84 +80,84 @@ public abstract class PatternMapper {
     protected abstract void mapToUML();
 
 
-    protected UMLClassifier getClassifierFromString(String majorRoleValue){
+    protected UMLClassifier getClassifierFromString(String majorRoleValue) {
         return umlClassDiagram.getPackageTree().getClassifier(convertStringToPackagedString(majorRoleValue), 0, umlClassDiagram.getPackageTree().getRoot());
     }
 
-    protected UMLClassifier getOneMajorRole(PatternInstance pi){
+    protected UMLClassifier getOneMajorRole(PatternInstance pi) {
         return getClassifierFromString(pi.getValueOfMajorRole(pi));
     }
 
-    protected UMLClassifier getSecondMajorRole(PatternInstance pi){
+    protected UMLClassifier getSecondMajorRole(PatternInstance pi) {
         return getClassifierFromString(pi.getValueOfSecondMajorRole(pi));
     }
 
-    protected List<String> convertStringToPackagedString(String value){
+    protected List<String> convertStringToPackagedString(String value) {
         List<String> toRet = new ArrayList<>();
         String[] splitter = value.split("\\.");
-        for (String s : splitter){
+        for (String s : splitter) {
             toRet.add(s);
         }
         return toRet;
     }
 
-    private UMLOperation matchOperation(UMLClassifier umlClassifier, String operationName, String returnType, List<String> params){
+    private UMLOperation matchOperation(UMLClassifier umlClassifier, String operationName, String returnType, List<String> params) {
         //greedily try to find classifier - by removing package info. If this fails then just kill it.
         if (returnType.contains(".")) {
             String[] splitter = returnType.split("\\.");
-            return matchOperation(umlClassifier, operationName, splitter[splitter.length-1], params);
+            return matchOperation(umlClassifier, operationName, splitter[splitter.length - 1], params);
         }
-        for (UMLOperation op : umlClassifier.getOperations()){
-            if (op.getName().equals(operationName)){
+        for (UMLOperation op : umlClassifier.getOperations()) {
+            if (op.getName().equals(operationName)) {
                 //will work for most things but we also need ot check params and return type (basically check method signature)
-                if (op.getStringReturnDataType().equals(returnType)){
+                if (op.getStringReturnDataType().equals(returnType)) {
                     boolean foundDifference = false;
-                    if (params.size() != op.getParameters().size()){
+                    if (params.size() != op.getParameters().size()) {
                         //same method name, but different number of params.. so different method signature. break and check other ops.
                         break;
                     }
-                    for (int i = 0; i < params.size(); i++){
+                    for (int i = 0; i < params.size(); i++) {
                         //param order needs to be preserved too
                         String param = params.get(i);
                         if (param.contains("[")) {
                             //list, need to remove brackets
-                            param = param.replace("[","");
-                            param = param.replace("]","");
+                            param = param.replace("[", "");
+                            param = param.replace("]", "");
                         }
-                        if (!param.equals(op.getParameters().get(i).getName())){
+                        if (!param.equals(op.getParameters().get(i).getName())) {
                             foundDifference = true;
                             break;
                         }
                     }
                     //same method signature!
-                    if (foundDifference == false){
+                    if (foundDifference == false) {
                         return op;
                     }
                 }
             }
         }
-        if (umlClassifier.getIdentifier().equals("class")){
+        if (umlClassifier.getIdentifier().equals("class")) {
             //need to check constructors if this is the case.
-            UMLClass umlClass = (UMLClass)umlClassifier;
-            for (UMLOperation op : umlClass.getConstructors()){
-                if (op.getName().equals(operationName)){
+            UMLClass umlClass = (UMLClass) umlClassifier;
+            for (UMLOperation op : umlClass.getConstructors()) {
+                if (op.getName().equals(operationName)) {
                     boolean foundDifference = false;
                     //name match, now need to check param types.
-                    for (int i = 0; i < params.size(); i++){
+                    for (int i = 0; i < params.size(); i++) {
                         //param order needs to be preserved too
                         String param = params.get(i);
                         if (param.contains("[")) {
                             //list, need to remove brackets
-                            param = param.replace("[","");
-                            param = param.replace("]","");
+                            param = param.replace("[", "");
+                            param = param.replace("]", "");
                         }
-                        if (!param.equals(op.getParameters().get(i).getName())){
+                        if (!param.equals(op.getParameters().get(i).getName())) {
                             foundDifference = true;
                             break;
                         }
                     }
                     //same method signature!
-                    if (foundDifference == false){
+                    if (foundDifference == false) {
                         return op;
                     }
                 }
@@ -163,8 +166,8 @@ public abstract class PatternMapper {
         //if we get here just super greedily search. -- will happen if the return type is a generic, such as a List.
         //this is because the detection tool does not separate generics from actual types correctly, because it uses byte-code analysis
         //and at the bytecode level generics are treated differently.
-        for (UMLOperation op : umlClassifier.getOperations()){
-            if (op.getName().equals(operationName)){
+        for (UMLOperation op : umlClassifier.getOperations()) {
+            if (op.getName().equals(operationName)) {
                 return op;
             }
         }
@@ -178,29 +181,29 @@ public abstract class PatternMapper {
 
 
     //input will look like this: execute(org.openqa.selenium.remote.http.HttpRequest, boolean)
-    protected List<String> getParamsFromNameParams(String minorClassOperationNameParams){
+    protected List<String> getParamsFromNameParams(String minorClassOperationNameParams) {
         List<String> paramsList = new ArrayList<>();
         String paramsBlock = minorClassOperationNameParams.split("\\(")[1];
         //minus 2 becuase last char is a ')'
-        if (paramsBlock.length() == 1){
+        if (paramsBlock.length() == 1) {
             return paramsList;
         }
-        String[] params = paramsBlock.substring(0, paramsBlock.length()-1).split("\\,");
-        for (String s : params){
+        String[] params = paramsBlock.substring(0, paramsBlock.length() - 1).split("\\,");
+        for (String s : params) {
             s = s.replace(" ", "");//remove spaces
-            if (s.contains(".")){
+            if (s.contains(".")) {
                 //package
                 String[] splitter = s.split("\\.");
-                s = splitter[splitter.length-1];
+                s = splitter[splitter.length - 1];
             }
             paramsList.add(s);
         }
         return paramsList;
     }
 
-    protected UMLAttribute matchAttribute(UMLClassifier umlClassifier, String attributeName){
-        for (UMLAttribute attribute : umlClassifier.getAttributes()){
-            if (attribute.getName().equals(attributeName)){
+    protected UMLAttribute matchAttribute(UMLClassifier umlClassifier, String attributeName) {
+        for (UMLAttribute attribute : umlClassifier.getAttributes()) {
+            if (attribute.getName().equals(attributeName)) {
                 //dont need to check type because attribute names are unique.
                 return attribute;
             }
@@ -212,14 +215,14 @@ public abstract class PatternMapper {
         return null;
     }
 
-    protected UMLAttribute getAttributeFromString(UMLClassifier umlClassifier, String attributeName){
+    protected UMLAttribute getAttributeFromString(UMLClassifier umlClassifier, String attributeName) {
         String parsedAttributeName = parseRoleName(attributeName);
         UMLAttribute attribute = matchAttribute(umlClassifier, parsedAttributeName);
         return attribute;
     }
 
 
-    protected UMLOperation getOperationFromString(UMLClassifier umlClassifier, String operationName){
+    protected UMLOperation getOperationFromString(UMLClassifier umlClassifier, String operationName) {
         //operation name is unparsed; need to parse it.
         String roleName = parseRoleName(operationName);
         String roleType = parseRoleType(operationName);
@@ -235,7 +238,7 @@ public abstract class PatternMapper {
     //input will look like: "CH.ifa.draw.standard.AlignCommand::fView:CH.ifa.draw.framework.DrawingView" or
     //"CH.ifa.draw.standard.AlignCommand::execute():void"
     //need to return fView or execute()
-    private String parseRoleName(String role){
+    private String parseRoleName(String role) {
         String ownerRemoved = role.split("\\:\\:")[1];
         String typeRemoved = ownerRemoved.split("\\:")[0];
         return typeRemoved;
@@ -245,7 +248,7 @@ public abstract class PatternMapper {
     //input will look like: "CH.ifa.draw.standard.AlignCommand::fView:CH.ifa.draw.framework.DrawingView" or
     //"CH.ifa.draw.standard.AlignCommand::execute():void"
     //need to return CH.ifa.draw.standard.AlignCommand in both cases.
-    private String parseRoleOwner(String role){
+    private String parseRoleOwner(String role) {
         String nameRemoved = role.split("\\:\\:")[0];
         return nameRemoved;
     }
@@ -253,12 +256,12 @@ public abstract class PatternMapper {
     //input will look like: "CH.ifa.draw.standard.AlignCommand::fView:CH.ifa.draw.framework.DrawingView" or
     //"CH.ifa.draw.standard.AlignCommand::execute():void"
     //need to return CH.ifa.draw.framework.DrawingView or void
-    private String parseRoleType(String role){
+    private String parseRoleType(String role) {
         String ownerRemoved = role.split("\\:\\:")[1];
         String nameRemoved = ownerRemoved.split("\\:")[1];
-        if (nameRemoved.contains("\\.")){
+        if (nameRemoved.contains("\\.")) {
             String[] typeSplitter = nameRemoved.split("\\.");
-            nameRemoved = typeSplitter[typeSplitter.length-1];
+            nameRemoved = typeSplitter[typeSplitter.length - 1];
         }
         return nameRemoved;
     }
@@ -268,30 +271,34 @@ public abstract class PatternMapper {
      * @return
      */
     public abstract List<Pair<String, UMLClassifier>> getClassifierModelBlocks();
+
     public abstract List<Pair<String, UMLClassifier>> getClassModelBlocks();
+
     public abstract List<Pair<String, UMLOperation>> getOperationModelBlocks();
+
     public abstract List<Pair<String, UMLAttribute>> getAttributeModelBlocks();
+
     public abstract List<Pair<String, UMLClassifier>> getAllParticipatingClasses();
 
-    public List<Pair<String, UMLClassifier>> getAllClassifierModelBlocks(){
+    public List<Pair<String, UMLClassifier>> getAllClassifierModelBlocks() {
         List<Pair<String, UMLClassifier>> blocks = new ArrayList<>();
         blocks.addAll(getClassifierModelBlocks());
         blocks.addAll(getClassModelBlocks());
         return blocks;
     }
 
-    protected void parsePatternCommonNames(){
+    protected void parsePatternCommonNames() {
         patternCommonNames = new HashMap<>();
-        try{
+        try {
             File f = new File(Main.patternCommonNames + this.getPatternCommonNamesFileName());
             Scanner in = new Scanner(f);
-            while(in.hasNext()){
+            while (in.hasNext()) {
                 String line = in.nextLine();
                 String key = line.split(":")[0];
                 String[] values = (line.split(":")[1]).split(",");
                 patternCommonNames.put(key, Arrays.asList(values));
             }
-        }catch(FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             System.out.println("Unable to parse common names file. Exiting");
             e.printStackTrace();
             System.exit(0);
@@ -301,63 +308,31 @@ public abstract class PatternMapper {
     protected abstract String getPatternCommonNamesFileName();
 
     /***
-     * this method returns a list of unique relationship pais (of the type specified in the parameter)
+     * this method returns a set of unique relationship pairs (of the type specified in the parameter)
      * for all classifiers associated around (pointing to and away from, via uml class diagram) the pattern classifiers.
      *
      * @param relationshipType
      * @return
      */
-    public List<Relationship> getUniqueRelationshipsFromPatternClassifiers(RelationshipType relationshipType){
-        List<Relationship> relationships = new ArrayList<>();
-        for (Pair<String, UMLClassifier> self : getClassifierModelBlocks()) {
-            //for all classifiers in teh pattern
-            for (UMLClassifier predecessor : umlClassDiagram.getClassDiagram().predecessors(self.getValue())){
-                //for all predecessors of all classifiers in the pattern
-                for (Relationship r : umlClassDiagram.getClassDiagram().edgesConnecting(predecessor, self.getValue())){
-                    //for all relationships between the two (pred -> self)
-                    if (r.getRelationshipType() == relationshipType) {
-                        //same relationship type
-                        boolean hasBeenAdded = false;
-                        for (Relationship existingRelationship : relationships) {
-                            //check to see if already added
-                            if (existingRelationship.equals(r)) {
-                                //already here.
-                                hasBeenAdded = true;
-                            }
-                        }
-                        if (!hasBeenAdded) {
-                            //only add if unique.
-                            relationships.add(r);
-                        }
-                    }
-                }
+    public Set<Relationship> getUniqueRelationshipsFromPatternClassifiers(RelationshipType relationshipType) {
+        Set<Relationship> relationships = new HashSet<>();
+        for (Relationship afferentR : uniqueAfferentRelationships){
+            if (afferentR.getRelationshipType().equals(relationshipType)){
+                relationships.add(afferentR);
             }
-            for (UMLClassifier successor : umlClassDiagram.getClassDiagram().successors(self.getValue())){
-                //for all predecessors of all classifiers in the pattern
-                for (Relationship r : umlClassDiagram.getClassDiagram().edgesConnecting(self.getValue(), successor)){
-                    //for all relationships between the two (pred -> self)
-                    if (r.getRelationshipType() == relationshipType) {
-                        //same relationship type
-                        boolean hasBeenAdded = false;
-                        for (Relationship existingRelationship : relationships) {
-                            //check to see if already added
-                            if (existingRelationship.equals(r)) {
-                                //already here.
-                                hasBeenAdded = true;
-                            }
-                        }
-                        if (!hasBeenAdded) {
-                            //only add if unique.
-                            relationships.add(r);
-                        }
-                    }
-                }
+        }
+        for (Relationship efferentR : uniqueEfferentRelationships){
+            if (efferentR.getRelationshipType().equals(relationshipType)){
+                relationships.add(efferentR);
+            }
+        }
+        for (Relationship internalR : uniqueInternalRelationships){
+            if (internalR.getRelationshipType().equals(relationshipType)){
+                relationships.add(internalR);
             }
         }
         return relationships;
     }
-
-
 
 
     public abstract void printSummary();
@@ -367,8 +342,8 @@ public abstract class PatternMapper {
      * @param tagName
      * @return
      */
-    private String getTypeFromCallTreeTagDecl(String tagName){
-        return tagName.replace("decl{", "").replace("}","");
+    private String getTypeFromCallTreeTagDecl(String tagName) {
+        return tagName.replace("decl{", "").replace("}", "");
     }
 
     /***
@@ -380,9 +355,9 @@ public abstract class PatternMapper {
      * @param owningClassifier owning classifier
      * @param dataStruct pass by ref return value
      */
-    protected void coalescenceStringSearchOperations(String searchString, UMLClassifier owningClassifier, List<Pair<String, UMLOperation>> dataStruct){
-        for (UMLOperation umlOperation : owningClassifier.getOperations()){
-            if (StringUtils.containsIgnoreCase(umlOperation.getName(), searchString)){
+    protected void coalescenceStringSearchOperations(String searchString, UMLClassifier owningClassifier, List<Pair<String, UMLOperation>> dataStruct) {
+        for (UMLOperation umlOperation : owningClassifier.getOperations()) {
+            if (StringUtils.containsIgnoreCase(umlOperation.getName(), searchString)) {
                 //match!
                 dataStruct.add(new ImmutablePair<>(searchString, umlOperation));
             }
@@ -395,9 +370,9 @@ public abstract class PatternMapper {
      * @param owningClassifier
      * @param dataStruct
      */
-    protected void coalescenceStringSearchAttributes(String searchString, UMLClassifier owningClassifier, List<Pair<String, UMLAttribute>> dataStruct){
-        for (UMLAttribute umlAttribute : owningClassifier.getAttributes()){
-            if (StringUtils.containsIgnoreCase(umlAttribute.getName(), searchString)){
+    protected void coalescenceStringSearchAttributes(String searchString, UMLClassifier owningClassifier, List<Pair<String, UMLAttribute>> dataStruct) {
+        for (UMLAttribute umlAttribute : owningClassifier.getAttributes()) {
+            if (StringUtils.containsIgnoreCase(umlAttribute.getName(), searchString)) {
                 //match!
                 dataStruct.add(new ImmutablePair<>(searchString, umlAttribute));
             }
@@ -412,13 +387,13 @@ public abstract class PatternMapper {
      * @param operationName
      * @return
      */
-    protected List<Pair<String, UMLOperation>> coalesceOperations(List<Pair<String, UMLClassifier>> owningClassifier, String operationName){
+    protected List<Pair<String, UMLOperation>> coalesceOperations(List<Pair<String, UMLClassifier>> owningClassifier, String operationName) {
         List<Pair<String, UMLOperation>> operationsDataStruct = new ArrayList<>();
-        for (Pair<String, UMLClassifier> classifierPair : owningClassifier){
-            for (String commonNameValue : patternCommonNames.get(operationName)){
+        for (Pair<String, UMLClassifier> classifierPair : owningClassifier) {
+            for (String commonNameValue : patternCommonNames.get(operationName)) {
                 List<Pair<String, UMLOperation>> tempOperations = new ArrayList<>();
                 coalescenceStringSearchOperations(commonNameValue, classifierPair.getRight(), tempOperations);
-                for (Pair<String, UMLOperation> op : tempOperations){
+                for (Pair<String, UMLOperation> op : tempOperations) {
                     operationsDataStruct.add(new ImmutablePair<>(operationName, op.getRight()));
                 }
             }
@@ -426,13 +401,13 @@ public abstract class PatternMapper {
         return operationsDataStruct;
     }
 
-    protected List<Pair<String, UMLAttribute>> coalesceAttributes(List<Pair<String, UMLClassifier>> owningClassifier, String attributeName){
+    protected List<Pair<String, UMLAttribute>> coalesceAttributes(List<Pair<String, UMLClassifier>> owningClassifier, String attributeName) {
         List<Pair<String, UMLAttribute>> attributeDataStruct = new ArrayList<>();
-        for (Pair<String, UMLClassifier> classifierPair : owningClassifier){
-            for (String commonNameValue : patternCommonNames.get(attributeName)){
+        for (Pair<String, UMLClassifier> classifierPair : owningClassifier) {
+            for (String commonNameValue : patternCommonNames.get(attributeName)) {
                 List<Pair<String, UMLAttribute>> tempAttributes = new ArrayList<>();
                 coalescenceStringSearchAttributes(commonNameValue, classifierPair.getRight(), tempAttributes);
-                for (Pair<String, UMLAttribute> at : tempAttributes){
+                for (Pair<String, UMLAttribute> at : tempAttributes) {
                     attributeDataStruct.add(new ImmutablePair<>(attributeName, at.getRight()));
                 }
             }
@@ -441,18 +416,18 @@ public abstract class PatternMapper {
     }
 
     //gets only the classifier objects of the CONCRETE, ABSTRACT classes, and INTERFACES in this pattern
-    public List<UMLClassifier> getAllParticipatingClassifiersOnlyUMLClassifiers(){
+    public List<UMLClassifier> getAllParticipatingClassifiersOnlyUMLClassifiers() {
         List<UMLClassifier> classifiers = new ArrayList<>();
-        for (Pair<String, UMLClassifier> classifierPair : this.getAllClassifierModelBlocks()){
+        for (Pair<String, UMLClassifier> classifierPair : this.getAllClassifierModelBlocks()) {
             classifiers.add(classifierPair.getRight());
         }
         return classifiers;
     }
 
     //gets only the classifier objects of all the CONCRETE, ABSTRACT classes in this pattern
-    public List<UMLClassifier> getAllParticipatingClassesOnlyUMLClassifiers(){
+    public List<UMLClassifier> getAllParticipatingClassesOnlyUMLClassifiers() {
         List<UMLClassifier> classifiers = new ArrayList<>();
-        for (Pair<String, UMLClassifier> classifierPair : this.getAllClassifierModelBlocks()){
+        for (Pair<String, UMLClassifier> classifierPair : this.getAllClassifierModelBlocks()) {
             classifiers.add(classifierPair.getRight());
         }
         return classifiers;
@@ -461,30 +436,37 @@ public abstract class PatternMapper {
     /***
      * method to fill afferent and efferent participating classifiers (the variables)
      */
-    public void fillParticipatingClassifiers(){
-        this.afferentParticipants = new ArrayList<>();
-        this.uniqueAfferentParticipants = new HashSet<>();
-        this.efferentParticipants = new ArrayList<>();
-        this.uniqueEfferentParticipants = new HashSet<>();
-        for (Relationship r : umlClassDiagram.getClassDiagram().edges()){
-            if (this.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(r.getFrom())){
+    public void fillParticipatingClassifiers() {
+        this.afferentRelationships = new ArrayList<>();
+        this.uniqueAfferentRelationships = new HashSet<>();
+        this.efferentRelationships = new ArrayList<>();
+        this.uniqueEfferentRelationships = new HashSet<>();
+        this.internalRelationships = new ArrayList<>();
+        this.uniqueInternalRelationships = new HashSet<>();
+        for (Relationship r : umlClassDiagram.getClassDiagram().edges()) {
+            if (this.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(r.getFrom())) {
                 //our pattern contains a potential efferent link.
-                if (!this.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(r.getTo())){
+                if (!this.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(r.getTo())) {
                     //make sure the 'to' link is not in the pattern
-                    efferentParticipants.add(r.getTo());
-                    uniqueEfferentParticipants.add(r.getTo());
+                    efferentRelationships.add(r);
+                    uniqueEfferentRelationships.add(r);
+                } else {
+                    internalRelationships.add(r);
+                    uniqueInternalRelationships.add(r);
                 }
             }
-            if (this.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(r.getTo())){
+            if (this.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(r.getTo())) {
                 //check afferent links
-                if (!this.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(r.getFrom())){
+                if (!this.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(r.getFrom())) {
                     //make sure from link not in pattern
-                    afferentParticipants.add(r.getFrom());
-                    uniqueAfferentParticipants.add(r.getFrom());
+                    afferentRelationships.add(r);
+                    uniqueAfferentRelationships.add(r);
+                } else {
+                    internalRelationships.add(r);
+                    uniqueInternalRelationships.add(r);
                 }
             }
         }
-
     }
 
 }
