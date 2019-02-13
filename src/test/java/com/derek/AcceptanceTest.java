@@ -52,6 +52,8 @@ public class AcceptanceTest {
             if (output.delete()){
                 System.out.println("Deleted old output file");
             }
+
+
         }catch (Exception e){
             e.printStackTrace();
         }finally {

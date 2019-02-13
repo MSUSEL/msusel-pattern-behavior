@@ -1,5 +1,7 @@
 package com.derek.grime;
 
+import com.derek.BehaviorConformance;
+import com.derek.BehavioralMapping;
 import com.derek.Main;
 import com.derek.PatternMapper;
 import com.derek.rbml.RBMLMapping;
@@ -39,6 +41,8 @@ public class GrimeSuite {
         classGrimeMeasurementList = new HashMap<>();
         calculateModularGrime();
         calculateClassGrime();
+        calculateOrderGrime();
+
     }
 
     private void calculateModularGrime() {
@@ -50,8 +54,6 @@ public class GrimeSuite {
         teaGrimeInstances = new ArrayList<>();
         teeGrimeInstances = new ArrayList<>();
         findModularGrime2();
-        //findModularGrime(piGrimeInstances, peaGrimeInstances, peeGrimeInstances, RelationshipType.ASSOCIATION);
-        //findModularGrime(tiGrimeInstances, teaGrimeInstances, teeGrimeInstances, RelationshipType.DEPENDENCY);
     }
 
     private void findModularGrime2() {
@@ -65,14 +67,6 @@ public class GrimeSuite {
             }
         }
         int currentAfferentUsages = 0;
-        Set<Relationship> old = patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.ASSOCIATION);
-        List<Relationship> newera = patternMapper.getAfferentRelationships();
-        List<Relationship> newere = patternMapper.getEfferentRelationships();
-        List<Relationship> neweri = patternMapper.getInternalRelationships();
-
-        Set<Relationship> newerau = patternMapper.getUniqueAfferentRelationships();
-        Set<Relationship> newereu = patternMapper.getUniqueEfferentRelationships();
-        Set<Relationship> neweriu = patternMapper.getUniqueInternalRelationships();
 
         for (Relationship patternAssociation : patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.ASSOCIATION)) {
             if (patternAssociation.getFrom().getName().equals("Client")){
@@ -120,54 +114,6 @@ public class GrimeSuite {
         }
     }
 
-    private void findModularGrime(List<Relationship> internal, List<Relationship> afferent, List<Relationship> efferent, RelationshipType relationshipType) {
-        List<Relationship> validRBMLMappings = new ArrayList<>();
-
-        for (RBMLMapping structuralMapping : rbmlStructuralMappings) {
-            Relationship relationship = structuralMapping.getRelationshipArtifact();
-            if (relationship != null) {
-                //have a valid relationship
-                validRBMLMappings.add(relationship);
-            }
-        }
-        int currentAfferentClassifierUsages = patternMapper.getUniqueAfferentRelationships().size();
-        int currentAfferentMethodUsages = 0;
-        for (Relationship patternRelationship : patternMapper.getUniqueRelationshipsFromPatternClassifiers(relationshipType)) {
-            //3 cases - relationship is between pattern classes (could be internal grime) (could be external and efferent) (could be external and afferent)
-            //pi first
-            if (!isCapturedInRBML(validRBMLMappings, patternRelationship)) {
-                //logic for the 3 cases starts here.
-                if (patternMapper.getUniqueAfferentRelationships().size() > Main.clientClassAllowances) {
-                    //afferent grime, this means we have too many classes referencing our pattern.
-                    //afferent.add(patternRelationship);
-                    //System.out.println("Afferent grime (unique): " + patternRelationship.getFrom().getName() + "  to " + patternRelationship.getTo().getName() + " as " + relationshipType);
-                }
-
-                if (patternMapper.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(patternRelationship.getFrom())) {
-                    if (patternMapper.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(patternRelationship.getTo())) {
-                        //pi.
-                        internal.add(patternRelationship);
-                        //System.out.println("Added internal grime: " + patternRelationship.getFrom().getName() + " to " + patternRelationship.getTo().getName() + " as " + relationshipType);
-                    } else {
-                        //relationship points from pattern member -> non-pattern member. (efferent)
-                        efferent.add(patternRelationship);
-                        //System.out.println("Added efferent grime: " + patternRelationship.getFrom().getName() + "  to " + patternRelationship.getTo().getName() + " as " + relationshipType);
-                    }
-                } else {
-                    //relationship points from non-pattern member -> pattern member (afferent)
-//                    if (currentAfferentMethodUsages <= Main.clientUsageAllowances){
-//                        //not grime yet, because we allow a configurable number of client usages
-//                        currentAfferentMethodUsages++;
-//                    }else {
-                    //though if we get here it really is grime, because we have surpassed the number of allowances for usages.
-                    afferent.add(patternRelationship);
-                    System.out.println("Added afferent grime: " + patternRelationship.getFrom().getName() + "  to " + patternRelationship.getTo().getName() + " as " + relationshipType);
-                    //}
-                }
-            }
-        }
-    }
-
     private boolean isCapturedInRBML(List<Relationship> validRBMLMappings, Relationship r) {
         boolean relationshipExistsInRBML = false;
         for (Relationship validRBMLMapping : validRBMLMappings) {
@@ -188,5 +134,17 @@ public class GrimeSuite {
             grime.calculateClassGrimeMeasurements();
             classGrimeMeasurementList.put(umlClassifier, grime);
         }
+    }
+
+    private void calculateOrderGrime(){
+        for (RBMLMapping rbmlBehaviorMapping : this.rbmlBehavioralMappings){
+            BehaviorConformance bc = rbmlBehaviorMapping.getBehavioralConformance();
+            if (bc != null){
+                for (BehavioralMapping behavioralMapping : bc.getBehavioralGrime()){
+                    System.out.println(behavioralMapping.printMe());
+                }
+            }
+        }
+
     }
 }

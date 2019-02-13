@@ -53,8 +53,10 @@ public abstract class PatternMapper {
     //same items as above, but its a set so items are unique.
     protected Set<Relationship> uniqueEfferentRelationships;
 
+    //internal relationships of the pattern only
     protected List<Relationship> internalRelationships;
 
+    //internal items as a list
     protected Set<Relationship> uniqueInternalRelationships;
 
 

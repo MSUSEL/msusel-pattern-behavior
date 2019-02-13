@@ -214,7 +214,7 @@ public class UMLGenerator {
                 //standard operation relationships
                 if (operation.getType() != null) {
                     if (umlClassDiagram.getClassDiagram().nodes().contains(operation.getType())){
-                        umlClassDiagram.addRelationshipToDiagram(umlClassifier, operation.getType(), RelationshipType.ASSOCIATION);
+                        umlClassDiagram.addRelationshipToDiagram(umlClassifier, operation.getType(), RelationshipType.DEPENDENCY);
                     }
                 }
                 //set params
@@ -222,7 +222,7 @@ public class UMLGenerator {
                 for (UMLClassifier param : operation.getParameters()){
                     if (param != null) {
                         if (umlClassDiagram.getClassDiagram().nodes().contains(param)){
-                            umlClassDiagram.addRelationshipToDiagram(umlClassifier, param, RelationshipType.ASSOCIATION);
+                            umlClassDiagram.addRelationshipToDiagram(umlClassifier, param, RelationshipType.DEPENDENCY);
                         }
                     }
                 }
