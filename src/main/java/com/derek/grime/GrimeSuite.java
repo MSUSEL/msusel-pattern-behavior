@@ -4,11 +4,12 @@ import com.derek.BehaviorConformance;
 import com.derek.BehavioralMapping;
 import com.derek.Main;
 import com.derek.PatternMapper;
+import com.derek.rbml.InteractionRole;
 import com.derek.rbml.RBMLMapping;
-import com.derek.uml.Relationship;
-import com.derek.uml.RelationshipType;
-import com.derek.uml.UMLClassifier;
+import com.derek.uml.*;
 import lombok.Getter;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 
@@ -53,10 +54,10 @@ public class GrimeSuite {
         tiGrimeInstances = new ArrayList<>();
         teaGrimeInstances = new ArrayList<>();
         teeGrimeInstances = new ArrayList<>();
-        findModularGrime2();
+        findModularGrime();
     }
 
-    private void findModularGrime2() {
+    private void findModularGrime() {
         List<Relationship> validRBMLMappings = new ArrayList<>();
 
         for (RBMLMapping structuralMapping : rbmlStructuralMappings) {
@@ -137,14 +138,21 @@ public class GrimeSuite {
     }
 
     private void calculateOrderGrime(){
-        for (RBMLMapping rbmlBehaviorMapping : this.rbmlBehavioralMappings){
-            BehaviorConformance bc = rbmlBehaviorMapping.getBehavioralConformance();
-            if (bc != null){
-                for (BehavioralMapping behavioralMapping : bc.getBehavioralGrime()){
-                    System.out.println(behavioralMapping.printMe());
+        for (Relationship afferentParticipants : patternMapper.getAfferentRelationships()){
+            UMLClassifier afferentClassifier = afferentParticipants.getFrom();
+            for (UMLOperation umlOperation : afferentClassifier.getOperations()){
+                for (String used : umlOperation.getLocalVariableUsageNames()){
+                    System.out.println(used);
                 }
             }
-        }
 
+        }
+//        for (RBMLMapping rbmlBehaviorMapping : this.rbmlBehavioralMappings){
+//            BehaviorConformance bc = rbmlBehaviorMapping.getBehavioralConformance();
+//            if (bc != null){
+//                bc.printPresenceMap();
+//            }
+//        }
     }
+
 }

@@ -155,6 +155,18 @@ public class AcceptanceTest {
         testModularGrimeType(thisVersion, "MG-TI", 1, 1, 0);
     }
 
+    @Test
+    public void testVersion7(){
+        CSVRecord thisVersion = outputRecords.iterator().next();
+        assertEquals("7", thisVersion.get("Software_Version"));
+    }
+
+    @Test
+    public void testVersion8(){
+        CSVRecord thisVersion = outputRecords.iterator().next();
+        assertEquals("8", thisVersion.get("Software_Version"));
+    }
+
     /***
      * shortcut utliity method to speed up the process of testing modular grime types. supply this method with a csvrecord,
      * grime name that corresponds with the name in the tab delimited output, and expected counts of grime.

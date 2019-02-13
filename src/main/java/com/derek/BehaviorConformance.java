@@ -226,7 +226,7 @@ public class BehaviorConformance {
      */
     private void collapsePresenceMap(){
         roleMap = new ArrayList<>();
-        for (MutablePair<CallTreeNode, InteractionRole> presence : presenceMap){
+        for (Pair<CallTreeNode, InteractionRole> presence : presenceMap){
             if (presence.getRight() != null){
                 //mapping
                 roleMap.add(presence);
@@ -253,14 +253,32 @@ public class BehaviorConformance {
         }
     }
 
-    public void printPresenceMap(List<Pair<CallTreeNode, InteractionRole>> map){
+    public void printRoleMap(){
         System.out.print("| ");
-        for (Pair<CallTreeNode, InteractionRole> pair : map){
+        for (Pair<CallTreeNode, InteractionRole> pair : roleMap){
             System.out.print(pair.getLeft().getName() + " | ");
         }
         System.out.println();
         System.out.print("| ");
-        for (Pair<CallTreeNode, InteractionRole> pair : map){
+        for (Pair<CallTreeNode, InteractionRole> pair : roleMap){
+            if (pair.getRight() == null){
+                //null if not mapped.
+                System.out.print("no role mapping | ");
+            }else {
+                System.out.print(pair.getRight().getName() + " | ");
+            }
+        }
+        System.out.println("\n");
+    }
+
+    public void printPresenceMap(){
+        System.out.print("| ");
+        for (Pair<CallTreeNode, InteractionRole> pair : presenceMap){
+            System.out.print(pair.getLeft().getName() + " | ");
+        }
+        System.out.println();
+        System.out.print("| ");
+        for (Pair<CallTreeNode, InteractionRole> pair : presenceMap){
             if (pair.getRight() == null){
                 //null if not mapped.
                 System.out.print("no role mapping | ");

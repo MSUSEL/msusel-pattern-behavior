@@ -35,6 +35,7 @@ import com.derek.rbml.*;
 import com.derek.uml.*;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.BufferedWriter;
@@ -60,12 +61,14 @@ public class Comparatizer {
     private Table<SoftwareVersion, String, MetricSuite> metricTable;
 
 
+
     public Comparatizer(Model model){
         this.model = model;
         this.umlClassDiagrams = model.getClassDiagramMap();
         outputter = new StringBuilder();
         grimeTable = HashBasedTable.create();
         metricTable = HashBasedTable.create();
+        clearLog();
     }
 
     public void runAnalysis(){
@@ -131,7 +134,6 @@ public class Comparatizer {
                 outputter.append("\n");
             }
         }
-
         output();
     }
 
@@ -212,8 +214,6 @@ public class Comparatizer {
         List<RBMLMapping> rbmlBehaviorMappings = conformance.mapBehavior(rbmlStructureMappings);
 
 
-
-
         //grime checks here I think.
         GrimeSuite grimeSuite = new GrimeSuite(patternMapper, rbmlStructureMappings, rbmlBehaviorMappings);
 
@@ -221,46 +221,6 @@ public class Comparatizer {
 
         ConformanceResults conformanceResults = new ConformanceResults(patternMapper, sps, rbmlStructureMappings, ips, rbmlBehaviorMappings, grimeSuite);
         return conformanceResults;
-    }
-
-    private void printViolatedRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, IPS ips, List<RBMLMapping> rbmlBehavioralMappings, StringBuilder output){
-        output.append("***************************************\n");
-        output.append("************Role Conformance***********\n");
-        output.append("***************************************\n");
-        //print all things that don't conform.
-        List<Role> conformingRoles = new ArrayList<>();
-        for (Role role : sps.getAllRoles()){
-            for (RBMLMapping rbmlMapping : rbmlStructureMappings){
-                if (rbmlMapping.getRole().equals(role) && !conformingRoles.contains(role)){
-                    conformingRoles.add(role);
-                }
-            }
-        }
-        //sps conformance checks - but this is printing; it does not include any logic.
-        for (Role role : sps.getAllRoles()){
-            if (conformingRoles.contains(role)){
-                output.append("Role " + role.getName() + " is satisfied.\n");
-            }else{
-                output.append("Role " + role.getName() + " is violated.\n");
-            }
-        }
-
-        for (Role role : ips.getInteractions()){
-            for (RBMLMapping rbmlMapping : rbmlBehavioralMappings){
-                if (rbmlMapping.getRole().equals(role) && !conformingRoles.contains(role)){
-                    conformingRoles.add(role);
-                }
-            }
-        }
-
-        //sps conformance checks - but this is printing; it does not include any logic.
-        for (Role role : ips.getInteractions()){
-            if (conformingRoles.contains(role)){
-                output.append("Role " + role.getName() + " is satisfied.\n");
-            }else{
-                output.append("Role " + role.getName() + " is violated.\n");
-            }
-        }
     }
 
     private void output() {
@@ -290,7 +250,6 @@ public class Comparatizer {
                 if (!directory.exists()) {
                     Files.createDirectory(Paths.get("roles\\" + patternMapper.getPi().getPatternType() + "\\"));
                 }
-
                 StringBuilder output = new StringBuilder();
                 output.append("Version: " + patternMapper.getPi().getSoftwareVersion().getVersionNum() + "\n");
                 output.append("***************************************\n");
@@ -384,6 +343,46 @@ public class Comparatizer {
         }
     }
 
+    private void printViolatedRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, IPS ips, List<RBMLMapping> rbmlBehavioralMappings, StringBuilder output){
+        output.append("***************************************\n");
+        output.append("************Role Conformance***********\n");
+        output.append("***************************************\n");
+        //print all things that don't conform.
+        List<Role> conformingRoles = new ArrayList<>();
+        for (Role role : sps.getAllRoles()){
+            for (RBMLMapping rbmlMapping : rbmlStructureMappings){
+                if (rbmlMapping.getRole().equals(role) && !conformingRoles.contains(role)){
+                    conformingRoles.add(role);
+                }
+            }
+        }
+        //sps conformance checks - but this is printing; it does not include any logic.
+        for (Role role : sps.getAllRoles()){
+            if (conformingRoles.contains(role)){
+                output.append("Role " + role.getName() + " is satisfied.\n");
+            }else{
+                output.append("Role " + role.getName() + " is violated.\n");
+            }
+        }
+
+        for (Role role : ips.getInteractions()){
+            for (RBMLMapping rbmlMapping : rbmlBehavioralMappings){
+                if (rbmlMapping.getRole().equals(role) && !conformingRoles.contains(role)){
+                    conformingRoles.add(role);
+                }
+            }
+        }
+
+        //sps conformance checks - but this is printing; it does not include any logic.
+        for (Role role : ips.getInteractions()){
+            if (conformingRoles.contains(role)){
+                output.append("Role " + role.getName() + " is satisfied.\n");
+            }else{
+                output.append("Role " + role.getName() + " is violated.\n");
+            }
+        }
+    }
+
     private String getOutputHeader(){
         String delim = "\t";
         StringBuilder header = new StringBuilder();
@@ -439,6 +438,24 @@ public class Comparatizer {
         header.append(typeOfClassGrime + " grime count (across all pattern classes)" + delim);
         header.append(typeOfClassGrime + " grime average (across all pattern classes)");
         return header.toString();
+    }
+
+
+    /***
+     * utility method reponsible for deleting old log files from the last simulation run.
+     */
+    private void clearLog(){
+        try{
+            File mainDirectory = new File("roles\\");
+            if (mainDirectory.exists()) {
+                FileUtils.deleteDirectory(mainDirectory);
+            }
+
+        }catch(Exception e){
+            System.out.println("Could not delete the old roles output files. Not fatal but we will continue.");
+            e.printStackTrace();
+        }
+
     }
 
 
