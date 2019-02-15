@@ -1,5 +1,6 @@
 package com.derek;
 
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.jupiter.api.BeforeAll;
@@ -161,11 +162,6 @@ public class AcceptanceTest {
         assertEquals("7", thisVersion.get("Software_Version"));
     }
 
-    @Test
-    public void testVersion8(){
-        CSVRecord thisVersion = outputRecords.iterator().next();
-        assertEquals("8", thisVersion.get("Software_Version"));
-    }
 
     /***
      * shortcut utliity method to speed up the process of testing modular grime types. supply this method with a csvrecord,

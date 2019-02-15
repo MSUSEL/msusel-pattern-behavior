@@ -140,9 +140,36 @@ public class GrimeSuite {
     private void calculateOrderGrime(){
         for (Relationship afferentParticipants : patternMapper.getAfferentRelationships()){
             UMLClassifier afferentClassifier = afferentParticipants.getFrom();
-            for (UMLOperation umlOperation : afferentClassifier.getOperations()){
-                for (String used : umlOperation.getLocalVariableUsageNames()){
-                    System.out.println(used);
+            List<UMLAttribute> classVarUsages = afferentClassifier.getAttributes();
+            System.out.println(afferentClassifier.getName() + " has vars at class level: " + classVarUsages);
+            for (UMLOperation umlOperation : afferentClassifier.getOperationsIncludingConstructorsIfExists()){
+
+
+                List<String> localVarUsages = umlOperation.getLocalVariableUsageNames();
+                System.out.println("Method: " + umlOperation.getName());
+                System.out.println("\tDeclared at method level: ");
+                umlOperation.getLocalVariableDecls().forEach(num->System.out.println(num.getName()));
+                System.out.println("\tUsed at method level: " + localVarUsages);
+
+
+                System.out.println("Types used by local variables calls: ");
+                umlOperation.getLocalVariableUsageTypes().forEach(num->System.out.println("\t" + num));
+
+
+                System.out.println("Types used by local variables: ");
+                umlOperation.getLocalVariableUsageTypes().forEach(num->System.out.println("\t" + num));
+
+                umlOperation.getCallTreeString().printTree();
+
+                List<CallTreeNode<String>> callTree = umlOperation.getCallTreeString().convertMeToOrderedList();
+                for (CallTreeNode<String> callTreeNode : callTree){
+                    if (callTreeNode.isDecl()){
+                        String declTagName = callTreeNode.parseDeclTagName();
+                        //got the decl name, now I need to match to pattern classes to see if the variable declaration is indeed an afferent connection. This would be a temporary
+                        //grime artifact I think.
+                    }if (callTreeNode.isCall()){
+
+                    }
                 }
             }
 

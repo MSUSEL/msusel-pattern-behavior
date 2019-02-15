@@ -174,7 +174,7 @@ public class UMLGenerationUtils {
         if (srcMLBlock != null) {
             //happens when this is an interface or abstract declaration. Of course such a type will not have any attributes, so skip it.
             List<UMLAttribute> localAttDecls = getLocalUMLAttributeDecls(srcMLBlock);
-            umlOperation.setLocalAttributeDecls(localAttDecls);
+            umlOperation.setLocalVariableDecls(localAttDecls);
             List<String> localVarUsages = getVariableUsages(srcMLBlock);
             umlOperation.setLocalVariableUsageNames(localVarUsages);
         }

@@ -123,7 +123,7 @@ public class BehaviorConformance {
      */
     public void findUnnecessaryActions(UMLOperation operation){
         //look for cases where a variable is defined but not used
-        for (UMLAttribute localVar : operation.getLocalAttributeDecls()) {
+        for (UMLAttribute localVar : operation.getLocalVariableDecls()) {
             boolean isUsed = false;
             for (String usage : operation.getLocalVariableUsageNames()) {
                 if (usage.equals(localVar.getName())){

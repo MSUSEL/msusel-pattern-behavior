@@ -90,10 +90,10 @@ public class ClassGrimeMeasurements {
             maxDmInteractions.addAll(ddInterations);
             //now I need to get max dd interactions (all def uses within a method.)
             for (UMLOperation op : umlClassifier.getOperations()){
-                for (UMLAttribute umlAttribute : op.getLocalAttributeDecls()){
+                for (UMLAttribute umlAttribute : op.getLocalVariableDecls()){
                     maxDmInteractions.add(new ImmutablePair<>(umlAttribute.getType(), umlClassifier));
                 }
-                for (UMLClassifier localUsage : op.getLocalVariableTypeUsages()){
+                for (UMLClassifier localUsage : op.getLocalVariableUsageTypes()){
                     maxDmInteractions.add(new ImmutablePair<>(localUsage, umlClassifier));
                 }
             }
@@ -101,7 +101,7 @@ public class ClassGrimeMeasurements {
                 //definitely a class - now check constructors.
                 UMLClass asClass = (UMLClass) umlClassifier;
                 for (UMLOperation constructor : asClass.getConstructors()){
-                    for (UMLClassifier localUsage : constructor.getLocalVariableTypeUsages()){
+                    for (UMLClassifier localUsage : constructor.getLocalVariableUsageTypes()){
                         maxDmInteractions.add(new ImmutablePair<>(localUsage, umlClassifier));
                     }
                 }

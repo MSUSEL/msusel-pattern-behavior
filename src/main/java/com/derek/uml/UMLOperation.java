@@ -24,7 +24,6 @@
  */
 package com.derek.uml;
 
-import lombok.NonNull;
 import org.apache.commons.lang3.tuple.Pair;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,24 +52,24 @@ public class UMLOperation {
     @Setter
     private CallTreeNode<String> callTreeString;
 
-    //type will be set after the first passthrough.
+    //type will be set after the first passthrough. - type is the return type of this operation
     @Setter
     private UMLClassifier type;
 
     @Setter
-    private List<UMLAttribute> localAttributeDecls;
+    private List<UMLAttribute> localVariableDecls;
 
     @Setter
     private List<String> localVariableUsageNames;
 
     @Setter
-    private List<UMLClassifier> localVariableTypeUsages;
+    private List<UMLClassifier> localVariableUsageTypes;
 
     //names of the variables that are used in this method.
     private List<String> variableTypeUsagesFromCall;
 
     //not call.
-    private List<String> variableTypeUSagesFromOperator;
+    private List<String> variableTypeUsagesFromOperator;
 
     //classifier that owns this method.
     @Setter
@@ -82,9 +81,9 @@ public class UMLOperation {
         this.stringParameters = stringParameters;
         this.stringReturnDataType = stringReturnDataType;
         this.visibility = visibility;
-        localAttributeDecls = new ArrayList<>();
+        localVariableDecls = new ArrayList<>();
         localVariableUsageNames = new ArrayList<>();
-        localVariableTypeUsages = new ArrayList<>();
+        localVariableUsageTypes = new ArrayList<>();
     }
 
     /***
@@ -97,9 +96,9 @@ public class UMLOperation {
         this.name = name;
         this.stringParameters = stringParameters;
         this.stringReturnDataType = stringReturnDataType;
-        localAttributeDecls = new ArrayList<>();
+        localVariableDecls = new ArrayList<>();
         localVariableUsageNames = new ArrayList<>();
-        localVariableTypeUsages = new ArrayList<>();
+        localVariableUsageTypes = new ArrayList<>();
     }
 
     public String buildParamsForPlantUMLDiagram(){
@@ -126,9 +125,9 @@ public class UMLOperation {
     private void findLocalVariableTypeUsagesStringFromOperator(){
         if (this.getLocalVariableUsageNames() != null){
             for (String s : this.getLocalVariableUsageNames()){
-                if (!variableTypeUSagesFromOperator.contains(s)){
+                if (!variableTypeUsagesFromOperator.contains(s)){
                     //ensure variable usages are unique.
-                    variableTypeUSagesFromOperator.add(s);
+                    variableTypeUsagesFromOperator.add(s);
                 }
             }
         }
@@ -141,20 +140,20 @@ public class UMLOperation {
                 //though in reference to the comment above, the most commonly used usage is a call. The primitive type usages are more rare I have found.
                 if (callTreeNode.isCall()) {
                     String parsedVarNameFromCall = callTreeNode.parseVarNameFromCall();
-                    if (!variableTypeUsagesFromCall.contains(parsedVarNameFromCall)){
-                        //make sure variable usages that are added are unique.
-                        variableTypeUsagesFromCall.add(parsedVarNameFromCall);
-                    }
+                    callTreeNode.printTree();
+                    System.out.println("adding " + parsedVarNameFromCall + " from " + callTreeNode.getName() + " owning classifier " + owningClassifier);
+                    variableTypeUsagesFromCall.add(parsedVarNameFromCall);
+
                 }
             }
         }
     }
 
-    public void addLocalVariableTypeUsage(UMLClassifier umlClassifier){
-        if (localVariableTypeUsages == null){
-            localVariableTypeUsages = new ArrayList<>();
+    public void addLocalVariableUsageType(UMLClassifier umlClassifier){
+        if (localVariableUsageTypes == null){
+            localVariableUsageTypes = new ArrayList<>();
         }
-        localVariableTypeUsages.add(umlClassifier);
+        localVariableUsageTypes.add(umlClassifier);
     }
 
     public List<String> getVariableTypeUsagesFromCall(){
@@ -166,11 +165,11 @@ public class UMLOperation {
     }
 
     public List<String> getVariableTypeUsagesFromOperator(){
-        if (variableTypeUSagesFromOperator == null){
-            variableTypeUSagesFromOperator = new ArrayList<>();
+        if (variableTypeUsagesFromOperator == null){
+            variableTypeUsagesFromOperator = new ArrayList<>();
         }
         findLocalVariableTypeUsagesStringFromOperator();
-        return variableTypeUSagesFromOperator;
+        return variableTypeUsagesFromOperator;
     }
 
 }

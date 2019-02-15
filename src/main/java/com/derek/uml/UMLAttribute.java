@@ -55,4 +55,8 @@ public class UMLAttribute {
         this.name = name;
         this.stringDataType = stringDataType;
     }
+
+    public String toString(){
+        return "UML Attribute owned by: " + owningClassifier.getName() + " and with name: " + name + " and of type: " + type.getName();
+    }
 }

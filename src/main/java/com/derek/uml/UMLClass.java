@@ -105,4 +105,12 @@ public class UMLClass extends UMLClassifier {
         return output.toString();
     }
 
+    @Override
+    public List<UMLOperation> getOperationsIncludingConstructorsIfExists() {
+        List<UMLOperation> ops = new ArrayList<>();
+        ops.addAll(getConstructors());
+        ops.addAll(getOperations());
+        return ops;
+    }
+
 }

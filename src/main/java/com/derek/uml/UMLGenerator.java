@@ -104,7 +104,7 @@ public class UMLGenerator {
                 }
 
                 //set the local variable type (as uml classifier). Local meaning any vars declared within the context of a method.
-                for (UMLAttribute localAtt : umlOperation.getLocalAttributeDecls()){
+                for (UMLAttribute localAtt : umlOperation.getLocalVariableDecls()){
                     UMLClassifier localVariablePotentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, localAtt.getStringDataType());
                     localAtt.setType(localVariablePotentialMatch);
                 }
@@ -113,7 +113,7 @@ public class UMLGenerator {
                 if (umlOperation.getCallTreeString() != null) {
                     for (String s : umlOperation.getVariableTypeUsagesFromCall()) {
                         UMLClassifier localVariableUsageType = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, s);
-                        umlOperation.addLocalVariableTypeUsage(localVariableUsageType);
+                        umlOperation.addLocalVariableUsageType(localVariableUsageType);
                     }
                 }
             }
@@ -121,7 +121,7 @@ public class UMLGenerator {
                 //in the case of classes, need to do constructors.
                 for (UMLOperation constructor : ((UMLClass)umlClassifier).getConstructors()){
                     constructor.setParameters(getParamsFromString(umlClassifier, constructor));
-                    for (UMLAttribute localAtt : constructor.getLocalAttributeDecls()){
+                    for (UMLAttribute localAtt : constructor.getLocalVariableDecls()){
                         UMLClassifier localVariablePotentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, localAtt.getStringDataType());
                         localAtt.setType(localVariablePotentialMatch);
                     }
@@ -129,7 +129,7 @@ public class UMLGenerator {
                     if (constructor.getCallTreeString() != null) {
                         for (String s : constructor.getVariableTypeUsagesFromCall()) {
                             UMLClassifier localVariableUsageType = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, s);
-                            constructor.addLocalVariableTypeUsage(localVariableUsageType);
+                            constructor.addLocalVariableUsageType(localVariableUsageType);
                         }
                     }
                 }
@@ -248,7 +248,7 @@ public class UMLGenerator {
     }
 
     private void assignUseDependencies(UMLClassifier owningClassifier, UMLOperation operation){
-        for (UMLAttribute localAtt : operation.getLocalAttributeDecls()){
+        for (UMLAttribute localAtt : operation.getLocalVariableDecls()){
             if (localAtt.getType() != null){
                 if (umlClassDiagram.getClassDiagram().nodes().contains(localAtt.getType())) {
                     umlClassDiagram.addRelationshipToDiagram(owningClassifier, localAtt.getType(), RelationshipType.DEPENDENCY);

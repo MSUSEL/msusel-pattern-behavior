@@ -39,9 +39,6 @@ public class CallTreeNode<T> {
     private List<CallTreeNode<T>> children;
     private String tagName;
 
-    @Setter
-    private UMLClassifier umlClassifier;
-
     public CallTreeNode(T name, String tagName){
         //call tree will start with a name of the 'to' node in the tree. The name starts as a string.
         //in the second pass through the tree, once the UMLClassifiers are identified, thew name will be
@@ -50,6 +47,7 @@ public class CallTreeNode<T> {
         this.tagName = tagName;
         children = new ArrayList<>();
     }
+
     public void addChild(CallTreeNode<T> child){
         children.add(child);
     }

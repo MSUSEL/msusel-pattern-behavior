@@ -58,6 +58,8 @@ public abstract class UMLClassifier {
     //returns attributes or null if the holding class does not have any attributes
     public abstract List<UMLAttribute> getAttributes();
 
+    public abstract List<UMLOperation> getOperationsIncludingConstructorsIfExists();
+
     //used for uml class diagram generation
     public abstract List<String> getExtendsParentsString();
     public abstract List<String> getImplementsParentsString();
