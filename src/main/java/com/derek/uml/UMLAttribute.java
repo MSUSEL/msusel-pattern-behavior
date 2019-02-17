@@ -52,8 +52,13 @@ public class UMLAttribute {
         this.visibility = visibility;
     }
     public UMLAttribute(String name, String stringDataType) {
+        this(name, stringDataType, Visibility.UNSPECIFIED);
+    }
+    public UMLAttribute(String name, UMLClassifier type){
         this.name = name;
-        this.stringDataType = stringDataType;
+        this.type = type;
+        this.stringDataType = type.getName();
+        this.visibility = Visibility.UNSPECIFIED;
     }
 
     public String toString(){

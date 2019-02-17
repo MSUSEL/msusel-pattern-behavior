@@ -29,7 +29,7 @@ public class ClassGrimeMeasurements {
 
 
     private void calculateTCC(){
-        int numMethodsInClass = umlClassifier.getOperations().size();
+        int numMethodsInClass = umlClassifier.getOperationsIncludingConstructorsIfExists().size();
         //NP(C) from cohesion and reuse in OO systems paper
         double npc = numMethodsInClass*(numMethodsInClass-1)/2;
 
@@ -38,9 +38,9 @@ public class ClassGrimeMeasurements {
 
         for (UMLAttribute att : umlClassifier.getAttributes()){
             int usages = 0;
-            for (UMLOperation op : umlClassifier.getOperations()){
-                if (op.getVariableTypeUsagesFromCall().contains(att.getName())){
-                    //we use this varaible.
+            for (UMLOperation op : umlClassifier.getOperationsIncludingConstructorsIfExists()){
+                if (op.getVariableTable().get(att) != null){
+                    //we use this variable, which is declared at the class level and used by a method.
                     usages++;
                 }
             }
@@ -66,43 +66,25 @@ public class ClassGrimeMeasurements {
                 }
             }
             //once dd interactions are found, I can find dm interactions
-            for (UMLOperation op : umlClassifier.getOperations()){
+            for (UMLOperation op : umlClassifier.getOperationsIncludingConstructorsIfExists()){
                 //need to do constructors too, I think... though its not specified in the definition.
-                for (UMLClassifier param : op.getParameters()){
+                for (UMLAttribute param : op.getParameters()){
                     //params are dd interactions, but specifically dm Interactions (dm contained in set dd)
-                    ddInterations.add(new ImmutablePair<>(param, umlClassifier));
+                    ddInterations.add(new ImmutablePair<>(param.getType(), umlClassifier));
                 }
                 if (op.getType() != null){
                     //has return type.
                     ddInterations.add(new ImmutablePair<>(op.getType(), umlClassifier));
                 }
             }
-            if (umlClassifier instanceof UMLClass){
-                //definitely a class - now check constructors.
-                UMLClass asClass = (UMLClass) umlClassifier;
-                for (UMLOperation constructor : asClass.getConstructors()){
-                    for (UMLClassifier param : constructor.getParameters()){
-                        ddInterations.add(new ImmutablePair<>(param, umlClassifier));
-                    }
-                }
-            }
 
             maxDmInteractions.addAll(ddInterations);
             //now I need to get max dd interactions (all def uses within a method.)
-            for (UMLOperation op : umlClassifier.getOperations()){
+            for (UMLOperation op : umlClassifier.getOperationsIncludingConstructorsIfExists()){
                 for (UMLAttribute umlAttribute : op.getLocalVariableDecls()){
-                    maxDmInteractions.add(new ImmutablePair<>(umlAttribute.getType(), umlClassifier));
-                }
-                for (UMLClassifier localUsage : op.getLocalVariableUsageTypes()){
-                    maxDmInteractions.add(new ImmutablePair<>(localUsage, umlClassifier));
-                }
-            }
-            if (umlClassifier instanceof UMLClass){
-                //definitely a class - now check constructors.
-                UMLClass asClass = (UMLClass) umlClassifier;
-                for (UMLOperation constructor : asClass.getConstructors()){
-                    for (UMLClassifier localUsage : constructor.getLocalVariableUsageTypes()){
-                        maxDmInteractions.add(new ImmutablePair<>(localUsage, umlClassifier));
+                    //get the call tree nodes from only local variable declarations.
+                    for (CallTreeNode callTreeNode : op.getVariableUsages(umlAttribute)){
+                        maxDmInteractions.add(new ImmutablePair<>(umlAttribute.getType(), umlClassifier));
                     }
                 }
             }
@@ -113,12 +95,12 @@ public class ClassGrimeMeasurements {
     private void findScope(){
         internalMethods = new ArrayList<>();
         externalMethods = new ArrayList<>();
-        for (UMLOperation op : umlClassifier.getOperations()){
+        for (UMLOperation op : umlClassifier.getOperationsIncludingConstructorsIfExists()){
             boolean potentiallyInternal = false;
             boolean potentiallyExternal = false;
             for (RBMLMapping structureMapping : rbmlStructuralMappings){
                 if (structureMapping.getUMLOperationArtifact() instanceof UMLOperation){
-                    if (umlClassifier.getOperations().contains(structureMapping.getUMLOperationArtifact())){
+                    if (umlClassifier.getOperationsIncludingConstructorsIfExists().contains(structureMapping.getUMLOperationArtifact())){
                         potentiallyInternal = true;
                     }else{
                         potentiallyExternal = true;
@@ -145,27 +127,22 @@ public class ClassGrimeMeasurements {
      * @return
      */
     private boolean operationUsesClassAttributeOnCall(UMLOperation op){
-        for (String s : op.getVariableTypeUsagesFromCall()){
-            for (UMLAttribute umlAttribute : umlClassifier.getAttributes()){
-                if (s.equals(umlAttribute.getName())){
-                    //same name, likely the same attribute. Though if a variables of the same name in methods and classes might conflict here.
-                    return true;
-                }
+        for (UMLAttribute classAttribute : umlClassifier.getAttributes()){
+            if (!op.getVariableTable().get(classAttribute).isEmpty()){
+                return true;
             }
         }
         return false;
-
     }
 
     private boolean operationUsesClassAttributeOnOperator(UMLOperation op){
-        for(String s : op.getVariableTypeUsagesFromOperator()){
-            for (UMLAttribute umlAttribute : umlClassifier.getAttributes()){
-                if (s.equals(umlAttribute.getName())){
-                    return true;
-                }
+        //TODO  - I need to re-write this code (as it is the same as the operationUsesClassAttributeOnCall
+        //I need to look at how CallTreeNodes store operators vs. storing calls based on object references (keyword '.')
+        for (UMLAttribute classAttribute : umlClassifier.getAttributes()){
+            if (!op.getVariableTable().get(classAttribute).isEmpty()){
+                return true;
             }
         }
-
         return false;
     }
 

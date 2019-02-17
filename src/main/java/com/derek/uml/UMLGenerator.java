@@ -56,6 +56,10 @@ public class UMLGenerator {
         //apss 3 is building relationship types.
         pass3();
 
+        //pass 4 is building symbol tables (also known as variable tables in UMLOperation). This needs to be done after pass 3
+        //becasue the symbol table needs knowledge of super classes, which is a relationship.
+        pass4();
+
         PlantUMLTransformer pltTransformer = new PlantUMLTransformer(umlClassDiagram, umlSequenceDiagram);
         //used to print plantuml
         pltTransformer.generateClassDiagram();
@@ -76,6 +80,18 @@ public class UMLGenerator {
 
     private void pass3(){
         placeRelationships();
+    }
+
+    private void pass4(){
+        fillVariableTables();
+    }
+
+    private void fillVariableTables(){
+        for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
+            for (UMLOperation umlOperation : umlClassifier.getOperationsIncludingConstructorsIfExists()){
+                umlOperation.fillVariableTable(umlClassDiagram);
+            }
+        }
     }
 
 
@@ -109,13 +125,14 @@ public class UMLGenerator {
                     localAtt.setType(localVariablePotentialMatch);
                 }
 
-                //find local variable usages (if exist)
-                if (umlOperation.getCallTreeString() != null) {
-                    for (String s : umlOperation.getVariableTypeUsagesFromCall()) {
-                        UMLClassifier localVariableUsageType = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, s);
-                        umlOperation.addLocalVariableUsageType(localVariableUsageType);
-                    }
-                }
+                //TODO re-write
+//                //find local variable usages (if exist)
+//                if (umlOperation.getCallTreeString() != null) {
+//                    for (String s : umlOperation.getVariableTypeUsagesFromCall()) {
+//                        UMLClassifier localVariableUsageType = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, s);
+//                        umlOperation.addLocalVariableUsageType(localVariableUsageType);
+//                    }
+//                }
             }
             if (umlClassifier.getIdentifier().equals("class")){
                 //in the case of classes, need to do constructors.
@@ -125,13 +142,14 @@ public class UMLGenerator {
                         UMLClassifier localVariablePotentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, localAtt.getStringDataType());
                         localAtt.setType(localVariablePotentialMatch);
                     }
+                    //TODO re-write
                     //add local variable usages
-                    if (constructor.getCallTreeString() != null) {
-                        for (String s : constructor.getVariableTypeUsagesFromCall()) {
-                            UMLClassifier localVariableUsageType = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, s);
-                            constructor.addLocalVariableUsageType(localVariableUsageType);
-                        }
-                    }
+//                    if (constructor.getCallTreeString() != null) {
+//                        for (String s : constructor.getVariableTypeUsagesFromCall()) {
+//                            UMLClassifier localVariableUsageType = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, umlClassifier, s);
+//                            constructor.addLocalVariableUsageType(localVariableUsageType);
+//                        }
+//                    }
                 }
             }
         }
@@ -159,12 +177,13 @@ public class UMLGenerator {
         }
     }
 
-    private List<UMLClassifier> getParamsFromString(UMLClassifier owningClassifier, UMLOperation umlOperation){
-        List<UMLClassifier> params = new ArrayList<>();
+    private List<UMLAttribute> getParamsFromString(UMLClassifier owningClassifier, UMLOperation umlOperation){
+        List<UMLAttribute> params = new ArrayList<>();
         for (Pair<String, String> stringParam : umlOperation.getStringParameters()){
-
-            UMLClassifier potentialMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, owningClassifier, stringParam.getKey());
-            params.add(potentialMatch);
+            UMLClassifier potentialTypeMatch = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, owningClassifier, stringParam.getKey());
+            UMLAttribute toAdd = new UMLAttribute(stringParam.getValue(), potentialTypeMatch);
+            toAdd.setOwningClassifier(owningClassifier);
+            params.add(toAdd);
         }
         return params;
     }
@@ -219,10 +238,10 @@ public class UMLGenerator {
                 }
                 //set params
                 operation.setParameters(getParamsFromString(umlClassifier, operation));
-                for (UMLClassifier param : operation.getParameters()){
+                for (UMLAttribute param : operation.getParameters()){
                     if (param != null) {
-                        if (umlClassDiagram.getClassDiagram().nodes().contains(param)){
-                            umlClassDiagram.addRelationshipToDiagram(umlClassifier, param, RelationshipType.DEPENDENCY);
+                        if (umlClassDiagram.getClassDiagram().nodes().contains(param.getType())){
+                            umlClassDiagram.addRelationshipToDiagram(umlClassifier, param.getType(), RelationshipType.DEPENDENCY);
                         }
                     }
                 }

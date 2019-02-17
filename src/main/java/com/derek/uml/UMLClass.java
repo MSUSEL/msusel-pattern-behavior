@@ -113,4 +113,18 @@ public class UMLClass extends UMLClassifier {
         return ops;
     }
 
+    /***
+     * this one is tricky because I need to return all super-class attributes as well as attributes within the scope of htis class.
+     * @return
+     */
+    @Override
+    public List<UMLAttribute> getAttributes(){
+        List<UMLAttribute> attributes = new ArrayList<>();
+        attributes.addAll(this.attributes);
+        for (UMLClassifier umlClassifier : this.getExtendsParents()){
+            attributes.addAll(umlClassifier.getAttributes());
+        }
+        return attributes;
+    }
+
 }

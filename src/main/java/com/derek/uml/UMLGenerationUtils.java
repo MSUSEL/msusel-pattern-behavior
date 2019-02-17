@@ -87,19 +87,6 @@ public class UMLGenerationUtils {
         return decls;
     }
 
-
-    public static List<SrcMLName> getLocalVariableUsages(SrcMLNode node){
-        List<SrcMLName> usages = new ArrayList<>();
-        for (SrcMLNode child : node.getChildNodeOrder()){
-            if (child instanceof SrcMLExpression){
-                //add names... right?
-                usages.addAll(((SrcMLExpression)child).getNames());
-            }
-            usages.addAll(getLocalVariableUsages(child));
-        }
-        return usages;
-    }
-
     public static List<UMLAttribute> getUMLAttributes(SrcMLBlock block){
         List<UMLAttribute> attributes = new ArrayList<>();
         //first conditional happens in special cases (enums with both decls and decl_stmts)
@@ -154,29 +141,11 @@ public class UMLGenerationUtils {
         return localAtts;
     }
 
-    /***
-     * method to gather ALL the variable usages (unsages includes definitions, or declarations, too)
-     * returns a list of strings referring to variable names, taken from teh srcmlName obj.
-     * @param srcMLBlock
-     * @return
-     */
-    public static List<String> getVariableUsages(SrcMLBlock srcMLBlock){
-        List<String> localVariableUsages = new ArrayList<>();
-        List<SrcMLName> namesOfLocalVars = getLocalVariableUsages(srcMLBlock);
-
-        for (SrcMLName name : namesOfLocalVars){
-            localVariableUsages.add(name.getName());
-        }
-        return localVariableUsages;
-    }
-
     public static void setUMLOperationLocalVariableUsagesAndDecls(UMLOperation umlOperation, SrcMLBlock srcMLBlock){
         if (srcMLBlock != null) {
             //happens when this is an interface or abstract declaration. Of course such a type will not have any attributes, so skip it.
             List<UMLAttribute> localAttDecls = getLocalUMLAttributeDecls(srcMLBlock);
             umlOperation.setLocalVariableDecls(localAttDecls);
-            List<String> localVarUsages = getVariableUsages(srcMLBlock);
-            umlOperation.setLocalVariableUsageNames(localVarUsages);
         }
     }
 

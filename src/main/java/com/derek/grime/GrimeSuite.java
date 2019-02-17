@@ -145,20 +145,6 @@ public class GrimeSuite {
             for (UMLOperation umlOperation : afferentClassifier.getOperationsIncludingConstructorsIfExists()){
 
 
-                List<String> localVarUsages = umlOperation.getLocalVariableUsageNames();
-                System.out.println("Method: " + umlOperation.getName());
-                System.out.println("\tDeclared at method level: ");
-                umlOperation.getLocalVariableDecls().forEach(num->System.out.println(num.getName()));
-                System.out.println("\tUsed at method level: " + localVarUsages);
-
-
-                System.out.println("Types used by local variables calls: ");
-                umlOperation.getLocalVariableUsageTypes().forEach(num->System.out.println("\t" + num));
-
-
-                System.out.println("Types used by local variables: ");
-                umlOperation.getLocalVariableUsageTypes().forEach(num->System.out.println("\t" + num));
-
                 umlOperation.getCallTreeString().printTree();
 
                 List<CallTreeNode<String>> callTree = umlOperation.getCallTreeString().convertMeToOrderedList();
