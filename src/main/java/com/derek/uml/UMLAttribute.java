@@ -39,6 +39,10 @@ public class UMLAttribute {
     private boolean isStatic;
     private boolean isFinal;
 
+    //refers to if this attribute is instantiated or not upon declaration. -- will be null if no instantiation, otherwise will be the call tree that instantiates it.
+    @Setter
+    private CallTreeNode<String> instantiation;
+
     //type will be set after the first passthrough.
     @Setter
     private UMLClassifier type;

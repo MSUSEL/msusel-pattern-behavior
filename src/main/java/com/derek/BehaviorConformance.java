@@ -123,26 +123,14 @@ public class BehaviorConformance {
      */
     public void findUnnecessaryActions(UMLOperation operation){
         //look for cases where a variable is defined but not used
-        for (UMLAttribute localVar : operation.getLocalVariableDecls()) {
+        for (UMLAttribute localVar : operation.getVariableTable().keySet()) {
             boolean isUsed = false;
-            //TODO - re-write
-//            for (String usage : operation.getLocalVariableUsageNames()) {
-//                if (usage.equals(localVar.getName())){
-//                    //found a usage for this var's declaration
-//                    isUsed = true;
-//                    break;
-//                }
-//            }
-//            for (String usageViaCall : operation.getVariableTypeUsagesFromCall()){
-//                if (usageViaCall.equals(localVar.getName())){
-//                    //found a usage, but as a call (not as the right hand side of an operator)
-//                    isUsed = true;
-//                    break;
-//                }
-//            }
-            if (!isUsed){
-                //unneccessary actions grime.
-                behavioralGrime.add(new BehavioralMapping(localVar, BehavioralGrimeType.UNNECESSARY_ACTIONS));
+            if(operation.getVariableUsages(localVar).isEmpty()){
+                //not used
+                if (operation.isVariableDeclarationLocal(localVar)){
+                    //variable that isn't used is local.
+                    behavioralGrime.add(new BehavioralMapping(localVar, BehavioralGrimeType.UNNECESSARY_ACTIONS));
+                }
             }
         }
 

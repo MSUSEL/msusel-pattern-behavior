@@ -220,11 +220,12 @@ public class UMLGenerator {
 
     private void placeRelationships(){
         for (UMLClassifier umlClassifier : umlClassDiagram.getClassDiagram().nodes()){
-            for (UMLAttribute umlAttribute : umlClassifier.getAttributes()){
+            for (UMLAttribute umlAttribute : umlClassifier.getLocalAttributes()){
                 //standard attribute relationships
 
                 if (umlAttribute.getType() != null){
                     if (umlClassDiagram.getClassDiagram().nodes().contains(umlAttribute.getType())) {
+
                         umlClassDiagram.addRelationshipToDiagram(umlClassifier, umlAttribute.getType(), RelationshipType.ASSOCIATION);
                     }
                 }

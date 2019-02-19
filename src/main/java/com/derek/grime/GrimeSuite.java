@@ -70,9 +70,6 @@ public class GrimeSuite {
         int currentAfferentUsages = 0;
 
         for (Relationship patternAssociation : patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.ASSOCIATION)) {
-            if (patternAssociation.getFrom().getName().equals("Client")){
-                System.out.println();
-            }
             if (!isCapturedInRBML(validRBMLMappings, patternAssociation)) {
                 if (patternMapper.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(patternAssociation.getFrom())) {
                     if (patternMapper.getAllParticipatingClassifiersOnlyUMLClassifiers().contains(patternAssociation.getTo())) {
@@ -121,7 +118,8 @@ public class GrimeSuite {
             if (r.equals(validRBMLMapping)) {
                 relationshipExistsInRBML = true;
             } else if (r.getFrom().isLanguageType() || r.getTo().isLanguageType()) {
-                //ignore langauge types... this is a big assumption but if we don't ignore language types then the code would do nothing...
+                //ignore langauge types... this is a big assumption but if we don't ignore language types then the code would do nothing... as in it would be purely functional,
+                //in a paradigm sense.
                 relationshipExistsInRBML = true;
             }
         }
@@ -140,32 +138,32 @@ public class GrimeSuite {
     private void calculateOrderGrime(){
         for (Relationship afferentParticipants : patternMapper.getAfferentRelationships()){
             UMLClassifier afferentClassifier = afferentParticipants.getFrom();
-            List<UMLAttribute> classVarUsages = afferentClassifier.getAttributes();
-            System.out.println(afferentClassifier.getName() + " has vars at class level: " + classVarUsages);
-            for (UMLOperation umlOperation : afferentClassifier.getOperationsIncludingConstructorsIfExists()){
 
-
-                umlOperation.getCallTreeString().printTree();
-
-                List<CallTreeNode<String>> callTree = umlOperation.getCallTreeString().convertMeToOrderedList();
-                for (CallTreeNode<String> callTreeNode : callTree){
-                    if (callTreeNode.isDecl()){
-                        String declTagName = callTreeNode.parseDeclTagName();
-                        //got the decl name, now I need to match to pattern classes to see if the variable declaration is indeed an afferent connection. This would be a temporary
-                        //grime artifact I think.
-                    }if (callTreeNode.isCall()){
-
-                    }
+            if (afferentClassifier.getName().equals("External")){
+                for (UMLOperation umlOperation : afferentClassifier.getOperationsIncludingConstructorsIfExists()){
+                    System.out.println(umlOperation.getVariableTable());
                 }
+
             }
+//
+//
+//            List<UMLAttribute> classVarUsages = afferentClassifier.getAttributes();
+//            for (UMLOperation umlOperation : afferentClassifier.getOperationsIncludingConstructorsIfExists()){
+//                umlOperation.getCallTreeString().printTree();
+//
+//                List<CallTreeNode<String>> callTree = umlOperation.getCallTreeString().convertMeToOrderedList();
+//                for (CallTreeNode<String> callTreeNode : callTree){
+//                    if (callTreeNode.isDecl()){
+//                        String declTagName = callTreeNode.parseDeclTagName();
+//                        //got the decl name, now I need to match to pattern classes to see if the variable declaration is indeed an afferent connection. This would be a temporary
+//                        //grime artifact I think.
+//                    }if (callTreeNode.isCall()){
+//
+//                    }
+//                }
+//            }
 
         }
-//        for (RBMLMapping rbmlBehaviorMapping : this.rbmlBehavioralMappings){
-//            BehaviorConformance bc = rbmlBehaviorMapping.getBehavioralConformance();
-//            if (bc != null){
-//                bc.printPresenceMap();
-//            }
-//        }
     }
 
 }

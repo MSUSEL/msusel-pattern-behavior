@@ -94,8 +94,14 @@ public class UMLGenerationUtils {
             //dealing an enum (list of decls)
             List<SrcMLDecl> decls = block.getDecls();
             for (SrcMLDecl decl : decls) {
+                UMLAttribute toAdd = new UMLAttribute(decl.getName(), decl.getName());
                 //in this case the type is the same as the name... I think.. lol
-                attributes.add(new UMLAttribute(decl.getName(), decl.getName()));
+                if (decl.getInit() != null){
+                    CallTreeNode<SrcMLNode> callTreeSrcML = decl.getCallTree();
+                    //call tree is a string here. I will make it a call tree of umlClassifiers in the 4th pass.
+                    toAdd.setInstantiation((UMLMessageGenerationUtils.convertSrcMLCallTreeToString(callTreeSrcML)));
+                }
+                attributes.add(toAdd);
             }
         }
         //standard case
@@ -107,7 +113,14 @@ public class UMLGenerationUtils {
                 for (SrcMLDecl decl : declStmt.getDecls()) {
                     //multiple decl would happen with something like: int a,b,c;
                     //otherwise each decl has 1 name/type/etc..
-                    attributes.add(new UMLAttribute(decl.getName(), decl.getType().getName()));
+                    UMLAttribute toAdd = new UMLAttribute(decl.getName(), decl.getType().getName());
+                    //in this case the type is the same as the name... I think.. lol
+                    if (decl.getInit() != null){
+                        CallTreeNode<SrcMLNode> callTreeSrcML = decl.getCallTree();
+                        //call tree is a string here. I will make it a call tree of umlClassifiers in the 4th pass.
+                        toAdd.setInstantiation((UMLMessageGenerationUtils.convertSrcMLCallTreeToString(callTreeSrcML)));
+                    }
+                    attributes.add(toAdd);
                 }
             }
         }
@@ -136,7 +149,13 @@ public class UMLGenerationUtils {
         List<SrcMLDecl> decls = getAllDeclsBelowMe(srcMLBlock);
 
         for (SrcMLDecl decl : decls){
-            localAtts.add(new UMLAttribute(decl.getName(), decl.getType().getName()));
+            UMLAttribute toAdd = new UMLAttribute(decl.getName(), decl.getType().getName());
+            if (decl.getInit() != null){
+                CallTreeNode<SrcMLNode> callTreeSrcML = decl.getCallTree();
+                //call tree is a string here. I will make it a call tree of umlClassifiers in the 4th pass.
+                toAdd.setInstantiation((UMLMessageGenerationUtils.convertSrcMLCallTreeToString(callTreeSrcML)));
+            }
+            localAtts.add(toAdd);
         }
         return localAtts;
     }

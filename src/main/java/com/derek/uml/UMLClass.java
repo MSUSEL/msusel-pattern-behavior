@@ -127,4 +127,11 @@ public class UMLClass extends UMLClassifier {
         return attributes;
     }
 
+    public List<UMLAttribute> getLocalAttributes(){
+        if (attributes == null){
+            attributes = new ArrayList<>();
+        }
+        return attributes;
+    }
+
 }

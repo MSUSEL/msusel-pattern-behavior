@@ -98,10 +98,11 @@ public class UMLOperation {
      * @param umlClassDiagram
      */
     public void fillVariableTable(UMLClassDiagram umlClassDiagram){
+
         //first thing is to fill variable table from owning class attributes.
         for (UMLAttribute umlAttribute : owningClassifier.getAttributes()){
             //variable has been declared at the class level, but might not be used/ever used in this method.
-            addVariableToTable(umlAttribute, null);
+            addVariableToTable(umlAttribute, umlAttribute.getInstantiation());
         }
         //second thing to do is add parameters from this method
         for (UMLAttribute param : this.getParameters()){
@@ -171,6 +172,13 @@ public class UMLOperation {
         }else {
             return variableTable.get(attribute);
         }
+    }
+
+    public boolean isVariableDeclarationLocal(UMLAttribute umlAttribute){
+        if (localVariableDecls.contains(umlAttribute)){
+            return true;
+        }
+        return false;
     }
 
     public String buildParamsForPlantUMLDiagram(){
