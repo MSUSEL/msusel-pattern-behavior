@@ -471,4 +471,28 @@ public abstract class PatternMapper {
         }
     }
 
+    /***
+     * returns a set of unique afferent classifiers
+     * @return
+     */
+    public Set<UMLClassifier> getUniqueAfferentClassifiers(){
+        Set<UMLClassifier> uniqueAfferentClassifiers = new HashSet<>();
+        for (Relationship r : uniqueAfferentRelationships){
+            uniqueAfferentClassifiers.add(r.getFrom());
+        }
+        return uniqueAfferentClassifiers;
+    }
+
+    /***
+     * returns a set of unique efferent classifiers
+     * @return
+     */
+    public Set<UMLClassifier> getUniqueEfferentClassifiers(){
+        Set<UMLClassifier> uniqueEfferentClassifiers = new HashSet<>();
+        for (Relationship r : uniqueEfferentRelationships){
+            uniqueEfferentClassifiers.add(r.getTo());
+        }
+        return uniqueEfferentClassifiers;
+    }
+
 }

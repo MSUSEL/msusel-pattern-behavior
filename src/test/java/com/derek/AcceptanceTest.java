@@ -160,6 +160,14 @@ public class AcceptanceTest {
     public void testVersion7(){
         CSVRecord thisVersion = outputRecords.iterator().next();
         assertEquals("7", thisVersion.get("Software_Version"));
+        testModularGrimeType(thisVersion, "MG-PEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PEE", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PI", 1, 1, 0);
+        testModularGrimeType(thisVersion, "MG-TEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TEE", 0, 0, 0);
+        //removing 1 TI grime because that was from the modular grime test (version 6)
+        testModularGrimeType(thisVersion, "MG-TI", 0, 0, 1);
+        testOrderGrimeType(thisVersion, "BG-PEA");
     }
 
 
@@ -176,6 +184,10 @@ public class AcceptanceTest {
         assertEquals( grimeCount + "", csvRecord.get(grimeName + " grime count"));
         assertEquals(grimeAdditions + "", csvRecord.get(grimeName + " grime additions"));
         assertEquals(grimeRemovals + "", csvRecord.get(grimeName + " grime removals"));
+    }
+
+    public void testOrderGrimeType(CSVRecord csvRecord, String grimeName){
+        //TODO
     }
 
 }

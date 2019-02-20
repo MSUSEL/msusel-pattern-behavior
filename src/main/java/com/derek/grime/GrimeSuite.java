@@ -136,15 +136,30 @@ public class GrimeSuite {
     }
 
     private void calculateOrderGrime(){
-        for (Relationship afferentParticipants : patternMapper.getAfferentRelationships()){
-            UMLClassifier afferentClassifier = afferentParticipants.getFrom();
 
-            if (afferentClassifier.getName().equals("External")){
-                for (UMLOperation umlOperation : afferentClassifier.getOperationsIncludingConstructorsIfExists()){
-                    System.out.println(umlOperation.getVariableTable());
+        if (this.patternMapper.getPi().getSoftwareVersion().getVersionNum() == 7){
+            for (UMLClassifier afferentClassifier : patternMapper.getUniqueAfferentClassifiers()) {
+
+                for (UMLOperation operation : afferentClassifier.getOperationsIncludingConstructorsIfExists()) {
+                    operation.printVariableTable();
                 }
+        }
 
-            }
+//            for (RBMLMapping rbmlMapping : rbmlBehavioralMappings){
+//                BehaviorConformance bc = rbmlMapping.getBehavioralConformance();
+//                bc.printPresenceMap();
+//                bc.printRoleMap();
+//            }
+
+//            if (afferentClassifier.getName().equals("External")){
+////                for (UMLOperation umlOperation : afferentClassifier.getOperationsIncludingConstructorsIfExists()){
+////                    System.out.println(patternMapper.getPi().getSoftwareVersion().getVersionNum() + "  and vars: " +  umlOperation.getVariableTable());
+////                }
+////
+////            }
+
+
+
 //
 //
 //            List<UMLAttribute> classVarUsages = afferentClassifier.getAttributes();

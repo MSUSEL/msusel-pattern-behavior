@@ -78,6 +78,17 @@ public class CallTreeNode<T> {
         return asList;
     }
 
+    public String parseInitTagName(){
+        if (this.isInit()){
+            //will be of form: init_
+            Pattern pattern = Pattern.compile("init_\\{(.+?)\\}");
+            Matcher matcher = pattern.matcher(this.tagName);
+            matcher.find();
+            return matcher.group(1);
+        }
+        return "";
+    }
+
     /***
      * parses the type from a decl tag. Returns empty string if tag is not a decl
      * @return
@@ -101,6 +112,13 @@ public class CallTreeNode<T> {
 
     public boolean isDecl(){
         if (this.getTagName().contains("decl{")){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isInit(){
+        if (this.getTagName().contains("init_")){
             return true;
         }
         return false;

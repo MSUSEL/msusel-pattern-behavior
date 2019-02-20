@@ -113,9 +113,9 @@ public class UMLOperation {
             return;
         }
         //using a for loop here, not for each because I use i to match variable to spot in variable table.
-        for (int i = 0; i < this.getCallTreeString().convertMeToOrderedList().size(); i++){
+        for (int i = 0; i < this.getCallTreeString().convertMeToOrderedList().size(); i++) {
             CallTreeNode<String> callTreeNode = this.getCallTreeString().convertMeToOrderedList().get(i);
-            if (callTreeNode.isDecl()){
+            if (callTreeNode.isDecl()) {
                 //found a local declaration
                 String typeName = callTreeNode.parseDeclTagName();
 
@@ -124,18 +124,23 @@ public class UMLOperation {
                 localAttribute.setOwningClassifier(this.owningClassifier);
                 localVariableDecls.add(localAttribute);
                 addVariableToTable(localAttribute, callTreeNode);
-            }else if (callTreeNode.isCall()){
-                //call can be two types here -- one is a variable call (subject.getState), and one is a initialization call (Client c = new Client),
-                //where the call tree contains either 'subject.getState' or 'Client'.
+            } else if (callTreeNode.isCall()) {
+                //is call
+                String varName = callTreeNode.parseVarNameFromCall();
+                UMLAttribute referencedVariable = findVariableUsageInTable(varName);
+                if (referencedVariable != null) {
+                    addVariableToTable(referencedVariable, callTreeNode);
+                }
+            } else if (callTreeNode.isInit()) {
                 UMLClassifier potentialClassifier = UMLMessageGenerationUtils.getUMLClassifierFromStringType(umlClassDiagram, this.owningClassifier, callTreeNode.getName());
-                if (umlClassDiagram.getClassDiagram().nodes().contains(potentialClassifier)){
+                if (umlClassDiagram.getClassDiagram().nodes().contains(potentialClassifier)) {
                     //I can confidently say the call was a classifier - so its the declaration case. (Client)
                     //in this case I don't need to do anything else. i think.
-                }else{
-                    //not matched, so I can confidently say its an actual call (subject.getState)
-                    String varName = callTreeNode.parseVarNameFromCall();
+                    ///after some debate I think its worth adding this.. its still a call but hopefully I can do logic in the future to distinguish
+                    //calls from operators (for class grime findings)
+                    String varName = callTreeNode.parseInitTagName();
                     UMLAttribute referencedVariable = findVariableUsageInTable(varName);
-                    if (referencedVariable != null){
+                    if (referencedVariable != null) {
                         addVariableToTable(referencedVariable, callTreeNode);
                     }
                 }
@@ -207,6 +212,21 @@ public class UMLOperation {
             this.parameters = new ArrayList<>();
         }
         return this.parameters;
+    }
+
+    public void printVariableTable(){
+        for (UMLAttribute umlAttribute : variableTable.keySet()){
+            System.out.println(umlAttribute);
+            for (CallTreeNode<String> usage : variableTable.get(umlAttribute)){
+                System.out.print("\t");
+                if (usage != null) {
+                    usage.printTree();
+                }else{
+                    System.out.println("  () ");
+                }
+            }
+            System.out.println();
+        }
     }
 
 }
