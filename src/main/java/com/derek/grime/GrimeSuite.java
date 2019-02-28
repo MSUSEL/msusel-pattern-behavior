@@ -7,6 +7,7 @@ import com.derek.rbml.RBMLMapping;
 import com.derek.rbml.SPS;
 import com.derek.uml.*;
 import lombok.Getter;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -39,6 +40,13 @@ public class GrimeSuite {
     private List<Relationship> teaGrimeInstances;
     private List<Relationship> teeGrimeInstances;
 
+    private List<CallTreeNode> peaoGrimeInstances;
+    private List<CallTreeNode> peeoGrimeInstances;
+    private List<CallTreeNode> pioGrimeInstances;
+    private List<CallTreeNode> teaoGrimeInstances;
+    private List<CallTreeNode> teeoGrimeInstances;
+    private List<CallTreeNode> tioGrimeInstances;
+
 
     public GrimeSuite(PatternMapper patternMapper, SPS sps, List<RBMLMapping> rbmlStructuralMappings, IPS ips, List<RBMLMapping> rbmlBehavioralMappings) {
         this.patternMapper = patternMapper;
@@ -63,6 +71,16 @@ public class GrimeSuite {
         teaGrimeInstances = new ArrayList<>();
         teeGrimeInstances = new ArrayList<>();
         findModularGrime();
+    }
+
+    private void calculateOrderGrime(){
+        peaoGrimeInstances = new ArrayList<>();
+        peeoGrimeInstances = new ArrayList<>();
+        pioGrimeInstances = new ArrayList<>();
+        teaoGrimeInstances = new ArrayList<>();
+        teeoGrimeInstances = new ArrayList<>();
+        tioGrimeInstances = new ArrayList<>();
+        findOrderGrime();
     }
 
     private void findModularGrime() {
@@ -143,45 +161,54 @@ public class GrimeSuite {
         }
     }
 
-    private void calculateOrderGrime(){
-        if (this.patternMapper.getPi().getSoftwareVersion().getVersionNum() == 7){
-            if (patternMapper.getUniqueAfferentClassifiers().size() > Main.clientClassAllowances){
+    private void findOrderGrime(){
+        int currentAfferentUsages = 0;
+        for (UMLClassifier afferentClassifier : patternMapper.getUniqueAfferentClassifiers()) {
+            currentAfferentUsages++;
+            if (currentAfferentUsages > Main.clientClassAllowances){
                 //candiate for persistent grime.
-                System.out.println("Persistent");
-            }
-            for (UMLClassifier afferentClassifier : patternMapper.getUniqueAfferentClassifiers()) {
                 for (UMLOperation operation : afferentClassifier.getOperationsIncludingConstructorsIfExists()) {
                     operation.printVariableTable();
-                    for (UMLAttribute attribute : operation.getVariableTable().keySet()){
+                    List<MutablePair<CallTreeNode, InteractionRole>> fullRoleMap = behaviorMappingUtils.getRoleMap(operation);
+                    List<Pair<CallTreeNode, InteractionRole>> roleMap = behaviorMappingUtils.getCollapsedRoleMap(fullRoleMap);
+                    //TODO - the problem here is that if I iterate across all attributes, I can get multiple instances of the same beh. grime
+                    //this is what is happening.
+                    for (UMLAttribute attribute : operation.getVariableTable().keySet()) {
                         //see if class owns (persistent) or operation owns (temporary)
-                        if (operation.getOwningClassifier().getAttributes().contains(attribute)){
+                        if (operation.getOwningClassifier().getAttributes().contains(attribute)) {
                             //class owns, so its persistent
+                            //now I need to check order
+                            peaoGrimeInstances.addAll(evaluateOrder(roleMap));
+                            behaviorMappingUtils.printRoleMap(fullRoleMap);
 
-                            //now I need to check order and repetition
-                            if (operation.getName().equals("Client")){
-                                System.out.println("debug");
-                            }
-
-                            List<MutablePair<CallTreeNode, InteractionRole>> roleMap = behaviorMappingUtils.getRoleMap(operation);
-                            behaviorMappingUtils.printRoleMap(roleMap);
-
-
-
-                            //I don't know if I need the below code.... I think it offers different behaviors than I would
-                            //capture otherwise but maybe it doesn't matter so much....
-                            if (operation.isVariableInstantiatedImmediately(attribute)){
-                                //System.out.println(attribute + "Variable is instantiated immediately");
-                            }else{
-                            }
-                        }else{
+                        } else {
                             //operation owns (temporary)
+                            teaoGrimeInstances.addAll(evaluateOrder(roleMap));
                         }
                     }
-                    //do I need to find the thing that calls the afferent classifier?
-                    // I don't think so because that could get messy.. as in tracking calls all the way back to main.
                 }
             }
         }
+    }
+
+    private List<CallTreeNode> evaluateOrder(List<Pair<CallTreeNode, InteractionRole>> roleMap){
+        List<CallTreeNode> behavioralGrime = new ArrayList<>();
+        for (int i = 0; i < ips.getInteractions().size(); i++){
+            InteractionRole expectedInteraction = ips.getInteractions().get(i);
+            for (int j = 0; j < roleMap.size(); j++){
+                InteractionRole mappedRole = roleMap.get(j).getRight();
+                if (expectedInteraction.equals(mappedRole)){
+                    //found mapping.
+                    if (i > j){
+                        //standard order grime. in a collapsed role map, there is no way that i (which is the index in the interaction role)
+                        //can be larger than j (the index of the role map after its been collapsed)
+                        behavioralGrime.add(roleMap.get(j).getLeft());
+                    }
+                }
+            }
+
+        }
+        return behavioralGrime;
     }
 
 }

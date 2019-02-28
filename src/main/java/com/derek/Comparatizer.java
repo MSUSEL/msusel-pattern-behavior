@@ -48,6 +48,7 @@ import java.util.*;
 
 public class Comparatizer {
 
+    private final String delim = "\t";
     private Model model;
     private Map<SoftwareVersion, UMLClassDiagram> umlClassDiagrams;
     private StringBuilder outputter;
@@ -131,6 +132,12 @@ public class Comparatizer {
                 outputter.append(grimeFinder.getIisGrime().get(version, patternID).getTabDelimSummary());
                 outputter.append(grimeFinder.getIepGrime().get(version, patternID).getTabDelimSummary());
                 outputter.append(grimeFinder.getIesGrime().get(version, patternID).getTabDelimSummary());
+                outputter.append(grimeFinder.getPeaoGrime().get(version, patternID).getTabDelimSummary());
+                outputter.append(grimeFinder.getPeeoGrime().get(version, patternID).getTabDelimSummary());
+                outputter.append(grimeFinder.getPioGrime().get(version, patternID).getTabDelimSummary());
+                outputter.append(grimeFinder.getTeaoGrime().get(version, patternID).getTabDelimSummary());
+                outputter.append(grimeFinder.getTeeoGrime().get(version, patternID).getTabDelimSummary());
+                outputter.append(grimeFinder.getTioGrime().get(version, patternID).getTabDelimSummary());
                 outputter.append("\n");
             }
         }
@@ -384,7 +391,6 @@ public class Comparatizer {
     }
 
     private String getOutputHeader(){
-        String delim = "\t";
         StringBuilder header = new StringBuilder();
         header.append("Project_ID" + delim);
         header.append("Software_Version" + delim);
@@ -419,12 +425,17 @@ public class Comparatizer {
         header.append(this.getClassGrimeOutputHeader("CG-IIS") + delim);
         header.append(this.getClassGrimeOutputHeader("CG-IEP") + delim);
         header.append(this.getClassGrimeOutputHeader("CG-IES") + delim);
+        header.append(this.getOrderGrimeOutputHeader("OG-PEA") + delim);
+        header.append(this.getOrderGrimeOutputHeader("OG-PEE") + delim);
+        header.append(this.getOrderGrimeOutputHeader("OG-PI") + delim);
+        header.append(this.getOrderGrimeOutputHeader("OG-TEA") + delim);
+        header.append(this.getOrderGrimeOutputHeader("OG-TEE") + delim);
+        header.append(this.getOrderGrimeOutputHeader("OG-TI") + delim);
         header.append("\n");
         return header.toString();
     }
 
     private String getModularGrimeOutputHeader(String typeOfModularGrime){
-        String delim = "\t";
         StringBuilder header = new StringBuilder();
         header.append(typeOfModularGrime + " grime count" + delim);
         header.append(typeOfModularGrime + " grime additions" + delim);
@@ -433,10 +444,17 @@ public class Comparatizer {
     }
 
     private String getClassGrimeOutputHeader(String typeOfClassGrime){
-        String delim = "\t";
         StringBuilder header = new StringBuilder();
         header.append(typeOfClassGrime + " grime count (across all pattern classes)" + delim);
         header.append(typeOfClassGrime + " grime average (across all pattern classes)");
+        return header.toString();
+    }
+
+    private String getOrderGrimeOutputHeader(String typeOfOrderGrime){
+        StringBuilder header = new StringBuilder();
+        header.append(typeOfOrderGrime + " grime count" + delim);
+        header.append(typeOfOrderGrime + " grime additions" + delim);
+        header.append(typeOfOrderGrime + " grime removals");
         return header.toString();
     }
 

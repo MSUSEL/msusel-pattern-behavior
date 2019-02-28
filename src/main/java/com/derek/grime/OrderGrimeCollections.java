@@ -1,22 +1,23 @@
 package com.derek.grime;
 
-import com.derek.uml.Relationship;
+import com.derek.uml.CallTreeNode;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class ModularGrimeCollections<T> {
+public class OrderGrimeCollections {
+
 
     //T will be a List<Relationship> for modular grime, and a List<CallTreeNode> for Order grime
     //above is a tod o comment. It would be great to combine the grime collections for order and modular, but
     //I don't have time to figure out how to refactor to allow a 'equals', given a generic T.
-    private List<Relationship> grimeInstancesInThisVersion;
-    private List<Relationship> additionsFromLastVersion;
-    private List<Relationship> removalsFromLastVersion;
+    private List<CallTreeNode> grimeInstancesInThisVersion;
+    private List<CallTreeNode> additionsFromLastVersion;
+    private List<CallTreeNode> removalsFromLastVersion;
 
-    public ModularGrimeCollections(List<Relationship> grimeInstancesInPreviousVersion, List<Relationship> grimeInstancesInThisVersion){
+    public OrderGrimeCollections(List<CallTreeNode> grimeInstancesInPreviousVersion, List<CallTreeNode> grimeInstancesInThisVersion){
         this.grimeInstancesInThisVersion = grimeInstancesInThisVersion;
         differentiate(grimeInstancesInPreviousVersion, grimeInstancesInThisVersion);
     }
@@ -25,13 +26,13 @@ public class ModularGrimeCollections<T> {
         return grimeInstancesInThisVersion.size();
     }
 
-    private void differentiate(List<Relationship> previous, List<Relationship> current) {
+    private void differentiate(List<CallTreeNode> previous, List<CallTreeNode> current) {
         additionsFromLastVersion = new ArrayList<>();
         removalsFromLastVersion = new ArrayList<>();
-        for (Relationship previousGrime : previous) {
+        for (CallTreeNode previousGrime : previous) {
             boolean hasFound = false;
-            for (Relationship currentGrime : current) {
-                if (previousGrime.equalsFromClassifierName(currentGrime)) {
+            for (CallTreeNode currentGrime : current) {
+                if (previousGrime.getName().equals(currentGrime.getName())) {
                     hasFound = true;
                 }
             }
@@ -43,10 +44,10 @@ public class ModularGrimeCollections<T> {
                 removalsFromLastVersion.add(previousGrime);
             }
         }
-        for (Relationship currentGrime : current){
+        for (CallTreeNode currentGrime : current){
             boolean hasFound = false;
-            for (Relationship previousGrime : previous){
-                if (currentGrime.equalsFromClassifierName(previousGrime)){
+            for (CallTreeNode previousGrime : previous){
+                if (previousGrime.getName().equals(currentGrime.getName())){
                     hasFound = true;
                 }
             }
@@ -59,7 +60,7 @@ public class ModularGrimeCollections<T> {
     }
 
     public void printSummary(){
-        System.out.println("Order Grime Collection: ");
+        System.out.println("Modular Grime Collection: ");
         System.out.println("Cardinality: " + getCardinality());
         System.out.println("Number grime additions: " + this.getAdditionsFromLastVersion().size());
         System.out.println("Number grime removals: " + this.getRemovalsFromLastVersion().size());
@@ -74,5 +75,7 @@ public class ModularGrimeCollections<T> {
         toRet.append(this.getRemovalsFromLastVersion().size() + delim);
         return toRet.toString();
     }
+
+
 
 }

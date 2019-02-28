@@ -5,7 +5,7 @@ import com.derek.rbml.InteractionRole;
 import com.derek.rbml.RBMLMapping;
 import com.derek.rbml.SPS;
 import com.derek.uml.CallTreeNode;
-import com.derek.uml.UMLClassifier;
+
 import com.derek.uml.UMLOperation;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -46,6 +46,17 @@ public class BehaviorMappingUtils {
         }
         return roleMap;
 
+    }
+
+    public static List<Pair<CallTreeNode, InteractionRole>> getCollapsedRoleMap(List<MutablePair<CallTreeNode, InteractionRole>> bigRoleMap){
+        List<Pair<CallTreeNode, InteractionRole>> collapsedRoleMap = new ArrayList<>();
+        for (Pair<CallTreeNode, InteractionRole> rolePair : bigRoleMap){
+            if (rolePair.getRight() != null){
+                //mapping
+                collapsedRoleMap.add(rolePair);
+            }
+        }
+        return collapsedRoleMap;
     }
 
     public static InteractionRole mapInteractionRole(CallTreeNode<String> callTreeNode){

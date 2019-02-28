@@ -1,14 +1,11 @@
 package com.derek.grime;
 
-import com.derek.BehaviorConformance;
-import com.derek.BehavioralMapping;
 import com.derek.model.SoftwareVersion;
-import com.derek.uml.UMLOperation;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import lombok.Getter;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 
@@ -33,8 +30,14 @@ public class GrimeFinder {
     private Table<SoftwareVersion, String, ClassGrimeCollections> iepGrime;
     private Table<SoftwareVersion, String, ClassGrimeCollections> iesGrime;
 
-    private Table<SoftwareVersion, String, BehavioralGrimeCollections> improperOrderGrime;
-    private Table<SoftwareVersion, String, BehavioralGrimeCollections> repetitionGrime;
+    private Table<SoftwareVersion, String, OrderGrimeCollections> peaoGrime;
+    private Table<SoftwareVersion, String, OrderGrimeCollections> peeoGrime;
+    private Table<SoftwareVersion, String, OrderGrimeCollections> pioGrime;
+    private Table<SoftwareVersion, String, OrderGrimeCollections> teaoGrime;
+    private Table<SoftwareVersion, String, OrderGrimeCollections> teeoGrime;
+    private Table<SoftwareVersion, String, OrderGrimeCollections> tioGrime;
+    //TODO
+    private Table<SoftwareVersion, String, ModularGrimeCollections> repetitionGrime;
 
 
 
@@ -111,24 +114,37 @@ public class GrimeFinder {
     }
 
     public void findBehavioralGrime(){
+        peaoGrime =  HashBasedTable.create();
+        peeoGrime = HashBasedTable.create();
+        pioGrime = HashBasedTable.create();
+        teeoGrime = HashBasedTable.create();
+        teaoGrime = HashBasedTable.create();
+        tioGrime = HashBasedTable.create();
+
         for (String patternID : grimeTable.columnKeySet()) {
             Iterator<SoftwareVersion> iter = grimeTable.rowKeySet().iterator();
             List<SoftwareVersion> listIter = Lists.newArrayList(iter);
             for (int i = 0; i < listIter.size(); i++){
                 SoftwareVersion version = listIter.get(i);
                 GrimeSuite currentGrimeSuite = grimeTable.get(version, patternID);
-                //print statements I don't need right now
-//                System.out.println("Pattern id: " + patternID + " and version: " + version.getVersionNum());
-//                for (Pair<UMLOperation, BehaviorConformance> behaviorConformancePair : currentGrimeSuite.getRbmlBehavioralMappings()){
-//                    System.out.println("UMLOperation name: " + behaviorConformancePair.getLeft().getName());
-//                    List<BehavioralMapping> grimes = behaviorConformancePair.getRight().getBehavioralGrime();
-//                    for (BehavioralMapping grime : grimes){
-//                        System.out.println(grime.printMe());
-//                    }
-//                }
+                if (i != 0){
+                    GrimeSuite previousGrimeSuite = grimeTable.get(listIter.get(i-1), patternID);
+                    peaoGrime.put(version, patternID, new OrderGrimeCollections(previousGrimeSuite.getPeaoGrimeInstances(), currentGrimeSuite.getPeaoGrimeInstances()));
+                    peeoGrime.put(version, patternID, new OrderGrimeCollections(previousGrimeSuite.getPeeoGrimeInstances(), currentGrimeSuite.getPeeoGrimeInstances()));
+                    pioGrime.put(version, patternID, new OrderGrimeCollections(previousGrimeSuite.getPioGrimeInstances(), currentGrimeSuite.getPioGrimeInstances()));
+                    teaoGrime.put(version, patternID, new OrderGrimeCollections(previousGrimeSuite.getTeaoGrimeInstances(), currentGrimeSuite.getTeaoGrimeInstances()));
+                    teeoGrime.put(version, patternID, new OrderGrimeCollections(previousGrimeSuite.getTeeoGrimeInstances(), currentGrimeSuite.getTeeoGrimeInstances()));
+                    tioGrime.put(version, patternID, new OrderGrimeCollections(previousGrimeSuite.getTioGrimeInstances(), currentGrimeSuite.getTioGrimeInstances()));
+                }else{
+                    peaoGrime.put(version, patternID, new OrderGrimeCollections(new ArrayList(), currentGrimeSuite.getPeaoGrimeInstances()));
+                    peeoGrime.put(version, patternID, new OrderGrimeCollections(new ArrayList(), currentGrimeSuite.getPeeoGrimeInstances()));
+                    pioGrime.put(version, patternID, new OrderGrimeCollections(new ArrayList(), currentGrimeSuite.getPioGrimeInstances()));
+                    teaoGrime.put(version, patternID, new OrderGrimeCollections(new ArrayList(), currentGrimeSuite.getTeaoGrimeInstances()));
+                    teeoGrime.put(version, patternID, new OrderGrimeCollections(new ArrayList(), currentGrimeSuite.getTeeoGrimeInstances()));
+                    tioGrime.put(version, patternID, new OrderGrimeCollections(new ArrayList(), currentGrimeSuite.getTioGrimeInstances()));
+                }
             }
         }
     }
-
 
 }
