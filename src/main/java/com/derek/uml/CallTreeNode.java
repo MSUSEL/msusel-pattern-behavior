@@ -128,6 +128,9 @@ public class CallTreeNode<T> {
         if (this.getTagName().contains("function")){
             return true;
         }
+        if (this.getTagName().contains("constructor")){
+            return true;
+        }
         return false;
     }
 

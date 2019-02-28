@@ -215,7 +215,7 @@ public class Comparatizer {
 
 
         //grime checks here I think.
-        GrimeSuite grimeSuite = new GrimeSuite(patternMapper, rbmlStructureMappings, rbmlBehaviorMappings);
+        GrimeSuite grimeSuite = new GrimeSuite(patternMapper, sps, rbmlStructureMappings, ips, rbmlBehaviorMappings);
 
         outputRoles(sps, rbmlStructureMappings, ips, rbmlBehaviorMappings, patternMapper);
 

@@ -60,4 +60,7 @@ public class SrcMLConstructor extends SrcMLNode{
     public String getName(){
         return name.getName();
     }
+    public String toString(){
+        return getName();
+    }
 }

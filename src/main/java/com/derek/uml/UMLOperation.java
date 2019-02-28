@@ -186,6 +186,14 @@ public class UMLOperation {
         return false;
     }
 
+    public boolean isVariableInstantiatedImmediately(UMLAttribute umlAttribute){
+        List<CallTreeNode<String>> callTreeNodes = variableTable.get(umlAttribute);
+        if (callTreeNodes.get(0) == null){
+            return false;
+        }
+        return true;
+    }
+
     public String buildParamsForPlantUMLDiagram(){
         StringBuilder s = new StringBuilder();
         //we have params
@@ -222,7 +230,7 @@ public class UMLOperation {
                 if (usage != null) {
                     usage.printTree();
                 }else{
-                    System.out.println("  () ");
+                    System.out.println("  --  ");
                 }
             }
             System.out.println();

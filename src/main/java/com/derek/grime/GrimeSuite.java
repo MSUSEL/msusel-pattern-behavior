@@ -1,11 +1,10 @@
 package com.derek.grime;
 
-import com.derek.BehaviorConformance;
-import com.derek.BehavioralMapping;
-import com.derek.Main;
-import com.derek.PatternMapper;
+import com.derek.*;
+import com.derek.rbml.IPS;
 import com.derek.rbml.InteractionRole;
 import com.derek.rbml.RBMLMapping;
+import com.derek.rbml.SPS;
 import com.derek.uml.*;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -19,6 +18,12 @@ public class GrimeSuite {
     private PatternMapper patternMapper;
     private List<RBMLMapping> rbmlStructuralMappings;
     private List<RBMLMapping> rbmlBehavioralMappings;
+
+    private BehaviorMappingUtils behaviorMappingUtils;
+
+    private SPS sps;
+    private IPS ips;
+
 
     //list of class grime instances for a single pattern (pattern mapper obj)
     private Map<UMLClassifier, ClassGrimeMeasurements> classGrimeMeasurementList;
@@ -35,11 +40,14 @@ public class GrimeSuite {
     private List<Relationship> teeGrimeInstances;
 
 
-    public GrimeSuite(PatternMapper patternMapper, List<RBMLMapping> rbmlStructuralMappings, List<RBMLMapping> rbmlBehavioralMappings) {
+    public GrimeSuite(PatternMapper patternMapper, SPS sps, List<RBMLMapping> rbmlStructuralMappings, IPS ips, List<RBMLMapping> rbmlBehavioralMappings) {
         this.patternMapper = patternMapper;
+        this.sps = sps;
         this.rbmlStructuralMappings = rbmlStructuralMappings;
+        this.ips = ips;
         this.rbmlBehavioralMappings = rbmlBehavioralMappings;
         classGrimeMeasurementList = new HashMap<>();
+        behaviorMappingUtils = new BehaviorMappingUtils(sps, rbmlStructuralMappings, ips);
         calculateModularGrime();
         calculateClassGrime();
         calculateOrderGrime();
@@ -136,48 +144,43 @@ public class GrimeSuite {
     }
 
     private void calculateOrderGrime(){
-
         if (this.patternMapper.getPi().getSoftwareVersion().getVersionNum() == 7){
+            if (patternMapper.getUniqueAfferentClassifiers().size() > Main.clientClassAllowances){
+                //candiate for persistent grime.
+                System.out.println("Persistent");
+            }
             for (UMLClassifier afferentClassifier : patternMapper.getUniqueAfferentClassifiers()) {
-
                 for (UMLOperation operation : afferentClassifier.getOperationsIncludingConstructorsIfExists()) {
                     operation.printVariableTable();
+                    for (UMLAttribute attribute : operation.getVariableTable().keySet()){
+                        //see if class owns (persistent) or operation owns (temporary)
+                        if (operation.getOwningClassifier().getAttributes().contains(attribute)){
+                            //class owns, so its persistent
+
+                            //now I need to check order and repetition
+                            if (operation.getName().equals("Client")){
+                                System.out.println("debug");
+                            }
+
+                            List<MutablePair<CallTreeNode, InteractionRole>> roleMap = behaviorMappingUtils.getRoleMap(operation);
+                            behaviorMappingUtils.printRoleMap(roleMap);
+
+
+
+                            //I don't know if I need the below code.... I think it offers different behaviors than I would
+                            //capture otherwise but maybe it doesn't matter so much....
+                            if (operation.isVariableInstantiatedImmediately(attribute)){
+                                //System.out.println(attribute + "Variable is instantiated immediately");
+                            }else{
+                            }
+                        }else{
+                            //operation owns (temporary)
+                        }
+                    }
+                    //do I need to find the thing that calls the afferent classifier?
+                    // I don't think so because that could get messy.. as in tracking calls all the way back to main.
                 }
-        }
-
-//            for (RBMLMapping rbmlMapping : rbmlBehavioralMappings){
-//                BehaviorConformance bc = rbmlMapping.getBehavioralConformance();
-//                bc.printPresenceMap();
-//                bc.printRoleMap();
-//            }
-
-//            if (afferentClassifier.getName().equals("External")){
-////                for (UMLOperation umlOperation : afferentClassifier.getOperationsIncludingConstructorsIfExists()){
-////                    System.out.println(patternMapper.getPi().getSoftwareVersion().getVersionNum() + "  and vars: " +  umlOperation.getVariableTable());
-////                }
-////
-////            }
-
-
-
-//
-//
-//            List<UMLAttribute> classVarUsages = afferentClassifier.getAttributes();
-//            for (UMLOperation umlOperation : afferentClassifier.getOperationsIncludingConstructorsIfExists()){
-//                umlOperation.getCallTreeString().printTree();
-//
-//                List<CallTreeNode<String>> callTree = umlOperation.getCallTreeString().convertMeToOrderedList();
-//                for (CallTreeNode<String> callTreeNode : callTree){
-//                    if (callTreeNode.isDecl()){
-//                        String declTagName = callTreeNode.parseDeclTagName();
-//                        //got the decl name, now I need to match to pattern classes to see if the variable declaration is indeed an afferent connection. This would be a temporary
-//                        //grime artifact I think.
-//                    }if (callTreeNode.isCall()){
-//
-//                    }
-//                }
-//            }
-
+            }
         }
     }
 
