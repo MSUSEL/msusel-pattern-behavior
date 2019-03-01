@@ -438,7 +438,7 @@ public abstract class PatternMapper {
     /***
      * method to fill afferent and efferent participating classifiers (the variables)
      */
-    public void fillParticipatingClassifiers() {
+    private void fillParticipatingClassifiers() {
         this.afferentRelationships = new ArrayList<>();
         this.uniqueAfferentRelationships = new HashSet<>();
         this.efferentRelationships = new ArrayList<>();

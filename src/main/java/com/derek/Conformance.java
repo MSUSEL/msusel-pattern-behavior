@@ -202,7 +202,7 @@ public class Conformance {
                 //in this case, the method won't have any behavior, so I can literally just skip over it.
                 if (callTree != null) {
                     List<CallTreeNode<String>> callTreeAsList = callTree.convertMeToOrderedList();
-                    BehaviorConformance behaviorConformance = new BehaviorConformance(ips, callTreeAsList, structureMappings);
+                    BehaviorConformance behaviorConformance = new BehaviorConformance(ips, callTreeAsList, structureMappings, mappedOperation);
                     if (behaviorConformance.getFunctionHeaderMapping() != null){
                         //will be null if the IPS does not include this mapping.. and in this case we should ignore it.
                         behaviorConformance.findUnnecessaryActions(mappedOperation);

@@ -39,10 +39,13 @@ public class BehaviorConformance {
     //tracks behavioral satisfactions
     private List<BehavioralMapping> behavioralSatisfactions;
 
-    public BehaviorConformance(IPS ips, List<CallTreeNode<String>> callTreeAsList, List<RBMLMapping> structureMappings){
+    private UMLOperation umlOperation;
+
+    public BehaviorConformance(IPS ips, List<CallTreeNode<String>> callTreeAsList, List<RBMLMapping> structureMappings, UMLOperation umlOperation){
         this.ips = ips;
         this.callTreeAsList = callTreeAsList;
         this.structureMappings = structureMappings;
+        this.umlOperation = umlOperation;
         this.varMappings = new ArrayList<>();
         behavioralGrime = new ArrayList<>();
         behavioralViolations = new ArrayList<>();

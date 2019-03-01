@@ -47,6 +47,13 @@ public class GrimeSuite {
     private List<CallTreeNode> teeoGrimeInstances;
     private List<CallTreeNode> tioGrimeInstances;
 
+    private List<CallTreeNode> pearGrimeInstances;
+    private List<CallTreeNode> peerGrimeInstances;
+    private List<CallTreeNode> pirGrimeInstances;
+    private List<CallTreeNode> tearGrimeInstances;
+    private List<CallTreeNode> teerGrimeInstances;
+    private List<CallTreeNode> tirGrimeInstances;
+
 
     public GrimeSuite(PatternMapper patternMapper, SPS sps, List<RBMLMapping> rbmlStructuralMappings, IPS ips, List<RBMLMapping> rbmlBehavioralMappings) {
         this.patternMapper = patternMapper;
@@ -168,26 +175,71 @@ public class GrimeSuite {
             if (currentAfferentUsages > Main.clientClassAllowances){
                 //candiate for persistent grime.
                 for (UMLOperation operation : afferentClassifier.getOperationsIncludingConstructorsIfExists()) {
-                    operation.printVariableTable();
                     List<MutablePair<CallTreeNode, InteractionRole>> fullRoleMap = behaviorMappingUtils.getRoleMap(operation);
                     List<Pair<CallTreeNode, InteractionRole>> roleMap = behaviorMappingUtils.getCollapsedRoleMap(fullRoleMap);
-                    //TODO - the problem here is that if I iterate across all attributes, I can get multiple instances of the same beh. grime
-                    //this is what is happening.
+
                     for (UMLAttribute attribute : operation.getVariableTable().keySet()) {
                         //see if class owns (persistent) or operation owns (temporary)
                         if (operation.getOwningClassifier().getAttributes().contains(attribute)) {
                             //class owns, so its persistent
                             //now I need to check order
-                            peaoGrimeInstances.addAll(evaluateOrder(roleMap));
-                            behaviorMappingUtils.printRoleMap(fullRoleMap);
-
+                            List<CallTreeNode> orderGrime = evaluateOrder(roleMap);
+                            for (CallTreeNode callTreeNode : orderGrime){
+                                if (!peaoGrimeInstances.contains(callTreeNode)){
+                                    peaoGrimeInstances.add(callTreeNode);
+                                }
+                            }
                         } else {
                             //operation owns (temporary)
-                            teaoGrimeInstances.addAll(evaluateOrder(roleMap));
+                            List<CallTreeNode> orderGrime = evaluateOrder(roleMap);
+                            for (CallTreeNode callTreeNode : orderGrime){
+                                if (!teaoGrimeInstances.contains(callTreeNode)){
+                                    teaoGrimeInstances.add(callTreeNode);
+                                }
+                            }
                         }
                     }
                 }
             }
+        }
+        int currentEfferentUsages = 0;
+        for (UMLClassifier efferentClassifier : patternMapper.getUniqueEfferentClassifiers()) {
+            currentEfferentUsages++;
+            if (currentEfferentUsages > Main.clientClassAllowances){
+                //candiate for persistent grime.
+                for (UMLOperation operation : efferentClassifier.getOperationsIncludingConstructorsIfExists()) {
+                    List<MutablePair<CallTreeNode, InteractionRole>> fullRoleMap = behaviorMappingUtils.getRoleMap(operation);
+                    List<Pair<CallTreeNode, InteractionRole>> roleMap = behaviorMappingUtils.getCollapsedRoleMap(fullRoleMap);
+
+                    for (UMLAttribute attribute : operation.getVariableTable().keySet()) {
+                        //see if class owns (persistent) or operation owns (temporary)
+                        if (operation.getOwningClassifier().getAttributes().contains(attribute)) {
+                            //class owns, so its persistent
+                            //now I need to check order
+                            List<CallTreeNode> orderGrime = evaluateOrder(roleMap);
+                            for (CallTreeNode callTreeNode : orderGrime){
+                                if (!peeoGrimeInstances.contains(callTreeNode)){
+                                    peeoGrimeInstances.add(callTreeNode);
+                                }
+                            }
+                        } else {
+                            //operation owns (temporary)
+                            List<CallTreeNode> orderGrime = evaluateOrder(roleMap);
+                            for (CallTreeNode callTreeNode : orderGrime){
+                                if (!teeoGrimeInstances.contains(callTreeNode)){
+                                    teeoGrimeInstances.add(callTreeNode);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //internal here:
+        for (RBMLMapping behaviorMapping : rbmlBehavioralMappings){
+            evaluateOrderForInternal(behaviorMapping);
+
         }
     }
 
@@ -206,9 +258,68 @@ public class GrimeSuite {
                     }
                 }
             }
-
         }
         return behavioralGrime;
     }
 
+    private int findLocationInIPS(BehaviorConformance behaviorConformance){
+        for (int i = 0; i < ips.getInteractions().size(); i++){
+            if (behaviorConformance.getFunctionHeaderMapping().equals(ips.getInteractions().get(i))){
+                return i;
+            }
+        }
+        return 0;
+    }
+
+
+    //this part is tough. I need to (1) locate where my behavior sits within the ips, and (2) make sure that no following behaviors violate order.
+    private void evaluateOrderForInternal(RBMLMapping behaviorMapping){
+        BehaviorConformance behaviorConformance = behaviorMapping.getBehavioralConformance();
+        if (behaviorConformance != null) {
+            //will nearly always be non null, just making sure.
+            int locationWithinIPS = findLocationInIPS(behaviorConformance);
+
+            List<MutablePair<CallTreeNode, InteractionRole>> fullRoleMap = behaviorMappingUtils.getRoleMap(behaviorConformance.getUmlOperation());
+            List<Pair<CallTreeNode, InteractionRole>> roleMap = behaviorMappingUtils.getCollapsedRoleMap(fullRoleMap);
+
+            for (UMLAttribute attribute : behaviorConformance.getUmlOperation().getVariableTable().keySet()) {
+                //see if class owns (persistent) or operation owns (temporary)
+                List<CallTreeNode> orderGrime = evaluateOrderInternal(roleMap, locationWithinIPS);
+                if (behaviorConformance.getUmlOperation().getOwningClassifier().getAttributes().contains(attribute)) {
+                    //class owns, so its persistent
+                    for (CallTreeNode callTreeNode : orderGrime){
+                        if (!pioGrimeInstances.contains(callTreeNode)){
+                            pioGrimeInstances.add(callTreeNode);
+                        }
+                    }
+                } else {
+                    //operation owns (temporary)
+                    for (CallTreeNode callTreeNode : orderGrime){
+                        if (!tioGrimeInstances.contains(callTreeNode)){
+                            tioGrimeInstances.add(callTreeNode);
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+
+    private List<CallTreeNode> evaluateOrderInternal(List<Pair<CallTreeNode, InteractionRole>> roleMap, int locationWithinIPS){
+        List<CallTreeNode> behavioralGrime = new ArrayList<>();
+        for (int i = 0; i < roleMap.size(); i++) {
+            InteractionRole mappedRole = roleMap.get(i).getRight();
+            for (int j = 0; j < ips.getInteractions().size(); j++) {
+                InteractionRole expectedInteraction = ips.getInteractions().get(j);
+                if (mappedRole.equals(expectedInteraction)) {
+                    if (j < locationWithinIPS) {
+                        //grime I think.
+                        behavioralGrime.add(roleMap.get(i).getLeft());
+                    }
+                }
+
+            }
+        }
+        return behavioralGrime;
+    }
 }

@@ -160,14 +160,15 @@ public class AcceptanceTest {
     public void testVersion7(){
         CSVRecord thisVersion = outputRecords.iterator().next();
         assertEquals("7", thisVersion.get("Software_Version"));
-        testModularGrimeType(thisVersion, "MG-PEA", 0, 0 , 0);
+        //pea is 2 because of how I have set up peao. (3 associations from external classes -> pattern classes.)
+        testModularGrimeType(thisVersion, "MG-PEA", 2, 2 , 0);
         testModularGrimeType(thisVersion, "MG-PEE", 0, 0 , 0);
-        testModularGrimeType(thisVersion, "MG-PI", 1, 1, 0);
+        testModularGrimeType(thisVersion, "MG-PI", 0, 0, 0);
         testModularGrimeType(thisVersion, "MG-TEA", 0, 0 , 0);
         testModularGrimeType(thisVersion, "MG-TEE", 0, 0, 0);
         //removing 1 TI grime because that was from the modular grime test (version 6)
         testModularGrimeType(thisVersion, "MG-TI", 0, 0, 1);
-        testOrderGrimeType(thisVersion, "BG-PEA");
+        testModularGrimeType(thisVersion, "OG-PEA", 1, 1, 0);
     }
 
 
@@ -186,8 +187,5 @@ public class AcceptanceTest {
         assertEquals(grimeRemovals + "", csvRecord.get(grimeName + " grime removals"));
     }
 
-    public void testOrderGrimeType(CSVRecord csvRecord, String grimeName){
-        //TODO
-    }
 
 }

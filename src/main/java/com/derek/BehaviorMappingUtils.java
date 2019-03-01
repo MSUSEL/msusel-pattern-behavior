@@ -36,6 +36,10 @@ public class BehaviorMappingUtils {
         //build presence map
         List<MutablePair<CallTreeNode, InteractionRole>> roleMap;
         roleMap = new ArrayList<>();
+        if (umlOperation.getCallTreeString() == null){
+            //this happens when umlOperation is an abstract method or method signature from an interface.
+            return roleMap;
+        }
         List<CallTreeNode<String>> callTreeAsList = umlOperation.getCallTreeString().convertMeToOrderedList();
         for (CallTreeNode<String> callTreeNode : callTreeAsList){
             roleMap.add(new MutablePair<>(callTreeNode, null));

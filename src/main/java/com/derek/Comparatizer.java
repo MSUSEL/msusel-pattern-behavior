@@ -114,6 +114,7 @@ public class Comparatizer {
         grimeFinder.findModularGrime();
         grimeFinder.findClassGrime();
         grimeFinder.findBehavioralGrime();
+        outputGrime();
 
         for (String patternID : metricTable.columnKeySet()){
             for (SoftwareVersion version : metricTable.rowKeySet()){
@@ -331,7 +332,8 @@ public class Comparatizer {
                 output.append("***************Behavior****************\n");
                 output.append("***************************************\n");
                 for (RBMLMapping rbmlMapping : rbmlBehavioralMappings){
-                    output.append(rbmlMapping.getRole().getName() + " is mapped to " + rbmlMapping.getBehavioralConformance().getFunctionHeaderMapping().getName() + "\n");
+                    output.append(rbmlMapping.getRole().getName() + " is mapped to " + rbmlMapping.getBehavioralConformance().getUmlOperation().getName() + "\n");
+                            //getFunctionHeaderMapping().getName() + "\n");
 
                     for (Pair<CallTreeNode, InteractionRole> behaviorMapping : rbmlMapping.getBehavioralConformance().getRoleMap()){
                         output.append("\tMapped Lifeline: " + behaviorMapping.getLeft().getName() + " has a mapping to " + behaviorMapping.getRight().getName() + "\n");
@@ -389,6 +391,94 @@ public class Comparatizer {
             }
         }
     }
+    private void outputGrime(){
+        try {
+            if (Boolean.parseBoolean(Main.printIndividualRoles)) {
+                //main directory
+                File mainDirectory = new File("grime\\");
+                if (!mainDirectory.exists()) {
+                    Files.createDirectory(Paths.get("grime\\"));
+                }
+                //sub-directories.
+
+                for (SoftwareVersion softwareVersion : grimeTable.rowKeySet()){
+                    for (String uniquePatternID : grimeTable.columnKeySet()){
+                        GrimeSuite individualPatternGrime = grimeTable.get(softwareVersion, uniquePatternID);
+
+                        File directory = new File("grime\\" + individualPatternGrime.getPatternMapper().getPi().getPatternType() + "\\");
+                        if (!directory.exists()) {
+                            Files.createDirectory(Paths.get("grime\\" + individualPatternGrime.getPatternMapper().getPi().getPatternType() + "\\"));
+                        }
+                        //print grime here
+                        StringBuilder output = new StringBuilder();
+                        output.append("Version: " + individualPatternGrime.getPatternMapper().getPi().getSoftwareVersion().getVersionNum() + "\n");
+                        output.append("***************************************\n");
+                        output.append("************Modular Grime**************\n");
+                        output.append("***************************************\n");
+                        output.append("PEA:\n");
+                        for (Relationship r : individualPatternGrime.getPeaGrimeInstances()){
+                            output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
+                        }
+                        output.append("PEE:\n");
+                        for (Relationship r : individualPatternGrime.getPeeGrimeInstances()){
+                            output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
+                        }
+                        output.append("PI:\n");
+                        for (Relationship r : individualPatternGrime.getPiGrimeInstances()){
+                            output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
+                        }
+                        output.append("TEA:\n");
+                        for (Relationship r : individualPatternGrime.getTeaGrimeInstances()){
+                            output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
+                        }
+                        output.append("TEE:\n");
+                        for (Relationship r : individualPatternGrime.getTeeGrimeInstances()){
+                            output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
+                        }
+                        output.append("TI:\n");
+                        for (Relationship r : individualPatternGrime.getTiGrimeInstances()){
+                            output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
+                        }
+                        output.append("\n\n");
+                        output.append("***************************************\n");
+                        output.append("*************Order Grime***************\n");
+                        output.append("***************************************\n");
+                        output.append("PEAO:\n");
+                        for (CallTreeNode callTreeNode : individualPatternGrime.getPeaoGrimeInstances()){
+                            output.append("\t" + callTreeNode.getName() + "\n");
+                        }
+                        output.append("PEEO:\n");
+                        for (CallTreeNode callTreeNode : individualPatternGrime.getPeeoGrimeInstances()){
+                            output.append("\t" + callTreeNode.getName() + "\n");
+                        }
+                        output.append("PIO:\n");
+                        for (CallTreeNode callTreeNode : individualPatternGrime.getPioGrimeInstances()){
+                            output.append("\t" + callTreeNode.getName() + "\n");
+                        }
+                        output.append("TEAO:\n");
+                        for (CallTreeNode callTreeNode : individualPatternGrime.getTeaoGrimeInstances()){
+                            output.append("\t" + callTreeNode.getName() + "\n");
+                        }
+                        output.append("TEEO:\n");
+                        for (CallTreeNode callTreeNode : individualPatternGrime.getTeeoGrimeInstances()){
+                            output.append("\t" + callTreeNode.getName() + "\n");
+                        }
+                        output.append("TIO:\n");
+                        for (CallTreeNode callTreeNode : individualPatternGrime.getTioGrimeInstances()){
+                            output.append("\t" + callTreeNode.getName() + "\n");
+                        }
+                        File outputFile = new File("grime\\" + individualPatternGrime.getPatternMapper().getPi().getPatternType() + "\\" + individualPatternGrime.getPatternMapper().getPi().getUniqueID() + ".log");
+                        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile, true)));
+                        out.println(output.toString());
+                        out.close();
+                    }
+                }
+            }
+        }catch (Exception e){
+            System.out.println("Error printing grime output.");
+            e.printStackTrace();
+        }
+    }
 
     private String getOutputHeader(){
         StringBuilder header = new StringBuilder();
@@ -411,26 +501,7 @@ public class Comparatizer {
         header.append("Pattern_Behavioral_Integrity" + delim);
         header.append("Pattern_Integrity" + delim);
         header.append("Pattern_Instability" + delim);
-        header.append(this.getModularGrimeOutputHeader("MG-PEA") + delim);
-        header.append(this.getModularGrimeOutputHeader("MG-PEE") + delim);
-        header.append(this.getModularGrimeOutputHeader("MG-PI") + delim);
-        header.append(this.getModularGrimeOutputHeader("MG-TEA") + delim);
-        header.append(this.getModularGrimeOutputHeader("MG-TEE") + delim);
-        header.append(this.getModularGrimeOutputHeader("MG-TI") + delim);
-        header.append(this.getClassGrimeOutputHeader("CG-DIP") + delim);
-        header.append(this.getClassGrimeOutputHeader("CG-DIS") + delim);
-        header.append(this.getClassGrimeOutputHeader("CG-DEP") + delim);
-        header.append(this.getClassGrimeOutputHeader("CG-DES") + delim);
-        header.append(this.getClassGrimeOutputHeader("CG-IIP") + delim);
-        header.append(this.getClassGrimeOutputHeader("CG-IIS") + delim);
-        header.append(this.getClassGrimeOutputHeader("CG-IEP") + delim);
-        header.append(this.getClassGrimeOutputHeader("CG-IES") + delim);
-        header.append(this.getOrderGrimeOutputHeader("OG-PEA") + delim);
-        header.append(this.getOrderGrimeOutputHeader("OG-PEE") + delim);
-        header.append(this.getOrderGrimeOutputHeader("OG-PI") + delim);
-        header.append(this.getOrderGrimeOutputHeader("OG-TEA") + delim);
-        header.append(this.getOrderGrimeOutputHeader("OG-TEE") + delim);
-        header.append(this.getOrderGrimeOutputHeader("OG-TI") + delim);
+        header.append(getGrimeHeader());
         header.append("\n");
         return header.toString();
     }
@@ -451,10 +522,31 @@ public class Comparatizer {
     }
 
     private String getOrderGrimeOutputHeader(String typeOfOrderGrime){
+        //order same as modular grime.
+        return getModularGrimeOutputHeader(typeOfOrderGrime);
+    }
+    private String getGrimeHeader(){
         StringBuilder header = new StringBuilder();
-        header.append(typeOfOrderGrime + " grime count" + delim);
-        header.append(typeOfOrderGrime + " grime additions" + delim);
-        header.append(typeOfOrderGrime + " grime removals");
+        header.append(this.getModularGrimeOutputHeader("MG-PEA") + delim);
+        header.append(this.getModularGrimeOutputHeader("MG-PEE") + delim);
+        header.append(this.getModularGrimeOutputHeader("MG-PI") + delim);
+        header.append(this.getModularGrimeOutputHeader("MG-TEA") + delim);
+        header.append(this.getModularGrimeOutputHeader("MG-TEE") + delim);
+        header.append(this.getModularGrimeOutputHeader("MG-TI") + delim);
+        header.append(this.getClassGrimeOutputHeader("CG-DIP") + delim);
+        header.append(this.getClassGrimeOutputHeader("CG-DIS") + delim);
+        header.append(this.getClassGrimeOutputHeader("CG-DEP") + delim);
+        header.append(this.getClassGrimeOutputHeader("CG-DES") + delim);
+        header.append(this.getClassGrimeOutputHeader("CG-IIP") + delim);
+        header.append(this.getClassGrimeOutputHeader("CG-IIS") + delim);
+        header.append(this.getClassGrimeOutputHeader("CG-IEP") + delim);
+        header.append(this.getClassGrimeOutputHeader("CG-IES") + delim);
+        header.append(this.getOrderGrimeOutputHeader("OG-PEA") + delim);
+        header.append(this.getOrderGrimeOutputHeader("OG-PEE") + delim);
+        header.append(this.getOrderGrimeOutputHeader("OG-PI") + delim);
+        header.append(this.getOrderGrimeOutputHeader("OG-TEA") + delim);
+        header.append(this.getOrderGrimeOutputHeader("OG-TEE") + delim);
+        header.append(this.getOrderGrimeOutputHeader("OG-TI") + delim);
         return header.toString();
     }
 
@@ -464,10 +556,15 @@ public class Comparatizer {
      */
     private void clearLog(){
         try{
-            File mainDirectory = new File("roles\\");
-            if (mainDirectory.exists()) {
-                FileUtils.deleteDirectory(mainDirectory);
+            File roleDirectory = new File("roles\\");
+            if (roleDirectory.exists()) {
+                FileUtils.deleteDirectory(roleDirectory);
             }
+            File grimeDirectory = new File("grime\\");
+            if (grimeDirectory.exists()) {
+                FileUtils.deleteDirectory(grimeDirectory);
+            }
+
 
         }catch(Exception e){
             System.out.println("Could not delete the old roles output files. Not fatal but we will continue.");
