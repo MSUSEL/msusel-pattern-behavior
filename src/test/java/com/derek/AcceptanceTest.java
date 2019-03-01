@@ -170,6 +170,8 @@ public class AcceptanceTest {
         testModularGrimeType(thisVersion, "MG-TI", 0, 0, 1);
         testModularGrimeType(thisVersion, "OG-PEA", 1, 1, 0);
         testModularGrimeType(thisVersion, "OG-PI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-TEA", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-TI", 0, 0, 0);
     }
 
     @Test
@@ -186,6 +188,42 @@ public class AcceptanceTest {
         testModularGrimeType(thisVersion, "MG-TI", 0, 0, 0);
         testModularGrimeType(thisVersion, "OG-PEA", 0, 0, 1);
         testModularGrimeType(thisVersion, "OG-PI", 1, 1, 0);
+        testModularGrimeType(thisVersion, "OG-TEA", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-TI", 0, 0, 0);
+    }
+
+    @Test
+    public void testVersion9(){
+        CSVRecord thisVersion = outputRecords.iterator().next();
+        assertEquals("9", thisVersion.get("Software_Version"));
+        testModularGrimeType(thisVersion, "MG-PEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PEE", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "MG-TEA", 1, 1 , 0);
+        testModularGrimeType(thisVersion, "MG-TEE", 0, 0, 0);
+        //removing 1 TI grime because that was from the modular grime test (version 6)
+        testModularGrimeType(thisVersion, "MG-TI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-PEA", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-PI", 0, 0, 1);
+        testModularGrimeType(thisVersion, "OG-TEA", 1, 1, 0);
+        testModularGrimeType(thisVersion, "OG-TI", 0, 0, 0);
+    }
+
+    @Test
+    public void testVersion10(){
+        CSVRecord thisVersion = outputRecords.iterator().next();
+        assertEquals("10", thisVersion.get("Software_Version"));
+        testModularGrimeType(thisVersion, "MG-PEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PEE", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "MG-TEA", 0, 0 , 1);
+        testModularGrimeType(thisVersion, "MG-TEE", 0, 0, 0);
+        //removing 1 TI grime because that was from the modular grime test (version 6)
+        testModularGrimeType(thisVersion, "MG-TI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-PEA", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-PI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-TEA", 0, 0, 1);
+        testModularGrimeType(thisVersion, "OG-TI", 1, 1, 0);
     }
 
 

@@ -41,10 +41,8 @@ public class GrimeSuite {
     private List<Relationship> teeGrimeInstances;
 
     private List<CallTreeNode> peaoGrimeInstances;
-    private List<CallTreeNode> peeoGrimeInstances;
     private List<CallTreeNode> pioGrimeInstances;
     private List<CallTreeNode> teaoGrimeInstances;
-    private List<CallTreeNode> teeoGrimeInstances;
     private List<CallTreeNode> tioGrimeInstances;
 
     private List<CallTreeNode> pearGrimeInstances;
@@ -82,10 +80,8 @@ public class GrimeSuite {
 
     private void calculateOrderGrime(){
         peaoGrimeInstances = new ArrayList<>();
-        peeoGrimeInstances = new ArrayList<>();
         pioGrimeInstances = new ArrayList<>();
         teaoGrimeInstances = new ArrayList<>();
-        teeoGrimeInstances = new ArrayList<>();
         tioGrimeInstances = new ArrayList<>();
         findOrderGrime();
     }
@@ -189,6 +185,7 @@ public class GrimeSuite {
                                     peaoGrimeInstances.add(callTreeNode);
                                 }
                             }
+                            //can I do repetition here?
                         } else {
                             //operation owns (temporary)
                             List<CallTreeNode> orderGrime = evaluateOrder(roleMap);
@@ -202,39 +199,7 @@ public class GrimeSuite {
                 }
             }
         }
-        int currentEfferentUsages = 0;
-        for (UMLClassifier efferentClassifier : patternMapper.getUniqueEfferentClassifiers()) {
-            currentEfferentUsages++;
-            if (currentEfferentUsages > Main.clientClassAllowances){
-                //candiate for persistent grime.
-                for (UMLOperation operation : efferentClassifier.getOperationsIncludingConstructorsIfExists()) {
-                    List<MutablePair<CallTreeNode, InteractionRole>> fullRoleMap = behaviorMappingUtils.getRoleMap(operation);
-                    List<Pair<CallTreeNode, InteractionRole>> roleMap = behaviorMappingUtils.getCollapsedRoleMap(fullRoleMap);
-
-                    for (UMLAttribute attribute : operation.getVariableTable().keySet()) {
-                        //see if class owns (persistent) or operation owns (temporary)
-                        if (operation.getOwningClassifier().getAttributes().contains(attribute)) {
-                            //class owns, so its persistent
-                            //now I need to check order
-                            List<CallTreeNode> orderGrime = evaluateOrder(roleMap);
-                            for (CallTreeNode callTreeNode : orderGrime){
-                                if (!peeoGrimeInstances.contains(callTreeNode)){
-                                    peeoGrimeInstances.add(callTreeNode);
-                                }
-                            }
-                        } else {
-                            //operation owns (temporary)
-                            List<CallTreeNode> orderGrime = evaluateOrder(roleMap);
-                            for (CallTreeNode callTreeNode : orderGrime){
-                                if (!teeoGrimeInstances.contains(callTreeNode)){
-                                    teeoGrimeInstances.add(callTreeNode);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        //efferent DNE!!! for order at least.
 
         for (RBMLMapping behaviorMapping : rbmlBehavioralMappings){
             evaluateOrderForInternal(behaviorMapping);
@@ -279,32 +244,35 @@ public class GrimeSuite {
 
             List<MutablePair<CallTreeNode, InteractionRole>> fullRoleMap = behaviorMappingUtils.getRoleMap(behaviorConformance.getUmlOperation());
             List<Pair<CallTreeNode, InteractionRole>> roleMap = behaviorMappingUtils.getCollapsedRoleMap(fullRoleMap);
-
-
             //internal here:
-            for (UMLAttribute attribute : behaviorConformance.getUmlOperation().getVariableTable().keySet()) {
-                //dont need so much.
-                //see if class owns (persistent) or operation owns (temporary)
-                List<CallTreeNode> orderGrime = evaluateOrderInternal(roleMap, locationWithinIPS);
+            //dont need so much.
+            //see if class owns (persistent) or operation owns (temporary)
+            List<CallTreeNode> orderGrime = evaluateOrderInternal(roleMap, locationWithinIPS);
 
-                //temp vs consistent
+            for (CallTreeNode callTreeNode : orderGrime){
+                UMLAttribute attribute = behaviorConformance.getUmlOperation().findVariableUsageInTable(callTreeNode.parseVarNameFromCall());
+                    //problem here.
 
-                if (behaviorConformance.getUmlOperation().getOwningClassifier().getAttributes().contains(attribute)) {
-                    //class owns, so its persistent
-                    for (CallTreeNode callTreeNode : orderGrime){
-                        if (!pioGrimeInstances.contains(callTreeNode)){
-                            pioGrimeInstances.add(callTreeNode);
-                        }
-                    }
-                } else {
-                    //operation owns (temporary)
-                    for (CallTreeNode callTreeNode : orderGrime){
+                if (behaviorConformance.getUmlOperation().getOwningClassifier().getAttributes().contains(attribute)){
+                    //could be named the same
+                    if (behaviorConformance.getUmlOperation().getLocalVariableDecls().contains(attribute)) {
+                        //temp too
                         if (!tioGrimeInstances.contains(callTreeNode)){
                             tioGrimeInstances.add(callTreeNode);
                         }
+                    }else {
+                        if (!pioGrimeInstances.contains(callTreeNode)) {
+                            pioGrimeInstances.add(callTreeNode);
+                        }
+                    }
+                }else{
+                    //tempoorary
+                    if (!tioGrimeInstances.contains(callTreeNode)){
+                        tioGrimeInstances.add(callTreeNode);
                     }
                 }
             }
+
         }
     }
 

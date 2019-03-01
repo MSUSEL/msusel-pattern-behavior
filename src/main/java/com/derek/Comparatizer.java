@@ -134,10 +134,8 @@ public class Comparatizer {
                 outputter.append(grimeFinder.getIepGrime().get(version, patternID).getTabDelimSummary());
                 outputter.append(grimeFinder.getIesGrime().get(version, patternID).getTabDelimSummary());
                 outputter.append(grimeFinder.getPeaoGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getPeeoGrime().get(version, patternID).getTabDelimSummary());
                 outputter.append(grimeFinder.getPioGrime().get(version, patternID).getTabDelimSummary());
                 outputter.append(grimeFinder.getTeaoGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getTeeoGrime().get(version, patternID).getTabDelimSummary());
                 outputter.append(grimeFinder.getTioGrime().get(version, patternID).getTabDelimSummary());
                 outputter.append("\n");
             }
@@ -447,20 +445,12 @@ public class Comparatizer {
                         for (CallTreeNode callTreeNode : individualPatternGrime.getPeaoGrimeInstances()){
                             output.append("\t" + callTreeNode.getName() + "\n");
                         }
-                        output.append("PEEO:\n");
-                        for (CallTreeNode callTreeNode : individualPatternGrime.getPeeoGrimeInstances()){
-                            output.append("\t" + callTreeNode.getName() + "\n");
-                        }
                         output.append("PIO:\n");
                         for (CallTreeNode callTreeNode : individualPatternGrime.getPioGrimeInstances()){
                             output.append("\t" + callTreeNode.getName() + "\n");
                         }
                         output.append("TEAO:\n");
                         for (CallTreeNode callTreeNode : individualPatternGrime.getTeaoGrimeInstances()){
-                            output.append("\t" + callTreeNode.getName() + "\n");
-                        }
-                        output.append("TEEO:\n");
-                        for (CallTreeNode callTreeNode : individualPatternGrime.getTeeoGrimeInstances()){
                             output.append("\t" + callTreeNode.getName() + "\n");
                         }
                         output.append("TIO:\n");
@@ -542,10 +532,8 @@ public class Comparatizer {
         header.append(this.getClassGrimeOutputHeader("CG-IEP") + delim);
         header.append(this.getClassGrimeOutputHeader("CG-IES") + delim);
         header.append(this.getOrderGrimeOutputHeader("OG-PEA") + delim);
-        header.append(this.getOrderGrimeOutputHeader("OG-PEE") + delim);
         header.append(this.getOrderGrimeOutputHeader("OG-PI") + delim);
         header.append(this.getOrderGrimeOutputHeader("OG-TEA") + delim);
-        header.append(this.getOrderGrimeOutputHeader("OG-TEE") + delim);
         header.append(this.getOrderGrimeOutputHeader("OG-TI") + delim);
         return header.toString();
     }

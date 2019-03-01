@@ -148,7 +148,7 @@ public class UMLOperation {
         }
     }
 
-    private UMLAttribute findVariableUsageInTable(String varName){
+    public UMLAttribute findVariableUsageInTable(String varName){
         for (UMLAttribute key : variableTable.keySet()){
             if (key.getName().equals(varName)){
                 //found a variable that matches names, but the locaiton might matter now...
