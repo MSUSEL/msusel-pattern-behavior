@@ -29,9 +29,11 @@ import com.derek.uml.*;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.management.relation.Relation;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 public class MetricSuite {
@@ -202,20 +204,13 @@ public class MetricSuite {
 
     private void calcAfferentCoupling(){
         //afferent means the value of the pair is a pattern class. (nonpattern_class -> pattern_class)
-        for (Relationship classifierPair : patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.ASSOCIATION)){
-            if (!isClassifierInPatternInstance(classifierPair.getFrom())){
-                afferentCoupling++;
-            }
-        }
+        afferentCoupling = patternMapper.getUniqueAfferentClassifiers().size();
+
     }
 
     private void calcEfferentCoupling(){
         //efferent means the key of the pair is a pattern class. (pattern_class -> nonpattern_class)
-        for (Relationship classifierPair : patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.ASSOCIATION)){
-            if (!isClassifierInPatternInstance(classifierPair.getTo())){
-                efferentCoupling++;
-            }
-        }
+        efferentCoupling = patternMapper.getUniqueEfferentClassifiers().size();
     }
 
     private void calcCouplingPatternClasses(){

@@ -236,10 +236,8 @@ public class GrimeSuite {
             }
         }
 
-        //internal here:
         for (RBMLMapping behaviorMapping : rbmlBehavioralMappings){
             evaluateOrderForInternal(behaviorMapping);
-
         }
     }
 
@@ -282,9 +280,15 @@ public class GrimeSuite {
             List<MutablePair<CallTreeNode, InteractionRole>> fullRoleMap = behaviorMappingUtils.getRoleMap(behaviorConformance.getUmlOperation());
             List<Pair<CallTreeNode, InteractionRole>> roleMap = behaviorMappingUtils.getCollapsedRoleMap(fullRoleMap);
 
+
+            //internal here:
             for (UMLAttribute attribute : behaviorConformance.getUmlOperation().getVariableTable().keySet()) {
+                //dont need so much.
                 //see if class owns (persistent) or operation owns (temporary)
                 List<CallTreeNode> orderGrime = evaluateOrderInternal(roleMap, locationWithinIPS);
+
+                //temp vs consistent
+
                 if (behaviorConformance.getUmlOperation().getOwningClassifier().getAttributes().contains(attribute)) {
                     //class owns, so its persistent
                     for (CallTreeNode callTreeNode : orderGrime){
@@ -301,7 +305,6 @@ public class GrimeSuite {
                     }
                 }
             }
-
         }
     }
 
@@ -316,8 +319,8 @@ public class GrimeSuite {
                         //grime I think.
                         behavioralGrime.add(roleMap.get(i).getLeft());
                     }
+                    locationWithinIPS = j;
                 }
-
             }
         }
         return behavioralGrime;

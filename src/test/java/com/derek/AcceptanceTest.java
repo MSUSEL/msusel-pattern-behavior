@@ -169,6 +169,23 @@ public class AcceptanceTest {
         //removing 1 TI grime because that was from the modular grime test (version 6)
         testModularGrimeType(thisVersion, "MG-TI", 0, 0, 1);
         testModularGrimeType(thisVersion, "OG-PEA", 1, 1, 0);
+        testModularGrimeType(thisVersion, "OG-PI", 0, 0, 0);
+    }
+
+    @Test
+    public void testVersion8(){
+        CSVRecord thisVersion = outputRecords.iterator().next();
+        assertEquals("8", thisVersion.get("Software_Version"));
+        //pea is 2 because of how I have set up peao. (3 associations from external classes -> pattern classes.)
+        testModularGrimeType(thisVersion, "MG-PEA", 0, 0 , 2);
+        testModularGrimeType(thisVersion, "MG-PEE", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "MG-TEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TEE", 0, 0, 0);
+        //removing 1 TI grime because that was from the modular grime test (version 6)
+        testModularGrimeType(thisVersion, "MG-TI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-PEA", 0, 0, 1);
+        testModularGrimeType(thisVersion, "OG-PI", 1, 1, 0);
     }
 
 
