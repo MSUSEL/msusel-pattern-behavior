@@ -64,7 +64,6 @@ public class GrimeSuite {
         calculateModularGrime();
         calculateClassGrime();
         calculateOrderGrime();
-
     }
 
     private void calculateModularGrime() {
@@ -83,6 +82,12 @@ public class GrimeSuite {
         pioGrimeInstances = new ArrayList<>();
         teaoGrimeInstances = new ArrayList<>();
         tioGrimeInstances = new ArrayList<>();
+        pearGrimeInstances = new ArrayList<>();
+        peerGrimeInstances = new ArrayList<>();
+        pirGrimeInstances = new ArrayList<>();
+        tearGrimeInstances = new ArrayList<>();
+        teerGrimeInstances = new ArrayList<>();
+        tirGrimeInstances = new ArrayList<>();
         findOrderGrime();
     }
 
@@ -185,13 +190,25 @@ public class GrimeSuite {
                                     peaoGrimeInstances.add(callTreeNode);
                                 }
                             }
-                            //can I do repetition here?
+                            List<CallTreeNode> repetitionGrime = evaluateRepetition(roleMap);
+                            for (CallTreeNode callTreeNode : repetitionGrime){
+                                if (!pearGrimeInstances.contains(callTreeNode)){
+                                    pearGrimeInstances.add(callTreeNode);
+                                }
+                            }
+
                         } else {
                             //operation owns (temporary)
                             List<CallTreeNode> orderGrime = evaluateOrder(roleMap);
                             for (CallTreeNode callTreeNode : orderGrime){
                                 if (!teaoGrimeInstances.contains(callTreeNode)){
                                     teaoGrimeInstances.add(callTreeNode);
+                                }
+                            }
+                            List<CallTreeNode> repetitionGrime = evaluateRepetition(roleMap);
+                            for (CallTreeNode callTreeNode : repetitionGrime){
+                                if (!tearGrimeInstances.contains(callTreeNode)){
+                                    tearGrimeInstances.add(callTreeNode);
                                 }
                             }
                         }
@@ -251,28 +268,43 @@ public class GrimeSuite {
 
             for (CallTreeNode callTreeNode : orderGrime){
                 UMLAttribute attribute = behaviorConformance.getUmlOperation().findVariableUsageInTable(callTreeNode.parseVarNameFromCall());
+                if (attribute != null) {
+                    //this line of logic is that attribute can be a variable.call or just a call. (observer.update or notifyObservers).
+                    //if notifyObservers is the next call then I think this is just flat out temporary order, because it happens in the scope of the
+                    //method.
+                    if (behaviorConformance.getUmlOperation().getOwningClassifier().getAttributes().contains(attribute)) {
+                        //could be named the same
 
-                if (behaviorConformance.getUmlOperation().getOwningClassifier().getAttributes().contains(attribute)){
-                    //could be named the same
-
-                    if (behaviorConformance.getUmlOperation().getLocalVariableDecls().contains(attribute)) {
-                        //temp too
-                        if (!tioGrimeInstances.contains(callTreeNode)){
-                            tioGrimeInstances.add(callTreeNode);
+                        if (behaviorConformance.getUmlOperation().getLocalVariableDecls().contains(attribute)) {
+                            //temp too
+                            if (!tioGrimeInstances.contains(callTreeNode)) {
+                                tioGrimeInstances.add(callTreeNode);
+                            }
+                        } else {
+                            if (!pioGrimeInstances.contains(callTreeNode)) {
+                                pioGrimeInstances.add(callTreeNode);
+                            }
                         }
-                    }else {
-                        if (!pioGrimeInstances.contains(callTreeNode)) {
-                            pioGrimeInstances.add(callTreeNode);
+                    } else {
+                        //temporary
+                        if (!tioGrimeInstances.contains(callTreeNode)) {
+                            tioGrimeInstances.add(callTreeNode);
                         }
                     }
                 }else{
-                    //temporary
-                    if (!tioGrimeInstances.contains(callTreeNode)){
+                    //not a valid attribute, so must be temporary grime.
+                    if (!tioGrimeInstances.contains(callTreeNode)) {
                         tioGrimeInstances.add(callTreeNode);
                     }
                 }
             }
-
+            //internal repetition here.
+            List<CallTreeNode> repetitionGrime = evaluateRepetition(roleMap);
+            for (CallTreeNode callTreeNode : repetitionGrime){
+                if (!pearGrimeInstances.contains(callTreeNode)){
+                    pearGrimeInstances.add(callTreeNode);
+                }
+            }
         }
     }
 
@@ -288,6 +320,24 @@ public class GrimeSuite {
                         behavioralGrime.add(roleMap.get(i-1).getLeft());
                     }
                     locationWithinIPS = j;
+                }
+            }
+        }
+        return behavioralGrime;
+    }
+
+    private List<CallTreeNode> evaluateRepetition(List<Pair<CallTreeNode, InteractionRole>> roleMap){
+        List<CallTreeNode> behavioralGrime = new ArrayList<>();
+        List<InteractionRole> seenInteractionRoles = new ArrayList<>();
+        for (int i = 0; i < roleMap.size(); i++) {
+            for (int j = 0; j < ips.getInteractions().size(); j++) {
+                if (roleMap.get(i).getRight().equals(ips.getInteractions().get(j))) {
+                    //found a match between mapped role and interaction role.
+                    if (seenInteractionRoles.contains(roleMap.get(i).getRight())) {
+                        behavioralGrime.add(roleMap.get(i).getLeft());
+                    }else {
+                        seenInteractionRoles.add(roleMap.get(i).getRight());
+                    }
                 }
             }
         }

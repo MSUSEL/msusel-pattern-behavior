@@ -137,6 +137,12 @@ public class Comparatizer {
                 outputter.append(grimeFinder.getPioGrime().get(version, patternID).getTabDelimSummary());
                 outputter.append(grimeFinder.getTeaoGrime().get(version, patternID).getTabDelimSummary());
                 outputter.append(grimeFinder.getTioGrime().get(version, patternID).getTabDelimSummary());
+                outputter.append(grimeFinder.getPearGrime().get(version, patternID).getTabDelimSummary());
+                outputter.append(grimeFinder.getPeerGrime().get(version, patternID).getTabDelimSummary());
+                outputter.append(grimeFinder.getPirGrime().get(version, patternID).getTabDelimSummary());
+                outputter.append(grimeFinder.getTearGrime().get(version, patternID).getTabDelimSummary());
+                outputter.append(grimeFinder.getTeerGrime().get(version, patternID).getTabDelimSummary());
+                outputter.append(grimeFinder.getTirGrime().get(version, patternID).getTabDelimSummary());
                 outputter.append("\n");
             }
         }
@@ -457,6 +463,34 @@ public class Comparatizer {
                         for (CallTreeNode callTreeNode : individualPatternGrime.getTioGrimeInstances()){
                             output.append("\t" + callTreeNode.getName() + "\n");
                         }
+                        output.append("\n\n");
+                        output.append("***************************************\n");
+                        output.append("***********Repetition Grime************\n");
+                        output.append("***************************************\n");
+                        output.append("PEAR:\n");
+                        for (CallTreeNode callTreeNode : individualPatternGrime.getPearGrimeInstances()){
+                            output.append("\t" + callTreeNode.getName() + "\n");
+                        }
+                        output.append("PEER:\n");
+                        for (CallTreeNode callTreeNode : individualPatternGrime.getPeerGrimeInstances()){
+                            output.append("\t" + callTreeNode.getName() + "\n");
+                        }
+                        output.append("PIR:\n");
+                        for (CallTreeNode callTreeNode : individualPatternGrime.getPirGrimeInstances()){
+                            output.append("\t" + callTreeNode.getName() + "\n");
+                        }
+                        output.append("TEAR:\n");
+                        for (CallTreeNode callTreeNode : individualPatternGrime.getTearGrimeInstances()){
+                            output.append("\t" + callTreeNode.getName() + "\n");
+                        }
+                        output.append("TEER:\n");
+                        for (CallTreeNode callTreeNode : individualPatternGrime.getTeerGrimeInstances()){
+                            output.append("\t" + callTreeNode.getName() + "\n");
+                        }
+                        output.append("TIR:\n");
+                        for (CallTreeNode callTreeNode : individualPatternGrime.getTirGrimeInstances()){
+                            output.append("\t" + callTreeNode.getName() + "\n");
+                        }
                         File outputFile = new File("grime\\" + individualPatternGrime.getPatternMapper().getPi().getPatternType() + "\\" + individualPatternGrime.getPatternMapper().getPi().getUniqueID() + ".log");
                         PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile, true)));
                         out.println(output.toString());
@@ -515,6 +549,9 @@ public class Comparatizer {
         //order same as modular grime.
         return getModularGrimeOutputHeader(typeOfOrderGrime);
     }
+    private String getRepetitionGrimeOutputHeader(String typeOfRepetitionGrime){
+        return getModularGrimeOutputHeader(typeOfRepetitionGrime);
+    }
     private String getGrimeHeader(){
         StringBuilder header = new StringBuilder();
         header.append(this.getModularGrimeOutputHeader("MG-PEA") + delim);
@@ -535,6 +572,12 @@ public class Comparatizer {
         header.append(this.getOrderGrimeOutputHeader("OG-PI") + delim);
         header.append(this.getOrderGrimeOutputHeader("OG-TEA") + delim);
         header.append(this.getOrderGrimeOutputHeader("OG-TI") + delim);
+        header.append(this.getRepetitionGrimeOutputHeader("RG-PEA") + delim);
+        header.append(this.getRepetitionGrimeOutputHeader("RG-PEE") + delim);
+        header.append(this.getRepetitionGrimeOutputHeader("RG-PI") + delim);
+        header.append(this.getRepetitionGrimeOutputHeader("RG-TEA") + delim);
+        header.append(this.getRepetitionGrimeOutputHeader("RG-TEE") + delim);
+        header.append(this.getRepetitionGrimeOutputHeader("RG-TI") + delim);
         return header.toString();
     }
 

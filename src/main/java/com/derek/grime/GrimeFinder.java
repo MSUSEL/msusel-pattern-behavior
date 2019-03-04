@@ -34,8 +34,13 @@ public class GrimeFinder {
     private Table<SoftwareVersion, String, OrderGrimeCollections> pioGrime;
     private Table<SoftwareVersion, String, OrderGrimeCollections> teaoGrime;
     private Table<SoftwareVersion, String, OrderGrimeCollections> tioGrime;
-    //TODO
-    private Table<SoftwareVersion, String, ModularGrimeCollections> repetitionGrime;
+
+    private Table<SoftwareVersion, String, OrderGrimeCollections> pearGrime;
+    private Table<SoftwareVersion, String, OrderGrimeCollections> peerGrime;
+    private Table<SoftwareVersion, String, OrderGrimeCollections> pirGrime;
+    private Table<SoftwareVersion, String, OrderGrimeCollections> tearGrime;
+    private Table<SoftwareVersion, String, OrderGrimeCollections> teerGrime;
+    private Table<SoftwareVersion, String, OrderGrimeCollections> tirGrime;
 
 
 
@@ -116,6 +121,12 @@ public class GrimeFinder {
         pioGrime = HashBasedTable.create();
         teaoGrime = HashBasedTable.create();
         tioGrime = HashBasedTable.create();
+        pearGrime = HashBasedTable.create();
+        peerGrime = HashBasedTable.create();
+        pirGrime = HashBasedTable.create();
+        tearGrime = HashBasedTable.create();
+        teerGrime = HashBasedTable.create();
+        tirGrime = HashBasedTable.create();
 
         for (String patternID : grimeTable.columnKeySet()) {
             Iterator<SoftwareVersion> iter = grimeTable.rowKeySet().iterator();
@@ -129,11 +140,23 @@ public class GrimeFinder {
                     pioGrime.put(version, patternID, new OrderGrimeCollections(previousGrimeSuite.getPioGrimeInstances(), currentGrimeSuite.getPioGrimeInstances()));
                     teaoGrime.put(version, patternID, new OrderGrimeCollections(previousGrimeSuite.getTeaoGrimeInstances(), currentGrimeSuite.getTeaoGrimeInstances()));
                     tioGrime.put(version, patternID, new OrderGrimeCollections(previousGrimeSuite.getTioGrimeInstances(), currentGrimeSuite.getTioGrimeInstances()));
+                    pearGrime.put(version, patternID, new OrderGrimeCollections(previousGrimeSuite.getPearGrimeInstances(), currentGrimeSuite.getPearGrimeInstances()));
+                    peerGrime.put(version, patternID, new OrderGrimeCollections(previousGrimeSuite.getPeerGrimeInstances(), currentGrimeSuite.getPeerGrimeInstances()));
+                    pirGrime.put(version, patternID, new OrderGrimeCollections(previousGrimeSuite.getPirGrimeInstances(), currentGrimeSuite.getPirGrimeInstances()));
+                    tearGrime.put(version, patternID, new OrderGrimeCollections(previousGrimeSuite.getTearGrimeInstances(), currentGrimeSuite.getTearGrimeInstances()));
+                    teerGrime.put(version, patternID, new OrderGrimeCollections(previousGrimeSuite.getTeerGrimeInstances(), currentGrimeSuite.getTeerGrimeInstances()));
+                    tirGrime.put(version, patternID, new OrderGrimeCollections(previousGrimeSuite.getTirGrimeInstances(), currentGrimeSuite.getTirGrimeInstances()));
                 }else{
                     peaoGrime.put(version, patternID, new OrderGrimeCollections(new ArrayList(), currentGrimeSuite.getPeaoGrimeInstances()));
                     pioGrime.put(version, patternID, new OrderGrimeCollections(new ArrayList(), currentGrimeSuite.getPioGrimeInstances()));
                     teaoGrime.put(version, patternID, new OrderGrimeCollections(new ArrayList(), currentGrimeSuite.getTeaoGrimeInstances()));
                     tioGrime.put(version, patternID, new OrderGrimeCollections(new ArrayList(), currentGrimeSuite.getTioGrimeInstances()));
+                    pearGrime.put(version, patternID, new OrderGrimeCollections(new ArrayList(), currentGrimeSuite.getPearGrimeInstances()));
+                    peerGrime.put(version, patternID, new OrderGrimeCollections(new ArrayList(), currentGrimeSuite.getPeerGrimeInstances()));
+                    pirGrime.put(version, patternID, new OrderGrimeCollections(new ArrayList(), currentGrimeSuite.getPirGrimeInstances()));
+                    tearGrime.put(version, patternID, new OrderGrimeCollections(new ArrayList(), currentGrimeSuite.getTearGrimeInstances()));
+                    teerGrime.put(version, patternID, new OrderGrimeCollections(new ArrayList(), currentGrimeSuite.getTeerGrimeInstances()));
+                    tirGrime.put(version, patternID, new OrderGrimeCollections(new ArrayList(), currentGrimeSuite.getTirGrimeInstances()));
                 }
             }
         }
