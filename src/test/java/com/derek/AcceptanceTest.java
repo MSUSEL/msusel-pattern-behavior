@@ -228,7 +228,7 @@ public class AcceptanceTest {
 
 
     /***
-     * shortcut utliity method to speed up the process of testing modular grime types. supply this method with a csvrecord,
+     * shortcut utility method to speed up the process of testing modular grime types. supply this method with a csvrecord,
      * grime name that corresponds with the name in the tab delimited output, and expected counts of grime.
      * @param csvRecord
      * @param grimeName

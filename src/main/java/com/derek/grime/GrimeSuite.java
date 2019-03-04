@@ -251,10 +251,10 @@ public class GrimeSuite {
 
             for (CallTreeNode callTreeNode : orderGrime){
                 UMLAttribute attribute = behaviorConformance.getUmlOperation().findVariableUsageInTable(callTreeNode.parseVarNameFromCall());
-                    //problem here.
 
                 if (behaviorConformance.getUmlOperation().getOwningClassifier().getAttributes().contains(attribute)){
                     //could be named the same
+
                     if (behaviorConformance.getUmlOperation().getLocalVariableDecls().contains(attribute)) {
                         //temp too
                         if (!tioGrimeInstances.contains(callTreeNode)){
@@ -266,7 +266,7 @@ public class GrimeSuite {
                         }
                     }
                 }else{
-                    //tempoorary
+                    //temporary
                     if (!tioGrimeInstances.contains(callTreeNode)){
                         tioGrimeInstances.add(callTreeNode);
                     }
@@ -285,7 +285,7 @@ public class GrimeSuite {
                 if (mappedRole.equals(expectedInteraction)) {
                     if (j < locationWithinIPS) {
                         //grime I think.
-                        behavioralGrime.add(roleMap.get(i).getLeft());
+                        behavioralGrime.add(roleMap.get(i-1).getLeft());
                     }
                     locationWithinIPS = j;
                 }
