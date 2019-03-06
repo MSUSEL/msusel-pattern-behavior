@@ -64,6 +64,7 @@ public class GrimeSuite {
         calculateModularGrime();
         calculateClassGrime();
         calculateOrderGrime();
+        calculateRepetitionGrime();
     }
 
     private void calculateModularGrime() {
@@ -82,13 +83,16 @@ public class GrimeSuite {
         pioGrimeInstances = new ArrayList<>();
         teaoGrimeInstances = new ArrayList<>();
         tioGrimeInstances = new ArrayList<>();
+        findOrderGrime();
+    }
+    private void calculateRepetitionGrime(){
         pearGrimeInstances = new ArrayList<>();
         peerGrimeInstances = new ArrayList<>();
         pirGrimeInstances = new ArrayList<>();
         tearGrimeInstances = new ArrayList<>();
         teerGrimeInstances = new ArrayList<>();
         tirGrimeInstances = new ArrayList<>();
-        findOrderGrime();
+        findRepetitionGrime();
     }
 
     private void findModularGrime() {
@@ -170,51 +174,31 @@ public class GrimeSuite {
     }
 
     private void findOrderGrime(){
-        int currentAfferentUsages = 0;
         for (UMLClassifier afferentClassifier : patternMapper.getUniqueAfferentClassifiers()) {
-            currentAfferentUsages++;
-            if (currentAfferentUsages > Main.clientClassAllowances){
-                //candiate for persistent grime.
-                for (UMLOperation operation : afferentClassifier.getOperationsIncludingConstructorsIfExists()) {
-                    List<MutablePair<CallTreeNode, InteractionRole>> fullRoleMap = behaviorMappingUtils.getRoleMap(operation);
-                    List<Pair<CallTreeNode, InteractionRole>> roleMap = behaviorMappingUtils.getCollapsedRoleMap(fullRoleMap);
+            //candiate for persistent grime.
+            for (UMLOperation operation : afferentClassifier.getOperationsIncludingConstructorsIfExists()) {
+                List<MutablePair<CallTreeNode, InteractionRole>> fullRoleMap = behaviorMappingUtils.getRoleMap(operation);
+                List<Pair<CallTreeNode, InteractionRole>> roleMap = behaviorMappingUtils.getCollapsedRoleMap(fullRoleMap);
 
-                    for (UMLAttribute attribute : operation.getVariableTable().keySet()) {
-                        //see if class owns (persistent) or operation owns (temporary)
-                        if (operation.getOwningClassifier().getAttributes().contains(attribute)) {
-                            //class owns, so its persistent
-                            //now I need to check order
-                            List<CallTreeNode> orderGrime = evaluateOrder(roleMap);
-                            for (CallTreeNode callTreeNode : orderGrime){
-                                if (!peaoGrimeInstances.contains(callTreeNode)){
-                                    peaoGrimeInstances.add(callTreeNode);
-                                }
+                List<CallTreeNode> orderGrime = evaluateOrder(roleMap);
+                for (CallTreeNode callTreeNode : orderGrime) {
+                    if (callTreeNode.isCall()) {
+                        String varName = callTreeNode.parseVarNameFromCall();
+                        UMLAttribute asAttribute = operation.findVariableUsageInTable(varName);
+                        if (operation.getOwningClassifier().getAttributes().contains(asAttribute)) {
+                            if (!peaoGrimeInstances.contains(callTreeNode)) {
+                                peaoGrimeInstances.add(callTreeNode);
                             }
-                            List<CallTreeNode> repetitionGrime = evaluateRepetition(roleMap);
-                            for (CallTreeNode callTreeNode : repetitionGrime){
-                                if (!pearGrimeInstances.contains(callTreeNode)){
-                                    pearGrimeInstances.add(callTreeNode);
-                                }
-                            }
-
                         } else {
-                            //operation owns (temporary)
-                            List<CallTreeNode> orderGrime = evaluateOrder(roleMap);
-                            for (CallTreeNode callTreeNode : orderGrime){
-                                if (!teaoGrimeInstances.contains(callTreeNode)){
-                                    teaoGrimeInstances.add(callTreeNode);
-                                }
-                            }
-                            List<CallTreeNode> repetitionGrime = evaluateRepetition(roleMap);
-                            for (CallTreeNode callTreeNode : repetitionGrime){
-                                if (!tearGrimeInstances.contains(callTreeNode)){
-                                    tearGrimeInstances.add(callTreeNode);
-                                }
+                            //temporary
+                            if (!teaoGrimeInstances.contains(callTreeNode)) {
+                                teaoGrimeInstances.add(callTreeNode);
                             }
                         }
                     }
                 }
             }
+
         }
         //efferent DNE!!! for order at least.
 
@@ -326,6 +310,74 @@ public class GrimeSuite {
         return behavioralGrime;
     }
 
+    private void findRepetitionGrime(){
+        for (UMLClassifier afferentClassifier : patternMapper.getUniqueAfferentClassifiers()) {
+            //for afferent its gotta be roles.
+            for (UMLOperation operation : afferentClassifier.getOperationsIncludingConstructorsIfExists()) {
+                List<MutablePair<CallTreeNode, InteractionRole>> fullRoleMap = behaviorMappingUtils.getRoleMap(operation);
+                List<Pair<CallTreeNode, InteractionRole>> roleMap = behaviorMappingUtils.getCollapsedRoleMap(fullRoleMap);
+
+                List<CallTreeNode> repetition = evaluateRepetition(roleMap);
+
+                for (CallTreeNode callTreeNode : repetition){
+                    if (callTreeNode.isCall()){
+                        String varName = callTreeNode.parseVarNameFromCall();
+                        UMLAttribute asAttribute = operation.findVariableUsageInTable(varName);
+                        if (operation.getOwningClassifier().getAttributes().contains(asAttribute)){
+                            if (!pearGrimeInstances.contains(callTreeNode)) {
+                                pearGrimeInstances.add(callTreeNode);
+                            }
+                        }else{
+                            //temporary
+                            if (!tearGrimeInstances.contains(callTreeNode)) {
+                                tearGrimeInstances.add(callTreeNode);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        //external
+        for (UMLClassifier umlClassifier : patternMapper.getAllParticipatingClassifiersOnlyUMLClassifiers()){
+            for (UMLOperation operation : umlClassifier.getOperations()){
+                List<MutablePair<CallTreeNode, InteractionRole>> fullRoleMap = behaviorMappingUtils.getRoleMap(operation);
+                //only need the full role map here. So, for external the repetition that might exist is when a pattern calls
+                //an external class more than once.
+
+                //external is a little funky and I am setting repetition sets
+                evaluateExternalRepetition(fullRoleMap, operation, patternMapper.getUniqueEfferentClassifiers());
+
+            }
+        }
+
+        //internal
+        for (UMLClassifier umlClassifier : patternMapper.getAllParticipatingClassifiersOnlyUMLClassifiers()){
+            //just pattern classes
+            for (UMLOperation operation : umlClassifier.getOperations()){
+                List<MutablePair<CallTreeNode, InteractionRole>> fullRoleMap = behaviorMappingUtils.getRoleMap(operation);
+                List<Pair<CallTreeNode, InteractionRole>> roleMap = behaviorMappingUtils.getCollapsedRoleMap(fullRoleMap);
+
+                List<CallTreeNode> repetition = evaluateRepetition(roleMap);
+                for (CallTreeNode callTreeNode : repetition){
+                    if (callTreeNode.isCall()) {
+                        String varName = callTreeNode.parseVarNameFromCall();
+                        UMLAttribute asAttribute = operation.findVariableUsageInTable(varName);
+                        if (operation.getOwningClassifier().getAttributes().contains(asAttribute)){
+                            if (!pirGrimeInstances.contains(callTreeNode)) {
+                                pirGrimeInstances.add(callTreeNode);
+                            }
+                        }else{
+                            //temporary
+                            if (!tirGrimeInstances.contains(callTreeNode)) {
+                                tirGrimeInstances.add(callTreeNode);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private List<CallTreeNode> evaluateRepetition(List<Pair<CallTreeNode, InteractionRole>> roleMap){
         List<CallTreeNode> behavioralGrime = new ArrayList<>();
         List<InteractionRole> seenInteractionRoles = new ArrayList<>();
@@ -342,5 +394,41 @@ public class GrimeSuite {
             }
         }
         return behavioralGrime;
+    }
+
+    private void evaluateExternalRepetition(List<MutablePair<CallTreeNode, InteractionRole>> fullRoleMap, UMLOperation owningOperation, Set<UMLClassifier> externalClassifiers){
+        List<CallTreeNode> seenRepetitions = new ArrayList<>();
+        for (int i = 0; i < fullRoleMap.size(); i++){
+            //I might need to put a check here to amke sure interaction role is not null.. I'm ignoring it for now because
+            //the internals of the role map should not be repeated anyways.
+            CallTreeNode current = fullRoleMap.get(i).getLeft();
+            if (current.isCall()) {
+                String varName = current.parseVarNameFromCall();
+                UMLAttribute attribute = owningOperation.findVariableUsageInTable(varName);
+                if (externalClassifiers.contains(attribute.getType())) {
+                    //definitely an external type.
+                    if (owningOperation.getOwningClassifier().getAttributes().contains(attribute)) {
+                        //persistent candidate
+                        if (seenRepetitions.contains(current)){
+                            //repetition finally
+                            peerGrimeInstances.add(current);
+                        }else{
+                            //not seen yet.. this is PEE grime but not quite PEER
+                            seenRepetitions.add(current);
+                        }
+                    } else {
+                        //temporary candidate
+                        if (seenRepetitions.contains(current)){
+                            //repetition finally
+                            teerGrimeInstances.add(current);
+                        }else{
+                            //not seen yet.. this is TEE grime but not quite TEER
+                            seenRepetitions.add(current);
+                        }
+
+                    }
+                }
+            }
+        }
     }
 }
