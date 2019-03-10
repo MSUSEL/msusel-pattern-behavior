@@ -101,7 +101,7 @@ public class BehaviorMappingUtils {
         return originalName;
     }
 
-    public void printRoleMap(List<Pair<CallTreeNode, InteractionRole>> roleMap){
+    public void printRoleMap(List<MutablePair<CallTreeNode, InteractionRole>> roleMap){
         System.out.print("| ");
         for (Pair<CallTreeNode, InteractionRole> pair : roleMap){
             int padSize = getPadSize(pair);

@@ -252,8 +252,64 @@ public class AcceptanceTest {
         testModularGrimeType(thisVersion, "RG-TEE", 0, 0, 0);
         testModularGrimeType(thisVersion, "RG-TI", 0, 0, 0);
     }
+    @Test
+    public void testVersion12(){
+        CSVRecord thisVersion = outputRecords.iterator().next();
+        assertEquals("12", thisVersion.get("Software_Version"));
+        //pea is 2 because of how I have set up peao. (3 associations from external classes -> pattern classes.)
+        testModularGrimeType(thisVersion, "MG-PEA", 0, 0 , 2);
+        testModularGrimeType(thisVersion, "MG-PEE", 1, 1 , 0);
+        testModularGrimeType(thisVersion, "MG-PI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "MG-TEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TEE", 0, 0, 0);
+        //removing 1 TI grime because that was from the modular grime test (version 6)
+        testModularGrimeType(thisVersion, "MG-TI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-PEA", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-PI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-TEA", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-TI", 0, 0, 0);
+        //so for the one below, its +1 grime addition only because technically speaking, the previous versions all have
+        //3 instances of repetition (based on the code being a demo of the observer pattern. The subject.setSTate()
+        //shoudl technically not exist 3 times in Client, as it does, but it does so for demo purposes. However, I would not expect
+        //this to occur in real world systems, unless this is in fact grime.
+        testModularGrimeType(thisVersion, "RG-PEA", 3, 0, 1);
+        testModularGrimeType(thisVersion, "RG-PEE", 1, 1, 0);
+        testModularGrimeType(thisVersion, "RG-PI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "RG-TEA", 0, 0, 0);
+        testModularGrimeType(thisVersion, "RG-TEE", 0, 0, 0);
+        testModularGrimeType(thisVersion, "RG-TI", 0, 0, 0);
+    }
 
-    @Ignore
+    @Test
+    public void testVersion13(){
+        CSVRecord thisVersion = outputRecords.iterator().next();
+        assertEquals("13", thisVersion.get("Software_Version"));
+        //pea is 2 because of how I have set up peao. (3 associations from external classes -> pattern classes.)
+        testModularGrimeType(thisVersion, "MG-PEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PEE", 0, 0, 1);
+        //tricky one here, for mg-pi. So, the way I am looking at repetition is based on subject -> observer, and subjects can
+        //have any number of observers. I repeat an observer call, so I think its ok to have 0 mg-pi grime.
+        testModularGrimeType(thisVersion, "MG-PI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "MG-TEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TEE", 0, 0, 0);
+        //removing 1 TI grime because that was from the modular grime test (version 6)
+        testModularGrimeType(thisVersion, "MG-TI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-PEA", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-PI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-TEA", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-TI", 0, 0, 0);
+        //so for the one below, its +1 grime addition only because technically speaking, the previous versions all have
+        //3 instances of repetition (based on the code being a demo of the observer pattern. The subject.setSTate()
+        //shoudl technically not exist 3 times in Client, as it does, but it does so for demo purposes. However, I would not expect
+        //this to occur in real world systems, unless this is in fact grime.
+        testModularGrimeType(thisVersion, "RG-PEA", 3, 0, 0);
+        testModularGrimeType(thisVersion, "RG-PEE", 0, 0, 1);
+        testModularGrimeType(thisVersion, "RG-PI", 1, 1, 0);
+        testModularGrimeType(thisVersion, "RG-TEA", 0, 0, 0);
+        testModularGrimeType(thisVersion, "RG-TEE", 0, 0, 0);
+        testModularGrimeType(thisVersion, "RG-TI", 0, 0, 0);
+    }
+
     @Test
     public void testVersion14(){
         CSVRecord thisVersion = outputRecords.iterator().next();
@@ -262,14 +318,42 @@ public class AcceptanceTest {
         testModularGrimeType(thisVersion, "MG-PEA", 0, 0 , 0);
         testModularGrimeType(thisVersion, "MG-PEE", 0, 0 , 0);
         testModularGrimeType(thisVersion, "MG-PI", 0, 0, 0);
-        testModularGrimeType(thisVersion, "MG-TEA", 1, 1 , 0);
+        testModularGrimeType(thisVersion, "MG-TEA", 1, 1, 0);
         testModularGrimeType(thisVersion, "MG-TEE", 0, 0, 0);
         //removing 1 TI grime because that was from the modular grime test (version 6)
         testModularGrimeType(thisVersion, "MG-TI", 0, 0, 0);
         testModularGrimeType(thisVersion, "OG-PEA", 0, 0, 0);
         testModularGrimeType(thisVersion, "OG-PI", 0, 0, 0);
         testModularGrimeType(thisVersion, "OG-TEA", 0, 0, 0);
-        testModularGrimeType(thisVersion, "OG-TI", 0, 0, 1);
+        testModularGrimeType(thisVersion, "OG-TI", 0, 0, 0);
+        //so for the one below, its +1 grime addition only because technically speaking, the previous versions all have
+        //3 instances of repetition (based on the code being a demo of the observer pattern. The subject.setSTate()
+        //shoudl technically not exist 3 times in Client, as it does, but it does so for demo purposes. However, I would not expect
+        //this to occur in real world systems, unless this is in fact grime.
+        testModularGrimeType(thisVersion, "RG-PEA", 3, 0, 0);
+        testModularGrimeType(thisVersion, "RG-PEE", 0, 0, 0);
+        testModularGrimeType(thisVersion, "RG-PI", 0, 0, 1);
+        testModularGrimeType(thisVersion, "RG-TEA", 1, 1, 0);
+        testModularGrimeType(thisVersion, "RG-TEE", 0, 0, 0);
+        testModularGrimeType(thisVersion, "RG-TI", 0, 0, 0);
+    }
+
+    @Test
+    public void testVersion15(){
+        CSVRecord thisVersion = outputRecords.iterator().next();
+        assertEquals("15", thisVersion.get("Software_Version"));
+        //pea is 2 because of how I have set up peao. (3 associations from external classes -> pattern classes.)
+        testModularGrimeType(thisVersion, "MG-PEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PEE", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "MG-TEA", 0, 0 , 1);
+        testModularGrimeType(thisVersion, "MG-TEE", 1, 1, 0);
+        //removing 1 TI grime because that was from the modular grime test (version 6)
+        testModularGrimeType(thisVersion, "MG-TI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-PEA", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-PI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-TEA", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-TI", 0, 0, 0);
         //so for the one below, its +1 grime addition only because technically speaking, the previous versions all have
         //3 instances of repetition (based on the code being a demo of the observer pattern. The subject.setSTate()
         //shoudl technically not exist 3 times in Client, as it does, but it does so for demo purposes. However, I would not expect
@@ -277,10 +361,39 @@ public class AcceptanceTest {
         testModularGrimeType(thisVersion, "RG-PEA", 3, 0, 0);
         testModularGrimeType(thisVersion, "RG-PEE", 0, 0, 0);
         testModularGrimeType(thisVersion, "RG-PI", 0, 0, 0);
-        testModularGrimeType(thisVersion, "RG-TEA", 2, 2, 0);
-        testModularGrimeType(thisVersion, "RG-TEE", 0, 0, 0);
+        testModularGrimeType(thisVersion, "RG-TEA", 0, 0, 1);
+        testModularGrimeType(thisVersion, "RG-TEE", 1, 1, 0);
         testModularGrimeType(thisVersion, "RG-TI", 0, 0, 0);
     }
+
+    @Test
+    public void testVersion16(){
+        CSVRecord thisVersion = outputRecords.iterator().next();
+        assertEquals("16", thisVersion.get("Software_Version"));
+        //pea is 2 because of how I have set up peao. (3 associations from external classes -> pattern classes.)
+        testModularGrimeType(thisVersion, "MG-PEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PEE", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-PI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "MG-TEA", 0, 0 , 0);
+        testModularGrimeType(thisVersion, "MG-TEE", 0, 0, 1);
+        //removing 1 TI grime because that was from the modular grime test (version 6)
+        testModularGrimeType(thisVersion, "MG-TI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-PEA", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-PI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-TEA", 0, 0, 0);
+        testModularGrimeType(thisVersion, "OG-TI", 0, 0, 0);
+        //so for the one below, its +1 grime addition only because technically speaking, the previous versions all have
+        //3 instances of repetition (based on the code being a demo of the observer pattern. The subject.setSTate()
+        //shoudl technically not exist 3 times in Client, as it does, but it does so for demo purposes. However, I would not expect
+        //this to occur in real world systems, unless this is in fact grime.
+        testModularGrimeType(thisVersion, "RG-PEA", 3, 0, 0);
+        testModularGrimeType(thisVersion, "RG-PEE", 0, 0, 0);
+        testModularGrimeType(thisVersion, "RG-PI", 0, 0, 0);
+        testModularGrimeType(thisVersion, "RG-TEA", 0, 0, 0);
+        testModularGrimeType(thisVersion, "RG-TEE", 0, 0, 1);
+        testModularGrimeType(thisVersion, "RG-TI", 1, 1, 0);
+    }
+
 
 
     /***

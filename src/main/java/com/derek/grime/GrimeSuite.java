@@ -282,13 +282,13 @@ public class GrimeSuite {
                     }
                 }
             }
-            //internal repetition here.
-            List<CallTreeNode> repetitionGrime = evaluateRepetition(roleMap);
-            for (CallTreeNode callTreeNode : repetitionGrime){
-                if (!pearGrimeInstances.contains(callTreeNode)){
-                    pearGrimeInstances.add(callTreeNode);
-                }
-            }
+//            //internal repetition here.
+//            List<CallTreeNode> repetitionGrime = evaluateRepetition(roleMap);
+//            for (CallTreeNode callTreeNode : repetitionGrime){
+//                if (!pearGrimeInstances.contains(callTreeNode)){
+//                    pearGrimeInstances.add(callTreeNode);
+//                }
+//            }
         }
     }
 
@@ -345,7 +345,9 @@ public class GrimeSuite {
                 //an external class more than once.
 
                 //external is a little funky and I am setting repetition sets
-                evaluateExternalRepetition(fullRoleMap, operation, patternMapper.getUniqueEfferentClassifiers());
+                if (!patternMapper.getUniqueEfferentClassifiers().isEmpty()) {
+                    evaluateExternalRepetition(fullRoleMap, operation, patternMapper.getUniqueEfferentClassifiers());
+                }
 
             }
         }
@@ -397,35 +399,38 @@ public class GrimeSuite {
     }
 
     private void evaluateExternalRepetition(List<MutablePair<CallTreeNode, InteractionRole>> fullRoleMap, UMLOperation owningOperation, Set<UMLClassifier> externalClassifiers){
-        List<CallTreeNode> seenRepetitions = new ArrayList<>();
+        List<UMLAttribute> seenRepetitions = new ArrayList<>();
         for (int i = 0; i < fullRoleMap.size(); i++){
             //I might need to put a check here to amke sure interaction role is not null.. I'm ignoring it for now because
             //the internals of the role map should not be repeated anyways.
             CallTreeNode current = fullRoleMap.get(i).getLeft();
-            if (current.isCall()) {
-                String varName = current.parseVarNameFromCall();
+            if (current.isCall() || current.isInit()) {
+                String varName = current.parseVarNameFromCallOrInit();
                 UMLAttribute attribute = owningOperation.findVariableUsageInTable(varName);
-                if (externalClassifiers.contains(attribute.getType())) {
-                    //definitely an external type.
-                    if (owningOperation.getOwningClassifier().getAttributes().contains(attribute)) {
-                        //persistent candidate
-                        if (seenRepetitions.contains(current)){
-                            //repetition finally
-                            peerGrimeInstances.add(current);
-                        }else{
-                            //not seen yet.. this is PEE grime but not quite PEER
-                            seenRepetitions.add(current);
-                        }
-                    } else {
-                        //temporary candidate
-                        if (seenRepetitions.contains(current)){
-                            //repetition finally
-                            teerGrimeInstances.add(current);
-                        }else{
-                            //not seen yet.. this is TEE grime but not quite TEER
-                            seenRepetitions.add(current);
-                        }
+                if (attribute != null) {
+                    //will be null when the call is a call to a method within the pattern (notifyOBservers)
+                    if (externalClassifiers.contains(attribute.getType())) {
+                        //definitely an external type.
 
+                        if (owningOperation.getOwningClassifier().getAttributes().contains(attribute)) {
+                            //persistent candidate
+                            if (seenRepetitions.contains(attribute)) {
+                                //repetition finally
+                                peerGrimeInstances.add(current);
+                            } else {
+                                //not seen yet.. this is PEE grime but not quite PEER
+                                seenRepetitions.add(attribute);
+                            }
+                        } else {
+                            //temporary candidate
+                            if (seenRepetitions.contains(attribute)) {
+                                //repetition finally
+                                teerGrimeInstances.add(current);
+                            } else {
+                                //not seen yet.. this is TEE grime but not quite TEER
+                                seenRepetitions.add(attribute);
+                            }
+                        }
                     }
                 }
             }

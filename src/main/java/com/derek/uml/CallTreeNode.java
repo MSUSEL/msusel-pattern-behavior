@@ -140,6 +140,25 @@ public class CallTreeNode<T> {
         return splitter[0];
     }
 
+    public String parseVarNameFromCallOrInit(){
+        if (this.isCall()){
+            return parseVarNameFromCall();
+        }else if (this.isInit()){
+            return parseVarNameFromInit();
+        }
+        return "";
+    }
+    public String parseVarNameFromInit(){
+        if (this.tagName.contains("init_{")){
+            Pattern pattern = Pattern.compile("init_\\{(.+?)\\}");
+            Matcher matcher = pattern.matcher(this.tagName);
+            matcher.find();
+            return matcher.group(1);
+        }
+        return "";
+    }
+
+
     public String parseCallNameFromCall(int callDepth){
         String nameConverter = name.toString();
         String[] splitter = nameConverter.split("\\.");
