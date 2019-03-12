@@ -119,12 +119,15 @@ public class UMLClass extends UMLClassifier {
      */
     @Override
     public List<UMLAttribute> getAttributes(){
-        List<UMLAttribute> attributes = new ArrayList<>();
-        attributes.addAll(this.attributes);
-        for (UMLClassifier umlClassifier : this.getExtendsParents()){
-            attributes.addAll(umlClassifier.getAttributes());
+        List<UMLAttribute> attributesToRet = new ArrayList<>();
+        if (this.attributes == null) {
+            this.attributes = new ArrayList<>();
         }
-        return attributes;
+        attributesToRet.addAll(this.attributes);
+        for (UMLClassifier umlClassifier : this.getExtendsParents()){
+            attributesToRet.addAll(umlClassifier.getAttributes());
+        }
+        return attributesToRet;
     }
 
     public List<UMLAttribute> getLocalAttributes(){

@@ -39,7 +39,6 @@ import java.util.List;
 @Getter
 public class StatePattern extends PatternMapper {
 
-
     //provided by pattern4 tool
     private Pair<String, UMLClassifier> contextClassifier;
     private Pair<String, UMLClassifier> stateClassifier;
@@ -49,6 +48,9 @@ public class StatePattern extends PatternMapper {
     //coalesced members
     private List<Pair<String, UMLOperation>> handleOperations;
     private List<Pair<String, UMLClassifier>> stateFamily;
+    private List<Pair<String, UMLClassifier>> contextFamily;
+    private List<Pair<String, UMLOperation>> requestOperationFamily;
+    private List<Pair<String, UMLAttribute>> stateAttributeFamily;
 
     public StatePattern(PatternInstance pi, UMLClassDiagram umlClassDiagram) {
         super(pi, umlClassDiagram);
@@ -78,59 +80,19 @@ public class StatePattern extends PatternMapper {
         }
     }
 
-    public List<Pair<String, UMLClassifier>> getAllStates(){
-        //TODO
-        return null;
-    }
-
-    @Override
-    public List<Pair<String, UMLClassifier>> getClassModelBlocks(){
-        List<Pair<String, UMLClassifier>> modelBlocks = new ArrayList<>();
-        //add context
-        modelBlocks.add(contextClassifier);
-
-        //add states that are classes
-        for (Pair<String, UMLClassifier> statePair : stateFamily){
-            if (statePair.getLeft().equals("ConcreteState")){
-                modelBlocks.add(statePair);
-            }
-        }
-        return modelBlocks;
-    }
-
-    @Override
-    public List<Pair<String, UMLClassifier>> getAllParticipatingClasses(){
-        List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
-        toRet.add(contextClassifier);
-        toRet.add(stateClassifier);
-        toRet.addAll(stateFamily);
-        return toRet;
-    }
-
-    @Override
-    public List<Pair<String, UMLClassifier>> getClassifierModelBlocks() {
-        List<Pair<String, UMLClassifier>> modelBlocks= new ArrayList<>();
-        modelBlocks.add(contextClassifier);
-        modelBlocks.add(stateClassifier);
-        return modelBlocks;
-    }
-
-    @Override
-    public List<Pair<String, UMLOperation>>  getOperationModelBlocks() {
-        return requestOperations;
-    }
-
-    @Override
-    public List<Pair<String, UMLAttribute>> getAttributeModelBlocks() {
-        return stateAttributes;
-    }
-
     @Override
     protected void coalescePattern(){
         //get families of states. no need to get families of contexts because there should only be one context per state pattern.
         coalesceStates();
+        coalesceContexts();
 
+        //read this as 'we are looking to coalesce handle family in this.getAllStates, with search keyword "Handle"
+        //search keyword is the key value for a row in the state.txt file, in configs/patternNames
         handleOperations = coalesceOperations(this.getAllStates(), "Handle");
+        requestOperationFamily = coalesceOperations(this.getAllContexts(), "Request");
+
+        //for the attribute state
+        stateAttributeFamily = coalesceAttributes(getAllContexts(), "State");
     }
 
     private void coalesceStates(){
@@ -144,6 +106,93 @@ public class StatePattern extends PatternMapper {
                 stateFamily.add(new ImmutablePair<>("State", stateFamilyClassifier));
             }
         }
+    }
+    private void coalesceContexts(){
+        List<UMLClassifier> contextFamilyClassifiers = umlClassDiagram.getAllGeneralizationHierarchyChildren(contextClassifier.getRight());
+        contextFamily = new ArrayList<>();
+        for (UMLClassifier contextFamilyClassifier : contextFamilyClassifiers){
+            if (contextFamilyClassifier.getIdentifier().equals("class")){
+                //concrete subject
+                contextFamily.add(new ImmutablePair<>("ConcreteContext", contextFamilyClassifier));
+            }else {
+                contextFamily.add(new ImmutablePair<>("Context", contextFamilyClassifier));
+            }
+        }
+    }
+
+    @Override
+    public List<Pair<String, UMLClassifier>> getClassModelBlocks(){
+        List<Pair<String, UMLClassifier>> modelBlocks = new ArrayList<>();
+        //add states that are classes
+        for (Pair<String, UMLClassifier> statePair : stateFamily){
+            if (statePair.getLeft().equals("ConcreteState")){
+                modelBlocks.add(statePair);
+            }
+        }
+        for (Pair<String, UMLClassifier> contextPair : contextFamily){
+            if (contextPair.getLeft().equals("ConcreteContext")){
+                modelBlocks.add(contextPair);
+            }
+        }
+        return modelBlocks;
+    }
+
+    @Override
+    public List<Pair<String, UMLClassifier>> getClassifierModelBlocks() {
+        List<Pair<String, UMLClassifier>> modelBlocks = new ArrayList<>();
+        modelBlocks.add(stateClassifier);
+        modelBlocks.add(contextClassifier);
+        for (Pair<String, UMLClassifier> observerPair : stateFamily){
+            if (observerPair.getLeft().equals("State")){
+                modelBlocks.add(observerPair);
+            }
+        }
+        for (Pair<String, UMLClassifier> subjectPair : contextFamily){
+            if (subjectPair.getLeft().equals("Context")){
+                modelBlocks.add(subjectPair);
+            }
+        }
+        return modelBlocks;
+    }
+
+    @Override
+    public List<Pair<String, UMLOperation>>  getOperationModelBlocks() {
+        List<Pair<String, UMLOperation>> toRet = new ArrayList<>();
+        toRet.addAll(requestOperations);
+        toRet.addAll(handleOperations);
+        toRet.addAll(requestOperationFamily);
+        toRet.addAll(handleOperations);
+        return toRet;
+    }
+
+    @Override
+    public List<Pair<String, UMLAttribute>> getAttributeModelBlocks() {
+        List<Pair<String, UMLAttribute>> toRet = new ArrayList<>();
+        toRet.addAll(stateAttributes);
+        toRet.addAll(stateAttributeFamily);
+        return toRet;
+    }
+
+    public List<Pair<String, UMLClassifier>> getAllContexts(){
+        List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
+        toRet.add(contextClassifier);
+        toRet.addAll(contextFamily);
+        return toRet;
+    }
+
+    public List<Pair<String, UMLClassifier>> getAllStates(){
+        List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
+        toRet.add(stateClassifier);
+        toRet.addAll(stateFamily);
+        return toRet;
+    }
+
+    @Override
+    public List<Pair<String, UMLClassifier>> getAllParticipatingClasses(){
+        List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
+        toRet.addAll(getAllStates());
+        toRet.addAll(getAllContexts());
+        return toRet;
     }
 
     public void printSummary(){

@@ -117,33 +117,37 @@ public class Comparatizer {
         outputGrime();
 
         for (String patternID : metricTable.columnKeySet()){
-            for (SoftwareVersion version : metricTable.rowKeySet()){
-                outputter.append(metricTable.get(version, patternID).getSummary());
-                outputter.append(grimeFinder.getPeaGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getPeeGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getPiGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getTeaGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getTeeGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getTiGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getDipGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getDisGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getDepGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getDesGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getIipGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getIisGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getIepGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getIesGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getPeaoGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getPioGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getTeaoGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getTioGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getPearGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getPeerGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getPirGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getTearGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getTeerGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append(grimeFinder.getTirGrime().get(version, patternID).getTabDelimSummary());
-                outputter.append("\n");
+            for (SoftwareVersion version : metricTable.rowKeySet()) {
+                MetricSuite versionSuite = metricTable.get(version, patternID);
+                if (versionSuite != null) {
+                    //will be null when a pattern instance does not appear in a particular version.
+                    outputter.append(metricTable.get(version, patternID).getSummary());
+                    outputter.append(grimeFinder.getPeaGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getPeeGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getPiGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getTeaGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getTeeGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getTiGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getDipGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getDisGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getDepGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getDesGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getIipGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getIisGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getIepGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getIesGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getPeaoGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getPioGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getTeaoGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getTioGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getPearGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getPeerGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getPirGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getTearGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getTeerGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getTirGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append("\n");
+                }
             }
         }
         output();
@@ -406,95 +410,96 @@ public class Comparatizer {
                 //sub-directories.
 
                 for (SoftwareVersion softwareVersion : grimeTable.rowKeySet()){
-                    for (String uniquePatternID : grimeTable.columnKeySet()){
+                    for (String uniquePatternID : grimeTable.columnKeySet()) {
                         GrimeSuite individualPatternGrime = grimeTable.get(softwareVersion, uniquePatternID);
-
-                        File directory = new File("grime\\" + individualPatternGrime.getPatternMapper().getPi().getPatternType() + "\\");
-                        if (!directory.exists()) {
-                            Files.createDirectory(Paths.get("grime\\" + individualPatternGrime.getPatternMapper().getPi().getPatternType() + "\\"));
+                        if (individualPatternGrime != null) {
+                            File directory = new File("grime\\" + individualPatternGrime.getPatternMapper().getPi().getPatternType() + "\\");
+                            if (!directory.exists()) {
+                                Files.createDirectory(Paths.get("grime\\" + individualPatternGrime.getPatternMapper().getPi().getPatternType() + "\\"));
+                            }
+                            //print grime here
+                            StringBuilder output = new StringBuilder();
+                            output.append("Version: " + individualPatternGrime.getPatternMapper().getPi().getSoftwareVersion().getVersionNum() + "\n");
+                            output.append("***************************************\n");
+                            output.append("************Modular Grime**************\n");
+                            output.append("***************************************\n");
+                            output.append("PEA:\n");
+                            for (Relationship r : individualPatternGrime.getPeaGrimeInstances()) {
+                                output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
+                            }
+                            output.append("PEE:\n");
+                            for (Relationship r : individualPatternGrime.getPeeGrimeInstances()) {
+                                output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
+                            }
+                            output.append("PI:\n");
+                            for (Relationship r : individualPatternGrime.getPiGrimeInstances()) {
+                                output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
+                            }
+                            output.append("TEA:\n");
+                            for (Relationship r : individualPatternGrime.getTeaGrimeInstances()) {
+                                output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
+                            }
+                            output.append("TEE:\n");
+                            for (Relationship r : individualPatternGrime.getTeeGrimeInstances()) {
+                                output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
+                            }
+                            output.append("TI:\n");
+                            for (Relationship r : individualPatternGrime.getTiGrimeInstances()) {
+                                output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
+                            }
+                            output.append("\n\n");
+                            output.append("***************************************\n");
+                            output.append("*************Order Grime***************\n");
+                            output.append("***************************************\n");
+                            output.append("PEAO:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getPeaoGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            output.append("PIO:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getPioGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            output.append("TEAO:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getTeaoGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            output.append("TIO:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getTioGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            output.append("\n\n");
+                            output.append("***************************************\n");
+                            output.append("***********Repetition Grime************\n");
+                            output.append("***************************************\n");
+                            output.append("PEAR:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getPearGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            output.append("PEER:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getPeerGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            output.append("PIR:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getPirGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            output.append("TEAR:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getTearGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            output.append("TEER:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getTeerGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            output.append("TIR:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getTirGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            File outputFile = new File("grime\\" + individualPatternGrime.getPatternMapper().getPi().getPatternType() + "\\" + individualPatternGrime.getPatternMapper().getPi().getUniqueID() + ".log");
+                            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile, true)));
+                            out.println(output.toString());
+                            out.close();
                         }
-                        //print grime here
-                        StringBuilder output = new StringBuilder();
-                        output.append("Version: " + individualPatternGrime.getPatternMapper().getPi().getSoftwareVersion().getVersionNum() + "\n");
-                        output.append("***************************************\n");
-                        output.append("************Modular Grime**************\n");
-                        output.append("***************************************\n");
-                        output.append("PEA:\n");
-                        for (Relationship r : individualPatternGrime.getPeaGrimeInstances()){
-                            output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
-                        }
-                        output.append("PEE:\n");
-                        for (Relationship r : individualPatternGrime.getPeeGrimeInstances()){
-                            output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
-                        }
-                        output.append("PI:\n");
-                        for (Relationship r : individualPatternGrime.getPiGrimeInstances()){
-                            output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
-                        }
-                        output.append("TEA:\n");
-                        for (Relationship r : individualPatternGrime.getTeaGrimeInstances()){
-                            output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
-                        }
-                        output.append("TEE:\n");
-                        for (Relationship r : individualPatternGrime.getTeeGrimeInstances()){
-                            output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
-                        }
-                        output.append("TI:\n");
-                        for (Relationship r : individualPatternGrime.getTiGrimeInstances()){
-                            output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
-                        }
-                        output.append("\n\n");
-                        output.append("***************************************\n");
-                        output.append("*************Order Grime***************\n");
-                        output.append("***************************************\n");
-                        output.append("PEAO:\n");
-                        for (CallTreeNode callTreeNode : individualPatternGrime.getPeaoGrimeInstances()){
-                            output.append("\t" + callTreeNode.getName() + "\n");
-                        }
-                        output.append("PIO:\n");
-                        for (CallTreeNode callTreeNode : individualPatternGrime.getPioGrimeInstances()){
-                            output.append("\t" + callTreeNode.getName() + "\n");
-                        }
-                        output.append("TEAO:\n");
-                        for (CallTreeNode callTreeNode : individualPatternGrime.getTeaoGrimeInstances()){
-                            output.append("\t" + callTreeNode.getName() + "\n");
-                        }
-                        output.append("TIO:\n");
-                        for (CallTreeNode callTreeNode : individualPatternGrime.getTioGrimeInstances()){
-                            output.append("\t" + callTreeNode.getName() + "\n");
-                        }
-                        output.append("\n\n");
-                        output.append("***************************************\n");
-                        output.append("***********Repetition Grime************\n");
-                        output.append("***************************************\n");
-                        output.append("PEAR:\n");
-                        for (CallTreeNode callTreeNode : individualPatternGrime.getPearGrimeInstances()){
-                            output.append("\t" + callTreeNode.getName() + "\n");
-                        }
-                        output.append("PEER:\n");
-                        for (CallTreeNode callTreeNode : individualPatternGrime.getPeerGrimeInstances()){
-                            output.append("\t" + callTreeNode.getName() + "\n");
-                        }
-                        output.append("PIR:\n");
-                        for (CallTreeNode callTreeNode : individualPatternGrime.getPirGrimeInstances()){
-                            output.append("\t" + callTreeNode.getName() + "\n");
-                        }
-                        output.append("TEAR:\n");
-                        for (CallTreeNode callTreeNode : individualPatternGrime.getTearGrimeInstances()){
-                            output.append("\t" + callTreeNode.getName() + "\n");
-                        }
-                        output.append("TEER:\n");
-                        for (CallTreeNode callTreeNode : individualPatternGrime.getTeerGrimeInstances()){
-                            output.append("\t" + callTreeNode.getName() + "\n");
-                        }
-                        output.append("TIR:\n");
-                        for (CallTreeNode callTreeNode : individualPatternGrime.getTirGrimeInstances()){
-                            output.append("\t" + callTreeNode.getName() + "\n");
-                        }
-                        File outputFile = new File("grime\\" + individualPatternGrime.getPatternMapper().getPi().getPatternType() + "\\" + individualPatternGrime.getPatternMapper().getPi().getUniqueID() + ".log");
-                        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile, true)));
-                        out.println(output.toString());
-                        out.close();
                     }
                 }
             }

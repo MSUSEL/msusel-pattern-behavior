@@ -35,8 +35,6 @@ import java.util.*;
 
 public class Main {
 
-    public static boolean verboseLog = false;
-
     @Setter
     public static int counter = 0;
 

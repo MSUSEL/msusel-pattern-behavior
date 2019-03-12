@@ -56,8 +56,15 @@ public class UMLMessageGenerationUtils {
                     return importer;
                 }
             } else {
-                //third part type.
-                return null;
+                //third part type... but could also be a language type.. hmm.
+                if (searchStrings.get(0).equals("java")){
+                    //language type for sure.
+                    for (UMLClassifier langType : UMLGenerator.languageTypes.getDataTypes()) {
+                        if (searchStrings.get(searchStrings.size()-1).equals(langType.getName())) {
+                            return langType;
+                        }
+                    }
+                }
             }
         }
         //check classifier's vars

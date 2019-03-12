@@ -149,13 +149,18 @@ public class UMLGenerationUtils {
         List<SrcMLDecl> decls = getAllDeclsBelowMe(srcMLBlock);
 
         for (SrcMLDecl decl : decls){
-            UMLAttribute toAdd = new UMLAttribute(decl.getName(), decl.getType().getName());
-            if (decl.getInit() != null){
-                CallTreeNode<SrcMLNode> callTreeSrcML = decl.getCallTree();
-                //call tree is a string here. I will make it a call tree of umlClassifiers in the 4th pass.
-                toAdd.setInstantiation((UMLMessageGenerationUtils.convertSrcMLCallTreeToString(callTreeSrcML)));
+            //decl.getType might be null if the variable declaration is a lambda expression where the right hand size of the lambda
+            //points to a variable that hasn't been declared yet.
+            //im just ignoring this for now.
+            if (decl.getType() != null) {
+                UMLAttribute toAdd = new UMLAttribute(decl.getName(), decl.getType().getName());
+                if (decl.getInit() != null) {
+                    CallTreeNode<SrcMLNode> callTreeSrcML = decl.getCallTree();
+                    //call tree is a string here. I will make it a call tree of umlClassifiers in the 4th pass.
+                    toAdd.setInstantiation((UMLMessageGenerationUtils.convertSrcMLCallTreeToString(callTreeSrcML)));
+                }
+                localAtts.add(toAdd);
             }
-            localAtts.add(toAdd);
         }
         return localAtts;
     }
