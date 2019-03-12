@@ -39,9 +39,16 @@ public class UMLAttribute {
     private boolean isStatic;
     private boolean isFinal;
 
+    //refers to if this attribute is instantiated or not upon declaration. -- will be null if no instantiation, otherwise will be the call tree that instantiates it.
+    @Setter
+    private CallTreeNode<String> instantiation;
+
     //type will be set after the first passthrough.
     @Setter
     private UMLClassifier type;
+
+    @Setter
+    private UMLClassifier owningClassifier;
 
     public UMLAttribute(String name, String stringDataType, Visibility visibility) {
         this.name = name;
@@ -49,7 +56,16 @@ public class UMLAttribute {
         this.visibility = visibility;
     }
     public UMLAttribute(String name, String stringDataType) {
+        this(name, stringDataType, Visibility.UNSPECIFIED);
+    }
+    public UMLAttribute(String name, UMLClassifier type){
         this.name = name;
-        this.stringDataType = stringDataType;
+        this.type = type;
+        this.stringDataType = type.getName();
+        this.visibility = Visibility.UNSPECIFIED;
+    }
+
+    public String toString(){
+        return "UML Attribute owned by: " + owningClassifier.getName() + " and with name: " + name + " and of type: " + type.getName();
     }
 }

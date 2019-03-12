@@ -30,7 +30,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class UMLGenerationUtils {
     //utility class for common uml things..
@@ -95,8 +94,14 @@ public class UMLGenerationUtils {
             //dealing an enum (list of decls)
             List<SrcMLDecl> decls = block.getDecls();
             for (SrcMLDecl decl : decls) {
+                UMLAttribute toAdd = new UMLAttribute(decl.getName(), decl.getName());
                 //in this case the type is the same as the name... I think.. lol
-                attributes.add(new UMLAttribute(decl.getName(), decl.getName()));
+                if (decl.getInit() != null){
+                    CallTreeNode<SrcMLNode> callTreeSrcML = decl.getCallTree();
+                    //call tree is a string here. I will make it a call tree of umlClassifiers in the 4th pass.
+                    toAdd.setInstantiation((UMLMessageGenerationUtils.convertSrcMLCallTreeToString(callTreeSrcML)));
+                }
+                attributes.add(toAdd);
             }
         }
         //standard case
@@ -108,7 +113,14 @@ public class UMLGenerationUtils {
                 for (SrcMLDecl decl : declStmt.getDecls()) {
                     //multiple decl would happen with something like: int a,b,c;
                     //otherwise each decl has 1 name/type/etc..
-                    attributes.add(new UMLAttribute(decl.getName(), decl.getType().getName()));
+                    UMLAttribute toAdd = new UMLAttribute(decl.getName(), decl.getType().getName());
+                    //in this case the type is the same as the name... I think.. lol
+                    if (decl.getInit() != null){
+                        CallTreeNode<SrcMLNode> callTreeSrcML = decl.getCallTree();
+                        //call tree is a string here. I will make it a call tree of umlClassifiers in the 4th pass.
+                        toAdd.setInstantiation((UMLMessageGenerationUtils.convertSrcMLCallTreeToString(callTreeSrcML)));
+                    }
+                    attributes.add(toAdd);
                 }
             }
         }
@@ -132,14 +144,33 @@ public class UMLGenerationUtils {
         return params;
     }
 
-    public static List<UMLAttribute> getLocalUMLAttributes(SrcMLBlock srcMLBlock){
+    public static List<UMLAttribute> getLocalUMLAttributeDecls(SrcMLBlock srcMLBlock){
         List<UMLAttribute> localAtts = new ArrayList<>();
         List<SrcMLDecl> decls = getAllDeclsBelowMe(srcMLBlock);
 
         for (SrcMLDecl decl : decls){
-            localAtts.add(new UMLAttribute(decl.getName(), decl.getType().getName()));
+            //decl.getType might be null if the variable declaration is a lambda expression where the right hand size of the lambda
+            //points to a variable that hasn't been declared yet.
+            //im just ignoring this for now.
+            if (decl.getType() != null) {
+                UMLAttribute toAdd = new UMLAttribute(decl.getName(), decl.getType().getName());
+                if (decl.getInit() != null) {
+                    CallTreeNode<SrcMLNode> callTreeSrcML = decl.getCallTree();
+                    //call tree is a string here. I will make it a call tree of umlClassifiers in the 4th pass.
+                    toAdd.setInstantiation((UMLMessageGenerationUtils.convertSrcMLCallTreeToString(callTreeSrcML)));
+                }
+                localAtts.add(toAdd);
+            }
         }
         return localAtts;
+    }
+
+    public static void setUMLOperationLocalVariableUsagesAndDecls(UMLOperation umlOperation, SrcMLBlock srcMLBlock){
+        if (srcMLBlock != null) {
+            //happens when this is an interface or abstract declaration. Of course such a type will not have any attributes, so skip it.
+            List<UMLAttribute> localAttDecls = getLocalUMLAttributeDecls(srcMLBlock);
+            umlOperation.setLocalVariableDecls(localAttDecls);
+        }
     }
 
     public static UMLOperation getUMLOperation(SrcMLFunction srcMLFunction){
@@ -149,13 +180,7 @@ public class UMLGenerationUtils {
 
         //create toreturn object.. Though I need to see if there are any local attributes before returning it.
         UMLOperation toRet = new UMLOperation(name, params, returnType);
-
-        if (srcMLFunction.getBlock() != null) {
-            //happens when this is an interface or abstract declaration. Of course such a type will not have any attributes, so skip it.
-            List<UMLAttribute> localAtts = getLocalUMLAttributes(srcMLFunction.getBlock());
-            toRet.setLocalAttributes(localAtts);
-        }
-
+        setUMLOperationLocalVariableUsagesAndDecls(toRet, srcMLFunction.getBlock());
         return toRet;
     }
 
@@ -166,13 +191,7 @@ public class UMLGenerationUtils {
         String returnType = "null";
         //I need to include use dependencies in here eventually. -- see comment above for umloperation
         UMLOperation toRet = new UMLOperation(name, params, returnType);
-
-        if (srcMLConstructor.getBlock() != null) {
-            //happens when this is an interface or abstract declaration. Of course such a type will not have any attributes, so skip it.
-            List<UMLAttribute> localAtts = getLocalUMLAttributes(srcMLConstructor.getBlock());
-            toRet.setLocalAttributes(localAtts);
-        }
-
+        setUMLOperationLocalVariableUsagesAndDecls(toRet, srcMLConstructor.getBlock());
         return toRet;
     }
 
@@ -285,6 +304,10 @@ public class UMLGenerationUtils {
 
         boolean isAbstract = UMLGenerationUtils.isAbstract(srcMLClass.getSpecifiers());
         UMLClass umlClass = new UMLClass(srcMLClass.getName(), residingPackage, imports, attributes, operations, constructors, isAbstract, extendsParents, implementsParents, "class");
+        assignOperationOwners(operations, umlClass);
+        assignOperationOwners(constructors, umlClass);
+        assignAttributeOwners(attributes, umlClass);
+
         return umlClass;
     }
 
@@ -304,6 +327,7 @@ public class UMLGenerationUtils {
         if (!attributes.isEmpty()){
             umlInterface.setAttributes(attributes);
         }
+        assignOperationOwners(operations, umlInterface);
         return umlInterface;
     }
     public static UMLClass getUMLEnum(SrcMLEnum srcMLEnum, List<String> residingPackage, List<List<String>> imports){
@@ -315,8 +339,35 @@ public class UMLGenerationUtils {
         //null for extends parents because enums can't have extends parents.. while then can have implements (i think), srcml doesn't support
         //that as far as I can tell.
         UMLClass umlEnum = new UMLClass(srcMLEnum.getName(), residingPackage, imports, attributes, operations, constructors, false, new ArrayList<>(), new ArrayList<>(),"enum");
+        assignOperationOwners(operations, umlEnum);
+        assignOperationOwners(constructors, umlEnum);
+        assignAttributeOwners(attributes, umlEnum);
         return umlEnum;
     }
+
+    /***
+     * method responsible for assigning an owning classifier to each method within itself.
+     * This is purely to help with my code later on, and is not needed in the uml metamodel. However, its a pain to track uml operations without knowledge of their owning class
+     * @param operations
+     * @param umlClassifier
+     */
+    private static void assignOperationOwners(List<UMLOperation> operations, UMLClassifier umlClassifier){
+        for (UMLOperation umlOperation : operations){
+            umlOperation.setOwningClassifier(umlClassifier);
+        }
+    }
+
+    /***
+     * Same as abocve, but for attributes.
+     * @param attributes
+     * @param umlClassifier
+     */
+    private static void assignAttributeOwners(List<UMLAttribute> attributes, UMLClassifier umlClassifier){
+        for (UMLAttribute umlAttribute : attributes){
+            umlAttribute.setOwningClassifier(umlClassifier);
+        }
+    }
+
 
 
 }

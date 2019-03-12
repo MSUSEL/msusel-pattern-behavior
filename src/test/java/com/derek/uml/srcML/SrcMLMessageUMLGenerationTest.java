@@ -28,15 +28,12 @@ import com.derek.uml.UMLGenerationUtils;
 import com.derek.uml.UMLMessage;
 import com.derek.uml.UMLMessageGenerationUtils;
 import com.google.common.graph.MutableGraph;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import jdk.nashorn.internal.ir.annotations.Ignore;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 
-import java.util.List;
-
-import static org.junit.Assert.*;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
 //I'm beginning to realize that this is going to be a tough class to test because I will need to treat it similar to integration tests..
 //I basically need all files in a call chain to properly generate a sequence diagram.
 //I'll leave this class here for now but likely I'll discard it.
@@ -50,7 +47,7 @@ public class SrcMLMessageUMLGenerationTest extends SrcMLTest {
         xmlFileLocation = "src/test/resources/SrcMLCallExample.xml";
     }
 
-    @Before
+    @BeforeAll
     public void build(){
         super.build();
         Element blockEle = (Element)doc.getElementsByTagName("block").item(0);

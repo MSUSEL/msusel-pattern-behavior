@@ -26,13 +26,14 @@ package com.derek.uml.srcML;
 
 import com.derek.uml.UMLAttribute;
 import com.derek.uml.UMLGenerationUtils;
-import org.junit.Before;
-import org.junit.Test;
+import com.derek.uml.UMLGenerationUtils;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SrcMLDeclStmtUMLGenerationTest extends SrcMLTest{
 
@@ -44,7 +45,7 @@ public class SrcMLDeclStmtUMLGenerationTest extends SrcMLTest{
         xmlFileLocation = "src/test/resources/SrcMLDeclStmtExample.xml";
     }
 
-    @Before
+    @BeforeAll
     public void build(){
         super.build();
         Element blockEle = (Element)doc.getElementsByTagName("block").item(0);

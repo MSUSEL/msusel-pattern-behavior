@@ -25,17 +25,17 @@
 package com.derek.uml.srcML;
 
 import com.derek.uml.CallTreeNode;
-import com.google.common.graph.MutableGraph;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import jdk.nashorn.internal.ir.annotations.Ignore;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class SrcMLCallTreeLogicTest extends SrcMLTest {
     private SrcMLBlock block;
@@ -48,7 +48,7 @@ public class SrcMLCallTreeLogicTest extends SrcMLTest {
         xmlFileLocation = "src/test/resources/SrcMLCallExample.xml";
     }
 
-    @Before
+    @BeforeAll
     public void build(){
         super.build();
         Element blockEle = (Element)doc.getElementsByTagName("block").item(0);
@@ -124,7 +124,7 @@ public class SrcMLCallTreeLogicTest extends SrcMLTest {
     }
 
 
-    @After
+    @AfterAll
     public void after(){
         System.setOut(System.out);
     }

@@ -24,11 +24,14 @@
  */
 package com.derek.rbml;
 
+import com.derek.BehaviorConformance;
 import com.derek.uml.Relationship;
 import com.derek.uml.UMLClassifier;
+import com.derek.uml.UMLOperation;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import lombok.Getter;
+import org.omg.CosNaming.BindingHelper;
 
 @Getter
 public class RBMLMapping<T> {
@@ -54,9 +57,28 @@ public class RBMLMapping<T> {
         return null;
     }
 
+    /***
+     * gets a uml operations as correct type if the umlArtifact var is of type.
+     * @return
+     */
+    public UMLOperation getUMLOperationArtifact(){
+        if (umlArtifact instanceof UMLOperation){
+            return (UMLOperation) umlArtifact;
+        }
+        return null;
+    }
+
+
     public Relationship getRelationshipArtifact(){
         if (umlArtifact instanceof Relationship){
             return (Relationship) umlArtifact;
+        }
+        return null;
+    }
+
+    public BehaviorConformance getBehavioralConformance(){
+        if (umlArtifact instanceof BehaviorConformance){
+            return (BehaviorConformance)umlArtifact;
         }
         return null;
     }

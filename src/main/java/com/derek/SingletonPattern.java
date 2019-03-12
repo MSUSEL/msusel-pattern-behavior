@@ -40,7 +40,13 @@ import java.util.List;
 public class SingletonPattern extends PatternMapper {
 
     private Pair<String, UMLClassifier> singletonClassifier;
-    private Pair<String, UMLAttribute> singletonAttribute;
+    private List<Pair<String, UMLAttribute>> singletonAttributes;
+
+
+    private List<Pair<String, UMLOperation>> getInstanceOperationFamily;
+    private List<Pair<String, UMLOperation>> operationFamily;
+    private List<Pair<String, UMLOperation>> getDataOperationFamily;
+    private List<Pair<String, UMLAttribute>> uniqueInstanceAttributeFamily;
 
     public SingletonPattern(PatternInstance pi, UMLClassDiagram umlClassDiagram) {
         super(pi, umlClassDiagram);
@@ -51,14 +57,28 @@ public class SingletonPattern extends PatternMapper {
         singletonClassifier = new ImmutablePair<>("Singleton", getOneMajorRole(pi));
         List<Pair<String, String>> minorRoles = pi.getMinorRoles();
         //should only be 1 attribute for a singleton.
-        Pair<String, String> attribute = minorRoles.get(0);
-        singletonAttribute = new ImmutablePair<>("UniqueInstance", getAttributeFromString(singletonClassifier.getValue(), attribute.getValue()));
+        singletonAttributes = new ArrayList<>();
+        for (Pair<String, String> minorRole : minorRoles) {
+            singletonAttributes.add(new ImmutablePair<>("UniqueInstance", getAttributeFromString(singletonClassifier.getValue(), minorRole.getValue())));
+        }
+    }
+
+    @Override
+    protected void coalescePattern() {
+        List<Pair<String, UMLClassifier>> classifierAsList = new ArrayList<>();
+        classifierAsList.add(singletonClassifier);
+        getInstanceOperationFamily = coalesceOperations(classifierAsList, "GetInstance");
+        operationFamily = coalesceOperations(classifierAsList, "Operation");
+        getDataOperationFamily = coalesceOperations(classifierAsList, "GetData");
+
+        uniqueInstanceAttributeFamily = coalesceAttributes(classifierAsList,"UniqueInstance");
     }
 
     @Override
     public List<Pair<String, UMLClassifier>> getClassModelBlocks(){
-        //TODO
-        return new ArrayList<>();
+        List<Pair<String, UMLClassifier>> classifierAsList = new ArrayList<>();
+        classifierAsList.add(singletonClassifier);
+        return classifierAsList;
     }
 
     @Override
@@ -77,20 +97,26 @@ public class SingletonPattern extends PatternMapper {
 
     @Override
     public List<Pair<String, UMLOperation>> getOperationModelBlocks() {
-        return new ArrayList<>();
+        List<Pair<String, UMLOperation>> toRet = new ArrayList<>();
+        toRet.addAll(getInstanceOperationFamily);
+        toRet.addAll(operationFamily);
+        toRet.addAll(getDataOperationFamily);
+        return toRet;
     }
 
     @Override
     public List<Pair<String, UMLAttribute>> getAttributeModelBlocks() {
         List<Pair<String, UMLAttribute>> atts = new ArrayList<>();
-        atts.add(singletonAttribute);
+        atts.addAll(singletonAttributes);
+        atts.addAll(uniqueInstanceAttributeFamily);
         return atts;
     }
+
 
     @Override
     public void printSummary() {
         System.out.println("Singleton role: " + singletonClassifier.getValue().getName());
-        System.out.println("Singleton attribute role (attribute): " + singletonAttribute.getValue().getName());
+        System.out.println("Singleton attribute role (attribute): " + singletonAttributes.get(0).getValue().getName());
     }
 
     @Override

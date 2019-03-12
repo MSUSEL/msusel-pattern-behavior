@@ -29,9 +29,11 @@ import com.derek.uml.*;
 import lombok.Getter;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.management.relation.Relation;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 public class MetricSuite {
@@ -39,7 +41,7 @@ public class MetricSuite {
     private PatternMapper patternMapper;
     private List<RBMLMapping> rbmlStructuralMappings;
     private SPS sps;
-    private List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings;
+    private List<RBMLMapping> rbmlBehavioralMappings;
     private IPS ips;
 
     //number of participating classes
@@ -76,14 +78,12 @@ public class MetricSuite {
     //pattern instability, defined as (efferentCoupling) / (afferentCoupling + efferentCoupling)
     private String patternInstability = "";
 
-
-
-    public MetricSuite(List<RBMLMapping> rbmlStructuralMappings, PatternMapper patternMapper, SPS sps, List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings, IPS ips){
-        this.patternMapper = patternMapper;
-        this.rbmlStructuralMappings = rbmlStructuralMappings;
-        this.sps = sps;
-        this.rbmlBehavioralMappings = rbmlBehavioralMappings;
-        this.ips = ips;
+    public MetricSuite(ConformanceResults conformanceResults){
+        this.patternMapper = conformanceResults.getPatternMapper();
+        this.sps = conformanceResults.getSps();
+        this.rbmlStructuralMappings = conformanceResults.getRbmlStructureMappings();
+        this.ips = conformanceResults.getIps();
+        this.rbmlBehavioralMappings = conformanceResults.getRbmlBehaviorMappings();
         calculate();
     }
 
@@ -91,8 +91,8 @@ public class MetricSuite {
         calcNumParticipatingClasses();
         calcNumConformingStructuralRoles();
         calcNumNonConformingStructuralRoles();
+        //behavioral roles being done in 1 method now
         calcNumConformingBehavioralRoles();
-        calcNumNonConformingBehavioralRoles();
         calcNumConformingRolesTotal();
         calcNumNonConformingRolesTotal();
         calcSSize2();
@@ -172,26 +172,17 @@ public class MetricSuite {
 
     private void calcNumConformingBehavioralRoles(){
         List<InteractionRole> seenAlready = new ArrayList<>();
-        for (Pair<UMLOperation, BehaviorConformance> mapping : rbmlBehavioralMappings){
-            for (Pair<CallTreeNode, InteractionRole> pair : mapping.getRight().getRoleMap()){
-                if (!seenAlready.contains(pair.getRight())){
-                    seenAlready.add(pair.getRight());
+        for (InteractionRole interactionRole : ips.getInteractions()){
+            for (RBMLMapping rbmlMapping : rbmlBehavioralMappings){
+                if (interactionRole.equals(rbmlMapping.getRole())){
+                    if (!seenAlready.contains(interactionRole)){
+                        seenAlready.add(interactionRole);
+                    }
                 }
             }
         }
         numConformingBehavioralRoles = seenAlready.size();
-    }
-
-    private void calcNumNonConformingBehavioralRoles(){
-        List<InteractionRole> seenAlready = new ArrayList<>();
-        for (Pair<UMLOperation, BehaviorConformance> mapping : rbmlBehavioralMappings){
-            for (InteractionRole interactionRole : mapping.getRight().getBehavioralViolations()){
-                if (!seenAlready.contains(interactionRole)){
-                    seenAlready.add(interactionRole);
-                }
-            }
-        }
-        numNonConformingBehavioralRoles = seenAlready.size();
+        numNonConformingBehavioralRoles = ips.getInteractions().size() - seenAlready.size();
     }
     
     private void calcNumConformingRolesTotal(){
@@ -213,20 +204,13 @@ public class MetricSuite {
 
     private void calcAfferentCoupling(){
         //afferent means the value of the pair is a pattern class. (nonpattern_class -> pattern_class)
-        for (Relationship classifierPair : patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.ASSOCIATION)){
-            if (!isClassifierInPatternInstance(classifierPair.getFrom())){
-                afferentCoupling++;
-            }
-        }
+        afferentCoupling = patternMapper.getUniqueAfferentClassifiers().size();
+
     }
 
     private void calcEfferentCoupling(){
         //efferent means the key of the pair is a pattern class. (pattern_class -> nonpattern_class)
-        for (Relationship classifierPair : patternMapper.getUniqueRelationshipsFromPatternClassifiers(RelationshipType.ASSOCIATION)){
-            if (!isClassifierInPatternInstance(classifierPair.getTo())){
-                efferentCoupling++;
-            }
-        }
+        efferentCoupling = patternMapper.getUniqueEfferentClassifiers().size();
     }
 
     private void calcCouplingPatternClasses(){
@@ -284,28 +268,27 @@ public class MetricSuite {
 
 
     public String getSummary(){
-        String separator = "\t";
+        String delim = "\t";
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(Main.projectID + separator);
-        stringBuilder.append(patternMapper.getPi().getSoftwareVersion().getVersionNum() + separator);
-        stringBuilder.append(patternMapper.getPi().getPatternType() + separator);
-        stringBuilder.append(patternMapper.getPi().getUniqueID() + separator);
-        stringBuilder.append(this.getNumParticipatingClasses() + separator);
-        stringBuilder.append(this.getNumConformingStructuralRoles() + separator);
-        stringBuilder.append(this.getNumNonConformingStructuralRoles() + separator);
-        stringBuilder.append(this.getNumConformingBehavioralRoles() + separator);
-        stringBuilder.append(this.getNumNonConformingBehavioralRoles() + separator);
-        stringBuilder.append(this.getNumConformingRolesTotal() + separator);
-        stringBuilder.append(this.getNumNonConformingRolesTotal() + separator);
-        stringBuilder.append(this.getSsize2() + separator);
-        stringBuilder.append(this.getAfferentCoupling() + separator);
-        stringBuilder.append(this.getEfferentCoupling() + separator);
-        stringBuilder.append(this.getCouplingBetweenPatternClasses() + separator);
-        stringBuilder.append(this.getPatternStructuralIntegrity() + separator);
-        stringBuilder.append(this.getPatternBehavioralIntegrity() + separator);
-        stringBuilder.append(this.getPatternIntegrity() + separator);
-        stringBuilder.append(this.getPatternInstability());
-        stringBuilder.append("\n");
+        stringBuilder.append(Main.projectID + delim);
+        stringBuilder.append(patternMapper.getPi().getSoftwareVersion().getVersionNum() + delim);
+        stringBuilder.append(patternMapper.getPi().getPatternType() + delim);
+        stringBuilder.append(patternMapper.getPi().getUniqueID() + delim);
+        stringBuilder.append(this.getNumParticipatingClasses() + delim);
+        stringBuilder.append(this.getNumConformingStructuralRoles() + delim);
+        stringBuilder.append(this.getNumNonConformingStructuralRoles() + delim);
+        stringBuilder.append(this.getNumConformingBehavioralRoles() + delim);
+        stringBuilder.append(this.getNumNonConformingBehavioralRoles() + delim);
+        stringBuilder.append(this.getNumConformingRolesTotal() + delim);
+        stringBuilder.append(this.getNumNonConformingRolesTotal() + delim);
+        stringBuilder.append(this.getSsize2() + delim);
+        stringBuilder.append(this.getAfferentCoupling() + delim);
+        stringBuilder.append(this.getEfferentCoupling() + delim);
+        stringBuilder.append(this.getCouplingBetweenPatternClasses() + delim);
+        stringBuilder.append(this.getPatternStructuralIntegrity() + delim);
+        stringBuilder.append(this.getPatternBehavioralIntegrity() + delim);
+        stringBuilder.append(this.getPatternIntegrity() + delim);
+        stringBuilder.append(this.getPatternInstability() + delim);
         return stringBuilder.toString();
     }
 

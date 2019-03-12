@@ -35,8 +35,6 @@ import java.util.*;
 
 public class Main {
 
-    public static boolean verboseLog = false;
-
     @Setter
     public static int counter = 0;
 
@@ -53,12 +51,14 @@ public class Main {
     public static String outputFileName;
     public static String printIndividualRoles;
     public static String patternCommonNames;
+    public static int clientClassAllowances;
+    public static int clientUsageAllowances;
 
     private static Map<SoftwareVersion, SrcMLRunner> runner;
     public static List<SoftwareVersion> projectVersions;
     public static int currentVersion;
 
-    public Main(){
+    public void buildConfigs(){
         try {
             Properties seleniumProperties = new Properties();
             FileInputStream fileInputStream = new FileInputStream("configs/config.properties");
@@ -75,6 +75,8 @@ public class Main {
             this.outputFileName = seleniumProperties.getProperty("outputFileName");
             this.printIndividualRoles = seleniumProperties.getProperty("printIndividualRoles");
             this.patternCommonNames = seleniumProperties.getProperty("patternCommonNames");
+            this.clientClassAllowances = Integer.parseInt(seleniumProperties.getProperty("clientClassAllowances"));
+            this.clientUsageAllowances = Integer.parseInt(seleniumProperties.getProperty("clientUsageAllowances"));
 
 
             //new View(new Model(projectVersions));
@@ -87,7 +89,7 @@ public class Main {
         }
     }
 
-    private void doAnalysis(){
+    public void doAnalysis(){
         projectVersions = new ArrayList<>();
         for (int i = 0; i < Integer.parseInt(versions); i++){
             projectVersions.add(new SoftwareVersion(i));
@@ -107,6 +109,6 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        new Main();
+        new Main().buildConfigs();
     }
 }

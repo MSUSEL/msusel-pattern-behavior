@@ -42,6 +42,12 @@ public class ObjectAdapterPattern extends PatternMapper {
     private List<Pair<String, UMLAttribute>> adapteeAttributes;
     private List<Pair<String, UMLOperation>> requestOperations;
 
+    private List<Pair<String, UMLClassifier>> adapteeFamily;
+    private List<Pair<String, UMLClassifier>> adapterFamily;
+    private List<Pair<String, UMLClassifier>> targetFamily;
+    private List<Pair<String, UMLAttribute>> adapteeAttributeFamily;
+    private List<Pair<String, UMLOperation>> requestOperationsFamily;
+
     public ObjectAdapterPattern(PatternInstance pi, UMLClassDiagram umlClassDiagram) {
         super(pi, umlClassDiagram);
     }
@@ -70,35 +76,156 @@ public class ObjectAdapterPattern extends PatternMapper {
         }
     }
 
+
     @Override
-    public List<Pair<String, UMLClassifier>> getClassModelBlocks(){
-        //TODO
-        return new ArrayList<>();
+    protected void coalescePattern() {
+        coalesceAdapters();
+        coalesceAdaptees();
+        coalesceTargets();
+
+        //operations
+        requestOperationsFamily = coalesceOperations(this.getAllAdaptersAndTargets(), "Request");
+        adapteeAttributeFamily = coalesceAttributes(this.getAllAdapters(), "Adapter");
+    }
+
+    private void coalesceAdapters(){
+        List<UMLClassifier> adapterFamilyClassifiers = umlClassDiagram.getAllGeneralizationHierarchyChildren(adapterClassifier.getRight());
+        adapterFamily = new ArrayList<>();
+        for (UMLClassifier adapterFamilyClassifier : adapterFamilyClassifiers){
+            if (adapterFamilyClassifier.getIdentifier().equals("class")){
+                //concrete observer
+                adapterFamily.add(new ImmutablePair<>("ConcreteAdapter", adapterFamilyClassifier));
+            }else {
+                adapterFamily.add(new ImmutablePair<>("Adapter", adapterFamilyClassifier));
+            }
+        }
+    }
+
+    private void coalesceAdaptees(){
+        List<UMLClassifier> adapteeFamilyClassifiers = umlClassDiagram.getAllGeneralizationHierarchyChildren(adapteeClassifier.getRight());
+        adapteeFamily = new ArrayList<>();
+        for (UMLClassifier adapteeFamilyClassifier : adapteeFamilyClassifiers){
+            if (adapteeFamilyClassifier.getIdentifier().equals("class")){
+                //concrete observer
+                adapteeFamily.add(new ImmutablePair<>("ConcreteAdaptee", adapteeFamilyClassifier));
+            }else {
+                adapteeFamily.add(new ImmutablePair<>("Adaptee", adapteeFamilyClassifier));
+            }
+        }
+    }
+
+    private void coalesceTargets(){
+        List<UMLClassifier> adapters = getAdaptersOnlyUMLCLassifiers();
+        targetFamily = new ArrayList<>();
+        for (UMLClassifier adapter : adapters) {
+            List<UMLClassifier> adapterParents = umlClassDiagram.getAllGeneralizationHierarchyImmediateParents(adapter);
+            for (UMLClassifier target : adapterParents){
+                if (target.getIdentifier().equals("class")){
+                    //concrete observer
+                    targetFamily.add(new ImmutablePair<>("ConcreteTarget", target));
+                }else {
+                    targetFamily.add(new ImmutablePair<>("Target", target));
+                }
+            }
+        }
+    }
+
+    private List<UMLClassifier> getAdaptersOnlyUMLCLassifiers(){
+        List<UMLClassifier> classifiers = new ArrayList<>();
+        for (Pair<String, UMLClassifier> pair : getAllAdapters()){
+            classifiers.add(pair.getRight());
+        }
+        return classifiers;
     }
 
     @Override
-    public List<Pair<String, UMLClassifier>> getAllParticipatingClasses(){
-        List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
-        //TODO
-        return toRet;
+    public List<Pair<String, UMLClassifier>> getClassModelBlocks(){
+        List<Pair<String, UMLClassifier>> modelBlocks = new ArrayList<>();
+        //class
+        modelBlocks.add(adapterClassifier);
+        for (Pair<String, UMLClassifier> adapterPair : adapterFamily){
+            if (adapterPair.getLeft().equals("ConcreteAdapter")){
+                modelBlocks.add(adapterPair);
+            }
+        }
+        for (Pair<String, UMLClassifier> adapteePair : adapteeFamily){
+            if (adapteePair.getLeft().equals("ConcreteAdaptee")){
+                modelBlocks.add(adapteePair);
+            }
+        }
+        for (Pair<String, UMLClassifier> targetPair : targetFamily){
+            if (targetPair.getLeft().equals("ConcreteTarget")){
+                modelBlocks.add(targetPair);
+            }
+        }
+        return modelBlocks;
     }
 
     @Override
     public List<Pair<String, UMLClassifier>> getClassifierModelBlocks() {
-        List<Pair<String, UMLClassifier>> modelBlocks= new ArrayList<>();
+        List<Pair<String, UMLClassifier>> modelBlocks = new ArrayList<>();
         modelBlocks.add(adapteeClassifier);
-        modelBlocks.add(adapterClassifier);
+        for (Pair<String, UMLClassifier> adapterPair : adapterFamily){
+            if (adapterPair.getLeft().equals("Adapter")){
+                modelBlocks.add(adapterPair);
+            }
+        }
+        for (Pair<String, UMLClassifier> adapteePair : adapteeFamily){
+            if (adapteePair.getLeft().equals("Adaptee")){
+                modelBlocks.add(adapteePair);
+            }
+        }
+        for (Pair<String, UMLClassifier> targetPair : targetFamily){
+            if (targetPair.getLeft().equals("Target")){
+                modelBlocks.add(targetPair);
+            }
+        }
         return modelBlocks;
     }
 
     @Override
     public List<Pair<String, UMLOperation>> getOperationModelBlocks() {
-        return requestOperations;
+        List<Pair<String, UMLOperation>> toRet = new ArrayList<>();
+        toRet.addAll(requestOperations);
+        toRet.addAll(requestOperationsFamily);
+        return toRet;
     }
 
     @Override
     public List<Pair<String, UMLAttribute>> getAttributeModelBlocks() {
-        return adapteeAttributes;
+        List<Pair<String, UMLAttribute>> toRet = new ArrayList<>();
+        toRet.addAll(adapteeAttributes);
+        toRet.addAll(adapteeAttributeFamily);
+        return toRet;
+    }
+
+    public List<Pair<String, UMLClassifier>> getAllAdapters(){
+        List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
+        toRet.add(adapterClassifier);
+        toRet.addAll(adapterFamily);
+        return toRet;
+    }
+
+    public List<Pair<String, UMLClassifier>> getAllAdaptees(){
+        List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
+        toRet.add(adapteeClassifier);
+        toRet.addAll(adapteeFamily);
+        return toRet;
+    }
+
+    public List<Pair<String, UMLClassifier>> getAllAdaptersAndTargets(){
+        List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
+        toRet.addAll(getAllAdapters());
+        toRet.addAll(targetFamily);
+        return toRet;
+    }
+
+    @Override
+    public List<Pair<String, UMLClassifier>> getAllParticipatingClasses(){
+        List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
+        toRet.addAll(getAllAdapters());
+        toRet.addAll(getAllAdaptees());
+        return toRet;
     }
 
     @Override
@@ -112,6 +239,7 @@ public class ObjectAdapterPattern extends PatternMapper {
             System.out.println("Request() role (operation): " + op.getValue().getName());
         }
     }
+
 
     public List<UMLClassifier> getUMLClassifiers(){
         List<UMLClassifier> umlClassifiers = new ArrayList<>();

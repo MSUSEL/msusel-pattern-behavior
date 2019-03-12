@@ -37,10 +37,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class TemplateMethodPattern extends PatternMapper{
+public class TemplateMethodPattern extends PatternMapper {
 
     private Pair<String, UMLClassifier> templateClassifier;
     private List<Pair<String, UMLOperation>> templateOperations;
+
+    private List<Pair<String, UMLClassifier>> templateFamily;
+    private List<Pair<String, UMLClassifier>> templateConcreteFamily;
+    private List<Pair<String, UMLOperation>> templateOperationFamily;
+    private List<Pair<String, UMLOperation>> partialStepOperationFamily;
 
     public TemplateMethodPattern(PatternInstance pi, UMLClassDiagram umlClassDiagram) {
         super(pi, umlClassDiagram);
@@ -63,15 +68,40 @@ public class TemplateMethodPattern extends PatternMapper{
     }
 
     @Override
+    protected void coalescePattern() {
+        //coalesces both abstract and concrete templates
+        coalesceTemplates();
+
+        templateOperationFamily = coalesceOperations(getAllAbstractTemplates(), "TemplateMethod");
+        partialStepOperationFamily = coalesceOperations(getAllConcreteTemplates(), "PartialStep");
+    }
+
+    private void coalesceTemplates(){
+        List<UMLClassifier> templateFamilyClassifiers = umlClassDiagram.getAllGeneralizationHierarchyChildren(templateClassifier.getRight());
+        templateConcreteFamily = new ArrayList<>();
+        templateFamily = new ArrayList<>();
+        for (UMLClassifier templateFamilyClassifier : templateFamilyClassifiers){
+            if (templateFamilyClassifier.getIdentifier().equals("class")){
+                //concrete observer
+                templateConcreteFamily.add(new ImmutablePair<>("ConcreteTemplate", templateFamilyClassifier));
+            }else {
+                templateFamily.add(new ImmutablePair<>("AbstractTemplate", templateFamilyClassifier));
+            }
+        }
+    }
+
+    @Override
     public List<Pair<String, UMLClassifier>> getClassModelBlocks(){
-        //TODO
-        return new ArrayList<>();
+        List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
+        toRet.addAll(templateConcreteFamily);
+        return toRet;
     }
 
     @Override
     public List<Pair<String, UMLClassifier>> getAllParticipatingClasses(){
         List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
-        //TODO
+        toRet.addAll(getAllAbstractTemplates());
+        toRet.addAll(getAllConcreteTemplates());
         return toRet;
     }
 
@@ -79,17 +109,37 @@ public class TemplateMethodPattern extends PatternMapper{
     public List<Pair<String, UMLClassifier>> getClassifierModelBlocks() {
         List<Pair<String, UMLClassifier>> blocks = new ArrayList<>();
         blocks.add(templateClassifier);
+        //template family is abstract classes.
+        blocks.addAll(templateFamily);
         return blocks;
     }
 
     @Override
     public List<Pair<String, UMLOperation>> getOperationModelBlocks() {
-        return templateOperations;
+        List<Pair<String, UMLOperation>> toRet = new ArrayList<>();
+        toRet.addAll(templateOperations);
+        toRet.addAll(templateOperationFamily);
+        toRet.addAll(partialStepOperationFamily);
+        return toRet;
     }
 
     @Override
     public List<Pair<String, UMLAttribute>> getAttributeModelBlocks() {
+        //no attributes in template method
         return new ArrayList<>();
+    }
+
+    public List<Pair<String, UMLClassifier>> getAllAbstractTemplates(){
+        List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
+        toRet.add(templateClassifier);
+        toRet.addAll(templateFamily);
+        return toRet;
+    }
+
+    public List<Pair<String, UMLClassifier>> getAllConcreteTemplates(){
+        List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
+        toRet.addAll(templateConcreteFamily);
+        return toRet;
     }
 
     @Override
@@ -99,6 +149,7 @@ public class TemplateMethodPattern extends PatternMapper{
             System.out.println("Template() role (operation): " + op.getValue().getName());
         }
     }
+
 
     @Override
     protected String getPatternCommonNamesFileName() {

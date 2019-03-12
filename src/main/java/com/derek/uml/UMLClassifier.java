@@ -58,6 +58,12 @@ public abstract class UMLClassifier {
     //returns attributes or null if the holding class does not have any attributes
     public abstract List<UMLAttribute> getAttributes();
 
+    //returns only local attributes - this is because technically speaking the attributes are from all super classes, but
+    //I would also like to separate local atts from this case.
+    public abstract List<UMLAttribute> getLocalAttributes();
+
+    public abstract List<UMLOperation> getOperationsIncludingConstructorsIfExists();
+
     //used for uml class diagram generation
     public abstract List<String> getExtendsParentsString();
     public abstract List<String> getImplementsParentsString();
@@ -68,5 +74,12 @@ public abstract class UMLClassifier {
 
     public String toString(){
         return name + " as a " + identifier;
+    }
+
+    public boolean isLanguageType(){
+        if (this.identifier.contains("language_")){
+            return true;
+        }
+        return  false;
     }
 }

@@ -26,11 +26,11 @@ package com.derek.uml.srcML;
 
 import com.derek.uml.UMLGenerationUtils;
 import com.derek.uml.UMLOperation;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SrcMLFunctionUMLGenerationTest extends SrcMLTest{
 
@@ -43,7 +43,7 @@ public class SrcMLFunctionUMLGenerationTest extends SrcMLTest{
         xmlFileLocation = "src/test/resources/SrcMLFunctionExample.xml";
     }
 
-    @Before
+    @BeforeAll
     public void build(){
         super.build();
         Element functionEle = (Element)doc.getElementsByTagName("function").item(0);

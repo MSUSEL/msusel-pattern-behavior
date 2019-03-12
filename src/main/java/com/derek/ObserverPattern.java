@@ -49,6 +49,8 @@ public class ObserverPattern extends PatternMapper {
     private List<Pair<String, UMLOperation>> setStateOperations;
     private List<Pair<String, UMLClassifier>> observerFamily;
     private List<Pair<String, UMLClassifier>> subjectFamily;
+    private List<Pair<String, UMLAttribute>> subjectStateAttributes;
+    private List<Pair<String, UMLAttribute>> observerStateAttributes;
 
     public ObserverPattern(PatternInstance pi, UMLClassDiagram umlClassDiagram) {
         super(pi, umlClassDiagram);
@@ -69,10 +71,10 @@ public class ObserverPattern extends PatternMapper {
         for (Pair<String, String> s : notifyOperationsString){
             notifyOperations.add(new ImmutablePair<>(s.getKey(), getOperationFromString(subjectClassifier.getValue(), s.getValue())));
         }
-        coalescePattern();
     }
 
-    private void coalescePattern(){
+    @Override
+    protected void coalescePattern(){
         //get families of subjects and observers
         coalesceObservers();
         coalesceSubjects();
@@ -83,8 +85,9 @@ public class ObserverPattern extends PatternMapper {
         updateOperations = coalesceOperations(this.getAllObservers(), "Update");
         getStateOperations = coalesceOperations(this.getAllSubjects(), "GetState");
         setStateOperations = coalesceOperations(this.getAllSubjects(), "SetState");
+        subjectStateAttributes = coalesceAttributes(this.getAllSubjects(), "SubjectState");
+        observerStateAttributes = coalesceAttributes(this.getAllObservers(), "ObserverState");
     }
-
 
     private void coalesceObservers(){
         List<UMLClassifier> observerFamilyClassifiers = umlClassDiagram.getAllGeneralizationHierarchyChildren(observerClassifier.getRight());
@@ -111,20 +114,6 @@ public class ObserverPattern extends PatternMapper {
             }
         }
 
-    }
-
-    private List<Pair<String, UMLOperation>> coalesceOperations(List<Pair<String, UMLClassifier>> owningClassifier, String operationName){
-        List<Pair<String, UMLOperation>> operationsDataStruct = new ArrayList<>();
-        for (Pair<String, UMLClassifier> classifierPair : owningClassifier){
-            for (String commonNameValue : patternCommonNames.get(operationName)){
-                List<Pair<String, UMLOperation>> tempOperations = new ArrayList<>();
-                coalescenceStringSearch(commonNameValue, classifierPair.getRight(), tempOperations);
-                for (Pair<String, UMLOperation> op : tempOperations){
-                    operationsDataStruct.add(new ImmutablePair<>(operationName, op.getRight()));
-                }
-            }
-        }
-        return operationsDataStruct;
     }
 
     @Override
@@ -183,7 +172,10 @@ public class ObserverPattern extends PatternMapper {
 
     @Override
     public List<Pair<String, UMLAttribute>> getAttributeModelBlocks() {
-        return new ArrayList<>();
+        List<Pair<String, UMLAttribute>> toRet = new ArrayList<>();
+        toRet.addAll(subjectStateAttributes);
+        toRet.addAll(observerStateAttributes);
+        return toRet;
     }
 
     public List<Pair<String, UMLClassifier>> getAllObservers(){

@@ -88,6 +88,25 @@ public class UMLClassDiagram {
         return children;
     }
 
+    public List<UMLClassifier> getAllGeneralizationHierarchyImmediateParents(UMLClassifier child){
+        List<UMLClassifier> parents = new ArrayList<>();
+        if (!classDiagram.nodes().contains(child)) {
+            //node not here, error condition
+            return parents;
+        }
+        List<UMLClassifier> immediateParents = new ArrayList<>();
+        for (UMLClassifier potentialParent : classDiagram.nodes()){
+            for (Relationship possibleEdge : classDiagram.edgesConnecting(child, potentialParent)){
+                if (possibleEdge.getRelationshipType() == RelationshipType.GENERALIZATION || possibleEdge.getRelationshipType() == RelationshipType.REALIZATION){
+                    immediateParents.add(potentialParent);
+                }
+            }
+        }
+        parents.addAll(immediateParents);
+        //if I want to add ALL parents, I would recursively add it here... I won't go up the entire way though.
+        return parents;
+    }
+
     public Relationship getRelationshipFromClassDiagram(UMLClassifier from, UMLClassifier to, RelationshipType relationshipType){
         for (Relationship r : classDiagram.edgesConnecting(from, to)){
             if (r.getRelationshipType() == relationshipType){

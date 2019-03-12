@@ -192,7 +192,7 @@ public class Conformance {
         return count;
     }
 
-    public List<Pair<UMLOperation, BehaviorConformance>> mapBehavior(List<RBMLMapping> structureMappings){
+    public List<RBMLMapping> mapBehavior(List<RBMLMapping> structureMappings){
         List<Pair<UMLOperation, BehaviorConformance>> behaviorMappings = new ArrayList<>();
         for (OperationRole operationRole : getOperationsFromMappings(structureMappings)){
             List<UMLOperation> umlOperations = getOperationsFromMapping(operationRole, structureMappings);
@@ -202,18 +202,39 @@ public class Conformance {
                 //in this case, the method won't have any behavior, so I can literally just skip over it.
                 if (callTree != null) {
                     List<CallTreeNode<String>> callTreeAsList = callTree.convertMeToOrderedList();
-                    BehaviorConformance behaviorConformance = new BehaviorConformance(ips, callTreeAsList, structureMappings);
+                    BehaviorConformance behaviorConformance = new BehaviorConformance(ips, callTreeAsList, structureMappings, mappedOperation);
                     if (behaviorConformance.getFunctionHeaderMapping() != null){
                         //will be null if the IPS does not include this mapping.. and in this case we should ignore it.
+                        behaviorConformance.findUnnecessaryActions(mappedOperation);
                         behaviorMappings.add(new ImmutablePair<>(mappedOperation, behaviorConformance));
                     }
-                    //no, to the comment below.
-                    //here is where I should add the use dependency, based on behaviorConforamnce.varMapping.getUMLArtifact.
-
                 }
             }
         }
-        return behaviorMappings;
+        //here I would like to check all behaivoral mappings and coalesce them. The problem is that each operation maps onyl certain elements of a
+        //pattern's behavior. For example, in an observer pattern the update() method and the setSTate() method are both required, yet there will
+        //maybe never be a single flow that satisfies both at the same time. So, because I am already statically scanning all pertinent methods to
+        //find behavior like this, now I need to 'combine them'.
+
+        List<RBMLMapping> rbmlBehaviorMappings = collapseBehaviors(behaviorMappings);
+
+
+        return rbmlBehaviorMappings;
+    }
+
+    private List<RBMLMapping> collapseBehaviors(List<Pair<UMLOperation, BehaviorConformance>> behaviorMappings ){
+        List<RBMLMapping> rbmlBehavioralMappings = new ArrayList<>();
+        for (Pair<UMLOperation, BehaviorConformance> behaviorMapping : behaviorMappings){
+            for (Pair<CallTreeNode, InteractionRole> pair : behaviorMapping.getRight().getRoleMap()){
+                if (ips.getInteractions().contains(pair.getRight())){
+                    //these behavioral mappings contain an interaction role on the left (of the mapping), and a behaviormapping instance on the right.
+                    //this can be read as saying an interaction role maps to a behavioralconformance, which by itself has umloperation information, as well as
+                    //call tree info
+                    rbmlBehavioralMappings.add(new RBMLMapping(pair.getRight(), behaviorMapping.getRight()));
+                }
+            }
+        }
+        return rbmlBehavioralMappings;
     }
 
     private List<OperationRole> getOperationsFromMappings(List<RBMLMapping> structureMappings){
@@ -249,20 +270,6 @@ public class Conformance {
         System.out.println("likely this means no operation was found that runs the behavior of this pattern.");
         System.out.println("Exiting.. ");
         System.exit(0);
-        return null;
-    }
-
-    private UMLOperation getUMLOperationObjFromName(List<RBMLMapping> structionalMappings, String opName){
-        for (RBMLMapping rbmlMapping : structionalMappings){
-            if (rbmlMapping.getUmlArtifact() instanceof UMLOperation){
-                UMLOperation mappedOperation = (UMLOperation) rbmlMapping.getUmlArtifact();
-                if (mappedOperation.getName().equals(opName)){
-                    //found a map!
-                    return mappedOperation;
-                }
-            }
-        }
-        //might return null here.. would happen if an operation is called that is not mapped structurally.
         return null;
     }
 

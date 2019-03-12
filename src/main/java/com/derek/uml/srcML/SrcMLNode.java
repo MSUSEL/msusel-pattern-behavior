@@ -433,7 +433,14 @@ public abstract class SrcMLNode {
         if (childNode != null) {
             List<SrcMLCall> calls = childNode.getCalls();
             for (SrcMLCall call : calls) {
-                CallTreeNode<SrcMLNode> nextChild = new CallTreeNode<>(call, "call");
+                CallTreeNode<SrcMLNode> nextChild;
+                if (!childNode.getNames().isEmpty()){
+                    //times when a var is declared at class level, but init is lazy and used by methods further down
+                    nextChild = new CallTreeNode<>(call, "init_{" + childNode.getNames().get(0).getName() + "}");
+                } else {
+                    nextChild = new CallTreeNode<>(call, "call");
+                }
+
                 callTree.addChild(nextChild);
                 //regardless, fill the rest of the forest with edges for each argument.
                 for (SrcMLArgument argument : call.getArgumentList().getArguments()) {

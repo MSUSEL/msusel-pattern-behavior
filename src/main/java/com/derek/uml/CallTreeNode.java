@@ -39,9 +39,6 @@ public class CallTreeNode<T> {
     private List<CallTreeNode<T>> children;
     private String tagName;
 
-    @Setter
-    private UMLClassifier umlClassifier;
-
     public CallTreeNode(T name, String tagName){
         //call tree will start with a name of the 'to' node in the tree. The name starts as a string.
         //in the second pass through the tree, once the UMLClassifiers are identified, thew name will be
@@ -50,6 +47,7 @@ public class CallTreeNode<T> {
         this.tagName = tagName;
         children = new ArrayList<>();
     }
+
     public void addChild(CallTreeNode<T> child){
         children.add(child);
     }
@@ -80,6 +78,17 @@ public class CallTreeNode<T> {
         return asList;
     }
 
+    public String parseInitTagName(){
+        if (this.isInit()){
+            //will be of form: init_
+            Pattern pattern = Pattern.compile("init_\\{(.+?)\\}");
+            Matcher matcher = pattern.matcher(this.tagName);
+            matcher.find();
+            return matcher.group(1);
+        }
+        return "";
+    }
+
     /***
      * parses the type from a decl tag. Returns empty string if tag is not a decl
      * @return
@@ -108,8 +117,18 @@ public class CallTreeNode<T> {
         return false;
     }
 
+    public boolean isInit(){
+        if (this.getTagName().contains("init_")){
+            return true;
+        }
+        return false;
+    }
+
     public boolean isFunction(){
         if (this.getTagName().contains("function")){
+            return true;
+        }
+        if (this.getTagName().contains("constructor")){
             return true;
         }
         return false;
@@ -120,6 +139,25 @@ public class CallTreeNode<T> {
         String[] splitter = nameConverter.split("\\.");
         return splitter[0];
     }
+
+    public String parseVarNameFromCallOrInit(){
+        if (this.isCall()){
+            return parseVarNameFromCall();
+        }else if (this.isInit()){
+            return parseVarNameFromInit();
+        }
+        return "";
+    }
+    public String parseVarNameFromInit(){
+        if (this.tagName.contains("init_{")){
+            Pattern pattern = Pattern.compile("init_\\{(.+?)\\}");
+            Matcher matcher = pattern.matcher(this.tagName);
+            matcher.find();
+            return matcher.group(1);
+        }
+        return "";
+    }
+
 
     public String parseCallNameFromCall(int callDepth){
         String nameConverter = name.toString();

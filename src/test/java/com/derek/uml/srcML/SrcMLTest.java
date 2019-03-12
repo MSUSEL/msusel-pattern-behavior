@@ -24,7 +24,7 @@
  */
 package com.derek.uml.srcML;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeAll;
 import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -36,7 +36,7 @@ public abstract class SrcMLTest {
     protected Document doc;
 
 
-    @Before
+    @BeforeAll
     public void build(){
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();

@@ -57,6 +57,16 @@ public class UMLInterface extends UMLClassifier {
         }
     }
 
+    @Override
+    public List<UMLAttribute> getLocalAttributes() {
+        return getAttributes();
+    }
+
+    @Override
+    public List<UMLOperation> getOperationsIncludingConstructorsIfExists() {
+        return getOperations();
+    }
+
     public List<String> getExtendsParentsString(){
         if (extendsParentsString == null){
             return new ArrayList<>();

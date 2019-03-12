@@ -24,11 +24,11 @@
  */
 package com.derek.uml.srcML;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SrcMLFunctionParserTest extends SrcMLTest{
 
@@ -40,7 +40,7 @@ public class SrcMLFunctionParserTest extends SrcMLTest{
         xmlFileLocation = "src/test/resources/SrcMLFunctionExample.xml";
     }
 
-    @Before
+    @BeforeAll
     public void build(){
         super.build();
         Element functionEle = (Element)doc.getElementsByTagName("function").item(0);

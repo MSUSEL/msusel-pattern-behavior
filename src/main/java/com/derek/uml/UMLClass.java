@@ -105,4 +105,36 @@ public class UMLClass extends UMLClassifier {
         return output.toString();
     }
 
+    @Override
+    public List<UMLOperation> getOperationsIncludingConstructorsIfExists() {
+        List<UMLOperation> ops = new ArrayList<>();
+        ops.addAll(getConstructors());
+        ops.addAll(getOperations());
+        return ops;
+    }
+
+    /***
+     * this one is tricky because I need to return all super-class attributes as well as attributes within the scope of htis class.
+     * @return
+     */
+    @Override
+    public List<UMLAttribute> getAttributes(){
+        List<UMLAttribute> attributesToRet = new ArrayList<>();
+        if (this.attributes == null) {
+            this.attributes = new ArrayList<>();
+        }
+        attributesToRet.addAll(this.attributes);
+        for (UMLClassifier umlClassifier : this.getExtendsParents()){
+            attributesToRet.addAll(umlClassifier.getAttributes());
+        }
+        return attributesToRet;
+    }
+
+    public List<UMLAttribute> getLocalAttributes(){
+        if (attributes == null){
+            attributes = new ArrayList<>();
+        }
+        return attributes;
+    }
+
 }

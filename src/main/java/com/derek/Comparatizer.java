@@ -24,6 +24,8 @@
  */
 package com.derek;
 
+import com.derek.grime.GrimeFinder;
+import com.derek.grime.GrimeSuite;
 import com.derek.model.Model;
 import com.derek.model.PatternInstanceEvolution;
 import com.derek.model.PatternType;
@@ -33,6 +35,7 @@ import com.derek.rbml.*;
 import com.derek.uml.*;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.BufferedWriter;
@@ -41,13 +44,11 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Comparatizer {
 
+    private final String delim = "\t";
     private Model model;
     private Map<SoftwareVersion, UMLClassDiagram> umlClassDiagrams;
     private StringBuilder outputter;
@@ -57,11 +58,18 @@ public class Comparatizer {
     // each entry will have a grimeSuite object, refering to all types of grime that exist for that pattern instance at that version.
     private Table<SoftwareVersion, String, GrimeSuite> grimeTable;
 
+    //in addition to tracking a grime table, I think its important to track a metric table so that I can output all at the end.
+    private Table<SoftwareVersion, String, MetricSuite> metricTable;
+
+
+
     public Comparatizer(Model model){
         this.model = model;
         this.umlClassDiagrams = model.getClassDiagramMap();
         outputter = new StringBuilder();
         grimeTable = HashBasedTable.create();
+        metricTable = HashBasedTable.create();
+        clearLog();
     }
 
     public void runAnalysis(){
@@ -82,73 +90,132 @@ public class Comparatizer {
                             if (pair.getValue() != null) {
                                 //will happen when a pattern instance first appears after the first version number under analysis.
                                 pair.getValue().setUniqueID(uniqueID);
-                                testComparisons(umlClassDiagrams.get(pair.getKey()), pair.getValue());
+                                SoftwareVersion version = pair.getLeft();
+                                PatternInstance patternInstance = pair.getRight();
+                                ConformanceResults conformanceResults = testComparisons(umlClassDiagrams.get(version), patternInstance);
 
-                                //do grime checks here i think..  Not in the output logic area.
+                                //after we have gathered conformance, build metrics.
+                                MetricSuite ms = new MetricSuite(conformanceResults);
+                                metricTable.put(version, patternInstance.getUniqueID(), ms);
+
+                                //after metrics, build grime table.
+                                grimeTable.put(version, patternInstance.getUniqueID(), conformanceResults.getGrimeSuite());
                             }
                         }
                     }
                 }
             }
         }
+        //here I will have to do the actual checks for grime, looking at each form of grime across versions and finding changes.
+        //this is because the grimesuite obj is just a 'snapshot' of pattern grime analysis, and contains measurements of the grime-related metrics
+        //(such as TCC, RCI, TEAG, PEAG, etc.)
 
+        GrimeFinder grimeFinder = new GrimeFinder(grimeTable);
+        grimeFinder.findModularGrime();
+        grimeFinder.findClassGrime();
+        grimeFinder.findBehavioralGrime();
+        outputGrime();
+
+        for (String patternID : metricTable.columnKeySet()){
+            for (SoftwareVersion version : metricTable.rowKeySet()) {
+                MetricSuite versionSuite = metricTable.get(version, patternID);
+                if (versionSuite != null) {
+                    //will be null when a pattern instance does not appear in a particular version.
+                    outputter.append(metricTable.get(version, patternID).getSummary());
+                    outputter.append(grimeFinder.getPeaGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getPeeGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getPiGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getTeaGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getTeeGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getTiGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getDipGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getDisGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getDepGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getDesGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getIipGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getIisGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getIepGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getIesGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getPeaoGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getPioGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getTeaoGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getTioGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getPearGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getPeerGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getPirGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getTearGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getTeerGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append(grimeFinder.getTirGrime().get(version, patternID).getTabDelimSummary());
+                    outputter.append("\n");
+                }
+            }
+        }
         output();
     }
 
-    public void testComparisons(UMLClassDiagram umlClassDiagram, PatternInstance pi){
-
+    public ConformanceResults testComparisons(UMLClassDiagram umlClassDiagram, PatternInstance pi){
+        ConformanceResults toRet;
         switch(pi.getPatternType()){
             case OBJECT_ADAPTER:
-                compareObjectAdapter(pi, umlClassDiagram);
+                toRet = compareObjectAdapter(pi, umlClassDiagram);
                 break;
             case STATE:
-                compareState(pi, umlClassDiagram);
+                toRet = compareState(pi, umlClassDiagram);
                 break;
             case OBSERVER:
-                compareObserver(pi, umlClassDiagram);
+                toRet = compareObserver(pi, umlClassDiagram);
                 break;
             case TEMPLATE_METHOD:
-                compareTemplateMethod(pi, umlClassDiagram);
+                toRet = compareTemplateMethod(pi, umlClassDiagram);
                 break;
             case SINGLETON:
-                compareSingleton(pi, umlClassDiagram);
+                toRet = compareSingleton(pi, umlClassDiagram);
+                break;
+          default:
+                toRet = null;
                 break;
         }
+        return toRet;
     }
 
-    public void compareState(PatternInstance pi, UMLClassDiagram umlClassDiagram){
+    public ConformanceResults compareState(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         StatePattern statePattern = new StatePattern(pi, umlClassDiagram);
         SPS strictStateSPS = new SPS("configs/sps/statePatternSPS_strict.txt");
         IPS strictStateIPS = new IPS("configs/ips/statePatternIPS_strict.txt", strictStateSPS);
-        verifyConformance(strictStateSPS, strictStateIPS, statePattern, umlClassDiagram);
+        ConformanceResults stateConformances = verifyConformance(strictStateSPS, strictStateIPS, statePattern, umlClassDiagram);
+        return stateConformances;
     }
 
-    public void compareObjectAdapter(PatternInstance pi, UMLClassDiagram umlClassDiagram){
+    public ConformanceResults compareObjectAdapter(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         ObjectAdapterPattern objectAdapterPattern = new ObjectAdapterPattern(pi, umlClassDiagram);
         SPS strictObjectAdapterSPS = new SPS("configs/sps/objectAdapterPatternSPS_strict.txt");
         IPS strictObjectAdapterIPS = new IPS("configs/ips/objectAdapterPatternIPS_strict.txt", strictObjectAdapterSPS);
-        verifyConformance(strictObjectAdapterSPS, strictObjectAdapterIPS, objectAdapterPattern, umlClassDiagram);
+        ConformanceResults objectAdapterConformances = verifyConformance(strictObjectAdapterSPS, strictObjectAdapterIPS, objectAdapterPattern, umlClassDiagram);
+        return objectAdapterConformances;
     }
 
-    public void compareObserver(PatternInstance pi, UMLClassDiagram umlClassDiagram){
+    public ConformanceResults compareObserver(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         ObserverPattern observerPattern = new ObserverPattern(pi, umlClassDiagram);
         SPS strictObserverSPS = new SPS("configs/sps/observerPatternSPS_strict.txt");
         IPS strictObserverIPS = new IPS("configs/ips/observerPatternIPS_strict.txt", strictObserverSPS);
-        verifyConformance(strictObserverSPS, strictObserverIPS, observerPattern, umlClassDiagram);
+        ConformanceResults observerConformances = verifyConformance(strictObserverSPS, strictObserverIPS, observerPattern, umlClassDiagram);
+        return observerConformances;
     }
 
-    public void compareTemplateMethod(PatternInstance pi, UMLClassDiagram umlClassDiagram){
+    public ConformanceResults compareTemplateMethod(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         TemplateMethodPattern templateMethodPattern = new TemplateMethodPattern(pi, umlClassDiagram);
         SPS strictTemplateMethodSPS = new SPS("configs/sps/templateMethodPatternSPS_strict.txt");
         IPS strictTemplateMethodIPS = new IPS("configs/ips/templateMethodPatternIPS_strict.txt", strictTemplateMethodSPS);
-        verifyConformance(strictTemplateMethodSPS, strictTemplateMethodIPS, templateMethodPattern, umlClassDiagram);
+        ConformanceResults templateMethodConformances = verifyConformance(strictTemplateMethodSPS, strictTemplateMethodIPS, templateMethodPattern, umlClassDiagram);
+        return templateMethodConformances;
     }
 
-    public void compareSingleton(PatternInstance pi, UMLClassDiagram umlClassDiagram){
+    public ConformanceResults compareSingleton(PatternInstance pi, UMLClassDiagram umlClassDiagram){
         SingletonPattern singletonPattern = new SingletonPattern(pi, umlClassDiagram);
         SPS strictSingletonSPS = new SPS("configs/sps/singletonPatternSPS_strict.txt");
         IPS strictSingletonIPS = new IPS("configs/ips/singletonPatternIPS_strict.txt", strictSingletonSPS);
-        verifyConformance(strictSingletonSPS, strictSingletonIPS, singletonPattern, umlClassDiagram);
+        ConformanceResults singletonConformances = verifyConformance(strictSingletonSPS, strictSingletonIPS, singletonPattern, umlClassDiagram);
+        return singletonConformances;
     }
 
     /***
@@ -157,67 +224,19 @@ public class Comparatizer {
      * @param sps
      * @param patternMapper
      */
-    public void verifyConformance(SPS sps, IPS ips, PatternMapper patternMapper, UMLClassDiagram umlClassDiagram){
+    public ConformanceResults verifyConformance(SPS sps, IPS ips, PatternMapper patternMapper, UMLClassDiagram umlClassDiagram){
         Conformance conformance = new Conformance(sps, ips, patternMapper, umlClassDiagram);
         List<RBMLMapping> rbmlStructureMappings = conformance.mapStructure();
-        List<Pair<UMLOperation, BehaviorConformance>> rbmlBehaviorMappings = conformance.mapBehavior(rbmlStructureMappings);
+        List<RBMLMapping> rbmlBehaviorMappings = conformance.mapBehavior(rbmlStructureMappings);
 
-//        for (Pair<UMLOperation, BehaviorConformance> behaviorMapping : rbmlBehaviorMappings){
-//            for (BehavioralMapping behavioralViolation : behaviorMapping.getRight().getBehavioralGrime()){
-//                System.out.println(behaviorMapping.getLeft().getName());
-//                System.out.println("Violation: " + behavioralViolation.printViolation());
-//            }
-//        }
-//        for (RBMLMapping rbmlMapping : rbmlStructureMappings){
-//            rbmlMapping.printSummary();
-//        }
 
         //grime checks here I think.
-        GrimeSuite grimeSuite = new GrimeSuite(patternMapper, rbmlStructureMappings, rbmlBehaviorMappings);
-        grimeTable.put(patternMapper.getPi().getSoftwareVersion(), patternMapper.getPi().getUniqueID(), grimeSuite);
+        GrimeSuite grimeSuite = new GrimeSuite(patternMapper, sps, rbmlStructureMappings, ips, rbmlBehaviorMappings);
 
         outputRoles(sps, rbmlStructureMappings, ips, rbmlBehaviorMappings, patternMapper);
 
-        MetricSuite ms = new MetricSuite(rbmlStructureMappings, patternMapper, sps, rbmlBehaviorMappings, ips);
-        outputter.append(ms.getSummary());
-        System.out.println(grimeTable);
-    }
-
-    private void printViolatedRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings, StringBuilder output){
-        output.append("***************************************\n");
-        output.append("************Role Conformance***********\n");
-        output.append("***************************************\n");
-        //print all things that don't conform.
-        List<Role> conformingRoles = new ArrayList<>();
-        for (Role role : sps.getAllRoles()){
-            for (RBMLMapping rbmlMapping : rbmlStructureMappings){
-                if (rbmlMapping.getRole().equals(role) && !conformingRoles.contains(role)){
-                    conformingRoles.add(role);
-                }
-            }
-        }
-        //sps conformance checks - but this is printing; it does not include any logic.
-        for (Role role : sps.getAllRoles()){
-            if (conformingRoles.contains(role)){
-                output.append("Role " + role.getName() + " is satisfied.\n");
-            }else{
-                output.append("Role " + role.getName() + " is violated.\n");
-            }
-        }
-
-        for (Pair<UMLOperation, BehaviorConformance> rbmlMapping : rbmlBehavioralMappings){
-            output.append("Operation: " + rbmlMapping.getLeft().getName() + "\n");
-            for (BehavioralMapping behavioralMapping : rbmlMapping.getRight().getBehavioralSatisfactions()){
-                output.append("\t" + behavioralMapping.printMe() + "\n");
-            }
-            for (BehavioralMapping behavioralMapping : rbmlMapping.getRight().getBehavioralGrime()){
-                output.append("\t" + behavioralMapping.printMe() + "\n");
-            }
-            //print violations
-            for (InteractionRole interactionRole : rbmlMapping.getRight().getBehavioralViolations()){
-                output.append("\t" + interactionRole.getName() + " is violated.\n");
-            }
-        }
+        ConformanceResults conformanceResults = new ConformanceResults(patternMapper, sps, rbmlStructureMappings, ips, rbmlBehaviorMappings, grimeSuite);
+        return conformanceResults;
     }
 
     private void output() {
@@ -233,7 +252,7 @@ public class Comparatizer {
         }
     }
 
-    private void outputRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, IPS ips, List<Pair<UMLOperation, BehaviorConformance>> rbmlBehavioralMappings, PatternMapper patternMapper){
+    private void outputRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, IPS ips, List<RBMLMapping> rbmlBehavioralMappings, PatternMapper patternMapper){
         try{
             if (Boolean.parseBoolean(Main.printIndividualRoles)){
                 //main directory
@@ -247,7 +266,6 @@ public class Comparatizer {
                 if (!directory.exists()) {
                     Files.createDirectory(Paths.get("roles\\" + patternMapper.getPi().getPatternType() + "\\"));
                 }
-
                 StringBuilder output = new StringBuilder();
                 output.append("Version: " + patternMapper.getPi().getSoftwareVersion().getVersionNum() + "\n");
                 output.append("***************************************\n");
@@ -263,14 +281,14 @@ public class Comparatizer {
                 for (Pair<String, UMLOperation> operation : patternMapper.getOperationModelBlocks()) {
                     for (RBMLMapping rbmlMapping : rbmlStructureMappings) {
                         if (rbmlMapping.getUmlArtifact().equals(operation.getValue())) {
-                            output.append("UML operation: " + operation.getValue().getName() + " has a mapping to " + rbmlMapping.getRole().getName() + "\n");
+                            output.append("UML operation: " + operation.getValue().getName() + " from classifier: " + operation.getValue().getOwningClassifier() + " has a mapping to " + rbmlMapping.getRole().getName() + "\n");
                         }
                     }
                 }
                 for (Pair<String, UMLAttribute> attribute : patternMapper.getAttributeModelBlocks()) {
                     for (RBMLMapping rbmlMapping : rbmlStructureMappings) {
                         if (rbmlMapping.getUmlArtifact().equals(attribute.getValue())) {
-                            output.append("UML attribute: " + attribute.getValue().getName() + " has a mapping to " + rbmlMapping.getRole().getName() + "\n");
+                            output.append("UML attribute: " + attribute.getValue().getName() + " from classifier: " + attribute.getValue().getOwningClassifier() + " has a mapping to " + rbmlMapping.getRole().getName() + "\n");
                         }
                     }
                 }
@@ -321,14 +339,16 @@ public class Comparatizer {
                 output.append("***************************************\n");
                 output.append("***************Behavior****************\n");
                 output.append("***************************************\n");
-                for (Pair<UMLOperation, BehaviorConformance> rbmlMapping : rbmlBehavioralMappings){
-                    output.append(rbmlMapping.getLeft().getName() + " is mapped to " + rbmlMapping.getRight().getFunctionHeaderMapping().getName() + "\n");
-                    for (Pair<CallTreeNode, InteractionRole> behaviorMapping : rbmlMapping.getRight().getRoleMap()){
+                for (RBMLMapping rbmlMapping : rbmlBehavioralMappings){
+                    output.append(rbmlMapping.getRole().getName() + " is mapped to " + rbmlMapping.getBehavioralConformance().getUmlOperation().getName() + "\n");
+                            //getFunctionHeaderMapping().getName() + "\n");
+
+                    for (Pair<CallTreeNode, InteractionRole> behaviorMapping : rbmlMapping.getBehavioralConformance().getRoleMap()){
                         output.append("\tMapped Lifeline: " + behaviorMapping.getLeft().getName() + " has a mapping to " + behaviorMapping.getRight().getName() + "\n");
                     }
                 }
 
-                printViolatedRoles(sps, rbmlStructureMappings, rbmlBehavioralMappings, output);
+                printViolatedRoles(sps, rbmlStructureMappings, ips, rbmlBehavioralMappings, output);
 
                 File outputFile = new File("roles\\" + patternMapper.getPi().getPatternType() + "\\" + patternMapper.getPi().getUniqueID() + ".log");
                 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile, true)));
@@ -340,30 +360,253 @@ public class Comparatizer {
         }
     }
 
+    private void printViolatedRoles(SPS sps, List<RBMLMapping> rbmlStructureMappings, IPS ips, List<RBMLMapping> rbmlBehavioralMappings, StringBuilder output){
+        output.append("***************************************\n");
+        output.append("************Role Conformance***********\n");
+        output.append("***************************************\n");
+        //print all things that don't conform.
+        List<Role> conformingRoles = new ArrayList<>();
+        for (Role role : sps.getAllRoles()){
+            for (RBMLMapping rbmlMapping : rbmlStructureMappings){
+                if (rbmlMapping.getRole().equals(role) && !conformingRoles.contains(role)){
+                    conformingRoles.add(role);
+                }
+            }
+        }
+        //sps conformance checks - but this is printing; it does not include any logic.
+        for (Role role : sps.getAllRoles()){
+            if (conformingRoles.contains(role)){
+                output.append("Role " + role.getName() + " is satisfied.\n");
+            }else{
+                output.append("Role " + role.getName() + " is violated.\n");
+            }
+        }
+
+        for (Role role : ips.getInteractions()){
+            for (RBMLMapping rbmlMapping : rbmlBehavioralMappings){
+                if (rbmlMapping.getRole().equals(role) && !conformingRoles.contains(role)){
+                    conformingRoles.add(role);
+                }
+            }
+        }
+
+        //sps conformance checks - but this is printing; it does not include any logic.
+        for (Role role : ips.getInteractions()){
+            if (conformingRoles.contains(role)){
+                output.append("Role " + role.getName() + " is satisfied.\n");
+            }else{
+                output.append("Role " + role.getName() + " is violated.\n");
+            }
+        }
+    }
+    private void outputGrime(){
+        try {
+            if (Boolean.parseBoolean(Main.printIndividualRoles)) {
+                //main directory
+                File mainDirectory = new File("grime\\");
+                if (!mainDirectory.exists()) {
+                    Files.createDirectory(Paths.get("grime\\"));
+                }
+                //sub-directories.
+
+                for (SoftwareVersion softwareVersion : grimeTable.rowKeySet()){
+                    for (String uniquePatternID : grimeTable.columnKeySet()) {
+                        GrimeSuite individualPatternGrime = grimeTable.get(softwareVersion, uniquePatternID);
+                        if (individualPatternGrime != null) {
+                            File directory = new File("grime\\" + individualPatternGrime.getPatternMapper().getPi().getPatternType() + "\\");
+                            if (!directory.exists()) {
+                                Files.createDirectory(Paths.get("grime\\" + individualPatternGrime.getPatternMapper().getPi().getPatternType() + "\\"));
+                            }
+                            //print grime here
+                            StringBuilder output = new StringBuilder();
+                            output.append("Version: " + individualPatternGrime.getPatternMapper().getPi().getSoftwareVersion().getVersionNum() + "\n");
+                            output.append("***************************************\n");
+                            output.append("************Modular Grime**************\n");
+                            output.append("***************************************\n");
+                            output.append("PEA:\n");
+                            for (Relationship r : individualPatternGrime.getPeaGrimeInstances()) {
+                                output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
+                            }
+                            output.append("PEE:\n");
+                            for (Relationship r : individualPatternGrime.getPeeGrimeInstances()) {
+                                output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
+                            }
+                            output.append("PI:\n");
+                            for (Relationship r : individualPatternGrime.getPiGrimeInstances()) {
+                                output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
+                            }
+                            output.append("TEA:\n");
+                            for (Relationship r : individualPatternGrime.getTeaGrimeInstances()) {
+                                output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
+                            }
+                            output.append("TEE:\n");
+                            for (Relationship r : individualPatternGrime.getTeeGrimeInstances()) {
+                                output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
+                            }
+                            output.append("TI:\n");
+                            for (Relationship r : individualPatternGrime.getTiGrimeInstances()) {
+                                output.append("\t[" + r.getFrom().getName() + " -> " + r.getTo().getName() + "]\n");
+                            }
+                            output.append("\n\n");
+                            output.append("***************************************\n");
+                            output.append("*************Order Grime***************\n");
+                            output.append("***************************************\n");
+                            output.append("PEAO:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getPeaoGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            output.append("PIO:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getPioGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            output.append("TEAO:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getTeaoGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            output.append("TIO:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getTioGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            output.append("\n\n");
+                            output.append("***************************************\n");
+                            output.append("***********Repetition Grime************\n");
+                            output.append("***************************************\n");
+                            output.append("PEAR:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getPearGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            output.append("PEER:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getPeerGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            output.append("PIR:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getPirGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            output.append("TEAR:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getTearGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            output.append("TEER:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getTeerGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            output.append("TIR:\n");
+                            for (CallTreeNode callTreeNode : individualPatternGrime.getTirGrimeInstances()) {
+                                output.append("\t" + callTreeNode.getName() + "\n");
+                            }
+                            File outputFile = new File("grime\\" + individualPatternGrime.getPatternMapper().getPi().getPatternType() + "\\" + individualPatternGrime.getPatternMapper().getPi().getUniqueID() + ".log");
+                            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile, true)));
+                            out.println(output.toString());
+                            out.close();
+                        }
+                    }
+                }
+            }
+        }catch (Exception e){
+            System.out.println("Error printing grime output.");
+            e.printStackTrace();
+        }
+    }
+
     private String getOutputHeader(){
-        String separator = "\t";
         StringBuilder header = new StringBuilder();
-        header.append("Project_ID" + separator);
-        header.append("Software_Version" + separator);
-        header.append("Pattern_Type" + separator);
-        header.append("Pattern_ID" + separator);
-        header.append("Num_Participating_Classes" + separator);
-        header.append("Num_Conforming_Structural_Roles" + separator);
-        header.append("Num_NonConforming_Structural_Roles" + separator);
-        header.append("Num_Conforming_Behavioral_Roles" + separator);
-        header.append("Num_NonConforming_Behavioral_Roles" + separator);
-        header.append("Num_Conforming_Roles_Total" + separator);
-        header.append("Num_NonConforming_Roles_Total" + separator);
-        header.append("SSize2" + separator);
-        header.append("Afferent_Coupling" + separator);
-        header.append("Efferent_Coupling" + separator);
-        header.append("Coupling_Between_Pattern_Classes" + separator);
-        header.append("Pattern_Structural_Integrity" + separator);
-        header.append("Pattern_Behavioral_Integrity" + separator);
-        header.append("Pattern_Integrity" + separator);
-        header.append("Pattern_Instability");
+        header.append("Project_ID" + delim);
+        header.append("Software_Version" + delim);
+        header.append("Pattern_Type" + delim);
+        header.append("Pattern_ID" + delim);
+        header.append("Num_Participating_Classes" + delim);
+        header.append("Num_Conforming_Structural_Roles" + delim);
+        header.append("Num_NonConforming_Structural_Roles" + delim);
+        header.append("Num_Conforming_Behavioral_Roles" + delim);
+        header.append("Num_NonConforming_Behavioral_Roles" + delim);
+        header.append("Num_Conforming_Roles_Total" + delim);
+        header.append("Num_NonConforming_Roles_Total" + delim);
+        header.append("SSize2" + delim);
+        header.append("Afferent_Coupling" + delim);
+        header.append("Efferent_Coupling" + delim);
+        header.append("Coupling_Between_Pattern_Classes" + delim);
+        header.append("Pattern_Structural_Integrity" + delim);
+        header.append("Pattern_Behavioral_Integrity" + delim);
+        header.append("Pattern_Integrity" + delim);
+        header.append("Pattern_Instability" + delim);
+        header.append(getGrimeHeader());
         header.append("\n");
         return header.toString();
+    }
+
+    private String getModularGrimeOutputHeader(String typeOfModularGrime){
+        StringBuilder header = new StringBuilder();
+        header.append(typeOfModularGrime + " grime count" + delim);
+        header.append(typeOfModularGrime + " grime additions" + delim);
+        header.append(typeOfModularGrime + " grime removals");
+        return header.toString();
+    }
+
+    private String getClassGrimeOutputHeader(String typeOfClassGrime){
+        StringBuilder header = new StringBuilder();
+        header.append(typeOfClassGrime + " grime count (across all pattern classes)" + delim);
+        header.append(typeOfClassGrime + " grime average (across all pattern classes)");
+        return header.toString();
+    }
+
+    private String getOrderGrimeOutputHeader(String typeOfOrderGrime){
+        //order same as modular grime.
+        return getModularGrimeOutputHeader(typeOfOrderGrime);
+    }
+    private String getRepetitionGrimeOutputHeader(String typeOfRepetitionGrime){
+        return getModularGrimeOutputHeader(typeOfRepetitionGrime);
+    }
+    private String getGrimeHeader(){
+        StringBuilder header = new StringBuilder();
+        header.append(this.getModularGrimeOutputHeader("MG-PEA") + delim);
+        header.append(this.getModularGrimeOutputHeader("MG-PEE") + delim);
+        header.append(this.getModularGrimeOutputHeader("MG-PI") + delim);
+        header.append(this.getModularGrimeOutputHeader("MG-TEA") + delim);
+        header.append(this.getModularGrimeOutputHeader("MG-TEE") + delim);
+        header.append(this.getModularGrimeOutputHeader("MG-TI") + delim);
+        header.append(this.getClassGrimeOutputHeader("CG-DIP") + delim);
+        header.append(this.getClassGrimeOutputHeader("CG-DIS") + delim);
+        header.append(this.getClassGrimeOutputHeader("CG-DEP") + delim);
+        header.append(this.getClassGrimeOutputHeader("CG-DES") + delim);
+        header.append(this.getClassGrimeOutputHeader("CG-IIP") + delim);
+        header.append(this.getClassGrimeOutputHeader("CG-IIS") + delim);
+        header.append(this.getClassGrimeOutputHeader("CG-IEP") + delim);
+        header.append(this.getClassGrimeOutputHeader("CG-IES") + delim);
+        header.append(this.getOrderGrimeOutputHeader("OG-PEA") + delim);
+        header.append(this.getOrderGrimeOutputHeader("OG-PI") + delim);
+        header.append(this.getOrderGrimeOutputHeader("OG-TEA") + delim);
+        header.append(this.getOrderGrimeOutputHeader("OG-TI") + delim);
+        header.append(this.getRepetitionGrimeOutputHeader("RG-PEA") + delim);
+        header.append(this.getRepetitionGrimeOutputHeader("RG-PEE") + delim);
+        header.append(this.getRepetitionGrimeOutputHeader("RG-PI") + delim);
+        header.append(this.getRepetitionGrimeOutputHeader("RG-TEA") + delim);
+        header.append(this.getRepetitionGrimeOutputHeader("RG-TEE") + delim);
+        header.append(this.getRepetitionGrimeOutputHeader("RG-TI") + delim);
+        return header.toString();
+    }
+
+
+    /***
+     * utility method reponsible for deleting old log files from the last simulation run.
+     */
+    private void clearLog(){
+        try{
+            File roleDirectory = new File("roles\\");
+            if (roleDirectory.exists()) {
+                FileUtils.deleteDirectory(roleDirectory);
+            }
+            File grimeDirectory = new File("grime\\");
+            if (grimeDirectory.exists()) {
+                FileUtils.deleteDirectory(grimeDirectory);
+            }
+
+
+        }catch(Exception e){
+            System.out.println("Could not delete the old roles output files. Not fatal but we will continue.");
+            e.printStackTrace();
+        }
+
     }
 
 

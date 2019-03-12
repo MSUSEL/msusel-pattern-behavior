@@ -1,5 +1,7 @@
 package com.derek;
 
+import com.derek.grime.BehavioralGrimeType;
+import com.derek.uml.UMLAttribute;
 import lombok.Getter;
 
 import com.derek.rbml.IPS;
@@ -37,10 +39,13 @@ public class BehaviorConformance {
     //tracks behavioral satisfactions
     private List<BehavioralMapping> behavioralSatisfactions;
 
-    public BehaviorConformance(IPS ips, List<CallTreeNode<String>> callTreeAsList, List<RBMLMapping> structureMappings){
+    private UMLOperation umlOperation;
+
+    public BehaviorConformance(IPS ips, List<CallTreeNode<String>> callTreeAsList, List<RBMLMapping> structureMappings, UMLOperation umlOperation){
         this.ips = ips;
         this.callTreeAsList = callTreeAsList;
         this.structureMappings = structureMappings;
+        this.umlOperation = umlOperation;
         this.varMappings = new ArrayList<>();
         behavioralGrime = new ArrayList<>();
         behavioralViolations = new ArrayList<>();
@@ -51,7 +56,7 @@ public class BehaviorConformance {
         findBehavioralViolations();
         pass2();
         pass3();
-        pass4();
+        //another class calls uneccesary actions.
     }
 
     private void buildStructure(){
@@ -105,7 +110,7 @@ public class BehaviorConformance {
                     //found a match between mapped role and interaction role.
                     if (seenInteractionRoles.contains(roleMap.get(i).getRight())){
                         //already seen this
-                        behavioralGrime.add(new BehavioralMapping(roleMap.get(i).getLeft(), roleMap.get(i).getRight(), BehavioralGrimeType.INTRA_REPETITION));
+                        behavioralGrime.add(new BehavioralMapping(roleMap.get(i).getLeft(), roleMap.get(i).getRight(), BehavioralGrimeType.REPETITION));
                     }else {
                         behavioralSatisfactions.add(new BehavioralMapping(roleMap.get(i).getLeft(), roleMap.get(i).getRight()));
                         seenInteractionRoles.add(roleMap.get(i).getRight());
@@ -116,9 +121,21 @@ public class BehaviorConformance {
     }
 
     /***
-     * pass 4 is concerned with identifying unnecessary actions.... really not sure how I am going to do this part yet.
+     * pass 4, or find unnecessary actions is concerned with identifying unnecessary actions.... this method needs to be called after
+     * passes 1,2,3, because it is concerned with the entire operation, not just lifeline roles and mappings.
      */
-    private void pass4(){
+    public void findUnnecessaryActions(UMLOperation operation){
+        //look for cases where a variable is defined but not used
+        for (UMLAttribute localVar : operation.getVariableTable().keySet()) {
+            boolean isUsed = false;
+            if(operation.getVariableUsages(localVar).isEmpty()){
+                //not used
+                if (operation.isVariableDeclarationLocal(localVar)){
+                    //variable that isn't used is local.
+                    behavioralGrime.add(new BehavioralMapping(localVar, BehavioralGrimeType.UNNECESSARY_ACTIONS));
+                }
+            }
+        }
 
     }
 
@@ -201,7 +218,7 @@ public class BehaviorConformance {
      */
     private void collapsePresenceMap(){
         roleMap = new ArrayList<>();
-        for (MutablePair<CallTreeNode, InteractionRole> presence : presenceMap){
+        for (Pair<CallTreeNode, InteractionRole> presence : presenceMap){
             if (presence.getRight() != null){
                 //mapping
                 roleMap.add(presence);
@@ -228,14 +245,32 @@ public class BehaviorConformance {
         }
     }
 
-    public void printPresenceMap(List<Pair<CallTreeNode, InteractionRole>> map){
+    public void printRoleMap(){
         System.out.print("| ");
-        for (Pair<CallTreeNode, InteractionRole> pair : map){
+        for (Pair<CallTreeNode, InteractionRole> pair : roleMap){
             System.out.print(pair.getLeft().getName() + " | ");
         }
         System.out.println();
         System.out.print("| ");
-        for (Pair<CallTreeNode, InteractionRole> pair : map){
+        for (Pair<CallTreeNode, InteractionRole> pair : roleMap){
+            if (pair.getRight() == null){
+                //null if not mapped.
+                System.out.print("no role mapping | ");
+            }else {
+                System.out.print(pair.getRight().getName() + " | ");
+            }
+        }
+        System.out.println("\n");
+    }
+
+    public void printPresenceMap(){
+        System.out.print("| ");
+        for (Pair<CallTreeNode, InteractionRole> pair : presenceMap){
+            System.out.print(pair.getLeft().getName() + " | ");
+        }
+        System.out.println();
+        System.out.print("| ");
+        for (Pair<CallTreeNode, InteractionRole> pair : presenceMap){
             if (pair.getRight() == null){
                 //null if not mapped.
                 System.out.print("no role mapping | ");

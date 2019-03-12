@@ -24,11 +24,11 @@
  */
 package com.derek.uml.srcML;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SrcMLNameTest extends SrcMLTest{
     private SrcMLName srcMLName1;
@@ -42,7 +42,7 @@ public class SrcMLNameTest extends SrcMLTest{
         xmlFileLocation = "src/test/resources/SrcMLNameExample.xml";
     }
 
-    @Before
+    @BeforeAll
     public void build(){
         super.build();
         Element nameEle1 = (Element) doc.getElementsByTagName("name").item(0);
