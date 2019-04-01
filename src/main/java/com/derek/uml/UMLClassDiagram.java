@@ -67,25 +67,34 @@ public class UMLClassDiagram {
     }
 
     public List<UMLClassifier> getAllGeneralizationHierarchyChildren(UMLClassifier umlClassifier){
-        List<UMLClassifier> children = new ArrayList<>();
-        if (!classDiagram.nodes().contains(umlClassifier)){
-            //node not here, error condition
-            return children;
-        }
-        List<UMLClassifier> immediateChildren = new ArrayList<>();
-        for (UMLClassifier potentialChild : classDiagram.nodes()){
-            for (Relationship possibleEdge : classDiagram.edgesConnecting(potentialChild, umlClassifier)){
-                if (possibleEdge.getRelationshipType() == RelationshipType.GENERALIZATION || possibleEdge.getRelationshipType() == RelationshipType.REALIZATION){
-                    immediateChildren.add(potentialChild);
+        try {
+            List<UMLClassifier> children = new ArrayList<>();
+            if (!classDiagram.nodes().contains(umlClassifier)) {
+                //node not here, error condition
+                return children;
+            }
+            List<UMLClassifier> immediateChildren = new ArrayList<>();
+            for (UMLClassifier potentialChild : classDiagram.nodes()) {
+                for (Relationship possibleEdge : classDiagram.edgesConnecting(potentialChild, umlClassifier)) {
+                    if (possibleEdge.getRelationshipType() == RelationshipType.GENERALIZATION || possibleEdge.getRelationshipType() == RelationshipType.REALIZATION) {
+                        if (!potentialChild.equals(umlClassifier)){
+                            //might occur when a class implements a generic of its type.
+                            immediateChildren.add(potentialChild);
+                        }
+                    }
                 }
             }
+            children.addAll(immediateChildren);
+            for (UMLClassifier immediateChild : immediateChildren) {
+                //recursively add all children
+                children.addAll(getAllGeneralizationHierarchyChildren(immediateChild));
+            }
+            return children;
         }
-        children.addAll(immediateChildren);
-        for (UMLClassifier immediateChild : immediateChildren){
-            //recursively add all children
-            children.addAll(getAllGeneralizationHierarchyChildren(immediateChild));
+        catch(StackOverflowError e){
+            e.printStackTrace();;
         }
-        return children;
+        return null;
     }
 
     public List<UMLClassifier> getAllGeneralizationHierarchyImmediateParents(UMLClassifier child){

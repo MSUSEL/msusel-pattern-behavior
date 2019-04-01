@@ -43,13 +43,12 @@ public class GrimeFinder {
     private Table<SoftwareVersion, String, OrderGrimeCollections> tirGrime;
 
 
-
     public GrimeFinder(Table<SoftwareVersion, String, GrimeSuite> grimeTable) {
         this.grimeTable = grimeTable;
     }
 
-    public void findModularGrime(){
-        peaGrime =  HashBasedTable.create();
+    public void findModularGrime() {
+        peaGrime = HashBasedTable.create();
         peeGrime = HashBasedTable.create();
         piGrime = HashBasedTable.create();
         teeGrime = HashBasedTable.create();
@@ -59,7 +58,7 @@ public class GrimeFinder {
         for (String patternID : grimeTable.columnKeySet()) {
             Iterator<SoftwareVersion> iter = grimeTable.rowKeySet().iterator();
             List<SoftwareVersion> listIter = Lists.newArrayList(iter);
-            for (int i = 0; i < listIter.size(); i++){
+            for (int i = 0; i < listIter.size(); i++) {
                 SoftwareVersion version = listIter.get(i);
                 GrimeSuite currentGrimeSuite = grimeTable.get(version, patternID);
                 if (currentGrimeSuite != null) {
@@ -99,7 +98,7 @@ public class GrimeFinder {
     /***
      * to find class grime I need to find instances where RCI or TCC drops between versions, then look at the method strength/scope..
      */
-    public void findClassGrime(){
+    public void findClassGrime() {
         dipGrime = HashBasedTable.create();
         disGrime = HashBasedTable.create();
         depGrime = HashBasedTable.create();
@@ -119,6 +118,10 @@ public class GrimeFinder {
                     if (i != 0) {
                         previousGrimeSuite = grimeTable.get(listIter.get(i - 1), patternID);
                     }
+                    if (previousGrimeSuite == null) {
+                        previousGrimeSuite = currentGrimeSuite;
+                    }
+                    //will be null when the pattern appears in not version 0.
                     dipGrime.put(version, patternID, new ClassGrimeCollections(previousGrimeSuite, currentGrimeSuite, ClassGrimeType.DIPGRIME));
                     disGrime.put(version, patternID, new ClassGrimeCollections(previousGrimeSuite, currentGrimeSuite, ClassGrimeType.DISGRIME));
                     depGrime.put(version, patternID, new ClassGrimeCollections(previousGrimeSuite, currentGrimeSuite, ClassGrimeType.DEPGRIME));
@@ -132,8 +135,8 @@ public class GrimeFinder {
         }
     }
 
-    public void findBehavioralGrime(){
-        peaoGrime =  HashBasedTable.create();
+    public void findBehavioralGrime() {
+        peaoGrime = HashBasedTable.create();
         pioGrime = HashBasedTable.create();
         teaoGrime = HashBasedTable.create();
         tioGrime = HashBasedTable.create();

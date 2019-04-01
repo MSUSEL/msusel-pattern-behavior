@@ -54,7 +54,6 @@ public class Main {
     public static int clientClassAllowances;
     public static int clientUsageAllowances;
 
-    private static Map<SoftwareVersion, SrcMLRunner> runner;
     public static List<SoftwareVersion> projectVersions;
     public static int currentVersion;
 
@@ -94,14 +93,13 @@ public class Main {
         for (int i = 0; i < Integer.parseInt(versions); i++){
             projectVersions.add(new SoftwareVersion(i));
         }
-        runner = new HashMap<>();
         Model m = new Model(projectVersions);
         for (SoftwareVersion version : projectVersions){
             currentVersion = version.getVersionNum();
             String pwd = workingDirectory + version.getVersionNum() + interVersionKey + interProjectKey;
-            runner.put(version, new SrcMLRunner(pwd, version.getVersionNum()));
+            SrcMLRunner runner = new SrcMLRunner(pwd, version.getVersionNum());
             System.out.println("Generating UML for version: " + version.getVersionNum());
-            UMLGenerator umlGenerator = new UMLGenerator(runner.get(version).getRootBlocks());
+            UMLGenerator umlGenerator = new UMLGenerator(runner.getRootBlocks());
             m.addClassDiagram(version, umlGenerator.getUmlClassDiagram());
         }
         Comparatizer cpt = new Comparatizer(m);

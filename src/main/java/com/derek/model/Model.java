@@ -390,7 +390,13 @@ public class Model {
      */
     private SoftwareVersion getVersionFromFileName(String s){
         s = stripSpecialChars(s);
-        int actualVersion = Integer.parseInt(s.substring(16, s.lastIndexOf('.')));
+        int actualVersion;
+        if (s.contains("pattern_detector")){
+            actualVersion = Integer.parseInt(s.substring(16, s.lastIndexOf('.')));
+        }else{
+            //of format 1.xml, 2.xml
+            actualVersion = Integer.parseInt(s.substring(0, s.lastIndexOf('.')));
+        }
         for (SoftwareVersion version : versions){
             if (version.getVersionNum() == actualVersion){
                 return version;

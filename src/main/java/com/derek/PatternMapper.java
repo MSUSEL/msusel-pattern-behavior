@@ -83,7 +83,12 @@ public abstract class PatternMapper {
 
 
     protected UMLClassifier getClassifierFromString(String majorRoleValue) {
-        return umlClassDiagram.getPackageTree().getClassifier(convertStringToPackagedString(majorRoleValue), 0, umlClassDiagram.getPackageTree().getRoot());
+        UMLClassifier toRet = umlClassDiagram.getPackageTree().getClassifier(convertStringToPackagedString(majorRoleValue), 0, umlClassDiagram.getPackageTree().getRoot());
+        if (toRet == null){
+            System.out.println();
+            toRet = umlClassDiagram.getPackageTree().getClassifier(convertStringToPackagedString(majorRoleValue), 0, umlClassDiagram.getPackageTree().getRoot());
+        }
+        return toRet;
     }
 
     protected UMLClassifier getOneMajorRole(PatternInstance pi) {
@@ -204,6 +209,9 @@ public abstract class PatternMapper {
     }
 
     protected UMLAttribute matchAttribute(UMLClassifier umlClassifier, String attributeName) {
+        if (umlClassifier == null){
+            System.out.println();
+        }
         for (UMLAttribute attribute : umlClassifier.getAttributes()) {
             if (attribute.getName().equals(attributeName)) {
                 //dont need to check type because attribute names are unique.
