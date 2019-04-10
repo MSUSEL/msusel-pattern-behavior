@@ -69,7 +69,7 @@ public class PatternInstance {
             case OBJECT_ADAPTER:return "Adaptee";
             case COMMAND:return "Receiver";
             case COMPOSITE:return "Component";
-            case DECORATOR:return "Decorator";
+            case DECORATOR:return "Component";
             case OBSERVER:return "Observer";
             case STATE:return "Context";
             case STRATEGY:return "Strategy";
@@ -123,7 +123,7 @@ public class PatternInstance {
             case OBJECT_ADAPTER:return "Adapter";
             case COMMAND:return "ConcreteCommand";
             case COMPOSITE:return "Composite";
-            case DECORATOR:return "Component";
+            case DECORATOR:return "Decorator";
             case OBSERVER:return "Subject";
             case STATE:return "State";
             case STRATEGY:return "Context";

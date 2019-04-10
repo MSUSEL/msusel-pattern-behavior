@@ -299,6 +299,7 @@ public class UMLGenerationUtils {
     public static UMLClass getUMLClass(SrcMLClass srcMLClass, List<String> residingPackage, List<List<String>> imports){
         SrcMLBlock block = srcMLClass.getBlock();
         List<UMLAttribute> attributes = UMLGenerationUtils.getUMLAttributes(block);
+
         List<UMLOperation> operations = UMLGenerationUtils.getUMLOperations(block.getFunctions(), block.getFunctionDecls());
         List<UMLOperation> constructors = UMLGenerationUtils.getUMLConstructors(block.getConstructors(), block.getConstructors_decl());
         List<String> extendsParents = UMLGenerationUtils.getUMLExtendsParents(srcMLClass.getSuperLink());

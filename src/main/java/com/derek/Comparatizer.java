@@ -80,6 +80,8 @@ public class Comparatizer {
         typesToAnalyze.add(PatternType.TEMPLATE_METHOD);
         typesToAnalyze.add(PatternType.OBSERVER);
         typesToAnalyze.add(PatternType.SINGLETON);
+        typesToAnalyze.add(PatternType.DECORATOR);
+        typesToAnalyze.add(PatternType.FACTORY_METHOD);
         for (PatternType type : typesToAnalyze) {
             if (model.getPatternEvolutions().get(type) != null) {
                 //will be null if that pattern type does not exist in the project ever.
@@ -171,6 +173,12 @@ public class Comparatizer {
             case SINGLETON:
                 toRet = compareSingleton(pi, umlClassDiagram);
                 break;
+            case DECORATOR:
+                toRet = compareDecorator(pi, umlClassDiagram);
+                break;
+            case FACTORY_METHOD:
+                toRet = compareFactoryMethod(pi, umlClassDiagram);
+                break;
           default:
                 toRet = null;
                 break;
@@ -216,6 +224,22 @@ public class Comparatizer {
         IPS strictSingletonIPS = new IPS("configs/ips/singletonPatternIPS_strict.txt", strictSingletonSPS);
         ConformanceResults singletonConformances = verifyConformance(strictSingletonSPS, strictSingletonIPS, singletonPattern, umlClassDiagram);
         return singletonConformances;
+    }
+
+    public ConformanceResults compareDecorator(PatternInstance pi, UMLClassDiagram umlClassDiagram){
+        DecoratorPattern decoratorPattern = new DecoratorPattern(pi, umlClassDiagram);
+        SPS strictDecoratorSPS = new SPS("configs/sps/decoratorPatternSPS_strict.txt");
+        IPS strictDecoratorIPS = new IPS("configs/ips/decoratorPatternIPS_strict.txt", strictDecoratorSPS);
+        ConformanceResults decoratorConformances = verifyConformance(strictDecoratorSPS, strictDecoratorIPS, decoratorPattern, umlClassDiagram);
+        return decoratorConformances;
+    }
+
+    public ConformanceResults compareFactoryMethod(PatternInstance pi, UMLClassDiagram umlClassDiagram){
+        FactoryMethodPattern factoryMethodPattern = new FactoryMethodPattern(pi, umlClassDiagram);
+        SPS strictFactoryMethodSPS = new SPS("configs/sps/factoryMethodPatternSPS_strict.txt");
+        IPS strictFactoryMethodIPS = new IPS("configs/ips/factoryMethodPatternIPS_strict.txt", strictFactoryMethodSPS);
+        ConformanceResults factoryMethodConformances = verifyConformance(strictFactoryMethodSPS, strictFactoryMethodIPS, factoryMethodPattern, umlClassDiagram);
+        return factoryMethodConformances;
     }
 
     /***

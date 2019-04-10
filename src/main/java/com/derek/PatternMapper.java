@@ -180,6 +180,8 @@ public abstract class PatternMapper {
         }
 
         //should not happen - but will if we are looking at a third party return type rn.
+        //THIS HAPPENS BECAUSE OF A BUG WITH SRCML GENERATION. If I get here, not much to do until srcml fixes their xml generation (basically,
+        //in certain instances srcml closes a '</class>' element before it should really be closed.
         System.out.println("was not able to match project class: " + umlClassifier.getName() + " and method name: " + operationName);
         System.out.println("This should not happen. The tool will likely crash because of this.");
         System.out.println("Version: " + this.getPi().getSoftwareVersion().getVersionNum());
@@ -209,9 +211,6 @@ public abstract class PatternMapper {
     }
 
     protected UMLAttribute matchAttribute(UMLClassifier umlClassifier, String attributeName) {
-        if (umlClassifier == null){
-            System.out.println();
-        }
         for (UMLAttribute attribute : umlClassifier.getAttributes()) {
             if (attribute.getName().equals(attributeName)) {
                 //dont need to check type because attribute names are unique.
@@ -219,6 +218,8 @@ public abstract class PatternMapper {
             }
         }
         //should not happen.
+        //THIS HAPPENS BECAUSE OF A BUG WITH SRCML GENERATION. If I get here, not much to do until srcml fixes their xml generation (basically,
+        //in certain instances srcml closes a '</class>' element before it should really be closed.
         System.out.println("was not able to match project class: " + umlClassifier.getName() + " and attribute name: " + attributeName);
         System.out.println("This should not happen. The tool will likely crash because of this.");
         System.out.println("Version: " + this.getPi().getSoftwareVersion().getVersionNum());
