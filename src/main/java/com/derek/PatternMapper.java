@@ -38,6 +38,11 @@ import java.util.*;
 @Getter
 public abstract class PatternMapper {
 
+    //TODO -- run qatch on a subset of patterns.
+    protected List<String> classFilePaths;
+    protected List<String> srcFilePaths;
+
+
     protected PatternInstance pi;
     protected UMLClassDiagram umlClassDiagram;
     protected CoalescerUtility coalescerUtility;

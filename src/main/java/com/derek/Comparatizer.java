@@ -35,13 +35,13 @@ import com.derek.rbml.*;
 import com.derek.uml.*;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import com.sun.xml.internal.txw2.output.IndentingXMLStreamWriter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -81,7 +81,7 @@ public class Comparatizer {
         typesToAnalyze.add(PatternType.OBSERVER);
         typesToAnalyze.add(PatternType.SINGLETON);
         typesToAnalyze.add(PatternType.DECORATOR);
-        typesToAnalyze.add(PatternType.FACTORY_METHOD);
+        //typesToAnalyze.add(PatternType.FACTORY_METHOD);
         for (PatternType type : typesToAnalyze) {
             if (model.getPatternEvolutions().get(type) != null) {
                 //will be null if that pattern type does not exist in the project ever.
@@ -116,6 +116,7 @@ public class Comparatizer {
         grimeFinder.findModularGrime();
         grimeFinder.findClassGrime();
         grimeFinder.findBehavioralGrime();
+
         outputGrime();
 
         for (String patternID : metricTable.columnKeySet()){
@@ -153,6 +154,7 @@ public class Comparatizer {
             }
         }
         output();
+        xmlOutputForQualityModel();
     }
 
     public ConformanceResults testComparisons(UMLClassDiagram umlClassDiagram, PatternInstance pi){
@@ -631,6 +633,100 @@ public class Comparatizer {
             e.printStackTrace();
         }
 
+    }
+
+    /***
+     * this method is responsible for outputting grime metrics for each class (even those that aren't a pattern) to an xml file that
+     * quality model tools can import for integration into quality hierarchies.
+     */
+    public void xmlOutputForQualityModel(){
+        try {
+            for (SoftwareVersion softwareVersion : grimeTable.rowKeySet()){
+                XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
+                XMLStreamWriter writer = new IndentingXMLStreamWriter(outputFactory.createXMLStreamWriter(new FileOutputStream("devaResults" + softwareVersion.getVersionNum() + ".xml")));
+                writer.writeStartDocument("utf-8", "1.0");
+                writer.writeStartElement("deva");
+                for (String patternID : grimeTable.columnKeySet()){
+                    if (grimeTable.get(softwareVersion, patternID) == null){
+                        //this means the pattern does not exist in the version.
+                        continue;
+                    }
+                    //write pattern element
+                    writer.writeStartElement(grimeTable.get(softwareVersion,patternID).getPatternMapper().pi.getPatternType()+ "_pattern");
+                    //write name element
+                    writer.writeStartElement("name");
+                    writer.writeCharacters(patternID);
+                    //close name
+                    writer.writeEndElement();
+                    //write all metrics
+                    writeXMLBlockFromClassifier(writer, grimeTable.get(softwareVersion, patternID));
+                    //close pattern
+                    writer.writeEndElement();
+                }
+                //close deva
+                writer.writeEndElement();
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error writing xml file for qatch input");
+        }
+    }
+
+    private void writeXMLBlockFromClassifier(XMLStreamWriter writer, GrimeSuite grimeSuite){
+        try {
+            writer.writeStartElement("PEAM");
+            writer.writeCharacters(grimeSuite.getPeaGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("PEEM");
+            writer.writeCharacters(grimeSuite.getPeeGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("PIM");
+            writer.writeCharacters(grimeSuite.getPiGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("TEAM");
+            writer.writeCharacters(grimeSuite.getTeaGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("TEEM");
+            writer.writeCharacters(grimeSuite.getTeeGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("TIM");
+            writer.writeCharacters(grimeSuite.getTiGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("PEAO");
+            writer.writeCharacters(grimeSuite.getPeaoGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("PIO");
+            writer.writeCharacters(grimeSuite.getPioGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("TEAO");
+            writer.writeCharacters(grimeSuite.getTeaoGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("TIO");
+            writer.writeCharacters(grimeSuite.getTioGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("PEAR");
+            writer.writeCharacters(grimeSuite.getPearGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("PEER");
+            writer.writeCharacters(grimeSuite.getPeerGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("PIR");
+            writer.writeCharacters(grimeSuite.getPirGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("TEAR");
+            writer.writeCharacters(grimeSuite.getTearGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("TEER");
+            writer.writeCharacters(grimeSuite.getTeerGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("TIR");
+            writer.writeCharacters(grimeSuite.getTirGrimeInstances().size() + "");
+            writer.writeEndElement();
+
+        }  catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Error writing to xml block from a grime suite item");
+        }
     }
 
 

@@ -83,6 +83,7 @@ public class Main {
 
             fileInputStream.close();
             doAnalysis();
+            //QualityParser qualityParser = new QualityParser("C:\\Users\\Derek Reimanis\\Documents\\research\\quality\\acceptance_no");
         }catch (Exception e){
             e.printStackTrace();
         }

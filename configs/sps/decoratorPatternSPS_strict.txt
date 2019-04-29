@@ -1,0 +1,6 @@
+Classifier |Component,1..*[]{|Operation():*,1..*}
+Classifier |Decorator,1..*[]{|Operation():*,1..*}
+Class |ConcreteComponent,1..*[]{|Operation():*,1..*}
+Class |ConcreteDecorator,1..*[|AddedState:|Component,1..1;]{|Operation():*,1..*;}
+Association |Decorates{|Component,|Decorator,1..*,1..*}
+Generalization||Realization |ComponentDecoratesGeneralization{|Component,|Decorator}

@@ -1,6 +1,5 @@
 package com.derek;
 
-import com.derek.PatternMapper;
 import com.derek.model.patterns.PatternInstance;
 import com.derek.uml.UMLAttribute;
 import com.derek.uml.UMLClassDiagram;

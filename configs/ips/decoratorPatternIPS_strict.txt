@@ -1,0 +1,3 @@
+|DecorateInteractions
+|Operation(){|ConcreteDecorator}
+|Operation(){|ConcreteComponent}
