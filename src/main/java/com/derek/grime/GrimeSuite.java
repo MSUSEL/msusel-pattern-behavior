@@ -436,4 +436,30 @@ public class GrimeSuite {
             }
         }
     }
+
+    public List<Relationship> getStructuralAberrations(){
+        List<Relationship> structuralAberrations = new ArrayList<>();
+        structuralAberrations.addAll(peaGrimeInstances);
+        structuralAberrations.addAll(peeGrimeInstances);
+        structuralAberrations.addAll(piGrimeInstances);
+        structuralAberrations.addAll(teaGrimeInstances);
+        structuralAberrations.addAll(teeGrimeInstances);
+        structuralAberrations.addAll(tiGrimeInstances);
+        return structuralAberrations;
+    }
+
+    public List<CallTreeNode> getBehavioralAberrations(){
+        List<CallTreeNode> behavioralAberrations = new ArrayList<>();
+        behavioralAberrations.addAll(peaoGrimeInstances);
+        behavioralAberrations.addAll(pioGrimeInstances);
+        behavioralAberrations.addAll(teaoGrimeInstances);
+        behavioralAberrations.addAll(tioGrimeInstances);
+        behavioralAberrations.addAll(pearGrimeInstances);
+        behavioralAberrations.addAll(peerGrimeInstances);
+        behavioralAberrations.addAll(pirGrimeInstances);
+        behavioralAberrations.addAll(tearGrimeInstances);
+        behavioralAberrations.addAll(teerGrimeInstances);
+        behavioralAberrations.addAll(tirGrimeInstances);
+        return behavioralAberrations;
+    }
 }

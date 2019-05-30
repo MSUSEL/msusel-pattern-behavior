@@ -659,7 +659,12 @@ public class Comparatizer {
                     //close name
                     writer.writeEndElement();
                     //write all metrics
-                    writeXMLBlockFromClassifier(writer, grimeTable.get(softwareVersion, patternID));
+
+                    writePropertyXMLBlockFromClassifier(writer, grimeTable.get(softwareVersion, patternID), metricTable.get(softwareVersion, patternID));
+
+                    //deprecated, using summay metrics now
+                    //writeMetricXMLBlockFromClassifier(writer, grimeTable.get(softwareVersion, patternID));
+
                     //close pattern
                     writer.writeEndElement();
                 }
@@ -672,7 +677,33 @@ public class Comparatizer {
         }
     }
 
-    private void writeXMLBlockFromClassifier(XMLStreamWriter writer, GrimeSuite grimeSuite){
+    private void writePropertyXMLBlockFromClassifier(XMLStreamWriter writer, GrimeSuite grimeSuite, MetricSuite metricSuite){
+        try{
+            writer.writeStartElement("Pattern_Structural_Integrity");
+            writer.writeCharacters(metricSuite.getPatternStructuralIntegrity() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("Pattern_Behavioral_Integrity");
+            writer.writeCharacters(metricSuite.getPatternBehavioralIntegrity() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("Pattern_Instability");
+            writer.writeCharacters(metricSuite.getPatternInstability() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("Pattern_Structural_Aberrations");
+            writer.writeCharacters(grimeSuite.getStructuralAberrations().size() / grimeSuite.getPatternMapper().getPatternMembers().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("Pattern_Behavioral_Aberrations");
+            writer.writeCharacters(grimeSuite.getBehavioralAberrations().size() / grimeSuite.getPatternMapper().getPatternMembers().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("MEM");
+            writer.writeCharacters(grimeSuite.getPatternMapper().getPatternMembers().size() + "");
+            writer.writeEndElement();
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Error writing to properties xml block from a grime suite item");
+        }
+    }
+
+    private void writeMetricXMLBlockFromClassifier(XMLStreamWriter writer, GrimeSuite grimeSuite){
         try {
             writer.writeStartElement("PEAM");
             writer.writeCharacters(grimeSuite.getPeaGrimeInstances().size() + "");
@@ -721,6 +752,9 @@ public class Comparatizer {
             writer.writeEndElement();
             writer.writeStartElement("TIR");
             writer.writeCharacters(grimeSuite.getTirGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("MEM");
+            writer.writeCharacters(grimeSuite.getPatternMapper().getPatternMembers().size() + "");
             writer.writeEndElement();
 
         }  catch (Exception e){

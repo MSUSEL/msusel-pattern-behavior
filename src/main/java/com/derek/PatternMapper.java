@@ -449,6 +449,21 @@ public abstract class PatternMapper {
         return classifiers;
     }
 
+    public List<UMLOperation> getAllParticipatingOperationsOnlyUMLOperations() {
+        List<UMLOperation> operations = new ArrayList<>();
+        for (Pair<String, UMLOperation> operationPair : this.getOperationModelBlocks()) {
+            operations.add(operationPair.getRight());
+        }
+        return operations;
+    }
+    public List<UMLAttribute> getAllParticipatingAttributesOnlyUMLAttributes() {
+        List<UMLAttribute> attributes = new ArrayList<>();
+        for (Pair<String, UMLAttribute> attributePair : this.getAttributeModelBlocks()) {
+            attributes.add(attributePair.getRight());
+        }
+        return attributes;
+    }
+
     /***
      * method to fill afferent and efferent participating classifiers (the variables)
      */
@@ -507,6 +522,14 @@ public abstract class PatternMapper {
             uniqueEfferentClassifiers.add(r.getTo());
         }
         return uniqueEfferentClassifiers;
+    }
+
+    public List<Object> getPatternMembers(){
+        List<Object> patternMembers = new ArrayList<>();
+        patternMembers.addAll(this.getAllParticipatingClassifiersOnlyUMLClassifiers());
+        patternMembers.addAll(this.getAllParticipatingOperationsOnlyUMLOperations());
+        patternMembers.addAll(this.getAllParticipatingAttributesOnlyUMLAttributes());
+        return patternMembers;
     }
 
 }
