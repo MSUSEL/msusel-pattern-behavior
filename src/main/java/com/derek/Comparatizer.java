@@ -125,6 +125,8 @@ public class Comparatizer {
                 if (versionSuite != null) {
                     //will be null when a pattern instance does not appear in a particular version.
                     outputter.append(metricTable.get(version, patternID).getSummary());
+                    outputter.append(grimeFinder.getGrimeTable().get(version, patternID).getStructuralAberrations().size() + "\t");
+                    outputter.append(grimeFinder.getGrimeTable().get(version, patternID).getBehavioralAberrations().size() + "\t");
                     outputter.append(grimeFinder.getPeaGrime().get(version, patternID).getTabDelimSummary());
                     outputter.append(grimeFinder.getPeeGrime().get(version, patternID).getTabDelimSummary());
                     outputter.append(grimeFinder.getPiGrime().get(version, patternID).getTabDelimSummary());
@@ -549,6 +551,7 @@ public class Comparatizer {
         header.append("Num_Conforming_Roles_Total" + delim);
         header.append("Num_NonConforming_Roles_Total" + delim);
         header.append("SSize2" + delim);
+        header.append("Pattern_Members" + delim);
         header.append("Afferent_Coupling" + delim);
         header.append("Efferent_Coupling" + delim);
         header.append("Coupling_Between_Pattern_Classes" + delim);
@@ -556,6 +559,10 @@ public class Comparatizer {
         header.append("Pattern_Behavioral_Integrity" + delim);
         header.append("Pattern_Integrity" + delim);
         header.append("Pattern_Instability" + delim);
+        //summary metrics here
+        header.append("Pattern_Structural_Aberrations" + delim);
+        header.append("Pattern_Behavioral_Aberrations" + delim);
+
         header.append(getGrimeHeader());
         header.append("\n");
         return header.toString();

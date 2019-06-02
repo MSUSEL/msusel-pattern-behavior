@@ -282,6 +282,7 @@ public class MetricSuite {
         stringBuilder.append(this.getNumConformingRolesTotal() + delim);
         stringBuilder.append(this.getNumNonConformingRolesTotal() + delim);
         stringBuilder.append(this.getSsize2() + delim);
+        stringBuilder.append(this.getPatternMapper().getPatternMembers().size() + delim);
         stringBuilder.append(this.getAfferentCoupling() + delim);
         stringBuilder.append(this.getEfferentCoupling() + delim);
         stringBuilder.append(this.getCouplingBetweenPatternClasses() + delim);

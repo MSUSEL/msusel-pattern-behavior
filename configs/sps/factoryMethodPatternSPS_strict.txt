@@ -1,0 +1,7 @@
+Classifier |Creator,1..*[]{|FactoryMethod():|Product,1..*}
+Classifier |Product,1..*[]{}
+Class |ConcreteCreator,1..*[]{|FactoryMethod():|Product,1..*}
+Class |ConcreteProduct,1..*[]{}
+Association |ProductCreation{|ConcreteProduct,|ConcreteCreator,1..*,1..*}
+Generalization||Realization |CreatorGeneralization{|ConcreteCreator,|Creator}
+Generalization||Realization |ProductGeneralization{|ConcreteProduct,|Product}
