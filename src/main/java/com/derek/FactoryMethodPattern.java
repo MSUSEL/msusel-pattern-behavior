@@ -18,7 +18,9 @@ public class FactoryMethodPattern extends PatternMapper {
 
     //dont' konw if I need to do productfamily, because it sin't being detected anyway. Coalescing it might prove difficult.
     private List<Pair<String, UMLClassifier>> creatorFamily;
+    private List<Pair<String, UMLClassifier>> productFamily;
     private List<Pair<String, UMLOperation>> factoryMethodOperationFamily;
+    private List<Pair<String, UMLOperation>> productMethodOperationFamily;
 
     public FactoryMethodPattern(PatternInstance pi, UMLClassDiagram umlClassDiagram) {
         super(pi, umlClassDiagram);
@@ -43,8 +45,10 @@ public class FactoryMethodPattern extends PatternMapper {
     @Override
     protected void coalescePattern() {
         coalesceCreators();
+        coalesceProducts();
 
         factoryMethodOperationFamily = coalesceOperations(this.getAllCreators(), "FactoryMethod");
+        productMethodOperationFamily = coalesceOperations(this.getAllProducts(), "ConcreteProduct");
     }
 
     private void coalesceCreators(){
@@ -60,10 +64,38 @@ public class FactoryMethodPattern extends PatternMapper {
         }
     }
 
+    private void coalesceProducts(){
+        productFamily = new ArrayList<>();
+        //pull out string ids.
+        List<UMLClassifier> creators = new ArrayList<>();
+        for (Pair<String, UMLClassifier> fullCreator : getAllCreators()){
+            creators.add(fullCreator.getRight());
+        }
+        List<UMLClassifier> neighbors = umlClassDiagram.getNeighbors(creators);
+        for (UMLClassifier neighbor : neighbors){
+            for (String potentialName : patternCommonNames.get("Product")){
+                if (neighbor.getName().equals(potentialName)){
+                    //match found, this is a product.
+                    if (neighbor.getIdentifier().equals("class")) {
+                        productFamily.add(new ImmutablePair<>("ConcreteProduct", neighbor));
+                    }else{
+                        productFamily.add(new ImmutablePair<>("Product", neighbor));
+                    }
+                }
+            }
+        }
+    }
+
     private List<Pair<String, UMLClassifier>> getAllCreators(){
         List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
         toRet.add(creatorClassifier);
         toRet.addAll(creatorFamily);
+        return toRet;
+    }
+
+    private List<Pair<String, UMLClassifier>> getAllProducts(){
+        List<Pair<String, UMLClassifier>> toRet = new ArrayList<>();
+        toRet.addAll(productFamily);
         return toRet;
     }
 
@@ -74,6 +106,11 @@ public class FactoryMethodPattern extends PatternMapper {
         for (Pair<String, UMLClassifier> creatorPair : creatorFamily){
             if (creatorPair.getLeft().equals("ConcreteCreator")){
                 modelBlocks.add(creatorPair);
+            }
+        }
+        for (Pair<String, UMLClassifier> productPair : productFamily){
+            if (productPair.getLeft().equals("ConcreteProduct")){
+                modelBlocks.add(productPair);
             }
         }
         return modelBlocks;
@@ -89,6 +126,11 @@ public class FactoryMethodPattern extends PatternMapper {
                 modelBlocks.add(creatorPair);
             }
         }
+        for (Pair<String, UMLClassifier> productPair : productFamily){
+            if (productPair.getLeft().equals("Product")){
+                modelBlocks.add(productPair);
+            }
+        }
         return modelBlocks;
     }
 
@@ -97,6 +139,7 @@ public class FactoryMethodPattern extends PatternMapper {
         List<Pair<String, UMLOperation>> toRet = new ArrayList<>();
         toRet.addAll(factoryMethodOperations);
         toRet.addAll(factoryMethodOperationFamily);
+        toRet.addAll(productMethodOperationFamily);
         return toRet;
     }
 
@@ -108,7 +151,10 @@ public class FactoryMethodPattern extends PatternMapper {
 
     @Override
     public List<Pair<String, UMLClassifier>> getAllParticipatingClasses() {
-        return getAllCreators();
+        List<Pair<String, UMLClassifier>> classModelBlocks = new ArrayList<>();
+        classModelBlocks.addAll(getAllCreators());
+        classModelBlocks.addAll(getAllProducts());
+        return classModelBlocks;
     }
 
     @Override

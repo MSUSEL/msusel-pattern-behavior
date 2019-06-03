@@ -532,4 +532,5 @@ public abstract class PatternMapper {
         return patternMembers;
     }
 
+
 }

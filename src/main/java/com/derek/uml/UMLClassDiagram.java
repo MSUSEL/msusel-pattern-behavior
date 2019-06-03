@@ -30,6 +30,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.management.relation.Relation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,6 +117,45 @@ public class UMLClassDiagram {
         //if I want to add ALL parents, I would recursively add it here... I won't go up the entire way though.
         return parents;
     }
+
+    /***
+     * method to retun the neighbors of input starting nodes. (both afferent and efferent
+     * @param startingNodes
+     * @return
+     */
+    public List<UMLClassifier> getNeighbors(List<UMLClassifier> startingNodes){
+        List<UMLClassifier> neighbors = new ArrayList<>();
+        for (UMLClassifier umlClassifier : startingNodes){
+            neighbors.addAll(getNeighborsSingle(umlClassifier));
+        }
+        return neighbors;
+    }
+
+    public List<UMLClassifier> getNeighborsSingle(UMLClassifier startingNode){
+        List<UMLClassifier> neighbors = new ArrayList<>();
+
+        for (UMLClassifier potentialNeighbor : classDiagram.nodes()) {
+            for (Relationship possibleEdge : classDiagram.edgesConnecting(startingNode, potentialNeighbor)) {
+                if (possibleEdge.getRelationshipType() == RelationshipType.ASSOCIATION || possibleEdge.getRelationshipType() == RelationshipType.DEPENDENCY) {
+                    if (!potentialNeighbor.equals(startingNode)){
+                        //might occur when a class implements a generic of its type.
+                        neighbors.add(potentialNeighbor);
+                    }
+                }
+            }
+            //think I need this for both directions.
+            for (Relationship possibleEdge : classDiagram.edgesConnecting(potentialNeighbor, startingNode)){
+                if (possibleEdge.getRelationshipType() == RelationshipType.ASSOCIATION || possibleEdge.getRelationshipType() == RelationshipType.DEPENDENCY) {
+                    if (!potentialNeighbor.equals(startingNode)){
+                        //might occur when a class implements a generic of its type.
+                        neighbors.add(potentialNeighbor);
+                    }
+                }
+            }
+        }
+        return neighbors;
+    }
+
 
     public Relationship getRelationshipFromClassDiagram(UMLClassifier from, UMLClassifier to, RelationshipType relationshipType){
         for (Relationship r : classDiagram.edgesConnecting(from, to)){

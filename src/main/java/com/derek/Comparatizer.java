@@ -81,7 +81,7 @@ public class Comparatizer {
         typesToAnalyze.add(PatternType.OBSERVER);
         typesToAnalyze.add(PatternType.SINGLETON);
         typesToAnalyze.add(PatternType.DECORATOR);
-        //typesToAnalyze.add(PatternType.FACTORY_METHOD);
+        typesToAnalyze.add(PatternType.FACTORY_METHOD);
         for (PatternType type : typesToAnalyze) {
             if (model.getPatternEvolutions().get(type) != null) {
                 //will be null if that pattern type does not exist in the project ever.
