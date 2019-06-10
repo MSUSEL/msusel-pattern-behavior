@@ -650,7 +650,13 @@ public class Comparatizer {
         try {
             for (SoftwareVersion softwareVersion : grimeTable.rowKeySet()){
                 XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
-                XMLStreamWriter writer = new IndentingXMLStreamWriter(outputFactory.createXMLStreamWriter(new FileOutputStream("devaResults" + softwareVersion.getVersionNum() + ".xml")));
+                File projectDir = new File("devaResults/" + Main.projectID);
+                if (!projectDir.exists()){
+                    projectDir.mkdir();
+                }
+                File f = new File(projectDir + "/devaResults" + softwareVersion.getVersionNum() + ".xml");
+                f.createNewFile();
+                XMLStreamWriter writer = new IndentingXMLStreamWriter(outputFactory.createXMLStreamWriter(new FileOutputStream(f)));
                 writer.writeStartDocument("utf-8", "1.0");
                 writer.writeStartElement("deva");
                 for (String patternID : grimeTable.columnKeySet()){
