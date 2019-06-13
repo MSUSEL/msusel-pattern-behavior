@@ -17,7 +17,11 @@ public class ResultsCombiner {
         //combine("hystrix", "C:/Users/Derek Reimanis/Documents/research/quality/hystrix/hystrix_results");
         //combine("rxjava", "C:/Users/Derek Reimanis/Documents/research/quality/rxjava/rxjava_results");
         //combine("selenium", "C:/Users/Derek Reimanis/Documents/research/quality/selenium/selenium_results");
-        combine("springBoot", "C:/Users/Derek Reimanis/Documents/research/quality/springBoot/springBoot_results");
+        //combine("springBoot", "C:/Users/Derek Reimanis/Documents/research/quality/springBoot/springBoot_results");
+        //combine("elasticsearch", "C:/Users/Derek Reimanis/Documents/research/quality/elasticsearch/elasticsearch_results");
+        //combine("commons-lang", "C:/Users/Derek Reimanis/Documents/research/quality/commons-lang/commons-lang_results");
+        //combine("netty", "C:/Users/Derek Reimanis/Documents/research/quality/netty/netty_results");
+        combine("glide", "C:/Users/Derek Reimanis/Documents/research/quality/glide/glide_results");
 
     }
 

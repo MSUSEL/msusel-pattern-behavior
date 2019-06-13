@@ -216,10 +216,12 @@ public abstract class PatternMapper {
     }
 
     protected UMLAttribute matchAttribute(UMLClassifier umlClassifier, String attributeName) {
-        for (UMLAttribute attribute : umlClassifier.getAttributes()) {
-            if (attribute.getName().equals(attributeName)) {
-                //dont need to check type because attribute names are unique.
-                return attribute;
+        if (umlClassifier.getAttributes() != null) {
+            for (UMLAttribute attribute : umlClassifier.getAttributes()) {
+                if (attribute.getName().equals(attributeName)) {
+                    //dont need to check type because attribute names are unique.
+                    return attribute;
+                }
             }
         }
         //should not happen.
