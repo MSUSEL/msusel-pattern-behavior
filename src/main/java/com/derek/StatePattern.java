@@ -107,6 +107,7 @@ public class StatePattern extends PatternMapper {
             }
         }
     }
+
     private void coalesceContexts(){
         List<UMLClassifier> contextFamilyClassifiers = umlClassDiagram.getAllGeneralizationHierarchyChildren(contextClassifier.getRight());
         contextFamily = new ArrayList<>();

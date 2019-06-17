@@ -1,0 +1,5 @@
+Subject:Subject
+Adapter:Adapter
+Adaptee:Adaptee
+Request:Request
+SpecificRequest:SpecificRequest

@@ -35,13 +35,13 @@ import com.derek.rbml.*;
 import com.derek.uml.*;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import com.sun.xml.internal.txw2.output.IndentingXMLStreamWriter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -80,6 +80,8 @@ public class Comparatizer {
         typesToAnalyze.add(PatternType.TEMPLATE_METHOD);
         typesToAnalyze.add(PatternType.OBSERVER);
         typesToAnalyze.add(PatternType.SINGLETON);
+        typesToAnalyze.add(PatternType.DECORATOR);
+        typesToAnalyze.add(PatternType.FACTORY_METHOD);
         for (PatternType type : typesToAnalyze) {
             if (model.getPatternEvolutions().get(type) != null) {
                 //will be null if that pattern type does not exist in the project ever.
@@ -114,6 +116,7 @@ public class Comparatizer {
         grimeFinder.findModularGrime();
         grimeFinder.findClassGrime();
         grimeFinder.findBehavioralGrime();
+
         outputGrime();
 
         for (String patternID : metricTable.columnKeySet()){
@@ -122,6 +125,8 @@ public class Comparatizer {
                 if (versionSuite != null) {
                     //will be null when a pattern instance does not appear in a particular version.
                     outputter.append(metricTable.get(version, patternID).getSummary());
+                    outputter.append(grimeFinder.getGrimeTable().get(version, patternID).getStructuralAberrations().size() + "\t");
+                    outputter.append(grimeFinder.getGrimeTable().get(version, patternID).getBehavioralAberrations().size() + "\t");
                     outputter.append(grimeFinder.getPeaGrime().get(version, patternID).getTabDelimSummary());
                     outputter.append(grimeFinder.getPeeGrime().get(version, patternID).getTabDelimSummary());
                     outputter.append(grimeFinder.getPiGrime().get(version, patternID).getTabDelimSummary());
@@ -151,6 +156,7 @@ public class Comparatizer {
             }
         }
         output();
+        xmlOutputForQualityModel();
     }
 
     public ConformanceResults testComparisons(UMLClassDiagram umlClassDiagram, PatternInstance pi){
@@ -170,6 +176,12 @@ public class Comparatizer {
                 break;
             case SINGLETON:
                 toRet = compareSingleton(pi, umlClassDiagram);
+                break;
+            case DECORATOR:
+                toRet = compareDecorator(pi, umlClassDiagram);
+                break;
+            case FACTORY_METHOD:
+                toRet = compareFactoryMethod(pi, umlClassDiagram);
                 break;
           default:
                 toRet = null;
@@ -216,6 +228,22 @@ public class Comparatizer {
         IPS strictSingletonIPS = new IPS("configs/ips/singletonPatternIPS_strict.txt", strictSingletonSPS);
         ConformanceResults singletonConformances = verifyConformance(strictSingletonSPS, strictSingletonIPS, singletonPattern, umlClassDiagram);
         return singletonConformances;
+    }
+
+    public ConformanceResults compareDecorator(PatternInstance pi, UMLClassDiagram umlClassDiagram){
+        DecoratorPattern decoratorPattern = new DecoratorPattern(pi, umlClassDiagram);
+        SPS strictDecoratorSPS = new SPS("configs/sps/decoratorPatternSPS_strict.txt");
+        IPS strictDecoratorIPS = new IPS("configs/ips/decoratorPatternIPS_strict.txt", strictDecoratorSPS);
+        ConformanceResults decoratorConformances = verifyConformance(strictDecoratorSPS, strictDecoratorIPS, decoratorPattern, umlClassDiagram);
+        return decoratorConformances;
+    }
+
+    public ConformanceResults compareFactoryMethod(PatternInstance pi, UMLClassDiagram umlClassDiagram){
+        FactoryMethodPattern factoryMethodPattern = new FactoryMethodPattern(pi, umlClassDiagram);
+        SPS strictFactoryMethodSPS = new SPS("configs/sps/factoryMethodPatternSPS_strict.txt");
+        IPS strictFactoryMethodIPS = new IPS("configs/ips/factoryMethodPatternIPS_strict.txt", strictFactoryMethodSPS);
+        ConformanceResults factoryMethodConformances = verifyConformance(strictFactoryMethodSPS, strictFactoryMethodIPS, factoryMethodPattern, umlClassDiagram);
+        return factoryMethodConformances;
     }
 
     /***
@@ -523,6 +551,7 @@ public class Comparatizer {
         header.append("Num_Conforming_Roles_Total" + delim);
         header.append("Num_NonConforming_Roles_Total" + delim);
         header.append("SSize2" + delim);
+        header.append("Pattern_Members" + delim);
         header.append("Afferent_Coupling" + delim);
         header.append("Efferent_Coupling" + delim);
         header.append("Coupling_Between_Pattern_Classes" + delim);
@@ -530,6 +559,10 @@ public class Comparatizer {
         header.append("Pattern_Behavioral_Integrity" + delim);
         header.append("Pattern_Integrity" + delim);
         header.append("Pattern_Instability" + delim);
+        //summary metrics here
+        header.append("Pattern_Structural_Aberrations" + delim);
+        header.append("Pattern_Behavioral_Aberrations" + delim);
+
         header.append(getGrimeHeader());
         header.append("\n");
         return header.toString();
@@ -607,6 +640,140 @@ public class Comparatizer {
             e.printStackTrace();
         }
 
+    }
+
+    /***
+     * this method is responsible for outputting grime metrics for each class (even those that aren't a pattern) to an xml file that
+     * quality model tools can import for integration into quality hierarchies.
+     */
+    public void xmlOutputForQualityModel(){
+        try {
+            for (SoftwareVersion softwareVersion : grimeTable.rowKeySet()){
+                XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
+                File projectDir = new File("devaResults/" + Main.projectID);
+                if (!projectDir.exists()){
+                    projectDir.mkdir();
+                }
+                File f = new File(projectDir + "/devaResults" + softwareVersion.getVersionNum() + ".xml");
+                f.createNewFile();
+                XMLStreamWriter writer = new IndentingXMLStreamWriter(outputFactory.createXMLStreamWriter(new FileOutputStream(f)));
+                writer.writeStartDocument("utf-8", "1.0");
+                writer.writeStartElement("deva");
+                for (String patternID : grimeTable.columnKeySet()){
+                    if (grimeTable.get(softwareVersion, patternID) == null){
+                        //this means the pattern does not exist in the version.
+                        continue;
+                    }
+                    //write pattern element
+                    writer.writeStartElement(grimeTable.get(softwareVersion,patternID).getPatternMapper().pi.getPatternType()+ "_pattern");
+                    //write name element
+                    writer.writeStartElement("name");
+                    writer.writeCharacters(patternID);
+                    //close name
+                    writer.writeEndElement();
+                    //write all metrics
+
+                    writePropertyXMLBlockFromClassifier(writer, grimeTable.get(softwareVersion, patternID), metricTable.get(softwareVersion, patternID));
+
+                    //deprecated, using summay metrics now
+                    //writeMetricXMLBlockFromClassifier(writer, grimeTable.get(softwareVersion, patternID));
+
+                    //close pattern
+                    writer.writeEndElement();
+                }
+                //close deva
+                writer.writeEndElement();
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error writing xml file for qatch input");
+        }
+    }
+
+    private void writePropertyXMLBlockFromClassifier(XMLStreamWriter writer, GrimeSuite grimeSuite, MetricSuite metricSuite){
+        try{
+            writer.writeStartElement("Pattern_Structural_Integrity");
+            writer.writeCharacters(metricSuite.getPatternStructuralIntegrity() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("Pattern_Behavioral_Integrity");
+            writer.writeCharacters(metricSuite.getPatternBehavioralIntegrity() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("Pattern_Instability");
+            writer.writeCharacters(metricSuite.getPatternInstability() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("Pattern_Structural_Aberrations");
+            writer.writeCharacters(grimeSuite.getStructuralAberrations().size() / grimeSuite.getPatternMapper().getPatternMembers().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("Pattern_Behavioral_Aberrations");
+            writer.writeCharacters(grimeSuite.getBehavioralAberrations().size() / grimeSuite.getPatternMapper().getPatternMembers().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("MEM");
+            writer.writeCharacters(grimeSuite.getPatternMapper().getPatternMembers().size() + "");
+            writer.writeEndElement();
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Error writing to properties xml block from a grime suite item");
+        }
+    }
+
+    private void writeMetricXMLBlockFromClassifier(XMLStreamWriter writer, GrimeSuite grimeSuite){
+        try {
+            writer.writeStartElement("PEAM");
+            writer.writeCharacters(grimeSuite.getPeaGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("PEEM");
+            writer.writeCharacters(grimeSuite.getPeeGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("PIM");
+            writer.writeCharacters(grimeSuite.getPiGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("TEAM");
+            writer.writeCharacters(grimeSuite.getTeaGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("TEEM");
+            writer.writeCharacters(grimeSuite.getTeeGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("TIM");
+            writer.writeCharacters(grimeSuite.getTiGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("PEAO");
+            writer.writeCharacters(grimeSuite.getPeaoGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("PIO");
+            writer.writeCharacters(grimeSuite.getPioGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("TEAO");
+            writer.writeCharacters(grimeSuite.getTeaoGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("TIO");
+            writer.writeCharacters(grimeSuite.getTioGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("PEAR");
+            writer.writeCharacters(grimeSuite.getPearGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("PEER");
+            writer.writeCharacters(grimeSuite.getPeerGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("PIR");
+            writer.writeCharacters(grimeSuite.getPirGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("TEAR");
+            writer.writeCharacters(grimeSuite.getTearGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("TEER");
+            writer.writeCharacters(grimeSuite.getTeerGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("TIR");
+            writer.writeCharacters(grimeSuite.getTirGrimeInstances().size() + "");
+            writer.writeEndElement();
+            writer.writeStartElement("MEM");
+            writer.writeCharacters(grimeSuite.getPatternMapper().getPatternMembers().size() + "");
+            writer.writeEndElement();
+
+        }  catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Error writing to xml block from a grime suite item");
+        }
     }
 
 

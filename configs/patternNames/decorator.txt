@@ -1,0 +1,6 @@
+Component:Component
+Decorator:Decorator
+ConcreteDecorator:ConcreteDecorator
+ConcreteComponent:ConcreteComponent
+AddedState:AddedState,State
+Operation:Operation

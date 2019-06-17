@@ -38,6 +38,11 @@ import java.util.*;
 @Getter
 public abstract class PatternMapper {
 
+    //TODO -- run qatch on a subset of patterns.
+    protected List<String> classFilePaths;
+    protected List<String> srcFilePaths;
+
+
     protected PatternInstance pi;
     protected UMLClassDiagram umlClassDiagram;
     protected CoalescerUtility coalescerUtility;
@@ -83,7 +88,12 @@ public abstract class PatternMapper {
 
 
     protected UMLClassifier getClassifierFromString(String majorRoleValue) {
-        return umlClassDiagram.getPackageTree().getClassifier(convertStringToPackagedString(majorRoleValue), 0, umlClassDiagram.getPackageTree().getRoot());
+        UMLClassifier toRet = umlClassDiagram.getPackageTree().getClassifier(convertStringToPackagedString(majorRoleValue), 0, umlClassDiagram.getPackageTree().getRoot());
+        if (toRet == null){
+            System.out.println();
+            toRet = umlClassDiagram.getPackageTree().getClassifier(convertStringToPackagedString(majorRoleValue), 0, umlClassDiagram.getPackageTree().getRoot());
+        }
+        return toRet;
     }
 
     protected UMLClassifier getOneMajorRole(PatternInstance pi) {
@@ -175,6 +185,8 @@ public abstract class PatternMapper {
         }
 
         //should not happen - but will if we are looking at a third party return type rn.
+        //THIS HAPPENS BECAUSE OF A BUG WITH SRCML GENERATION. If I get here, not much to do until srcml fixes their xml generation (basically,
+        //in certain instances srcml closes a '</class>' element before it should really be closed.
         System.out.println("was not able to match project class: " + umlClassifier.getName() + " and method name: " + operationName);
         System.out.println("This should not happen. The tool will likely crash because of this.");
         System.out.println("Version: " + this.getPi().getSoftwareVersion().getVersionNum());
@@ -204,13 +216,17 @@ public abstract class PatternMapper {
     }
 
     protected UMLAttribute matchAttribute(UMLClassifier umlClassifier, String attributeName) {
-        for (UMLAttribute attribute : umlClassifier.getAttributes()) {
-            if (attribute.getName().equals(attributeName)) {
-                //dont need to check type because attribute names are unique.
-                return attribute;
+        if (umlClassifier.getAttributes() != null) {
+            for (UMLAttribute attribute : umlClassifier.getAttributes()) {
+                if (attribute.getName().equals(attributeName)) {
+                    //dont need to check type because attribute names are unique.
+                    return attribute;
+                }
             }
         }
         //should not happen.
+        //THIS HAPPENS BECAUSE OF A BUG WITH SRCML GENERATION. If I get here, not much to do until srcml fixes their xml generation (basically,
+        //in certain instances srcml closes a '</class>' element before it should really be closed.
         System.out.println("was not able to match project class: " + umlClassifier.getName() + " and attribute name: " + attributeName);
         System.out.println("This should not happen. The tool will likely crash because of this.");
         System.out.println("Version: " + this.getPi().getSoftwareVersion().getVersionNum());
@@ -435,6 +451,21 @@ public abstract class PatternMapper {
         return classifiers;
     }
 
+    public List<UMLOperation> getAllParticipatingOperationsOnlyUMLOperations() {
+        List<UMLOperation> operations = new ArrayList<>();
+        for (Pair<String, UMLOperation> operationPair : this.getOperationModelBlocks()) {
+            operations.add(operationPair.getRight());
+        }
+        return operations;
+    }
+    public List<UMLAttribute> getAllParticipatingAttributesOnlyUMLAttributes() {
+        List<UMLAttribute> attributes = new ArrayList<>();
+        for (Pair<String, UMLAttribute> attributePair : this.getAttributeModelBlocks()) {
+            attributes.add(attributePair.getRight());
+        }
+        return attributes;
+    }
+
     /***
      * method to fill afferent and efferent participating classifiers (the variables)
      */
@@ -494,5 +525,14 @@ public abstract class PatternMapper {
         }
         return uniqueEfferentClassifiers;
     }
+
+    public List<Object> getPatternMembers(){
+        List<Object> patternMembers = new ArrayList<>();
+        patternMembers.addAll(this.getAllParticipatingClassifiersOnlyUMLClassifiers());
+        patternMembers.addAll(this.getAllParticipatingOperationsOnlyUMLOperations());
+        patternMembers.addAll(this.getAllParticipatingAttributesOnlyUMLAttributes());
+        return patternMembers;
+    }
+
 
 }

@@ -125,7 +125,10 @@ public class UMLClass extends UMLClassifier {
         }
         attributesToRet.addAll(this.attributes);
         for (UMLClassifier umlClassifier : this.getExtendsParents()){
-            attributesToRet.addAll(umlClassifier.getAttributes());
+            if (!umlClassifier.getName().equals(this.getName())) {
+                //weird bug with nested classes recursively calling parent classes.
+                attributesToRet.addAll(umlClassifier.getAttributes());
+            }
         }
         return attributesToRet;
     }

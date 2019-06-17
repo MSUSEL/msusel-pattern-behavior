@@ -135,10 +135,12 @@ public class UMLGenerationUtils {
      */
     public static List<Pair<String, String>> getParameters(SrcMLParameterList parameterList){
         List<Pair<String, String>> params = new ArrayList<>();
-        for (SrcMLParameter p : parameterList.getParameters()){
-            if (p.getDecl() != null){
-                //reference to comment in SrcMLParameter class
-                params.add(new ImmutablePair<>(p.getDecl().getType().getName(), p.getDecl().getName()));
+        if (parameterList != null) {
+            for (SrcMLParameter p : parameterList.getParameters()) {
+                if (p.getDecl() != null) {
+                    //reference to comment in SrcMLParameter class
+                    params.add(new ImmutablePair<>(p.getDecl().getType().getName(), p.getDecl().getName()));
+                }
             }
         }
         return params;
@@ -297,6 +299,7 @@ public class UMLGenerationUtils {
     public static UMLClass getUMLClass(SrcMLClass srcMLClass, List<String> residingPackage, List<List<String>> imports){
         SrcMLBlock block = srcMLClass.getBlock();
         List<UMLAttribute> attributes = UMLGenerationUtils.getUMLAttributes(block);
+
         List<UMLOperation> operations = UMLGenerationUtils.getUMLOperations(block.getFunctions(), block.getFunctionDecls());
         List<UMLOperation> constructors = UMLGenerationUtils.getUMLConstructors(block.getConstructors(), block.getConstructors_decl());
         List<String> extendsParents = UMLGenerationUtils.getUMLExtendsParents(srcMLClass.getSuperLink());

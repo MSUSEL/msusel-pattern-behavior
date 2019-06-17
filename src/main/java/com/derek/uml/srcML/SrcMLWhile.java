@@ -49,7 +49,9 @@ public class SrcMLWhile extends SrcMLNode{
         if (condition != null){
             buildCallTree(callTree, condition.getExpression());
         }
-        block.fillCallTree(callTree);
+        if (block != null) {
+            block.fillCallTree(callTree);
+        }
     }
 
     public String toString(){

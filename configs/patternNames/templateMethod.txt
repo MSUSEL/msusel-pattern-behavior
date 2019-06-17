@@ -1,0 +1,4 @@
+AbstractTemplate:AbstractTemplate
+ConcreteTemplate:ConcreteTemplate,Template
+TemplateMethod:TemplateMethod
+PartialStep:PartialStep,Step

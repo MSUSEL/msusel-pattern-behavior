@@ -97,16 +97,13 @@ public class PatternInstanceEvolution {
     }
 
     public boolean hasMinVersions(){
-        //needs to have 10 consecutive versions or else false.
-
         int counter = 0;
         for (Pair<SoftwareVersion, PatternInstance> pi : patternLifetime){
             if (counter == minNumberVersions){
                 return true;
             }
-            if (pi.getValue() == null){
-                return false;
-            }else{
+            //pi.getValue returns null if this pattern dne at version 0.
+            if (pi.getValue() != null){
                 counter++;
             }
         }

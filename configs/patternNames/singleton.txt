@@ -1,0 +1,6 @@
+Singleton:Singleton
+UniqueInstance:UniqueInstance,Instance
+SingletonData:SingletonData,Data,State
+GetInstance:GetInstance
+Operation:Operation
+GetData:GetDate
