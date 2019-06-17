@@ -21,7 +21,8 @@ public class ResultsCombiner {
         //combine("elasticsearch", "C:/Users/Derek Reimanis/Documents/research/quality/elasticsearch/elasticsearch_results");
         //combine("commons-lang", "C:/Users/Derek Reimanis/Documents/research/quality/commons-lang/commons-lang_results");
         //combine("netty", "C:/Users/Derek Reimanis/Documents/research/quality/netty/netty_results");
-        combine("glide", "C:/Users/Derek Reimanis/Documents/research/quality/glide/glide_results");
+        //combine("glide", "C:/Users/Derek Reimanis/Documents/research/quality/glide/glide_results");
+        combine("mockito", "C:/Users/Derek Reimanis/Documents/research/quality/mockito/mockito_results");
 
     }
 

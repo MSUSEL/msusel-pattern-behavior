@@ -24,6 +24,7 @@
  */
 package com.derek.uml;
 
+import com.derek.Main;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -84,9 +84,6 @@ public class Conformance {
                 //there is still a bug here tho.. only 1 operation object is getting mapped.
                 for (OperationRole operationRole : strRole.getOperations()){
                     for (Pair<String, UMLOperation> operationModelBlockPair : patternInstance.getOperationModelBlocks()){
-                        if (modelBlockPair.getValue() == null){
-                            System.out.println("");
-                        }
                         if (modelBlockPair.getValue().getOperations().contains(operationModelBlockPair.getValue())) {
                             if (operationModelBlockPair.getKey().equals(operationRole.compareName())) {
                                 structuralMappings.add(new RBMLMapping(operationRole, operationModelBlockPair.getValue()));
