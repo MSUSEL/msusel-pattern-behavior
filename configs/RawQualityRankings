@@ -1,0 +1,2 @@
+Maintainability:
+Resource_Handling < Assignment < Messaging < Cohesion < Comprehensibility = Redundancy < Structuredness < Encapsulation < Complexity < Coupling = Pattern_Instability < Pattern_Structural_Aberrations < Pattern_Behavioral_Aberrations < Pattern_Structural_Integrity < Pattern_Behavioral_Integrity < Bad_Function
