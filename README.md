@@ -31,7 +31,7 @@ Currently working on:
 
 Generating UML class diagrams from srcML output. Progress ~ 100%
 
-Generating UML sequence diagrams from srcML output. Progress ~ 80%
+Generating UML sequence diagrams from srcML output. Progress ~ 100%
 
 Transforming UML data model to PlantUML. Progress ~ 50% (don't know if I will do sequence diagram generation)
 
@@ -39,8 +39,7 @@ Implementing SPS design pattern specifications in UML ~ 100% for now (State, Obj
 
 Implementing IPS design pattern specifications in UML ~ 100% for now (State, Object Adapter, Template Method, Singleton, Observer)
 
-conformance checking algos (Structural ~ 100%) (Behavioral ~ 90%) (behavioral is only including observer pattern right now, 
-but I think its set up for anything.)
+conformance checking algos (Structural ~ 100%) (Behavioral ~ 100%)
 
 Linking visualizer to UML segments ~ 0% (deciding against visualizer until I get results)
 
