@@ -1,6 +1,9 @@
 Design Pattern Evolution tracking tool.
 
-To use:
+To use (pre-built):
+1) Run the jar (in the target/ directory) as 'java -jar pattern-analysis-1.0-SNAPSHOT-jar-with-dependencies.jar'
+
+To use (manual-build):
 
 1) Download multiple versions of a software project to be analyzed, 
 both the runnable version (jar is what this tool supports now) and the src files.
